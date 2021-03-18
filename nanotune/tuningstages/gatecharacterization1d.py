@@ -1,0 +1,156 @@
+from typing import Optional, Tuple, List, Union, Dict, Callable, Any, Sequence
+import logging
+import copy
+import qcodes as qc
+
+import nanotune as nt
+from nanotune.device.gate import Gate
+from nanotune.fit.pinchofffit import PinchoffFit
+from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.classification.classifier import Classifier
+
+logger = logging.getLogger(__name__)
+
+
+class GateCharacterization1D(TuningStage):
+    """has a do_at_each for custom actions between setpoints
+    will change voltage of current gate until either pinchoff is found or
+    safety ranges are reached
+    """
+
+    def __init__(
+        self,
+        data_settings: Dict[str, Any],
+        setpoint_settings: Dict[str, Any],
+        readout_methods: Dict[str, qc.Parameter],
+        classifier: Classifier,
+        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
+        fit_options: Optional[Dict[str, Any]] = None,
+        update_settings: bool = True,
+        noise_level: float = 0.001,  # compares to normalised signal
+    ) -> None:
+        """
+        """
+        TuningStage.__init__(
+            self,
+            "gatecharacterization1d",
+            data_settings,
+            setpoint_settings,
+            readout_methods,
+            measurement_options=measurement_options,
+            update_settings=update_settings,
+            fit_options=fit_options,
+        )
+        print(f'GateCh readout methods: {readout_methods}')
+
+        self.clf = classifier
+        self.noise_level = noise_level
+        self._recent_signals: List[float] = []
+        if isinstance(self.setpoint_settings['gates_to_sweep'], Gate):
+            gate_list = [self.setpoint_settings['gates_to_sweep']]
+            self.setpoint_settings['gates_to_sweep'] = gate_list
+        else:
+            assert len(self.setpoint_settings['gates_to_sweep']) == 1
+        self.gate = self.setpoint_settings['gates_to_sweep'][0]
+
+    @property
+    def fit_class(self):
+        """
+        Use the appropriate fitting class
+        """
+        return PinchoffFit
+
+    def check_quality(self) -> bool:
+        """"""
+        found_dots = self.clf.predict(
+            self.current_id,
+            self.data_settings['db_name'],
+            self.data_settings['db_folder'],
+            )
+        return any(found_dots)
+
+    def update_measurement_settings(
+        self,
+        actions: List[str],
+    ) -> None:
+        """"""
+        for action in actions:
+            if action not in ["x more negative", "x more positive"]:
+                logger.error((f'{self.stage}: Unknown action.'
+                    'Cannot update measurement setting'))
+
+        if "x more negative" in actions:
+            self._update_setpoint_settings(0, 0)
+        if "x more positive" in actions:
+            self._update_setpoint_settings(0, 1)
+
+
+    def _update_setpoint_settings(self, gate_id, range_id):
+        v_change = abs(
+            self.current_ranges[gate_id][range_id]
+            - self.gate.safety_range()[range_id]
+        )
+        sign = (-1) ** (range_id + 1)
+        self.current_ranges[gate_id][range_id] += sign * v_change
+
+    def get_next_actions(self) -> Tuple[List[str], List[str]]:
+        """
+        Define next actions if quality of current fit is sub-optimal.
+        First: try to sweep the current gate more negative.
+        If we are speeing to its min_v, we set the auxiliary_gate to min_v
+        No intermediate tries, just being efficient.
+        """
+        fit_actions = self.current_fit.next_actions
+        safety_range = self.gate.safety_range()
+
+        neg_range_avail = abs(self.current_ranges[0][0] - safety_range[0])
+        pos_range_avail = abs(self.current_ranges[0][1] - safety_range[1])
+
+        actions = []
+        issues = []
+
+        if "x more negative" in fit_actions:
+            if neg_range_avail >= 0.1:
+                actions.append("x more negative")
+            else:
+                issues.append("auxiliary more negative")
+
+        if "x more positive" in fit_actions:
+            if pos_range_avail >= 0.1:
+                actions.append("x more positive")
+            else:
+                issues.append("auxiliary more positive")
+
+        return actions, issues
+
+    def clean_up(self) -> None:
+        """"""
+        self.gate.dc_voltage(self.gate.safety_range()[1])
+
+    def finish_early(self,
+                     current_output_dict: Dict[str, float],
+                     readout_method_to_use: str = 'dc_current',
+                     ) -> bool:
+        """Check strength of measured signal over the last 30mv and
+        see if current is constantly low/high. Measurement will be stopped
+        of this is the case
+        """
+        param = self.readout_methods[readout_method_to_use]
+        current_signal = current_output_dict[param.full_name]
+        finish = False
+
+        self._recent_signals.append(current_signal)
+        if len(self._recent_signals) > int(0.3 / self.dv[0]):
+            self._recent_signals = self._recent_signals[1:].copy()
+
+            norm_consts = self.data_settings['normalization_constants']
+            n_cts = norm_consts[readout_method_to_use]
+            norm_signal = (current_signal - n_cts[0]) / (n_cts[1] - n_cts[0])
+            if norm_signal < self.noise_level:
+                finish = True
+
+        return finish
+
+    def additional_post_measurement_actions(self) -> None:
+        """"""
+        self._recent_signals = []

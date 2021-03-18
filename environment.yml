@@ -1,0 +1,14 @@
+name: nanotune
+channels:
+ - defaults
+dependencies:
+ - python==3.9.1
+ - numpy==1.19.2
+ - pip
+ - pip:
+    - scikit-image>=0.18.0
+    - scikit-learn>=0.24.0
+    - qcodes>=0.22.0
+    - reportlab
+    - gitpython
+    - prettytable
