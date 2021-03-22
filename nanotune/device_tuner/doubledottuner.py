@@ -30,7 +30,7 @@ DATA_DIMS = {
 }
 
 
-class FivedotTuner(Tuner):
+class DoubleDotTuner(Tuner):
     """
     classifiers = {
         'pinchoff': Optional[Classifier],
