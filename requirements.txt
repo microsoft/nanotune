@@ -9,7 +9,7 @@ backcall==0.2.0
 bleach==3.3.0
 broadbean==0.9.1
 cached-property==1.5.2
-cachetools==4.2.0
+cachetools==4.2.1
 certifi==2020.12.5
 cffi==1.14.4
 cftime==1.4.1
