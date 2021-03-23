@@ -103,7 +103,7 @@ pytz==2021.1
 PyVISA==1.11.3
 PyWavelets==1.1.1
 PyYAML==5.3.1
-pyzmq==21.0.1
+pyzmq==22.0.3
 qcodes>=0.22.0
 reportlab==3.5.59
 requests==2.25.1
