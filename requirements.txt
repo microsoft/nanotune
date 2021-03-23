@@ -38,7 +38,7 @@ imageio==2.9.0
 importlib-metadata==3.7.3
 iniconfig==1.1.1
 ipykernel==5.4.3
-ipython==7.19.0
+ipython==7.21.0
 ipython-genutils==0.2.0
 ipywidgets==7.6.3
 jedi==0.17.2
@@ -112,7 +112,7 @@ requirements-parser==0.2.0
 rsa==4.7.2
 ruamel.yaml==0.16.13
 ruamel.yaml.clib==0.2.2
-schema==0.7.2
+schema==0.7.4
 scikit-image==0.18.1
 scikit-learn==0.24.1
 scipy==1.6.1
