@@ -28,7 +28,7 @@ gitdb==4.0.5
 GitPython==3.1.14
 google-api-core==1.26.1
 google-auth==1.28.0
-google-auth-oauthlib==0.4.2
+google-auth-oauthlib==0.4.3
 google-pasta==0.2.0
 googleapis-common-protos==1.53.0
 grpcio==1.32.0
