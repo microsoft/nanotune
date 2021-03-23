@@ -7,7 +7,7 @@ async-generator==1.10
 attrs==20.3.0
 backcall==0.2.0
 bleach==3.3.0
-broadbean==0.9.1
+broadbean==0.10.0
 cached-property==1.5.2
 cachetools==4.2.1
 certifi==2020.12.5
@@ -19,7 +19,7 @@ coverage==5.4
 cycler==0.10.0
 dataclasses==0.6
 decorator==4.4.2
-defusedxml==0.6.0
+defusedxml==0.7.1
 entrypoints==0.3
 execnet==1.8.0
 flatbuffers==1.12
@@ -94,7 +94,7 @@ pycparser==2.20
 Pygments==2.7.4
 pyparsing==2.4.7
 pyrsistent==0.17.3
-pytest==6.2.1
+pytest==6.2.2
 pytest-cov==2.11.1
 pytest-forked==1.3.0
 pytest-xdist==2.2.1
@@ -114,7 +114,7 @@ ruamel.yaml==0.16.12
 ruamel.yaml.clib==0.2.2
 schema==0.7.2
 scikit-image==0.18.1
-scikit-learn==0.24.0
+scikit-learn==0.24.1
 scipy==1.6.1
 Send2Trash==1.5.0
 six==1.15.0
@@ -125,10 +125,10 @@ tensorboard-plugin-wit==1.8.0
 tensorflow==2.4.1
 tensorflow-estimator==2.4.0
 termcolor==1.1.0
-terminado==0.9.2
+terminado==0.9.3
 testpath==0.4.4
 threadpoolctl==2.1.0
-tifffile==2021.1.14
+tifffile==2021.3.17
 toml==0.10.2
 tornado==6.1
 tqdm==4.59.0
