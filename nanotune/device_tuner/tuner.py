@@ -16,7 +16,7 @@ from qcodes.dataset.experiment_container import (load_last_experiment,
 
 import nanotune as nt
 from nanotune.device.device import Device as Nt_Device
-from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.classification.classifier import Classifier
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.device.gate import Gate
@@ -96,7 +96,6 @@ class Tuner(qc.Instrument):
         super().__init__(name)
 
         self.classifiers = classifiers
-        self.tuningresults = {}
 
         assert 'db_name' in data_settings.keys()
 
@@ -152,7 +151,7 @@ class Tuner(qc.Instrument):
         """
         available_readout_methods = device.readout_methods()
         normalization_constants = dict.fromkeys(
-            available_readout_methods.keys(), (0.0, 1.0)
+            available_readout_methods.keys(), [0.0, 1.0]
             )
         with set_back_voltages(device.gates):
             device.all_gates_to_lowest()
@@ -193,17 +192,18 @@ class Tuner(qc.Instrument):
         self,
         gates: List[Gate],
         skip_gate_ids: List[int],
-        ) -> None:
+    ) -> None:
         """"""
         for ig, gate in enumerate(gates):
             if ig not in skip_gate_ids:
                 gate.current_valid_range(gate.safety_range())
 
-    def getting_signal(self,
+    def getting_signal(
+        self,
         device: nt.Device,
         thresholds_normalized: Dict[str, float],
         readout_method_to_check: Optional[List[str]] = None,
-        ) -> bool:
+    ) -> bool:
         """Supply relative thresholds; the normalized signal will be compared
         """
         have_signal = False
@@ -224,19 +224,18 @@ class Tuner(qc.Instrument):
                         )
         return have_signal
 
-
     def characterize_gates(
         self,
         device: nt.Device,
         gates: List[Gate],
         use_safety_ranges: bool = False,
         comment: Optional[str] = None,
-    ) -> TuningResult:
+    ) -> MeasurementHistory:
         """
         Characterize multiple gates.
         It does not set any voltages.
 
-        returns instance of TuningResult
+        returns instance of MeasurementHistory
         """
         if comment is None:
             comment = f'Characterizing {gates}.'
@@ -248,7 +247,7 @@ class Tuner(qc.Instrument):
                 for gate in gates:
                     gate.current_valid_range(gate.safety_range())
 
-            tuningresult = TuningResult(device.name)
+            measurement_result = MeasurementHistory(device.name)
             with self.device_specific_settings(device):
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
@@ -262,42 +261,37 @@ class Tuner(qc.Instrument):
                         fit_options=self.fit_options()['pinchofffit'],
                         measurement_options=device.measurement_options(),
                     )
-                    success, termination_reasons, result = stage.run_stage()
-                    result['device_gates_status'] = device.get_gate_status()
-                    tuningresult.add_result(
-                        f"characterization_{gate.name}", success,
-                        termination_reasons, result,
-                        comment
-                        )
-        if device.name not in self.tuningresults.keys():
-            self.tuningresults[device.name] = []
-        self.tuningresults[device.name].append(tuningresult)
-        return tuningresult
+                    tuningresult = stage.run_stage()
+                    tuningresult.gates_status = device.get_gate_status()
+                    tuningresult.comment = comment
+                    measurement_result.add_result(
+                        tuningresult,
+                        f'characterization_{gate.name}',
+                    )
+
+        return measurement_result
 
     def measure_initial_ranges(
         self,
+        device: Nt_Device,
         gate_to_set: Gate,
         gates_to_sweep: List[Gate],
         voltage_step: float = 0.2,
-    ) -> Tuple[Tuple[float, float], TuningResult]:
+    ) -> Tuple[Tuple[float, float], MeasurementHistory]:
         """
         Estimate the default voltage range to consider
         """
         if 'pinchoff' not in self.classifiers.keys():
             raise KeyError('No pinchoff classifier found.')
 
-        device = gate_to_set.parent
         device.all_gates_to_highest()
 
-        tuningresult = TuningResult(device.name)
+        measurement_result = MeasurementHistory(device.name)
         layout_ids = [g.layout_id() for g in gates_to_sweep]
         skip_gates = dict.fromkeys(layout_ids, False)
 
         v_range = gate_to_set.safety_range()
         n_steps = abs(v_range[0] - v_range[1]) / voltage_step
-
-        init_range_gate_to_set = (None, None)
-        last_gate = None
 
         with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
@@ -317,33 +311,32 @@ class Tuner(qc.Instrument):
                             fit_options=self.fit_options()['pinchofffit'],
                             measurement_options=device.measurement_options(),
                         )
-
-                        success, termination_reasons, result = stage.run_stage()
-                        result['device_gates_status'] = device.get_gate_status()
-                        tuningresult.add_result(
-                            f"characterization_{gate.name}", success,
-                            termination_reasons, result,
-                            )
-                        if success:
+                        tuningresult = stage.run_stage()
+                        tuningresult.gates_status = device.get_gate_status()
+                        measurement_result.add_result(
+                            tuningresult,
+                            f'characterization_{gate.name}',
+                        )
+                        if tuningresult.success:
                             skip_gates[gid] = True
                             last_gate = gid
 
                 if all(skip_gates.values()):
                     break
-        init_range_gate_to_set[0] = gate_to_set.dc_voltage()
+        min_voltage = gate_to_set.dc_voltage()
 
         # Swap top_barrier and last barrier to pinch off agains it to
         # determine opposite corner of valid voltage space.
         gate_to_set.parent.all_gates_to_highest()
 
-        v_range = last_gate.safety_range()
+        v_range = device.gates[last_gate].safety_range()
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
         setpoint_settings['gates_to_sweep'] = [gate_to_set]
         with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 
-                last_gate.dc_voltage(voltage)
+                device.gates[last_gate].dc_voltage(voltage)
                 stage = GateCharacterization1D(
                     data_settings=self.data_settings(),
                     setpoint_settings=setpoint_settings,
@@ -354,29 +347,28 @@ class Tuner(qc.Instrument):
                     measurement_options=device.measurement_options(),
                 )
 
-                success, termination_reasons, result = stage.run_stage()
-                result['device_gates_status'] = device.get_gate_status()
-                tuningresult.add_result(
-                    f"characterization_{gate.name}", success,
-                    termination_reasons, result,
-                    )
-
-                if success:
-                    L = result['features']['low_voltage']
+                tuningresult = stage.run_stage()
+                tuningresult.gates_status = device.get_gate_status()
+                measurement_result.add_result(
+                    tuningresult,
+                    f'characterization_{gate.name}',
+                )
+                if tuningresult.success:
+                    L = tuningresult.features['low_voltage']
                     L = round(L - 0.1*abs(L), 2)
                     min_rng = self.top_barrier.safety_range()[0]
-                    init_range_gate_to_set[1] = np.max([min_rng, L])
+                    max_voltage = np.max([min_rng, L])
                     break
 
         gate_to_set.parent.all_gates_to_highest()
 
-        return init_range_gate_to_set, tuningresult
+        return (min_voltage, max_voltage), measurement_result
 
     @contextmanager
     def device_specific_settings(
         self,
         device: Nt_Device,
-        ) -> Dict[str, Any]:
+    ) -> Generator[None, None, None]:
         """ Add device relevant readout settings """
         original_data_settings = copy.deepcopy(self.data_settings())
         self.data_settings(
@@ -391,11 +383,11 @@ class Tuner(qc.Instrument):
         """ """
         self._fit_options.update(new_fit_options)
 
-    def get_fit_options(self) -> None:
+    def get_fit_options(self) -> Dict[str, Any]:
         """ """
         return self._fit_options
 
-    def get_data_settings(self) -> None:
+    def get_data_settings(self) -> Dict[str, Any]:
         """ """
         return self._data_settings
 

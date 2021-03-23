@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 DOT_LABLE_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
 
-
 class ChargeDiagram(TuningStage):
     """has a do_at_each for custom actions between setpoints"""
 
@@ -221,11 +220,13 @@ class ChargeDiagram(TuningStage):
         Currently either shifting the window or making it larger.
         """
         all_actions = ["x more negative", "x more positive",
-                        "y more negative", "y more positive"]
+                       "y more negative", "y more positive"]
         for action in actions:
             if action not in all_actions:
-                logger.error((f'{self.stage}: Unknown action.'
-                    'Cannot update measurement setting'))
+                logger.error(
+                    (f'{self.stage}: Unknown action.'
+                     'Cannot update measurement setting')
+                )
 
         if "x more negative" in actions:
             self._update_setpoint_settings(0, "negative")
@@ -239,8 +240,10 @@ class ChargeDiagram(TuningStage):
         if "y more positive" in actions:
             self._update_setpoint_settings(1, "positive")
         else:
-            logger.error((f'{self.stage}: Unknown action.'
-                'Cannot update measurement setting'))
+            logger.error(
+                (f'{self.stage}: Unknown action.'
+                 'Cannot update measurement setting')
+            )
 
     def _update_setpoint_settings(self, gate_id: int, direction: str) -> None:
         curr_rng = self.current_ranges[gate_id]
