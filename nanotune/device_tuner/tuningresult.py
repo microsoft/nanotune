@@ -8,7 +8,6 @@ import json
 import copy
 from typing import List, Optional, Dict, Tuple, Sequence, Callable, Any, Union
 from dataclasses import dataclass, asdict, field
-from dataclasses_json import dataclass_json
 
 import qcodes as qc
 from qcodes import validators as vals
