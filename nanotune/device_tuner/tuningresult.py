@@ -7,135 +7,176 @@ import datetime
 import json
 import copy
 from typing import List, Optional, Dict, Tuple, Sequence, Callable, Any, Union
+from dataclasses import dataclass, asdict, field
+from dataclasses_json import dataclass_json
 
 import qcodes as qc
 from qcodes import validators as vals
 import nanotune as nt
-from nanotune.device_tuner.tuningreport import TuningReport
 logger = logging.getLogger(__name__)
 
 
-class TuningResult():
+@dataclass()
+class TuningResult:
+    """Container to hold tuning result data
+
+    Attributes:
+        stage (str): the tuning stage, e.g. 'chargediagram'. Can be any string,
+            not necessarily a nt.tuningstage.
+        success (bool): whether the stage terminated successfully
+        guids (list): List of GUIDs of the measurements taken during the
+            stage
+        termination_reasons (list): List of reasons why the stage did not
+            succeed. Example: 'no current'.
+        data_ids (list): List of qc.run_id of the the measurements taken during
+            the stage. Optional, for convenience.
+        db_name (str): The database where to find data_ids, optional.
+        db_folder (str): The database folder where to find db_name and thus
+            data_ids. Optional
+        comment (str): Optional string if there is anything to say about the
+            tuning.
+        timestamp (str): time stamp when the stage finished.
+
+    Methods:
+        to_dict: Export tuning results to dictionary
+        to_json: Export tuning results to JSON
+    """
+    stage: str
+    success: bool
+    guids: List[str] = field(default_factory=list)
+    features: Dict[str, Any] = field(default_factory=dict)
+    data_ids: List[str] = field(default_factory=list)
+    db_name: str = ''
+    db_folder: str = ''
+    termination_reasons: List[str] = field(default_factory=list)
+    comment: str = ''
+    timestamp: str = ''
+    gates_status: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns:
+            dict: TuningResult instance as dict
+        """
+
+        return asdict(self)
+
+    def to_json(self) -> str:
+        """
+        Returns:
+            str: serialized version TuningResult instance
+        """
+
+        return json.dumps(self.to_dict())
+
+
+class MeasurementHistory:
+    """Container to save tuning results. Each device should have its own
+    instance. Results are saved in a dictionary mapping string indentifiers to
+    TuningResult instances.
+
+    Attributes:
+        device_name (str): Name of device tuned.
+        tuningresults (dict): Dictionary mapping string identifiers to
+            instances of TuningResults.
+
+    Methods:
+        add_tuningresult(new_tuningresult, identifier=None): Add another
+            result. If no identifier is specified,
+            new_tuningresult.name + '_' + new_tuningresult.guids[-1] is used.
+        to_dict: Export all tuning results to a dictionary.
+        to_json: Export all tuning results to JSON formatted string.
+    """
+
     def __init__(
         self,
         device_name: str,
     ) -> None:
+        """
+        Args:
+            device_name (str): Name of device tuned.
+        """
+
         self.device_name = device_name
-        self._data_comments: Dict[int, str] = {}
-        self._data_comments["general"] = ""
-        self._stage_summaries: Dict[str, Any] = {}
+        self._tuningresults: Dict[str, TuningResult] = {}
 
     @property
-    def data_comments(self):
-        return self._data_comments
+    def tuningresults(self):
+        """tuningresults property getter """
+        return self._tuningresults
 
-    @data_comments.setter
-    def data_comments(self, new_comments: Dict[int, str]):
-        return self.update_data_comments(new_comments)
+    @tuningresults.setter
+    def tuningresults(
+        self,
+        new_tuningresult: Union[TuningResult, Dict[str, TuningResult]],
+    ) -> None:
+        """tuningresults property setter. Checks if keys in new_tuningresult
+        already exist in self.tuningresults.
+        If a bare TuningResult instance is given, the TuningResult.stage serves
+        as identifier.
 
-    @property
-    def stage_summaries(self):
-        return self._stage_summaries
+        Args:
+            new_tuningresult (Union[TuningResult, Dict[str, TuningResult]]):
 
-    @stage_summaries.setter
-    def stage_summaries(self, new_summary: Dict[str, Any]):
-        return self.update_stage_summaries(new_summary)
+        Returns:
+        """
+        if isinstance(new_tuningresult, TuningResult):
+            new_tuningresult = {new_tuningresult.stage: new_tuningresult}
+
+        common_keys = list(
+            set(new_tuningresult.keys()) & set(self._tuningresults.keys())
+            )
+        for key in common_keys:
+            if new_tuningresult[key] != self._tuningresults[key]:
+                last_guid = new_tuningresult[key].guids[-1]
+                new_key = key + '_' + last_guid
+                new_tuningresult[new_key] = new_tuningresult[key]
+                del new_tuningresult[key]
+
+        self._tuningresults.update(new_tuningresult)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Merges all MeasurementHistory attributed into a dict
+
+        Returns:
+            dict: all MeasurementHistory data in a dict
+        """
+
+        self_dict = {k: v.to_dict() for (k, v) in self.tuningresults.items()}
+        self_dict['device_name'] = self.device_name
+        return self_dict
+
+    def to_json(self) -> str:
+        """Serializes MeasurementHistory instance to a JSON formatted sting.
+
+        Returns:
+            str: JSON formatted serial version of MeasurementHistory instance
+        """
+
+        return json.dumps(self.to_dict())
 
     def add_result(
         self,
-        identifier: str,
-        success: bool,
-        termination_reasons: List[int],
-        result: Dict[str, Any],
-        comment: Optional[str],
-        ) -> None:
-        """ """
-        summary = {}
-        summary[identifier] = {
-            'success': success,
-            'termination_reasons': termination_reasons,
-            **result,
-            'comment': comment,
-        }
-        self.update_stage_summaries(summary)
-
-    def update(self,
-        tuning_result: TuningResult,
-        ) -> None:
-        """ """
-        if tuning_result.device_name() != self.device_name():
-            raise ValueError('Device names do not match.')
-        self.update_data_comments(tuning_result.data_comments)
-        self.update_stage_summaries(tuning_result.stage_summaries)
-
-    def update_data_comments(self,
-        data_comments: Dict[int, str],
-        ) -> None:
-        """ """
-        common_keys = list(
-            set(data_comments.keys()) & set(self._data_comments.keys())
-            )
-        for key in common_keys:
-            data_comments[key] += (';' + self._data_comments[key])
-
-        self.data_comments.update(data_comments)
-
-    def update_stage_summaries(self, stage_summaries: Dict[str, Any]) -> None:
-        """ Checks if keys in stage_summaries overlap with already exiting
-        keys.
-        """
-        common_keys = list(
-            set(stage_summaries.keys()) & set(self._stage_summaries.keys())
-            )
-        for key in common_keys:
-            if stage_summaries[key] != self._stage_summaries[key]:
-                if key[-1].isdigit():
-                    m = re.search(r'\d+$', key).group()
-                    key[:-len(m)] + str(int(m)+1)
-                else:
-                    new_key = key + '_2'
-                stage_summaries[new_key] = stage_summaries[key]
-                del stage_summaries[key]
-        self._stage_summaries.update(stage_summaries)
-
-    def get_stage_summaries(self) -> Dict[str, Any]:
-        """"""
-        return copy.deepcopy(self._stage_summaries)
-
-    def get_data_comments(self) -> Dict[str, Any]:
-        """"""
-        return copy.deepcopy(self._data_comments)
-
-    def remove_data_comments(self,
-        data_ids: List[int],
-        ) -> None:
-        """
-        """
-        for data_id in data_ids:
-            del self._data_comments[data_id]
-
-    def remove_stage_summary(self,
-        stage: str,
-        ) -> None:
-        """ """
-        del self._stage_summaries[stage]
-
-    def print(
-        self,
-        tuning_step: str,
-        send: bool = False,
+        tuningresult: TuningResult,
+        identifier: Optional[str] = None,
     ) -> None:
-        """"""
-        nl = TuningReport(
-            self.stage_summaries,
-            device_name=self.device_name(),
-            comments=self.data_comments,
-        )
-        nl.press()
-        if send:
-            nl.distribute(reciever=["me@onenote.com", "nanotune@outlook.com"],
-                          sender="nanotune@outlook.com",
-                          pwd="N@notune")
+        """Adds TuningResult instance to self.tuningresults dictionary.
 
+        Args:
+            tuningresult (TuningResult):
+            identifier (Optional[str]): default if not supplied is
+                tuningresult.stage
+        """
 
+        if identifier is None:
+            identifier = tuningresult.stage
+        self.tuningresults = {identifier: tuningresult}
 
+    def update(self, other_measurement_history: MeasurementHistory) -> None:
+        """ """
+        assert other_measurement_history.device_name == self.device_name
+
+        # not using dict.merge in case of key duplicates - which are taken
+        # care of in add_result
+        for key, result in other_measurement_history.tuningresults.items():
+            self.add_result(result, key)

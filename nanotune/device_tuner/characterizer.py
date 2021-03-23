@@ -16,7 +16,7 @@ import nanotune as nt
 from nanotune.device.device import Device as Nt_Device
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.classification.classifier import Classifier
-from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.device.gate import Gate
 from nanotune.device_tuner.tuner import Tuner, set_back_voltages
 
@@ -56,17 +56,19 @@ class Characterizer(Tuner):
         setpoint_settings: Dict[str, Any],
         fit_options: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> None:
-        super().__init__(name,
+        super().__init__(
+            name,
             data_settings,
             classifiers,
             setpoint_settings,
-            fit_options=fit_options)
+            fit_options=fit_options,
+        )
 
-
-    def characterize(self,
+    def characterize(
+        self,
         device: Nt_Device,
         gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
-        ) -> TuningResult:
+    ) -> MeasurementHistory:
         """
         gate_configurations: Dict[int, Dict[int, float]]; with gate
         configuration to be applied for individual gate characterizations.
@@ -80,28 +82,23 @@ class Characterizer(Tuner):
         if gate_configurations is None:
             gate_configurations = {}
 
-        tuningresult = TuningResult(
-            'device_characterization_result', device.name
-            )
+        measurement_result = MeasurementHistory(device.name)
 
         for gate in device.gates:
             with set_back_voltages(device.gates):
                 gate_id = gate.layout_id()
                 if gate_id in gate_configurations.keys():
-                    for other_id, dc_voltage in gate_configurations[gate_id]:
+                    gate_conf = gate_configurations[gate_id].items()
+                    for other_id, dc_voltage in gate_conf:
                         device.gates[other_id].dc_voltage(dc_voltage)
 
                 sub_result = self.characterize_gates(
                     device, gates=device.gates,
                     use_safety_ranges=True,
                     )
-                tuningresult.update(sub_result)
+                measurement_result.update(sub_result)
 
-        if device.name not in self.tuningresults.keys():
-            self.tuningresults[device.name] = {}
-        self.tuningresults[device.name].update(tuningresult)
-
-        return tuningresult
+        return measurement_result
 
 
 

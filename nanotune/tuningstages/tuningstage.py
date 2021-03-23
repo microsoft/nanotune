@@ -14,6 +14,7 @@ import qcodes as qc
 from qcodes.dataset.measurements import Measurement as QC_Measurement
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.instrument.visa import VisaInstrument
+from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from nanotune.device.gate import Gate
 logger = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ data_dimensions = {
 #     'db_folder': '',
 # }
 # fit_options = {},
+
 
 class TuningStage(metaclass=ABCMeta):
     def __init__(
@@ -159,10 +161,11 @@ class TuningStage(metaclass=ABCMeta):
         """"""
         pass
 
-    def finish_early(self,
-                    current_output_dict: Dict[str, float],
-                    readout_methods_to_use: str = 'dc_current',
-                    ) -> bool:
+    def finish_early(
+        self,
+        current_output_dict: Dict[str, float],
+        readout_methods_to_use: str = 'dc_current',
+    ) -> bool:
         """"""
         return False
 
@@ -234,7 +237,6 @@ class TuningStage(metaclass=ABCMeta):
                 gate.use_ramp(True)
                 gate.post_delay(0)
 
-
     def _prepare_nt_metadata(self) -> Dict[str, Any]:
         gates_to_sweep = self.setpoint_settings['gates_to_sweep']
         nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
@@ -252,7 +254,6 @@ class TuningStage(metaclass=ABCMeta):
         nt_meta["readout_methods"] = read_dict
         nt_meta["features"] = {}
         return nt_meta
-
 
     def _take_data(self, qc_measurement_parameters: List[qc.Parameter]) -> int:
         """
@@ -348,7 +349,6 @@ class TuningStage(metaclass=ABCMeta):
 
         return datasaver.run_id
 
-
     def _run_stage(
         self,
         plot_measurements: bool = True,
@@ -414,13 +414,10 @@ class TuningStage(metaclass=ABCMeta):
     def run_stage(
         self,
         plot_measurements: bool = True,
-    ) -> Tuple[
-        bool,
-        List[str],
-        Dict[str, Any],
-    ]:
+    ) -> TuningResult:
         """
-        result returns the valid range and transition voltage for the gate swept
+        result returns the valid range and transition voltage for the gate
+        swept.
         result = {
         gate_id: [[low_v, high_v], trans_v]
         }
@@ -428,13 +425,19 @@ class TuningStage(metaclass=ABCMeta):
         p_m = plot_measurements
         success, termination_reasons = self._run_stage(plot_measurements=p_m)
 
-        tuning_result: Dict[str, Any] = {}
-        tuning_result['time_stamp'] = datetime.datetime.now().isoformat()
-        tuning_result['data_ids'] = self.result_ids
-        tuning_result['unsuccessful_data_ids'] = self.failed_ids
-        tuning_result['features'] = self.current_fit.features
+        tuning_result = TuningResult(
+            self.stage,
+            success,
+            termination_reasons=termination_reasons,
+            data_ids=self.result_ids,
+            db_name=self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+            features=self.current_fit.features,
+            timestamp=datetime.datetime.now().isoformat(),
+        )
 
-        return success, termination_reasons, tuning_result
+        return tuning_result
+
 
 def _flush_buffers(*params: Any):
     """

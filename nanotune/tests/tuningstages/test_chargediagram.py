@@ -12,17 +12,14 @@ def test_chargediagram_run_stage(chargediagram_settings, experiment):
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.
         classifiers={'singledot': MockClassifer('singledot'),
                      'doubledot': MockClassifer('doubledot'),
-                     'dotregime': MockClassifer('dotregime'),
-                    },
+                     'dotregime': MockClassifer('dotregime')},
         update_settings=False,
     )
-    (success,
-     termination_reasons,
-     tuning_result) = chdiag.run_stage(plot_measurements=False)
+    tuning_result = chdiag.run_stage(plot_measurements=False)
 
-    assert success
-    assert not termination_reasons
-    features = tuning_result['features']
+    assert tuning_result.success
+    assert not tuning_result.termination_reasons
+    features = tuning_result.features
 
     dc_current_features = features['dc_current']['triple_points']
     assert np.isclose(
