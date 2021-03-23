@@ -1,4 +1,4 @@
-absl-py==0.11.0
+absl-py==0.12.0
 apipkg==1.5
 appnope==0.1.2
 argon2-cffi==20.1.0
@@ -26,7 +26,7 @@ flatbuffers==1.12
 gast==0.3.3
 gitdb==4.0.5
 GitPython==3.1.14
-google-api-core==1.25.0
+google-api-core==1.26.1
 google-auth==1.28.0
 google-auth-oauthlib==0.4.2
 google-pasta==0.2.0
@@ -91,7 +91,7 @@ py==1.10.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
-Pygments==2.7.4
+Pygments==2.8.1
 pyparsing==2.4.7
 pyrsistent==0.17.3
 pytest==6.2.2
