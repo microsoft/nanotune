@@ -112,7 +112,7 @@ requirements-parser==0.2.0
 rsa==4.7.2
 ruamel.yaml==0.16.13
 ruamel.yaml.clib==0.2.2
-schema==0.7.2
+schema==0.7.4
 scikit-image==0.18.1
 scikit-learn==0.24.1
 scipy==1.6.1
