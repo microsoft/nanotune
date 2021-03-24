@@ -11,7 +11,7 @@ from qcodes.dataset.experiment_container import experiments
 from qcodes.dataset.sqlite.database import connect
 from qcodes.dataset.sqlite.connection import atomic
 from qcodes.dataset.sqlite.query_helpers import many_many, insert_column
-from qcodes.dataset.sqlite.queries import add_meta_data
+from qcodes.dataset.sqlite.queries import add_meta_data, get_metadata
 
 
 import nanotune as nt
@@ -142,6 +142,15 @@ def set_database(
     db_path = os.path.join(db_folder, db_name)
     qc.config["core"]["db_location"] = db_path
 
+    # check if label columns exist, create if not
+    db_conn = connect(db_path)
+    with atomic(db_conn) as conn:
+        try:
+            get_metadata(db_conn, 0, nt.config["core"]["labels"][0])
+        except (RuntimeError, KeyError):
+            for label in nt.config["core"]["labels"]:
+                add_meta_data(conn, 0, {label: 0})
+
 
 def get_database() -> Tuple[str, str]:
     """"""
@@ -178,11 +187,11 @@ def switch_database(temp_db_name: str, temp_db_folder: str):
     """ """
     original_db, original_db_folder = nt.get_database()
     nt.set_database(temp_db_name, db_folder=temp_db_folder)
-    try: 
+    try:
         yield
     finally:
         nt.set_database(original_db, db_folder=original_db_folder)
-    
+
 
 
 # def rename_labels(db_name: str,
