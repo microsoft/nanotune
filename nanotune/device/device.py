@@ -212,22 +212,22 @@ class Device(qc.Instrument):
         if normalization_constants is not None:
             self._normalization_constants = normalization_constants
         else:
-            self._normalization_constants = dict.fromkeys(
-                ["dc_current", "rf", "dc_sensor"], (0, 1)
-            )
+            self._normalization_constants = {
+                key: (0, 1) for key in ["dc_current", "rf", "dc_sensor"]
+            }
 
         super().add_parameter(
             name="normalization_constants",
             label="open circuit signal",
-            docstring=("Signal measured with all gates at "
-                "zero. Used as normalization "
-                "during data post processing"),
+            docstring=(
+                "Signal measured with all gates at  zero. Used as "
+                "normalization during data post processing"
+            ),
             set_cmd=self.set_normalization_constants,
             get_cmd=self.get_normalization_constants,
             initial_value=self._normalization_constants,
             vals=vals.Dict(),
         )
-
 
     def snapshot_base(
         self,

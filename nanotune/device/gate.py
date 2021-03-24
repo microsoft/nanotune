@@ -325,7 +325,7 @@ class Gate(InstrumentChannel):
     def set_current_valid_range(
         self,
         new_range: Union[Tuple[float, float], List[float]],
-        ) -> None:
+    ) -> None:
         # Check if range is within safety range
         new_range = list(new_range)
         if len(new_range) == 0:
@@ -342,8 +342,6 @@ class Gate(InstrumentChannel):
                         "safety limits instead."
                     )
                 if new_range[1] > safe_range[1]:
-                    print(new_range[1])
-                    print(safe_range[1])
                     safe_new_range[1] = safe_range[1]
                     logger.info(
                         f"{self.name}: new current_valid_range"
@@ -365,6 +363,7 @@ class Gate(InstrumentChannel):
             self._transition_voltage = new_T
         else:
             logger.error(
-                f"Gate {self.label() }: " "Invalid transition voltage. Keeping old one."
+                'Gate ' + self.label() + ': '
+                'Invalid transition voltage. Keeping old one.'
             )
             raise ValueError
