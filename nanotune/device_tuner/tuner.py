@@ -12,7 +12,8 @@ import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
 from qcodes.dataset.experiment_container import (load_last_experiment,
-                                                 load_experiment)
+                                                 load_experiment,
+                                                 new_experiment)
 
 import nanotune as nt
 from nanotune.device.device import Device as Nt_Device
@@ -98,9 +99,24 @@ class Tuner(qc.Instrument):
         self.classifiers = classifiers
 
         assert 'db_name' in data_settings.keys()
+        if 'db_folder' in data_settings.keys():
+            nt.set_database(
+                data_settings['db_name'],
+                db_folder=data_settings['db_folder'])
+        else:
+            nt.set_database(data_settings['db_name'])
 
         if data_settings.get('qc_experiment_id') is None:
-            self.qcodes_experiment = load_last_experiment()
+            try:
+                self.qcodes_experiment = load_last_experiment()
+            except ValueError:
+                logger.warning(
+                    'No qcodes experiment found. Starting a new '
+                    'one called "automated_tuning", with an unknown sample.'
+                )
+                self.qcodes_experiment = new_experiment(
+                        "automated_tuning",
+                        sample_name="unknown")
             exp_id = self.qcodes_experiment.exp_id
             data_settings['qc_experiment_id'] = exp_id
 
@@ -115,9 +131,10 @@ class Tuner(qc.Instrument):
             vals=vals.Dict(),
         )
         if fit_options is None or not fit_options:
-            fit_options = dict.fromkeys(
-                nt.config['core']['implemented_fits'], {}
-                )
+            fit_options = {
+                key: {} for key in nt.config['core']['implemented_fits']
+            }
+
         self._fit_options = fit_options
         super().add_parameter(
             name="fit_options",
@@ -149,84 +166,29 @@ class Tuner(qc.Instrument):
         Puts device back into state where it was before, gates are set in the
         order as they are set in device.gates.
         """
-        available_readout_methods = device.readout_methods()
-        normalization_constants = dict.fromkeys(
-            available_readout_methods.keys(), [0.0, 1.0]
-            )
+        available_readout_methods = {
+            r_type: qc_param for (r_type, qc_param)
+            in device.readout_methods().items()
+            if qc_param is not None
+            }
+
+        normalization_constants = {
+            key: [0.0, 1.0] for key in available_readout_methods.keys()
+        }
         with set_back_voltages(device.gates):
             device.all_gates_to_lowest()
             for read_meth in available_readout_methods.keys():
-                val = device.measurement_parameters[read_meth].get()
+                val = float(device.readout_methods()[read_meth].get())
                 normalization_constants[read_meth][0] = val
 
             device.all_gates_to_highest()
             for read_meth in available_readout_methods.keys():
-                val = device.measurement_parameters[read_meth].get()
+                val = float(device.readout_methods()[read_meth].get())
                 normalization_constants[read_meth][1] = val
-
         device.normalization_constants(normalization_constants)
-
-    def update_gate_voltages(
-        self,
-        gates: List[Gate],
-        new_voltages: List[float],
-    ) -> None:
-        """
-        The order of new_voltages needs to be the same are in gates
-        """
-        for gid, gate in enumerate(gates):
-            gate.dc_voltage(new_voltages[gid])
-
-    def update_gate_ranges(
-        self,
-        gates: List[Gate],
-        new_valid_ranges: List[Tuple[float, float]],
-    ) -> None:
-        """
-        The order of new_valid_ranges needs to be the same are in gates
-        """
-        for gid, gate in enumerate(gates):
-            gate.current_valid_range(new_valid_ranges[gid])
-
-    def clear_gate_ranges(
-        self,
-        gates: List[Gate],
-        skip_gate_ids: List[int],
-    ) -> None:
-        """"""
-        for ig, gate in enumerate(gates):
-            if ig not in skip_gate_ids:
-                gate.current_valid_range(gate.safety_range())
-
-    def getting_signal(
-        self,
-        device: nt.Device,
-        thresholds_normalized: Dict[str, float],
-        readout_method_to_check: Optional[List[str]] = None,
-    ) -> bool:
-        """Supply relative thresholds; the normalized signal will be compared
-        """
-        have_signal = False
-        norm_consts = self.normalization_constants()
-        if readout_method_to_check is None:
-            readout_method_to_check = device.readout_methods().keys()
-
-        for read_type in readout_method_to_check:
-            read_param = device.readout_methods()[read_type]
-            if isinstance(read_param, qc.Parameter):
-                csts = norm_consts[read_type]
-                signal = (read_param.get() - csts[0]) / (csts[1] - csts[0])
-                if signal > thresholds_normalized[read_type]:
-                    have_signal = True
-                else:
-                    logger.info(
-                        f'No signal detected in {device.name} for {read_type}'
-                        )
-        return have_signal
 
     def characterize_gates(
         self,
-        device: nt.Device,
         gates: List[Gate],
         use_safety_ranges: bool = False,
         comment: Optional[str] = None,
@@ -237,6 +199,9 @@ class Tuner(qc.Instrument):
 
         returns instance of MeasurementHistory
         """
+
+        device = gates[0].parent
+
         if comment is None:
             comment = f'Characterizing {gates}.'
         if 'pinchoff' not in self.classifiers.keys():
@@ -248,7 +213,7 @@ class Tuner(qc.Instrument):
                     gate.current_valid_range(gate.safety_range())
 
             measurement_result = MeasurementHistory(device.name)
-            with self.device_specific_settings(device):
+            with self.device_specific_settings(device):  # type: ignore
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
                     setpoint_settings['gates_to_sweep'] = [gate]
@@ -266,23 +231,32 @@ class Tuner(qc.Instrument):
                     tuningresult.comment = comment
                     measurement_result.add_result(
                         tuningresult,
-                        f'characterization_{gate.name}',
+                        'characterization_' + gate.name,
                     )
 
         return measurement_result
 
     def measure_initial_ranges(
         self,
-        device: Nt_Device,
         gate_to_set: Gate,
         gates_to_sweep: List[Gate],
         voltage_step: float = 0.2,
     ) -> Tuple[Tuple[float, float], MeasurementHistory]:
         """
         Estimate the default voltage range to consider
+
+        Args:
+            gate_to_set (nt.Gate):
+            gates_to_sweep (list)
+            voltage_step (flaot)
+        Returns:
+            tuple(float, float):
+            MeasurementHistory:
         """
         if 'pinchoff' not in self.classifiers.keys():
             raise KeyError('No pinchoff classifier found.')
+
+        device = gates_to_sweep[0].parent
 
         device.all_gates_to_highest()
 
@@ -291,15 +265,15 @@ class Tuner(qc.Instrument):
         skip_gates = dict.fromkeys(layout_ids, False)
 
         v_range = gate_to_set.safety_range()
-        n_steps = abs(v_range[0] - v_range[1]) / voltage_step
+        n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
 
-        with self.device_specific_settings(device):
+        with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
                 gate_to_set.dc_voltage(voltage)
 
-                for gid, gate in enumerate(gates_to_sweep):
-                    if not skip_gates[gid]:
+                for gate in gates_to_sweep:
+                    if not skip_gates[gate.layout_id()]:
                         setpoint_sets = copy.deepcopy(self.setpoint_settings())
                         setpoint_sets['gates_to_sweep'] = [gate]
                         stage = GateCharacterization1D(
@@ -318,8 +292,8 @@ class Tuner(qc.Instrument):
                             f'characterization_{gate.name}',
                         )
                         if tuningresult.success:
-                            skip_gates[gid] = True
-                            last_gate = gid
+                            skip_gates[gate.layout_id()] = True
+                            last_gate = gate.layout_id()
 
                 if all(skip_gates.values()):
                     break
@@ -330,9 +304,10 @@ class Tuner(qc.Instrument):
         gate_to_set.parent.all_gates_to_highest()
 
         v_range = device.gates[last_gate].safety_range()
+        n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
         setpoint_settings['gates_to_sweep'] = [gate_to_set]
-        with self.device_specific_settings(device):
+        with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 
@@ -369,7 +344,12 @@ class Tuner(qc.Instrument):
         self,
         device: Nt_Device,
     ) -> Generator[None, None, None]:
-        """ Add device relevant readout settings """
+        """ Add device relevant readout settings
+
+        Returns:
+            Generator yielding nothing.
+        """
+
         original_data_settings = copy.deepcopy(self.data_settings())
         self.data_settings(
             {'normalization_constants': device.normalization_constants()},
@@ -377,7 +357,7 @@ class Tuner(qc.Instrument):
         try:
             yield
         finally:
-            self.data_settings(original_data_settings)
+            del self._data_settings['normalization_constants']
 
     def set_fit_options(self, new_fit_options: Dict[str, Any]) -> None:
         """ """

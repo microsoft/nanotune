@@ -127,8 +127,11 @@ class MeasurementHistory:
             )
         for key in common_keys:
             if new_tuningresult[key] != self._tuningresults[key]:
-                last_guid = new_tuningresult[key].guids[-1]
-                new_key = key + '_' + last_guid
+                try:
+                    append_idx = new_tuningresult[key].guids[-1]
+                except IndexError:
+                    append_idx = new_tuningresult[key].data_ids[-1]
+                new_key = key + f'_{append_idx}'
                 new_tuningresult[new_key] = new_tuningresult[key]
                 del new_tuningresult[key]
 

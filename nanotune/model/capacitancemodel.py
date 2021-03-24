@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
- 
+
 # q = 1.60217662 * 10e-19
 q = 1.60217662  # * 10e-19
 # kb = 8.617330350 * 10−5
@@ -1007,7 +1007,7 @@ class CapacitanceModel(Instrument):
 
         meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], Any)
         meta_add_on["device_name"] = self.name
-        nm = dict.fromkeys(["dc_current", "rf"], [0, 1])
+        nm = dict.fromkeys(["dc_current", "rf"], (0, 1))
         meta_add_on["normalization_constants"] = nm
 
         ds.add_metadata(nt.meta_tag, json.dumps(meta_add_on))
@@ -1096,7 +1096,7 @@ class CapacitanceModel(Instrument):
         self,
         ds_id: int,
         db_name: str,
-        device_type: str = "fivedot",
+        device_type: str = "doubledot_2D",
     ) -> None:
         """
         parameters to fit:

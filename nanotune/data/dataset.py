@@ -153,10 +153,15 @@ class Dataset:
             self._normalization_constants = nm
         except KeyError:
             device_max_signal = self._nt_metadata["device_max_signal"]
-            self._normalization_constants = {"dc_current": [0, device_max_signal]}
+            self._normalization_constants = {
+                "dc_current": [0, device_max_signal]
+            }
         # merge dicts to add missing defaults
+        default_constants = {
+            key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
+        }
         self._normalization_constants = {
-            **dict.fromkeys(["dc_current", "rf", "dc_sensor"], [0, 1]),
+            **default_constants,
             **self._normalization_constants,
         }
 

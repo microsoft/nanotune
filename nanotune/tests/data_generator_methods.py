@@ -19,6 +19,8 @@ test_data_labels = {
     8: "doubledot",
     9: None,
 }
+
+
 class DotCurrent(qc.Parameter):
         def __init__(self, name, gate_x=None, gate_y=None, **kwargs):
             super().__init__(name, **kwargs)
@@ -39,6 +41,7 @@ class DotCurrent(qc.Parameter):
             while True:
                 x, y = yield
                 yield doubledot_triple_points(x, y)
+
 
 class DotSensor(qc.Parameter):
     def __init__(self, name, gate_x=None, gate_y=None, **kwargs):
@@ -63,6 +66,7 @@ class DotSensor(qc.Parameter):
             val += np.random.normal(0, 1, 1) * 0.2
             yield val
 
+
 class PinchoffCurrent(qc.Parameter):
     def __init__(self, name, gate=None, **kwargs):
         super().__init__(name, **kwargs)
@@ -81,6 +85,7 @@ class PinchoffCurrent(qc.Parameter):
         while True:
             x = yield
             yield pinchoff_curve(x)
+
 
 class PinchoffSensor(qc.Parameter):
     def __init__(self, name, gate=None, **kwargs):
@@ -102,6 +107,7 @@ class PinchoffSensor(qc.Parameter):
             curve = pinchoff_curve(x)
             curve += np.random.normal(0, 1, 1) * 0.1
             yield curve
+
 
 def pinchoff_curve(voltage):
     return 0.6 * (1 + np.tanh(1000 * voltage + 50))
@@ -227,9 +233,9 @@ def generate_doubledot_metadata():
 def generate_default_metadata():
     nt_metadata = dict.fromkeys(META_FIELDS, None)
     nt_metadata["device_name"] = "test_device"
-    nt_metadata["normalization_constants"] = dict.fromkeys(
-        ["dc_current", "rf", "dc_sensor"], [0, 1]
-    )
+    nt_metadata["normalization_constants"] = {
+        key: (0, 1) for key in ["dc_current", "rf", "dc_sensor"]
+    }
     nt_metadata["device_max_signal"] = 1
     nt_metadata["readout_methods"] = {"dc_current": "current"}
 
