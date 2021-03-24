@@ -50,7 +50,7 @@ class TuningResult:
     termination_reasons: List[str] = field(default_factory=list)
     comment: str = ''
     timestamp: str = ''
-    gates_status: Dict[str, Any] = field(default_factory=dict)
+    status: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """
