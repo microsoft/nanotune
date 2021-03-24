@@ -200,7 +200,7 @@ class Tuner(qc.Instrument):
         returns instance of MeasurementHistory
         """
 
-        device: Nt_Device = gates[0].parent
+        device = gates[0].parent
 
         if comment is None:
             comment = f'Characterizing {gates}.'
@@ -213,7 +213,7 @@ class Tuner(qc.Instrument):
                     gate.current_valid_range(gate.safety_range())
 
             measurement_result = MeasurementHistory(device.name)
-            with self.device_specific_settings(device):
+            with self.device_specific_settings(device):  # type: ignore
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
                     setpoint_settings['gates_to_sweep'] = [gate]
@@ -256,7 +256,7 @@ class Tuner(qc.Instrument):
         if 'pinchoff' not in self.classifiers.keys():
             raise KeyError('No pinchoff classifier found.')
 
-        device: Nt_Device = gates_to_sweep[0].parent
+        device = gates_to_sweep[0].parent
 
         device.all_gates_to_highest()
 
@@ -267,7 +267,7 @@ class Tuner(qc.Instrument):
         v_range = gate_to_set.safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
 
-        with self.device_specific_settings(device):
+        with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
                 gate_to_set.dc_voltage(voltage)
@@ -307,7 +307,7 @@ class Tuner(qc.Instrument):
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
         setpoint_settings['gates_to_sweep'] = [gate_to_set]
-        with self.device_specific_settings(device):
+        with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 

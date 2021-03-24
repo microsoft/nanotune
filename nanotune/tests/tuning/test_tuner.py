@@ -28,7 +28,7 @@ def test_set_back_voltages(gate_1, gate_2):
     assert gate_2.dc_voltage() == -0.9
 
 
-def set_back_valid_ranges(gate_1, gate_2):
+def test_set_back_valid_ranges(gate_1, gate_2):
     gate_1.current_valid_range([-0.8, -0.5])
     gate_2.current_valid_range([-0.9, -0.4])
     assert gate_1.current_valid_range() == [-0.8, -0.5]

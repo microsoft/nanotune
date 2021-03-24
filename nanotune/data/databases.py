@@ -146,7 +146,7 @@ def set_database(
     db_conn = connect(db_path)
     with atomic(db_conn) as conn:
         try:
-            get_metadata(db_conn, 0, nt.config["core"]["labels"][0])
+            get_metadata(db_conn, '0', nt.config["core"]["labels"][0])
         except (RuntimeError, KeyError):
             for label in nt.config["core"]["labels"]:
                 add_meta_data(conn, 0, {label: 0})
