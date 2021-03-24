@@ -4,7 +4,7 @@ import nanotune as nt
 
 
 def test_device_init_defaults():
-    device = nt.Device('test_fivedot', 'fivedot')
+    device = nt.Device('test_fivedot', 'doubledot_2D')
 
     assert not device.gates
     assert not device.ohmics
@@ -12,10 +12,14 @@ def test_device_init_defaults():
     assert device.snapshot()
     device.close()
 
-def test_device_gates(device_fivedot_inputs):
-    device = nt.Device(name='test_fivedot',
-        device_type='fivedot',
-        **device_fivedot_inputs,
+
+def test_device_gates(device_gate_inputs, dot_readout_methods):
+
+    device = nt.Device(
+        name='test_fivedot',
+        device_type='doubledot_2D',
+        readout_methods=dot_readout_methods,
+        **device_gate_inputs,
         )
     assert len(device.gates) == 5
     assert len(device.ohmics) == 1
@@ -40,10 +44,13 @@ def test_device_gates(device_fivedot_inputs):
         device.sensor_side("anywhere")
     device.close()
 
-def test_device_gate_methods(device_fivedot_inputs):
-    device = nt.Device(name='test_fivedot',
-        device_type='fivedot',
-        **device_fivedot_inputs,
+
+def test_device_gate_methods(device_gate_inputs, dot_readout_methods):
+    device = nt.Device(
+        name='test_fivedot',
+        device_type='doubledot_2D',
+        readout_methods=dot_readout_methods,
+        **device_gate_inputs,
         )
 
     for gate in device.gates:
@@ -60,10 +67,13 @@ def test_device_gate_methods(device_fivedot_inputs):
     assert device.ohmics[0].relay_state() == 'float'
     device.close()
 
-def test_device_snapshot(device_fivedot_inputs):
-    device = nt.Device(name='test_fivedot',
-        device_type='fivedot',
-        **device_fivedot_inputs,
+
+def test_device_snapshot(device_gate_inputs, dot_readout_methods):
+    device = nt.Device(
+        name='test_fivedot',
+        device_type='doubledot_2D',
+        readout_methods=dot_readout_methods,
+        **device_gate_inputs,
         )
     snap = device.snapshot()
     assert isinstance(snap['parameters']['readout_methods'], dict)
@@ -74,5 +84,4 @@ def test_device_snapshot(device_fivedot_inputs):
         assert isinstance(snap['parameters']['readout_methods'][key], dict)
 
     device.close()
-
 
