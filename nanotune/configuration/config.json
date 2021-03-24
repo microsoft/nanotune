@@ -3,7 +3,7 @@
     "main_db": "experiments.db",
     "db_folder": ".",
     "device": {
-        "fivedot": ["top_barrier", "left_barrier", "left_plunger",
+        "doubledot_2D": ["top_barrier", "left_barrier", "left_plunger",
                     "central_barrier", "right_plunger", "right_barrier",
                     "sensor_top", "sensor_cen", "sensor_bot"]
         },
