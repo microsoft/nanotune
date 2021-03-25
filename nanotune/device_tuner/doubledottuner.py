@@ -590,7 +590,7 @@ class DoubleDotTuner(Tuner):
             )
 
             tuningresult = stage.run_stage()
-            tuningresult.gates_status = device.get_gate_status()
+            tuningresult.status = device.get_gate_status()
             tuningresult.comment = comment
             tuningresult.features['segment_info'] = stage.segment_info
             # names = [gate.name for gate in gates_to_sweep]

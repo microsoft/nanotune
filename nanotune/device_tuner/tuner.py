@@ -227,7 +227,7 @@ class Tuner(qc.Instrument):
                         measurement_options=device.measurement_options(),
                     )
                     tuningresult = stage.run_stage()
-                    tuningresult.gates_status = device.get_gate_status()
+                    tuningresult.status = device.get_gate_status()
                     tuningresult.comment = comment
                     measurement_result.add_result(
                         tuningresult,
@@ -286,7 +286,7 @@ class Tuner(qc.Instrument):
                             measurement_options=device.measurement_options(),
                         )
                         tuningresult = stage.run_stage()
-                        tuningresult.gates_status = device.get_gate_status()
+                        tuningresult.status = device.get_gate_status()
                         measurement_result.add_result(
                             tuningresult,
                             f'characterization_{gate.name}',
@@ -323,7 +323,7 @@ class Tuner(qc.Instrument):
                 )
 
                 tuningresult = stage.run_stage()
-                tuningresult.gates_status = device.get_gate_status()
+                tuningresult.status = device.get_gate_status()
                 measurement_result.add_result(
                     tuningresult,
                     f'characterization_{gate.name}',
