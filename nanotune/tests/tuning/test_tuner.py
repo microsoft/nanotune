@@ -138,3 +138,5 @@ def test_device_specific_settings(tuner_default_input, device_pinchoff):
         assert tuner.fit_options() == original_fit_options
 
     assert 'normalization_constants' not in tuner.data_settings().keys()
+
+    tuner.close()
