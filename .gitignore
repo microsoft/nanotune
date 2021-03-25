@@ -112,14 +112,13 @@ ENV/
 *.eps
 *.jpg
 
-# Jana's virtual env on monch
-myenv/
-
 # cluster output files
 *.out
 
-# qcodes databases (as they tend to by big)
+# qcodes databases
 *.db
+*.db-shm
+*.db-wal
 
 # latex files
 *.aux
