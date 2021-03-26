@@ -48,15 +48,7 @@ class PinchoffFit(DataFit):
 
         gradient_percentile
         get_transition_from_fit
-        _low_signal
-        _high_signal
-        _transition_voltage
-        _transition_signal
 
-        _low_signal_index
-        _high_signal_index
-        _transition_signal_index
-        _normalized_voltage
     Methods:
     """
 
@@ -214,8 +206,7 @@ class PinchoffFit(DataFit):
         amplitude_min = 0
         amplitude_max = amplitude_init
 
-        slope_init = 1
-        slope_init /= amplitude_init
+        slope_init = 1/amplitude_init
         slope_min = 0
         slope_max = np.inf
 
