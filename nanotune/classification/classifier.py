@@ -37,6 +37,7 @@ from prettytable import PrettyTable
 
 import nanotune as nt
 from nanotune.data.dataset import Dataset
+from nanotune.data.export_data import prep_data
 
 logger = logging.getLogger(__name__)
 ALLOWED_CATEGORIES = list(dict(nt.config["core"]["features"]).keys())
@@ -444,7 +445,7 @@ class Classifier():
         DATA_TYPE_MAPPING = dict(nt.config["core"]["data_types"])
 
         df = Dataset(dataid, db_name)
-        condensed_data_all = df.prep_data(self.category)
+        condensed_data_all = prep_data(df, self.category)
 
         predictions = []
 

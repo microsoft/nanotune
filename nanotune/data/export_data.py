@@ -68,6 +68,85 @@ def export_label(
 
     return new_label
 
+def prep_data(
+        dataset: nt.Dataset,
+        category: str,
+    ) -> np.array:
+        """
+        Remove nans, normalize by normalization_constants and reshape into
+        target shape
+        shape convention:
+        shape =  datatypes, #samples, #features]
+        We return 1 sample and 2 datatypes
+        """
+        assert category in nt.config["core"]["features"].keys()
+        if len(dataset.power_spectrum) == 0:
+            dataset.compute_power_spectrum()
+
+        condensed_data_all = []
+
+        for readout_method in dataset.readout_methods.keys():
+            signal = dataset.data[readout_method].values
+            dimension = dataset.dimensions[readout_method]
+
+            shape = tuple(nt.config["core"]["standard_shapes"][str(dimension)])
+            condensed_data = np.empty(
+                (len(nt.config["core"]["data_types"]), 1, np.prod(shape))
+            )
+
+            relevant_features = nt.config["core"]["features"][category]
+            features = []
+
+            if dataset.features:
+                for feat in relevant_features:
+                    features.append(dataset.features[readout_method][feat])
+
+            # double check if current range is correct:
+            if np.max(signal) > 1:
+                min_curr = np.min(signal)
+                max_curr = np.max(signal)
+                signal = (signal - min_curr) / (max_curr - min_curr)
+                # assume we are talking dots and high current was not actually
+                # device_max_signal
+                dataset.data[readout_method].values = signal * 0.3
+                dataset.compute_power_spectrum()
+
+            data_resized = resize(
+                signal, shape, anti_aliasing=True, mode="constant"
+            ).flatten()
+
+            grad = generic_gradient_magnitude(signal, sobel)
+            gradient_resized = resize(
+                grad, shape, anti_aliasing=True, mode="constant"
+            ).flatten()
+            power = dataset.power_spectrum[readout_method].values
+            frequencies_resized = resize(
+                power, shape, anti_aliasing=True, mode="constant"
+            ).flatten()
+
+            pad_width = len(data_resized.flatten()) - len(features)
+            features = np.pad(
+                features,
+                (0, pad_width),
+                "constant",
+                constant_values=nt.config["core"]["fill_value"],
+            )
+
+            index = nt.config["core"]["data_types"]["signal"]
+            condensed_data[index, 0, :] = data_resized
+
+            index = nt.config["core"]["data_types"]["frequencies"]
+            condensed_data[index, 0, :] = frequencies_resized
+
+            index = nt.config["core"]["data_types"]["gradient"]
+            condensed_data[index, 0, :] = gradient_resized
+
+            index = nt.config["core"]["data_types"]["features"]
+            condensed_data[index, 0, :] = features
+
+            condensed_data_all.append(condensed_data)
+
+        return condensed_data_all
 
 def export_data(
     category: str,
@@ -147,7 +226,7 @@ def export_data(
             if d_id not in skip_us:
                 df = Dataset(d_id, db_name, db_folder=db_folder)
 
-                condensed_data = df.prep_data(category)
+                condensed_data = prep_data(df, category)
                 condensed_data_all = np.append(
                     condensed_data_all, condensed_data[0], axis=1
                 )
@@ -232,8 +311,8 @@ def correct_normalizations(
 #     temp_sub_size: int = 20,
 # ) -> None:
 #     """
-#     TODO: Fix subsample_2Ddata: Implement a method to increase the number of 
-#     datasets one can use for classifier training. "Cut out" random sub_images 
+#     TODO: Fix subsample_2Ddata: Implement a method to increase the number of
+#     datasets one can use for classifier training. "Cut out" random sub_images
 #     from exisitng data. These don't need to be saved in a db.
 #     """
 #     if original_db_folder is None:
