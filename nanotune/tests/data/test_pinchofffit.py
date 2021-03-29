@@ -72,11 +72,11 @@ def test_pinchofffit_fit_result(nt_dataset_pinchoff, tmp_path):
         fit_result["dc_current"]["residuals"], 0.00325722543290063756, rel_tol=rtol
     )
     val = -0.0504201680672269
-    assert math.isclose(fit_result["dc_current"]["_transition_voltage"], val, rel_tol=rtol)
+    assert math.isclose(fit_result["dc_current"]["transition_voltage"], val, rel_tol=rtol)
     val = 0.4123686284590007
-    assert math.isclose(fit_result["dc_current"]["_transition_signal"], val, rel_tol=rtol)
+    assert math.isclose(fit_result["dc_current"]["transition_signal"], val, rel_tol=rtol)
     assert math.isclose(
-        fit_result["dc_current"]["_high_signal"], 0.9385653092441386, rel_tol=rtol
+        fit_result["dc_current"]["high_signal"], 0.9385653092441386, rel_tol=rtol
     )
 
     assert math.isclose(
@@ -92,12 +92,12 @@ def test_pinchofffit_fit_result(nt_dataset_pinchoff, tmp_path):
     assert math.isclose(fit_result["dc_sensor"]["residuals"], val, rel_tol=rtol)
     val = -0.0495798319327731
     assert math.isclose(
-        fit_result["dc_sensor"]["_transition_voltage"], val, rel_tol=rtol
+        fit_result["dc_sensor"]["transition_voltage"], val, rel_tol=rtol
     )
     val = 0.5620627106146739
-    assert math.isclose(fit_result["dc_sensor"]["_transition_signal"], val, rel_tol=rtol)
+    assert math.isclose(fit_result["dc_sensor"]["transition_signal"], val, rel_tol=rtol)
     val = 0.8400070918869458
-    assert math.isclose(fit_result["dc_sensor"]["_high_signal"], val, rel_tol=rtol)
+    assert math.isclose(fit_result["dc_sensor"]["high_signal"], val, rel_tol=rtol)
 
 
 def test_pinchofffit_transition_interval_fitting(nt_dataset_pinchoff, tmp_path):
