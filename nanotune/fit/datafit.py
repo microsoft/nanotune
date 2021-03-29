@@ -56,7 +56,10 @@ class DataFit(ABC, Dataset):
         """"""
         nt.set_database(self.db_name, db_folder=self.db_folder)
         ds = load_by_id(self.qc_run_id)
-        nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
+        try:
+            nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
+        except (RuntimeError, TypeError) as r:
+            nt_meta = {}
         nt_meta["features"] = self.features
         ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
 
