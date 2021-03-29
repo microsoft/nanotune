@@ -37,7 +37,7 @@ from prettytable import PrettyTable
 
 import nanotune as nt
 from nanotune.data.dataset import Dataset
-from nanotune.data.data_export import prep_data
+from nanotune.data.export_data import prep_data
 
 logger = logging.getLogger(__name__)
 ALLOWED_CATEGORIES = list(dict(nt.config["core"]["features"]).keys())
