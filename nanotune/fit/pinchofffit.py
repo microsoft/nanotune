@@ -88,9 +88,8 @@ class PinchoffFit(DataFit):
     @property
     def next_actions(self) -> Dict[str, List[str]]:
         """"""
-        # if not self._low_signal:
-        self.compute_transition_interval()
-        print("Getting new transition interval")
+        if not self._low_signal:
+            self.compute_transition_interval()
         self._next_actions = {}
         for read_meth in self.readout_methods:
             self._next_actions[read_meth] = []
@@ -157,15 +156,15 @@ class PinchoffFit(DataFit):
             max_gradient = self.gradient_percentile * max_gradient / 100
             logger.debug(f"max_gradient = {max_gradient}")
 
-            range_idx = np.where(gradient >= max_gradient)
+            range_idx = np.where(gradient >= max_gradient)[0]
             logger.debug(f"Valid range indexes: {range_idx}")
 
             if range_idx[0].size > 0:
-                low_idx = np.min(range_idx)
-                high_idx = np.max(range_idx)
+                low_idx = np.where(temp_sig == min(temp_sig[range_idx]))[0][0]
+                high_idx = np.where(temp_sig == max(temp_sig[range_idx]))[0][0]
             else:
-                low_idx = 0
-                high_idx = int(gradient.size) - 1
+                low_idx = np.where(temp_sig == min(temp_sig))[0][0]
+                high_idx = np.where(temp_sig == max(temp_sig))[0][0]
                 logger.warning("No good valid range found.")
 
             self._low_signal[read_meth] = temp_sig[low_idx]
@@ -257,10 +256,10 @@ class PinchoffFit(DataFit):
 
             self._features[read_meth]["low_voltage"] = v_x[low_idx]
             self._features[read_meth]["high_voltage"] = v_x[high_idx]
-            self._features[read_meth]["_low_signal"] = self._low_signal[read_meth]
-            self._features[read_meth]["_high_signal"] = self._high_signal[read_meth]
-            self._features[read_meth]["_transition_voltage"] = trans_v
-            self._features[read_meth]["_transition_signal"] = trans_s
+            self._features[read_meth]["low_signal"] = self._low_signal[read_meth]
+            self._features[read_meth]["high_signal"] = self._high_signal[read_meth]
+            self._features[read_meth]["transition_voltage"] = trans_v
+            self._features[read_meth]["transition_signal"] = trans_s
             sign = self.data[read_meth].values
             self._features[read_meth]["max_signal"] = np.max(sign)
             self._features[read_meth]["min_signal"] = np.min(sign)
@@ -371,8 +370,6 @@ class PinchoffFit(DataFit):
             ]
             fit = self.fit_fct(self._normalized_voltage, fit_feat)
             ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
-            ax[r_i, 0].set_ylim(-0.05, 1.05)
-
             ax[r_i, 0].legend(loc="lower right", bbox_to_anchor=(1, 0.1))
 
             divider = make_axes_locatable(ax[r_i, 0])
