@@ -22,25 +22,25 @@ test_data_labels = {
 
 
 class DotCurrent(qc.Parameter):
-        def __init__(self, name, gate_x=None, gate_y=None, **kwargs):
-            super().__init__(name, **kwargs)
-            self._cr = self._current()
-            self.gate_x = gate_x
-            self.gate_y = gate_y
-            next(self._cr)
+    def __init__(self, name, gate_x=None, gate_y=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self._cr = self._current()
+        self.gate_x = gate_x
+        self.gate_y = gate_y
+        next(self._cr)
 
-        def get_raw(self):
-            val = self._cr.send(
-                (self.gate_x.dc_voltage(), self.gate_y.dc_voltage())
-                )
-            next(self._cr)
-            return val
+    def get_raw(self):
+        val = self._cr.send(
+            (self.gate_x.dc_voltage(), self.gate_y.dc_voltage())
+            )
+        next(self._cr)
+        return val
 
-        def _current(self):
-            x, y = 0, 0
-            while True:
-                x, y = yield
-                yield doubledot_triple_points(x, y)
+    def _current(self):
+        x, y = 0, 0
+        while True:
+            x, y = yield
+            yield doubledot_triple_points(x, y)
 
 
 class DotSensor(qc.Parameter):
@@ -289,8 +289,8 @@ def populate_db_doubledots():
         )
 
 
-def populate_db_pinchoffs():
-    for _ in range(10):
+def populate_db_pinchoffs(n_datasets: int = 10):
+    for _ in range(n_datasets):
         _ = save_1Ddata_with_qcodes(generate_pinchoff_data, generate_pinchoff_metadata)
 
 

@@ -138,32 +138,26 @@ class Dataset:
         self._prep_qcodes_data()
 
     def _load_metadata_from_qcodes(self, qc_dataset: DataSet):
+        self._normalization_constants = {
+                key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
+            }
+        self._snapshot = {}
+        self._nt_metadata = {}
+
         try:
             self._snapshot = json.loads(qc_dataset.get_metadata("snapshot"))
-        except TypeError:
-            self._snapshot = {}
+        except (RuntimeError, TypeError) as e:
+            pass
         try:
             self._nt_metadata = json.loads(qc_dataset.get_metadata(nt.meta_tag))
-        except TypeError:
-            self._nt_metadata = dict.fromkeys(
-                nt.config["core"]["meta_fields"], None
-                )
+        except (RuntimeError, TypeError) as e:
+            pass
+
         try:
             nm = self._nt_metadata["normalization_constants"]
-            self._normalization_constants = nm
+            self._normalization_constants.update(nm)
         except KeyError:
-            device_max_signal = self._nt_metadata["device_max_signal"]
-            self._normalization_constants = {
-                "dc_current": [0, device_max_signal]
-            }
-        # merge dicts to add missing defaults
-        default_constants = {
-            key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
-        }
-        self._normalization_constants = {
-            **default_constants,
-            **self._normalization_constants,
-        }
+            pass
 
         try:
             self.device_name = self._nt_metadata["device_name"]
@@ -256,85 +250,6 @@ class Dataset:
                                      sigma=2)
             self.filtered_data[read_meth].values = smooth
 
-    def prep_data(
-        self,
-        category: str,
-    ) -> np.array:
-        """
-        Remove nans, normalize by normalization_constants and reshape into
-        target shape
-        shape convention:
-        shape =  datatypes, #samples, #features]
-        We return 1 sample and 2 datatypes
-        """
-        assert category in nt.config["core"]["features"].keys()
-        if len(self.power_spectrum) == 0:
-            self.compute_power_spectrum()
-
-        condensed_data_all = []
-
-        for readout_method in self.readout_methods.keys():
-            signal = self.data[readout_method].values
-            dimension = self.dimensions[readout_method]
-
-            shape = tuple(nt.config["core"]["standard_shapes"][str(dimension)])
-            condensed_data = np.empty(
-                (len(nt.config["core"]["data_types"]), 1, np.prod(shape))
-            )
-
-            relevant_features = nt.config["core"]["features"][category]
-            features = []
-
-            if self.features:
-                for feat in relevant_features:
-                    features.append(self.features[readout_method][feat])
-
-            # double check if current range is correct:
-            if np.max(signal) > 1:
-                min_curr = np.min(signal)
-                max_curr = np.max(signal)
-                signal = (signal - min_curr) / (max_curr - min_curr)
-                # assume we are talking dots and high current was not actually
-                # device_max_signal
-                self.data[readout_method].values = signal * 0.3
-                self.compute_power_spectrum()
-
-            data_resized = resize(
-                signal, shape, anti_aliasing=True, mode="constant"
-            ).flatten()
-
-            grad = generic_gradient_magnitude(signal, sobel)
-            gradient_resized = resize(
-                grad, shape, anti_aliasing=True, mode="constant"
-            ).flatten()
-            power = self.power_spectrum[readout_method].values
-            frequencies_resized = resize(
-                power, shape, anti_aliasing=True, mode="constant"
-            ).flatten()
-
-            pad_width = len(data_resized.flatten()) - len(features)
-            features = np.pad(
-                features,
-                (0, pad_width),
-                "constant",
-                constant_values=nt.config["core"]["fill_value"],
-            )
-
-            index = nt.config["core"]["data_types"]["signal"]
-            condensed_data[index, 0, :] = data_resized
-
-            index = nt.config["core"]["data_types"]["frequencies"]
-            condensed_data[index, 0, :] = frequencies_resized
-
-            index = nt.config["core"]["data_types"]["gradient"]
-            condensed_data[index, 0, :] = gradient_resized
-
-            index = nt.config["core"]["data_types"]["features"]
-            condensed_data[index, 0, :] = features
-
-            condensed_data_all.append(condensed_data)
-
-        return condensed_data_all
 
     def compute_1D_power_spectrum(
         self, readout_method: str,

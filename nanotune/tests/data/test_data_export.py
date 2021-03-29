@@ -30,6 +30,7 @@ from nanotune.data.export_data import (
     export_label,
     export_data,
     correct_normalizations,
+    prep_data,
     # subsample_2Ddata,
 )
 
@@ -130,3 +131,88 @@ def test_correct_normalizations(experiment_doubledots, tmp_path):
 
         index = nt.config["core"]["data_types"]["gradient"]
         assert np.allclose(data[index, did, :], grad.flatten())
+
+
+def test_prep_data_return_shape(nt_dataset_pinchoff, tmp_path):
+    ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
+    shape = tuple(nt.config["core"]["standard_shapes"]["1"])
+
+    condensed_data = prep_data(ds, "pinchoff")[0]
+
+    assert len(ds.power_spectrum) > 0
+    index = nt.config["core"]["data_types"]["signal"]
+
+    assert len(condensed_data[index, 0, :]) == np.prod(shape)
+
+    index = nt.config["core"]["data_types"]["frequencies"]
+    assert len(condensed_data[index, 0, :]) == np.prod(shape)
+
+    index = nt.config["core"]["data_types"]["gradient"]
+    assert len(condensed_data[index, 0, :]) == np.prod(shape)
+
+    index = nt.config["core"]["data_types"]["features"]
+    assert len(condensed_data[index, 0, :]) == np.prod(shape)
+
+    with pytest.raises(KeyError):
+        condensed_data = prep_data(ds, "doubledot")[0]
+
+
+def test_prep_data_normalization(nt_dataset_pinchoff, tmp_path):
+    ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
+
+    ds.data['dc_current'].values *= 1.4
+    ds.data['dc_current'].values += 0.5
+    assert np.max(ds.data['dc_current'].values) > 1
+    assert np.min(ds.data['dc_current'].values) >= 0.5
+
+    _ = prep_data(ds, "pinchoff")[0]
+
+    assert np.max(ds.data['dc_current'].values) <= 1
+    assert np.min(ds.data['dc_current'].values) <= 0.5
+
+
+def test_prep_data_return_data(nt_dataset_pinchoff, tmp_path):
+    ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
+    condensed_data = prep_data(ds, "pinchoff")[0]
+
+    shape = tuple(nt.config["core"]["standard_shapes"]["1"])
+
+    ds_curr = ds.data['dc_current'].values
+    ds_freq = ds.power_spectrum['dc_current'].values
+
+    data_resized = resize(
+        ds_curr, shape, anti_aliasing=True, mode="constant"
+    ).flatten()
+    frq = resize(
+        ds_freq, shape, anti_aliasing=True, mode="constant"
+    ).flatten()
+
+    grad = generic_gradient_magnitude(ds_curr, sobel)
+    gradient_resized = resize(
+        grad, shape, anti_aliasing=True, mode="constant"
+    ).flatten()
+
+    relevant_features = nt.config["core"]["features"]["pinchoff"]
+    features = []
+    for feat in relevant_features:
+        features.append(ds.features['dc_current'][feat])
+
+    pad_width = len(data_resized.flatten()) - len(features)
+    features = np.pad(
+        features,
+        (0, pad_width),
+        "constant",
+        constant_values=nt.config["core"]["fill_value"],
+    )
+
+    index = nt.config["core"]["data_types"]["signal"]
+    assert np.allclose(condensed_data[index, 0, :], data_resized)
+
+    index = nt.config["core"]["data_types"]["frequencies"]
+    assert np.allclose(condensed_data[index, 0, :], frq)
+
+    index = nt.config["core"]["data_types"]["gradient"]
+    assert np.allclose(condensed_data[index, 0, :], gradient_resized)
+
+    index = nt.config["core"]["data_types"]["features"]
+    assert np.allclose(condensed_data[index, 0, :], features)
