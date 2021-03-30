@@ -13,7 +13,7 @@ class MockClassifer:
         db_name: str,
         db_folder: Optional[str] = None,
     ) -> List[int]:
-        if self.category == 'singledot':
-            return [0]
-        else:
-            return [1]
+        # if self.category == 'singledot':
+        #     return [0]
+        # else:
+        return [1]
