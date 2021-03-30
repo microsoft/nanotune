@@ -145,6 +145,7 @@ class ChargeDiagram(TuningStage):
                 nt_metadata = json.loads(ds.get_metadata(nt.meta_tag))
                 nt_metadata["predicted_category"] = category
                 ds.add_metadata(nt.meta_tag, json.dumps(nt_metadata))
+        print(nt.get_database())
         return segment_regimes
 
     def additional_post_measurement_actions(self) -> None:
@@ -180,39 +181,50 @@ class ChargeDiagram(TuningStage):
                          ) -> Tuple[List[str], List[str]]:
         """
         data fit returns next actions
-        actions are:
-        0: x more negative
-        1: x more positive
-        2: y more negative
-        3: y more positive
 
         check if we reached safety limits and remove corresponding action
         if it is the case
         """
-        all_actions = [
-            "x more negative",
-            "x more positive",
-            "y more negative",
-            "y more positive"
-            ]
+        fit_actions = self.current_fit.next_actions[readout_method_to_use]
+
         issues = []
-        actions = self.current_fit.next_actions[readout_method_to_use]
+        actions = []
+        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
+        if "x more negative" in fit_actions:
+            gate = gates_to_sweep[0]
+            d_n = abs(self.current_ranges[0][0] - gate.safety_range()[0])
+            if d_n > 0.015:
+                actions.append("x more negative")
+            else:
+                issues.append("x reached negative voltage limit")
 
-        for gid, gate in enumerate(self.setpoint_settings['gates_to_sweep']):
-            d_n = abs(self.current_ranges[gid][0] - gate.safety_range()[0])
-            d_p = abs(self.current_ranges[gid][1] - gate.safety_range()[1])
+        if "x more positive" in fit_actions:
+            gate = gates_to_sweep[0]
+            d_p = abs(self.current_ranges[0][1] - gate.safety_range()[1])
+            if d_p > 0.015:
+                actions.append("x more positive")
+            else:
+                issues.append("x reached positive voltage limit")
 
-            if all_actions[gid * 2] in actions and d_n < 0.015:
-                # gate reached negative limit
-                issues.append(all_actions[gid * 2])
-                actions.remove(all_actions[gid * 2])
-            if all_actions[gid * 2 + 1] in actions and d_p < 0.015:
-                # gate reached positive limit
-                issues.append(all_actions[gid * 2 + 1])
-                actions.remove(all_actions[gid * 2 + 1])
+        if "y more negative" in fit_actions:
+            gate = gates_to_sweep[1]
+            d_n = abs(self.current_ranges[1][0] - gate.safety_range()[0])
+            if d_n > 0.015:
+                actions.append("y more negative")
+            else:
+                issues.append("y reached negative voltage limit")
+
+        if "y more positive" in fit_actions:
+            gate = gates_to_sweep[1]
+            d_p = abs(self.current_ranges[1][1] - gate.safety_range()[1])
+            if d_p > 0.015:
+                actions.append("y more positive")
+            else:
+                issues.append("y reached positive voltage limit")
+
         return actions, issues
 
-    def update_measurement_settings(
+    def update_current_ranges(
         self,
         actions: List[str],
     ) -> None:
@@ -229,23 +241,23 @@ class ChargeDiagram(TuningStage):
                 )
 
         if "x more negative" in actions:
-            self._update_setpoint_settings(0, "negative")
+            self._update_range(0, "negative")
 
         if "x more positive" in actions:
-            self._update_setpoint_settings(0, "positive")
+            self._update_range(0, "positive")
 
         if "y more negative" in actions:
-            self._update_setpoint_settings(1, "negative")
+            self._update_range(1, "negative")
 
         if "y more positive" in actions:
-            self._update_setpoint_settings(1, "positive")
+            self._update_range(1, "positive")
         else:
             logger.error(
                 (f'{self.stage}: Unknown action.'
                  'Cannot update measurement setting')
             )
 
-    def _update_setpoint_settings(self, gate_id: int, direction: str) -> None:
+    def _update_range(self, gate_id: int, direction: str) -> None:
         curr_rng = self.current_ranges[gate_id]
         new_rng = list(curr_rng)
         gates_to_sweep = self.setpoint_settings['gates_to_sweep']
@@ -271,8 +283,7 @@ class ChargeDiagram(TuningStage):
         else:
             raise NotImplementedError
 
-        new_rng_tpl = tuple(new_rng)
-        gates_to_sweep[gate_id].current_valid_range(new_rng_tpl)
+        gates_to_sweep[gate_id].current_valid_range(new_rng)
         accepted_range = gates_to_sweep[gate_id].current_valid_range()
         self.current_ranges[gate_id] = accepted_range
 

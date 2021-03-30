@@ -332,7 +332,7 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
                                          'inter_delay': 0},
                            }
     setpoint_settings = {
-        'voltage_precision': 0.1,
+        'voltage_precision': 0.001,
         'gates_to_sweep': [gate_1],
     }
     data_settings = {
@@ -373,7 +373,7 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
                                          'inter_delay': 0},
                            }
     setpoint_settings = {
-        'voltage_precision': 0.01,
+        'voltage_precision': 0.001,
         'gates_to_sweep': [gate_1, gate_2],
     }
     data_settings = {

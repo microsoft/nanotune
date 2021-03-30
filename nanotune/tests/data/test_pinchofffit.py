@@ -124,7 +124,7 @@ def test_pinchofffit_transition_interval_fitting(nt_dataset_pinchoff, tmp_path):
     assert math.isclose(pf._low_signal["dc_sensor"], 0.15260464585587372, rel_tol=rtol)
 
 
-def test_pinchofffit__transition_voltage_fitting(nt_dataset_pinchoff, tmp_path):
+def test_pinchofffit_transition_voltage_fitting(nt_dataset_pinchoff, tmp_path):
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
     assert not pf._transition_signal
     assert not pf._transition_signal_index

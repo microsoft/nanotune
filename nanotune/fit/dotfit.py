@@ -421,18 +421,21 @@ class DotFit(DataFit):
             ax[r_i, 0].set_ylabel(self.get_plot_label(read_meth, 1))
             ax[r_i, 0].set_title(fig_title)
             triple_points = np.asarray(self.triple_points[read_meth])
-            ax[r_i, 0].scatter(
-                triple_points[:, 2, 0],
-                triple_points[:, 2, 1],
-                c="r",
-                label="electron triple point",
-            )
-            ax[r_i, 0].scatter(
-                triple_points[:, 3, 0],
-                triple_points[:, 3, 1],
-                c="b",
-                label="hole triple point",
-            )
+            try:
+                ax[r_i, 0].scatter(
+                    triple_points[:, 2, 0],
+                    triple_points[:, 2, 1],
+                    c="r",
+                    label="electron triple point",
+                )
+                ax[r_i, 0].scatter(
+                    triple_points[:, 3, 0],
+                    triple_points[:, 3, 1],
+                    c="b",
+                    label="hole triple point",
+                )
+            except IndexError as i:
+                pass
 
         ax[-1, 0].legend(loc="lower left", bbox_to_anchor=(0, 0))
 

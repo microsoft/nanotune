@@ -60,7 +60,7 @@ def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
     data_settings.update(new_data_settings)
     assert tuner.data_settings() == data_settings
 
-    assert tuner.setpoint_settings() == {'voltage_precision': 0.05}
+    assert tuner.setpoint_settings() == {'voltage_precision': 0.001}
     fit_options = {
         key: {} for key in nt.config['core']['implemented_fits']
     }
@@ -112,7 +112,7 @@ def test_characterize_gates(tuner_default_input, device_pinchoff):
     )
     gate_name = 'characterization_' + device_pinchoff.left_barrier.name
     assert gate_name in result.tuningresults.keys()
-
+    print(result)
     tuningresult = result.tuningresults[gate_name]
     assert isinstance(tuningresult, TuningResult)
     assert tuningresult.success

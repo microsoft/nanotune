@@ -41,7 +41,6 @@ class GateCharacterization1D(TuningStage):
             update_settings=update_settings,
             fit_options=fit_options,
         )
-        print(f'GateCh readout methods: {readout_methods}')
 
         self.clf = classifier
         self.noise_level = noise_level
@@ -69,7 +68,7 @@ class GateCharacterization1D(TuningStage):
             )
         return any(found_dots)
 
-    def update_measurement_settings(
+    def update_current_ranges(
         self,
         actions: List[str],
     ) -> None:
@@ -80,12 +79,12 @@ class GateCharacterization1D(TuningStage):
                     'Cannot update measurement setting'))
 
         if "x more negative" in actions:
-            self._update_setpoint_settings(0, 0)
+            self._update_range(0, 0)
         if "x more positive" in actions:
-            self._update_setpoint_settings(0, 1)
+            self._update_range(0, 1)
 
 
-    def _update_setpoint_settings(self, gate_id, range_id):
+    def _update_range(self, gate_id, range_id):
         v_change = abs(
             self.current_ranges[gate_id][range_id]
             - self.gate.safety_range()[range_id]
@@ -113,13 +112,13 @@ class GateCharacterization1D(TuningStage):
             if neg_range_avail >= 0.1:
                 actions.append("x more negative")
             else:
-                issues.append("auxiliary more negative")
+                issues.append("negative safety voltage reached")
 
         if "x more positive" in fit_actions:
             if pos_range_avail >= 0.1:
                 actions.append("x more positive")
             else:
-                issues.append("auxiliary more positive")
+                issues.append("positive safety voltage reached")
 
         return actions, issues
 
@@ -129,18 +128,19 @@ class GateCharacterization1D(TuningStage):
 
     def finish_early(self,
                      current_output_dict: Dict[str, float],
-                     readout_method_to_use: str = 'dc_current',
                      ) -> bool:
         """Check strength of measured signal over the last 30mv and
         see if current is constantly low/high. Measurement will be stopped
         of this is the case
         """
+        readout_method_to_use = 'dc_current'
         param = self.readout_methods[readout_method_to_use]
         current_signal = current_output_dict[param.full_name]
         finish = False
+        voltage_precision = self.setpoint_settings['voltage_precision']
 
         self._recent_signals.append(current_signal)
-        if len(self._recent_signals) > int(0.3 / self.dv[0]):
+        if len(self._recent_signals) > int(0.3 / (voltage_precision)):
             self._recent_signals = self._recent_signals[1:].copy()
 
             norm_consts = self.data_settings['normalization_constants']
