@@ -15,7 +15,7 @@ def test_gatecharacterizaton1D_run(gatecharacterization1D_settings, experiment):
     )
 
     tuning_result = pinchoff.run_stage(plot_measurements=False)
-
+    print(tuning_result)
     assert tuning_result.success
     assert not tuning_result.termination_reasons
     features = tuning_result.features
