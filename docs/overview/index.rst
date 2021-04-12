@@ -1,3 +1,4 @@
+
 ============
 What it does
 ============
@@ -52,3 +53,4 @@ The dotted ellipses indicates which stages are covered by QCoDeS or nanotune. QC
 
 Nanotune's TuningStage subclasses, which are responsible for data acquisition and part of a tuning sequence of DeviceTuner class, use QCoDeS'  measurement context manager to take measurements. The data and metadata is saved via qc.Dataset to a SQLite database. In the current case, measurements are linearly spaced one- and two-dimensional traces, called GateCharacterization1D and ChargeDiagram respectively.
 Once measured, the data is loaded into nanotune's dataset, where it is postprocessed, e.g. normalized with constants which were previously measured and saved to metadata. If required, Fourier frequencies or filtered data is computed as well. Next, the DataFit classes fit the data to extract features (example: slope and amplitude of a pinchoff-curve) or determine the device's transport regime (i.e. open, intermediate or closed, depending on current strength). Either the extracted feature vector or entire measurement is passed to the classifier for quality or charge state prediction. Based on the outcome, a decision about subsequent tuning is made.
+
