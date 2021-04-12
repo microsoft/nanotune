@@ -39,9 +39,6 @@ def test_device_gates(device_gate_inputs, dot_readout_methods):
     assert isinstance(n_sct, dict)
     assert all(key in n_sct for key in ['dc_current', 'dc_sensor', 'rf'])
 
-    assert device.sensor_side() == "left"
-    with pytest.raises(ValueError):
-        device.sensor_side("anywhere")
     device.close()
 
 

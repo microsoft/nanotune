@@ -22,51 +22,44 @@ vltg_rngs_tp = Dict[int, Tuple[Union[None, float], Union[None, float]]]
 
 class Device(qc.Instrument):
     """
-    device_type: str, e.g 'fivedot'
-    readout_methods = {
-        'dc_current': qc.Parameter,
-        'dc_sensor': qc.Parameter,
-        'rf': qc.Parameter,
-    }
-    measurement_options = {
-        'dc_current': {
-            'delay': <float>,
-            'inter_delay': <float>,
-        }
-        'dc_sensor': {
-            'delay': <float>,
-            'inter_delay': <float>,
-        }
-        'rf': {
-            'delay': <float>,
-            'inter_delay': <float>,
-        }
-    }
-    gate_parameters = {
-        layout_id: int = {
-            'channel_id': int,
-            'dac_instrument': DACInterface,
-            'label': str,
-            'safety_range': Tuple[float, float],
-        }
-    }
-    ohmic_parameters = {
-        ohmic_id: int ={
-            'dac_instrument': DACInterface,
-            'channel_id': int,
-            'ohmic_id': int,
-            'label': str,
+    The Device class represents a physical sample with gates, ohmics and readout
 
-        }
-    }
-    sensor_parameters = {
-        layout_id: int = {
-            'channel_id': int,
-            'dac_instrument': DACInterface,
-            'label': str,
-            'safety_range': Tuple[float, float],
-        }
-    }
+    Attributes:
+
+        name (str): string identifier. Should be valid, i.e. no spaces or
+            special characters.
+        device_type (str): One of the supported device types, e.g.
+            'doubledot_2D', which are defined in config.json.
+        gates (list): List of nt.Gate instances.
+        sensor_gates (list): List of nt.Gate instances.
+        ohmics (list): List of nt.Ohmics instances.
+        initial_valid_ranges (list): List of valid voltages ranges if known in
+            advance.
+        quality (bool): Whether or not a device is working and should be tuned.
+            To be determined trough a characterization and saved to metadata.
+        normalization_constants (dict):
+            {'dc_current': <float>,
+                'dc_sensor': <float>,
+                'rf': <float>}
+        readout_methods (dict):
+                {'dc_current': qc.Parameter,
+                'dc_sensor': qc.Parameter,
+                'rf': qc.Parameter}
+        measurement_options (dict):
+                {'dc_current': {
+                    'delay': <float>,
+                    'inter_delay': <float>}
+                'dc_sensor': {
+                    'delay': <float>,
+                    'inter_delay': <float>}
+                'rf': {
+                    'delay': <float>,
+                    'inter_delay': <float>}}
+
+    Methods:
+        getters and setters for qcodes parameters
+        all_gates_to_highest:
+        all_gates_to_zero:
     """
     def __init__(
         self,
@@ -77,11 +70,30 @@ class Device(qc.Instrument):
         ohmic_parameters: Optional[Dict[int, Any]] = None,
         sensor_parameters: Optional[Dict[int, Any]] = None,
         measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        sensor_side: str = "left",
         initial_valid_ranges: Optional[vltg_rngs_tp] = None,
         normalization_constants: Optional[nrm_cnst_tp] = None,
     ) -> None:
-
+        """
+        Args:
+            gate_parameters (dict):
+                    {layout_id: int = {
+                        'channel_id': int,
+                        'dac_instrument': DACInterface,
+                        'label': str,
+                        'safety_range': Tuple[float, float]}}
+            ohmic_parameters (dict):
+                    {ohmic_id: int ={
+                        'dac_instrument': DACInterface,
+                        'channel_id': int,
+                        'ohmic_id': int,
+                        'label': str}}
+            sensor_parameters (dict):
+                    {layout_id: int = {
+                        'channel_id': int,
+                        'dac_instrument': DACInterface,
+                        'label': str,
+                        'safety_range': Tuple[float, float]}}
+        """
         super().__init__(name)
 
         super().add_parameter(
@@ -121,16 +133,6 @@ class Device(qc.Instrument):
             vals=vals.Dict(),
         )
 
-        super().add_parameter(
-            name="sensor_side",
-            label="sensor side",
-            docstring="side where the sensor is located",
-            set_cmd=None,
-            get_cmd=None,
-            initial_value=sensor_side,
-            vals=vals.Enum("left", "right"),
-        )
-
         self.layout = nt.config["device"][self.device_type()]
         self.gates: List[Gate] = []
         self.sensor_gates: List[Gate] = []
@@ -150,10 +152,6 @@ class Device(qc.Instrument):
                 )
                 super().add_submodule(alias, gate)
                 self.gates.append(gate)
-
-        # if self.sensor_side() == "right":
-        #     self.outer_barriers.reverse()
-        #     self.plungers.reverse()
 
         if sensor_parameters is not None:
             for layout_id, sens_param in sensor_parameters.items():
