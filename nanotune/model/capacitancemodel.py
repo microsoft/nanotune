@@ -55,7 +55,6 @@ class CapacitanceModel(Instrument):
         name: str,
         charge_nodes: Optional[Dict[int, str]] = None,
         voltage_nodes: Optional[Dict[int, str]] = None,
-        dot_handles: Optional[Dict[int, str]] = None,
         N: Optional[Sequence[int]] = None,  # charge configuration
         V_v: Optional[Sequence[float]] = None,
         C_cc_off_diags: Optional[Sequence[float]] = None,
@@ -75,9 +74,6 @@ class CapacitanceModel(Instrument):
 
         if voltage_nodes is None:
             voltage_nodes = {}
-
-        if dot_handles is None:
-            dot_handles = {}
 
         super().__init__(name)
 
@@ -118,15 +114,6 @@ class CapacitanceModel(Instrument):
             C_cc_off_diags = []
             for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
                 C_cc_off_diags.append([0.0])
-
-        self.add_parameter(
-            "dot_handles",
-            label="main dot handles",
-            unit=None,
-            get_cmd=self._get_dot_handles,
-            set_cmd=self._set_dot_handles,
-            initial_value=dot_handles,
-        )
 
         self.add_parameter(
             "charge_node_mapping",
@@ -195,12 +182,6 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_C_L,
             initial_value=0,
         )
-
-    def _get_dot_handles(self) -> Dict[int, str]:
-        return self._dot_handles
-
-    def _set_dot_handles(self, value: Dict[int, str]):
-        self._dot_handles = value
 
     def _get_charge_node_mapping(self) -> Dict[int, str]:
         return self._charge_node_mapping
