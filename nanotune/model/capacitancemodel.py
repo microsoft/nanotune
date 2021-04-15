@@ -20,9 +20,6 @@ from tabulate import tabulate
 import nanotune as nt
 from nanotune.model.node import Node
 
-import nanotune as nt
-from nanotune.model.node import Node
-
 logger = logging.getLogger(__name__)
 
 
@@ -113,6 +110,15 @@ class CapacitanceModel(Instrument):
                 C_cc_off_diags.append([0.0])
 
         self.add_parameter(
+            "dot_handles",
+            label="main dot handles",
+            unit=None,
+            get_cmd=self._get_dot_handles,
+            set_cmd=self._set_dot_handles,
+            initial_value=dot_handles,
+        )
+
+        self.add_parameter(
             "charge_node_mapping",
             label="charge node name mapping",
             unit=None,
@@ -179,6 +185,12 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_C_L,
             initial_value=0,
         )
+
+    def _get_dot_handles(self) -> Dict[int, str]:
+        return self._dot_handles
+
+    def _set_dot_handles(self, value: Dict[int, str]):
+        self._dot_handles = value
 
     def _get_charge_node_mapping(self) -> Dict[int, str]:
         return self._charge_node_mapping
@@ -285,6 +297,7 @@ class CapacitanceModel(Instrument):
             logger.warning(
                 "Setting CapacitanceModel.C_L: Unable to update C_cc"
             )
+            pass
 
     def snapshot_base(
         self,
