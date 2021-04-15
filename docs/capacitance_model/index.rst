@@ -5,6 +5,6 @@ Model
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: nanotune.model
+.. automodule:: nanotune.capacitance_model
    :members:
 
