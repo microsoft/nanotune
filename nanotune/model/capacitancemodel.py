@@ -23,25 +23,19 @@ from qcodes.dataset.measurements import Measurement
 from qcodes.tests.instrument_mocks import DummyInstrument
 from qcodes.dataset.experiment_container import load_by_id
 
-# from qcodes.dataset.plotting import plot_by_id
-# from qcodes.dataset.data_export import reshape_2D_datas
-
 import nanotune as nt
 from nanotune.model.node import Node
 
 logger = logging.getLogger(__name__)
 
-# TO DO: Add units with pint
-# import pint as pt
 
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
 
-# q = 1.60217662 * 10e-19
-q = 1.60217662  # * 10e-19
-# kb = 8.617330350 * 10−5
-# kb = 1.3806485279 * 1e-23
+elem_charge = 1.60217662 * 10e-19
+# elem_charge = 1.60217662
+# elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
 
 # TODO: make variable names consistent. E.g: N/c_config/charge_configuration
@@ -72,6 +66,9 @@ class CapacitanceModel(Instrument):
 
         self.db_name = db_name
         self.db_folder = db_folder
+        self._C_l = 0.0
+        self._C_r = 0.0
+        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)])
 
         if charge_nodes is None:
             charge_nodes = {}
@@ -114,6 +111,14 @@ class CapacitanceModel(Instrument):
         self.add_submodule("charge_nodes", c_nodes)
         self.add_submodule("voltage_nodes", v_nodes)
 
+        if C_cv is None:
+            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)])
+
+        if C_cc_off_diags is None:
+            C_cc_off_diags = []
+            for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
+                C_cc_off_diags.append([0.0])
+
         self.add_parameter(
             "dot_handles",
             label="main dot handles",
@@ -154,26 +159,7 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_V_v,
             initial_value=V_v,
         )
-        self._C_l = 0.0
-        self._C_r = 0.0
-        # self.add_parameter('C_R',
-        #                    label='capacitance to right lead',
-        #                    unit='F',
-        #                    get_cmd=self._get_C_R,
-        #                    set_cmd=self._set_C_R,
-        #                    initial_value=0,
-        #                    )
 
-        # self.add_parameter('C_L',
-        #                    label='capacitance to left lead',
-        #                    unit='F',
-        #                    get_cmd=self._get_C_L,
-        #                    set_cmd=self._set_C_L,
-        #                    initial_value=0,
-        #                    )
-
-        if C_cv is None:
-            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)])
         self.add_parameter(
             "C_cv",
             label="gate capacitances",
@@ -182,13 +168,6 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_C_cv,
             initial_value=C_cv,
         )
-
-        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)])
-        if C_cc_off_diags is None:
-            C_cc_off_diags = []
-            for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
-                # C_cc_off_diags.append([0.]*(off_diag_inx+1))
-                C_cc_off_diags.append(0.0)
 
         self.add_parameter(
             "C_cc",
@@ -216,9 +195,6 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_C_L,
             initial_value=0,
         )
-
-        self.dummy_lockin = DummyInstrument("dummy_lockin_" + name, gates=["R"])
-        self.station = qc.Station(self, self.dummy_lockin)
 
     def _get_dot_handles(self) -> Dict[int, str]:
         return self._dot_handles
@@ -267,7 +243,6 @@ class CapacitanceModel(Instrument):
     def _set_C_cc(self, off_diagonals: List[List[float]]):
 
         self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
-        # print(C_cc)
         for dinx, diagonal in enumerate(off_diagonals):
             if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
                 logger.error(
@@ -316,7 +291,9 @@ class CapacitanceModel(Instrument):
         try:
             _ = self._get_C_cc()
         except Exception:
-            logger.warning("Setting CapacitanceModel.C_R: " + "Unable to update C_cc")
+            logger.warning(
+                "Setting CapacitanceModel.C_R: Unable to update C_cc"
+            )
             pass
 
     def _get_C_L(self) -> float:
@@ -327,7 +304,9 @@ class CapacitanceModel(Instrument):
         try:
             _ = self._get_C_cc()
         except Exception:
-            logger.warning("Setting CapacitanceModel.C_L: " + "Unable to update C_cc")
+            logger.warning(
+                "Setting CapacitanceModel.C_L: Unable to update C_cc"
+            )
             pass
 
     def snapshot_base(
@@ -393,41 +372,8 @@ class CapacitanceModel(Instrument):
         """
         Formulas relating voltage differences to capacitance
         """
-        capa_val = -q * dV
+        capa_val = -elem_charge * dV
         self.set_capacitance("cv", [dot_indx, v_node_idx], capa_val)
-
-    def set_Ccv_from_voltage_shift(
-        self,
-        v_node_idx_swept: int,
-        v_node_idx_wiggled: int,
-        dot_indx: int,
-        dV_shift: float,
-        dV_wiggle: float,
-    ) -> None:
-        """
-        Formulas relating voltage differences to capacitance
-        eq 30 in write up
-        """
-
-        # capa_val =
-        # self.set_capacitance('cv', [dot_indx, v_node_idx], capa_val)
-        raise NotImplementedError
-
-    def set_Ccc_from_dV(
-        self,
-        v_node_idx: int,
-        dV: float,
-        dot_indx: int,
-    ) -> None:
-        """
-        Formulas relating voltage differences to capacitance
-        Symmetric matrix
-        """
-        # C_A = sum of all capacitances
-
-        # capa_val = - q * dV
-        # self.set_capacitance('cc')
-        raise NotImplementedError
 
     def compute_energy(
         self,
@@ -444,9 +390,9 @@ class CapacitanceModel(Instrument):
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
 
-        U = (q ** 2) / 2 * multi_dot([N, inv(C_cc), N])
+        U = (elem_charge ** 2) / 2 * multi_dot([N, inv(C_cc), N])
         U += 1 / 2 * multi_dot([V_v, np.transpose(C_cv), inv(C_cc), C_cv, V_v])
-        U += q * multi_dot([N, inv(C_cc), C_cv, V_v])
+        U += elem_charge * multi_dot([N, inv(C_cc), C_cv, V_v])
 
         return abs(U)
 
@@ -484,23 +430,23 @@ class CapacitanceModel(Instrument):
                 energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
                 c_configs.append(charge_stage)
 
-        I = np.eye(n_dots)
+        I_mat = np.eye(n_dots)
         # Check if neighbouring ones have lower energy:
         for dot_id in range(n_dots):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
 
             append_energy(c_config + e_hat)
             append_energy(c_config - e_hat)
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
+                    e_hat_other = I_mat[other_dot]
                     append_energy(c_config + e_hat - e_hat_other)
 
         indx = np.where(np.array(energies) < np.array(current_energy))[0]
         if indx.size > 0:
-            min_indx = np.argmin(energies[indx])
-            min_c_configs = c_configs[indx]
+            min_indx = np.argmin(np.array(energies)[indx.astype(int)])
+            min_c_configs = np.array(c_configs)[indx.astype(int)]
             c_config = min_c_configs[min_indx]
 
         return c_config.tolist()
@@ -541,7 +487,9 @@ class CapacitanceModel(Instrument):
         for ic, c_config in enumerate(c_configs):
             # setting M mostly for monitor purposes
             self.N(list(c_config))
-            x_etp, x_htp = self.calculate_triplepoint(v_node_idx, np.array(c_config))
+            x_etp, x_htp = self.calculate_triplepoint(
+                v_node_idx, np.array(c_config)
+            )
 
             coordinates_etp[ic] = x_etp
             coordinates_htp[ic] = x_htp
@@ -566,7 +514,6 @@ class CapacitanceModel(Instrument):
             triple points.
         """
         e_tp = partial(self.triplepoint_e, v_node_idx=v_node_idx, N=N)
-
         h_tp = partial(self.triplepoint_h, v_node_idx=v_node_idx, N=N)
 
         x_init = np.array(self.V_v())[v_node_idx]
@@ -596,15 +543,13 @@ class CapacitanceModel(Instrument):
             N = self.N()
 
         V_v = np.array(self.V_v())
-
-        # V_v[v_node_idx, 0] = new_voltages
         V_v[v_node_idx] = new_voltages
 
-        I = np.eye(len(N))
+        I_mat = np.eye(len(N))
 
         out = []
         for dot_id in range(len(N)):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
             out.append(self.mu(dot_id, N=N + e_hat, V_v=V_v))
 
         out = np.array(out).flatten()
@@ -629,32 +574,23 @@ class CapacitanceModel(Instrument):
 
         if N is None:
             N = np.array(self.N())
-
         V_v = np.array(self.V_v())
         V_v[v_node_idx] = new_voltages
 
-        I = np.eye(len(N))
-
+        I_mat = np.eye(len(N))
         out = []
 
         for dot_id in range(len(N)):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
             for other_dot in range(len(N)):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
-                    out.append(self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v))
+                    e_hat_other = I_mat[other_dot]
+                    out.append(
+                        self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v)
+                    )
 
         out = np.array(out).flatten()
         return out
-
-    def print_triplepoints(
-        self,
-        v_node_idx: Sequence[int],
-        c_configs: Sequence[int],
-    ) -> None:
-        """"""
-        # etps, htps, c_configs = qdot.get_triplepoints([2, 4], [[0, 3], [0, 3]])
-        # print(tabulate(zip(etps, htps, c_configs), ['etps', 'htps', 'c_configs']))
 
     def mu(
         self,
@@ -686,9 +622,9 @@ class CapacitanceModel(Instrument):
         e_hat = np.zeros(len(N)).astype(int)
         e_hat[dot_indx] = 1
 
-        pot = -(q ** 2) / 2 * multi_dot([e_hat, inv(C_cc), e_hat])
-        pot += (q ** 2) * multi_dot([N, inv(C_cc), e_hat])
-        pot += q * multi_dot([e_hat, inv(C_cc), C_cv, V_v])
+        pot = -(elem_charge ** 2) / 2 * multi_dot([e_hat, inv(C_cc), e_hat])
+        pot += (elem_charge ** 2) * multi_dot([N, inv(C_cc), e_hat])
+        pot += elem_charge * multi_dot([e_hat, inv(C_cc), C_cv, V_v])
 
         return pot
 
@@ -716,17 +652,18 @@ class CapacitanceModel(Instrument):
         self.set_voltage(v_node_idx[1], np.min(v_ranges[1]))
         N_old = self.determine_N()
 
-        voltage_x = np.linspace(np.min(v_ranges[0]), np.max(v_ranges[0]), n_steps[0])
+        voltage_x = np.linspace(
+            np.min(v_ranges[0]), np.max(v_ranges[0]), n_steps[0]
+        )
 
-        voltage_y = np.linspace(np.min(v_ranges[1]), np.max(v_ranges[1]), n_steps[1])
+        voltage_y = np.linspace(
+            np.min(v_ranges[1]), np.max(v_ranges[1]), n_steps[1]
+        )
         signal = np.zeros(n_steps)
 
         if add_charge_jumps:
             x = np.ones(n_steps)
             s = 1
-            # lam = np.random.uniform(0, 0.2, 1)  # 0.01
-
-            # print('lambda: {}'.format(lam))
             trnsp = np.random.randint(2, size=1)
 
             poisson = np.random.poisson(lam=jump_freq, size=n_steps)
@@ -758,7 +695,6 @@ class CapacitanceModel(Instrument):
                     e_temp=e_temp,
                 )
                 if single_dot:
-                    # print(n_degen)
                     n_degen = np.min([1, n_degen])
 
                 signal[ivx, ivy] = n_degen * line_intensity
@@ -785,10 +721,11 @@ class CapacitanceModel(Instrument):
         else:
             regime = "doubledot"
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx[0]].v, self.voltage_nodes[v_node_idx[1]].v],
+            [self.voltage_nodes[v_node_idx[0]].v,
+             self.voltage_nodes[v_node_idx[1]].v],
             [voltage_x, voltage_y],
             signal,
-            nt_label=regime,
+            nt_label=[regime],
             quality=quality,
         )
 
@@ -811,20 +748,16 @@ class CapacitanceModel(Instrument):
         self.set_voltage(v_node_idx, np.min(v_range))
         signal = np.zeros(n_steps)
 
-        # N_old = self.determine_N()
-        # print(N_old)
         voltage_x = np.linspace(np.min(v_range), np.max(v_range), n_steps)
         for iv, v_val in enumerate(voltage_x):
             self.set_voltage(v_node_idx, v_val)
             N_current = self.determine_N()
-            # print(N_current)
             self.N(N_current)
 
             n_degen = self.get_number_of_degeneracies(
                 N_current=N_current,
                 e_temp=e_temp,
             )
-            # print(n_degen)
 
             signal[iv] = n_degen * line_intensity
 
@@ -835,7 +768,8 @@ class CapacitanceModel(Instrument):
             signal = signal / np.max(signal)
 
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx].v], [voltage_x], signal, nt_label="clmboscs"
+            [self.voltage_nodes[v_node_idx].v],
+            [voltage_x], signal, nt_label="clmboscs",
         )
 
         return dataid
@@ -858,7 +792,7 @@ class CapacitanceModel(Instrument):
             V_v = self.V_v()
 
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
-        I = np.eye(n_dots)
+        I_mat = np.eye(n_dots)
         energies = []
         c_configs = []
 
@@ -868,20 +802,22 @@ class CapacitanceModel(Instrument):
                 c_configs.append(charge_stage)
 
         for dot_id in range(n_dots):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
 
             append_energy(N_current + e_hat)
             append_energy(N_current - e_hat)
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
+                    e_hat_other = I_mat[other_dot]
                     append_energy(N_current + e_hat - e_hat_other)
 
         current_energy = np.array([current_energy] * len(energies))
         dU = abs(np.array(energies) - current_energy)
 
-        n_degen = np.sum(np.isclose(dU, np.zeros(len(dU)), atol=e_temp).astype(int))
+        n_degen = np.sum(
+            np.isclose(dU, np.zeros(len(dU)), atol=e_temp).astype(int)
+        )
 
         return n_degen
 
@@ -900,21 +836,7 @@ class CapacitanceModel(Instrument):
         Return:
             Gaussian blurred diagram.
         """
-        # d_shape = diagram.shape
-        # if len(d_shape) == 1:
-        #     kernel = sc.signal.gaussian(d_shape[0], kernel_widths[0])
-        # elif len(d_shape) == 2:
-        #     kernel = np.outer(sc.signal.gaussian(d_shape[0], kernel_widths[0]),
-        #                       sc.signal.gaussian(d_shape[1], kernel_widths[1]))
-        # else:
-        #     logger.error('CapacitanceModel._make_it_real: Unknown signal ' +
-        #                   'shape.')
-        #     raise NotImplementedError
-
-        # return sc.signal.frequenciesconvolve(diagram, kernel, mode='same')
         org_shape = diagram.shape
-        # n_shape = [3*sh for sh in org_shape]
-        # diagram = resize(diagram, org_shape)
         diagram = gaussian_filter(
             diagram, sigma=kernel_widths[0], mode="constant", truncate=1
         )
@@ -960,8 +882,7 @@ class CapacitanceModel(Instrument):
     ) -> Union[None, int]:
         """ Save data to database. Returns run id. """
 
-        nt.set_database(self.db_name, self.db_folder)
-
+        dummy_lockin = DummyInstrument("dummy_lockin", gates=["R"])
         if len(parameters) not in [1, 2]:
             logger.error("Only 1D and 2D sweeps supported right now.")
             return None
@@ -970,13 +891,13 @@ class CapacitanceModel(Instrument):
 
         if len(parameters) == 1:
             meas.register_parameter(parameters[0])
-            meas.register_parameter(self.dummy_lockin.R, setpoints=(parameters[0],))
+            meas.register_parameter(dummy_lockin.R, setpoints=(parameters[0],))
 
             with meas.run() as datasaver:
                 for x_indx, x_val in enumerate(setpoints[0]):
                     parameters[0](x_val)
                     datasaver.add_result(
-                        (parameters[0], x_val), (self.dummy_lockin.R, data[x_indx])
+                        (parameters[0], x_val), (dummy_lockin.R, data[x_indx])
                     )
 
                 dataid = datasaver.run_id
@@ -985,7 +906,7 @@ class CapacitanceModel(Instrument):
             meas.register_parameter(parameters[0])
             meas.register_parameter(parameters[1])
             meas.register_parameter(
-                self.dummy_lockin.R, setpoints=(parameters[0], parameters[1])
+                dummy_lockin.R, setpoints=(parameters[0], parameters[1])
             )
 
             with meas.run() as datasaver:
@@ -993,38 +914,36 @@ class CapacitanceModel(Instrument):
                     parameters[0](x_val)
                     for y_indx, y_val in enumerate(setpoints[1]):
                         parameters[1](y_val)
-                        # qdot.voltage_nodes[2].v(x_val)
-                        # qdot.voltage_nodes[4].v(y_val)
                         datasaver.add_result(
                             (parameters[0], x_val),
                             (parameters[1], y_val),
-                            (self.dummy_lockin.R, data[x_indx, y_indx]),
+                            (dummy_lockin.R, data[x_indx, y_indx]),
                         )
 
                 dataid = datasaver.run_id
 
         ds = load_by_id(dataid)
 
-        meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], Any)
+        meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], None)
         meta_add_on["device_name"] = self.name
-        nm = dict.fromkeys(["dc_current", "rf"], (0, 1))
+        nm = dict.fromkeys(["dc_current", "dc_sensor", "rf"], (0, 1))
         meta_add_on["normalization_constants"] = nm
 
         ds.add_metadata(nt.meta_tag, json.dumps(meta_add_on))
 
         current_label = dict.fromkeys(LABELS, 0)
         for label in nt_label:
-            if label is not None:  # and nt_label in LABELS:
+            if label is not None:
                 if label not in LABELS:
-                    logger.error("CapacitanceModel: Invalid label.")
-                    print(label)
+                    logger.error(f"CapacitanceModel: Invalid label: {label}")
                     raise ValueError
                 current_label[label] = 1
                 current_label["good"] = quality
 
-        # print('data id {} current label: {} '.format(dataid, current_label ))
         for label, value in current_label.items():
             ds.add_metadata(label, value)
+
+        dummy_lockin.close()
 
         return dataid
 
@@ -1035,7 +954,7 @@ class CapacitanceModel(Instrument):
         N_limits: Optional[N_lmt_type] = None,
     ) -> List[List[float]]:
         """
-        Determine N by minimizing the energy
+        Determine N by minimizing energy
         """
         if V_v is None:
             V_v = self.V_v()
@@ -1070,7 +989,6 @@ class CapacitanceModel(Instrument):
         for did in range(len(N_limits)):
             N_stop.append(N_limits[did][1])
 
-        # N_stop = [N_limits[0][1], N_limits[1][1]]
         eng_fct = partial(eng_sub_fct, N_stop)
 
         x0 = V_init_config
@@ -1092,252 +1010,5 @@ class CapacitanceModel(Instrument):
 
         return V_limits
 
-    def fit_data(
-        self,
-        ds_id: int,
-        db_name: str,
-        device_type: str = "doubledot_2D",
-    ) -> None:
-        """
-        parameters to fit:
-                #         N.  LW.   LP.  C.  RP.  RW
-        self.V_v([-1, -0.1, -4.2, -0.1, -0.5, -0.3])
 
-        qdot.C_cc([[-8e-18]])
-        #            N.        LW.     LP.      C.      RP.    RW
-        qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A
-                [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B
-        """
-        ds = nt.Dataset(ds_id, db_name)
 
-        def err_func(p: Sequence[float]) -> np.ndarray:
-            err = self.fit_fct(self.normalized_volt, p)
-            err = (err - self.smooth_signal) / np.linalg.norm(self.smooth_signal)
-            return err
-
-        result = sc.optimize.least_squares(
-            err_func,
-            self.initial_guess,
-            method="trf",
-            loss="cauchy",
-            verbose=0,
-            bounds=self.bounds,
-            gtol=1e-15,
-            ftol=1e-15,
-            xtol=1e-15,
-        )
-
-        self.residuals = np.linalg.norm(result.fun)
-
-    # def sweep_N(self,
-    #             v_node_idx: List[int],
-    #             N_ranges: List[List],
-    #             n_steps: Optional[List[int]] = [100, 100],
-    #             kernel_width: Optional[float] = 2,
-    #             target_snr_db: Optional[float] = 10,
-    #             line_intensity: Optional[float] = 1,
-    #             )-> List[np.ndarray]:
-    #     """
-    #     Generate diagram showing charge configurations within N_ranges
-    #     """
-    #     (coordinates_etp,
-    #      coordinates_htp,
-    #      c_configs) = self.get_triplepoints(v_node_idx,
-    #                                         N_ranges)
-
-    #     # print(tabulate(zip(coordinates_etp, coordinates_htp, c_configs), ['etps', 'htps', 'c_configs']))
-
-    #     slopes = self._get_voltage_spacings(v_node_idx)
-    #     tp_intensities = [2*line_intensity] * 3
-    #     lin_int = [line_intensity] * 3
-    #     xv, yv, diagram = self._generate_diagram([coordinates_etp,
-    #                                               coordinates_htp],
-    #                                              slopes,
-    #                                              kernel_width=kernel_width,
-    #                                              target_snr_db=target_snr_db,
-    #                                              line_intensities=lin_int,
-    #                                              tp_intensities=tp_intensities,
-    #                                              d_shape=n_steps)
-
-    #     dataid = self._save_to_db([self.voltage_nodes[v_node_idx[0]].v,
-    #                                self.voltage_nodes[v_node_idx[1]].v],
-    #                               [xv[0, :], yv[:, 0]], diagram,
-    #                               nt_label='doubledot')
-
-    #     return dataid
-
-    # def _generate_diagram(self,
-    #                     coordinates: List[np.ndarray],
-    #                     slopes: np.ndarray,
-    #                     tp_intensities: Optional[List] = [2., 2.],
-    #                     kernel_widths: Optional[float] = [3., 3.],
-    #                     line_intensities: Optional[List[float]] = [1., 1., 1.],
-    #                     target_snr_db: Optional[float] = 10.,
-    #                     d_shape: Optional[List] = [100, 100],
-    #                     ) -> List[np.ndarray]:
-    #     """ Generate a diagram based on previously found tp locations
-
-    #     Args:
-    #         coordinates: List of numpy arrays, first one with coordinates
-    #             of electron triple points, second with hole triple points.
-    #             Order matters, it needs to be [e_tps, h_tps].
-    #         slopes: Three (dx, dy) pairs defining lines between hole and
-    #             electron triple points.
-    #         tp_intensities: Intensities to be used for each triple point type.
-    #         kernel_width: OWidth of the Gaussian kernel used to blur the image.
-    #         line_intensities: Intensities to be used for lines between triple
-    #             points.
-    #         target_snr_db: Desired signal to noise ratio.
-    #         d_shape: Number of points in each direction, diagram.shape
-
-    #     Return:
-    #         X and Y meshgrids and diagram. Plot the diagrams transpose if
-    #         using matplotlib.pylplot.pcolormesh.
-    #     """
-    #     xv, yv, diagram = self._make_stickfigure(coordinates,
-    #                                             slopes,
-    #                                             tp_intensities=tp_intensities,
-    #                                             line_intensities=line_intensities,
-    #                                             d_shape=d_shape)
-
-    #     diagram = self._make_it_real(diagram, kernel_widths=kernel_widths)
-    #     diagram = self._add_noise(diagram, target_snr_db=target_snr_db)
-
-    #     return xv, yv, diagram
-
-    # def _get_voltage_spacings(self,
-    #                           v_node_idx: Sequence,
-    #                           ) -> np.ndarray:
-    #     """ Determine vectors between triple points, to print the full
-    #     honecomb pattern on charge diagram.
-    #     We take the first three triple point pairs to get the three vectors
-    #     defining the honecomb pattern.
-
-    #     Args:
-    #         v_node_idx: Indexes of voltage nodes to be determined
-
-    #     Return:
-    #         Three vectors (dx, dy), corresponding to lines of a honeycomb
-    #         patterns.
-    #     """
-
-    #     self.etp0, self.htp0 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([0, 0]))
-    #     self.etp1, self.htp1 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([0, 1]))
-    #     self.etp2, self.htp2 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([1, 0]))
-    #     # get slopes between tps
-    #     dv0 = self.etp0 - self.htp0
-    #     dv1 = self.etp1 - self.htp0
-    #     dv2 = self.etp2 - self.htp0
-
-    #     return np.array([dv0, dv1, dv2])  # * -1
-
-    # def _make_stickfigure(self,
-    #                     coordinates: List[np.ndarray],
-    #                     slopes: np.ndarray,
-    #                     margin_ratio: Optional[float] = 0.1,
-    #                     tp_intensities: Optional[List] = [2., 2.],
-    #                     line_intensities: Optional[List[float]] = [1., 1., 1.],
-    #                     d_shape: Optional[List] = [100, 100],
-    #                     ) -> List[np.ndarray]:
-    #     """ Generate stick figure equivalent of the desired charge diagram.
-
-    #     Args:
-    #         coordinates: Coordinates of electron and hole coordinates. Order
-    #             matters! It has to be [e_tps, h_tps] and printing of lines
-    #             depend on it.
-    #         slopes: List of three (dx, dy) pairs, defining lines from hole to
-    #             electron triple points.
-    #         tp_intensities: Intensities to be used for each triple point type.
-    #         line_intensities: Intensities to be used for lines between triple
-    #             points.
-
-    #     Return:
-    #         X and Y meshgrid as well as stickfigure diagram.
-    #     """
-    #     # print('generating diagram with following coordinates: ')
-    #     # print(coordinates)
-
-    #     coordinates = np.array(coordinates)
-
-    #     x_min = np.min(coordinates[:, :, 0])  # - dv_margin
-    #     x_max = np.max(coordinates[:, :, 0])  # + dv_margin
-    #     y_min = np.min(coordinates[:, :, 1])  # - dv_margin
-    #     y_max = np.max(coordinates[:, :, 1])  # + dv_margin
-
-    #     dv_margin_x = margin_ratio * abs(x_max-x_min)
-    #     dv_margin_y = margin_ratio * abs(y_max-y_min)
-
-    #     x_min -= dv_margin_x
-    #     x_max += dv_margin_x
-    #     y_min -= dv_margin_y
-    #     y_max += dv_margin_y
-
-    #     x = np.linspace(x_min, x_max, d_shape[0])
-    #     y = np.linspace(y_min, y_max, d_shape[1])
-    #     xv, yv = np.meshgrid(x, y)
-
-    #     dx = (x_max - x_min)/d_shape[0]
-    #     dy = (y_max - y_min)/d_shape[1]
-
-    #     diagram = np.zeros(d_shape)
-
-    #     def print_tp(coord: np.ndarray,
-    #                 intensity: float,
-    #                 ) -> np.ndarray:
-
-    #         x_coord = int(round((coord[0]-x_min)/dx))
-    #         y_coord = int(round((coord[1]-y_min)/dy))
-
-    #         if (x_coord < diagram.shape[0] and x_coord >= 0 and
-    #             y_coord < diagram.shape[1] and y_coord >= 0):
-    #             diagram[x_coord, y_coord] = np.max([intensity,
-    #                                                 diagram[x_coord, y_coord]])
-    #         # else:
-    #         #     logger.warning('CapacitanceModel.make_stickfigure: Trying ' +
-    #         #                     'to draw triple point outside of canvas.')
-
-    #     for ii, coords_per_type in enumerate(coordinates):
-    #         for c in coords_per_type:
-    #             print_tp(c, tp_intensities[ii])
-
-    #             if ii == 0:
-    #                 # to make sure we plot lines for left and bottom border
-    #                     # correctly we plot some lines twice:
-    #                 for ids, slope in enumerate(slopes):
-    #                     slope = -1*slope
-    #                     delta_x = slope[0]
-    #                     delta_y = slope[1]
-
-    #                     x0 = int(round((c[0]-x_min)/dx))
-    #                     y0 = int(round((c[1]-y_min)/dy))
-    #                     x1 = x0 + int(round(delta_x/dx))
-    #                     y1 = y0 + int(round(delta_y/dy))
-
-    #                     diagram = plot_line(x0, y0, x1, y1, diagram,
-    #                                         line_intensities[ids])
-
-    #             if ii == 1:
-    #                 for ids, slope in enumerate(slopes):
-    #                     delta_x = slope[0]
-    #                     delta_y = slope[1]
-
-    #                     x0 = int(round((c[0]-x_min)/dx))
-    #                     y0 = int(round((c[1]-y_min)/dy))
-    #                     x1 = x0 + int(round(delta_x/dx))
-    #                     y1 = y0 + int(round(delta_y/dy))
-    #                     diagram = plot_line(x0, y0, x1, y1, diagram,
-    #                                         line_intensities[ids])
-
-    #     # Print the first three triple point pairs with higher intensities
-    #     # for debugging purposes
-    #     print_tp(self.etp0, np.max(tp_intensities)*5)
-    #     print_tp(self.htp0, np.max(tp_intensities)*5)
-    #     print_tp(self.etp1, np.max(tp_intensities)*4)
-    #     print_tp(self.htp1, np.max(tp_intensities)*4)
-    #     print_tp(self.etp2, np.max(tp_intensities)*3)
-    #     print_tp(self.htp2, np.max(tp_intensities)*3)
-
-    #     return xv, yv, diagram
