@@ -9,7 +9,8 @@
         },
     "core":{
         "meta_add_on": "nanotune_metadata",
-        "meta_fields": ["n_points", "elapsed_time", "max_jumps", "ramp_rate",
+        "meta_fields": ["n_points", "elapsed_time", "max_voltage_jumps",
+                        "ramp_rate",
                         "write_period", "normalization_constants",
                         "device_name", "features", "predicted_category",
                         "signal_types", "git_hash"],
