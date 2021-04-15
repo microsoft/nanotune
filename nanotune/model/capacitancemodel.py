@@ -764,7 +764,7 @@ class CapacitanceModel(Instrument):
 
         dataid = self._save_to_db(
             [self.voltage_nodes[v_node_idx].v],
-            [voltage_x], signal, nt_label="clmboscs",
+            [voltage_x], signal, nt_label=["coulomboscillation"],
         )
 
         return dataid
