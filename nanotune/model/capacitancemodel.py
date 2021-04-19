@@ -1057,6 +1057,3 @@ class CapacitanceModel(Instrument):
                 "Setting CapacitanceModel.C_L: Unable to update C_cc"
             )
             pass
-
-
-
