@@ -1113,7 +1113,6 @@ class CapacitanceModel(Instrument):
             )
             pass
 
-
         self._C_cc += self._get_C_cc_diagonals()
         self._C_cc = self._C_cc.tolist()
 
