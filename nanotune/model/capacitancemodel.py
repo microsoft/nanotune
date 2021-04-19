@@ -6,11 +6,9 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-import qcodes as qc
 import scipy as sc
-from numpy.linalg import inv, multi_dot
-from qcodes import ChannelList, Instrument, Parameter
-from qcodes.dataset.experiment_container import load_by_id
+import qcodes as qc
+from qcodes import Instrument, ChannelList, Parameter
 from qcodes.dataset.measurements import Measurement
 from qcodes.tests.instrument_mocks import DummyInstrument
 from scipy.ndimage import gaussian_filter
@@ -19,26 +17,23 @@ from tabulate import tabulate
 
 import nanotune as nt
 from nanotune.model.node import Node
-
 logger = logging.getLogger(__name__)
-
 
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
-
 elem_charge = 1.60217662 * 10e-19
 # elem_charge = 1.60217662
 # elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
-
 # TODO: make variable names consistent. E.g: N/c_config/charge_configuration
 
 
 class CapacitanceModel(Instrument):
     """
-    Models a weakly coupled quantum dot with well localised charges.
-    It is a classical description based on two assumptions: (1) Coulomb
+    Implementation of a general capacitance model an arbitrary number of dots
+    and gates. Simulating weakly coupled quantum dots with well localised
+    charges, it is a classical description based on two assumptions: (1) Coulomb
     interactions between electrons on dots and in reservoirs are parametrised
     by constant capacitances. (2) The single-particle energy-level spectrum
     is considered independent of electron interactions and the number of
@@ -53,21 +48,28 @@ class CapacitanceModel(Instrument):
     voltage nodes, representing quantum dots and electrostatic gates
     respectively, and electron and hole triple points.
 
-    The capacitor connecting node .. math::`j` and node .. math::`k` has a
-    capacitance .. math::`C_{jk}` and stores a charge .. math::`q_{jk}`.
+    The capacitor connecting node :math:`j` and node :math:`k` has a
+    capacitance :math:`C_{jk}` and stores a charge :math:`q_{jk}`.
     We distinguish between charge and voltage sub-systems, and thus their
     respective sub-matrices:
+
     .. math::
+        :nowrap:
 
-        \mathbf{C} :=
-        \begin{pmatrix}
-        \mathbf{C_{cc}} & \mathbf{C_{cv}} \\
-        \mathbf{C_{vc}} & \mathbf{C_{vv}}
-        \end{pmatrix}
+        \mathbf{C} := \\begin{pmatrix}
+            \\mathbf{C_{cc}} & \\mathbf{C_{cv}} \\\
+            \\mathbf{C_{vc}} & \\mathbf{C_{vv}}
+        \\end{pmatrix}
 
-    Diagonal elements of the capacitance matrix, .. math::`C_{jj}', are total
+    Diagonal elements of the capacitance matrix, :math:`C_{jj}`, are total
     capacitances of each node and carry the opposite sign of the matrix's
-    off-diagonal elements
+    off-diagonal elements. The off-diagonal elements of
+    :math:`\mathbf{\mathbf{C_{cc}}}` are capacitances between charge nodes,
+    while the off-diagonal elements of :math:`\mathbf{\mathbf{C_{vv}}}` are
+    capacitances between voltage nodes. The elements of
+    :math:`\mathbf{\mathbf{C_{cv}}}` are capacitances between voltage and
+    charge nodes, and allow to calculate so-called virtual gate coefficients -
+    useful knobs in semiconductor qubit experiments.
     """
 
     def __init__(
@@ -82,6 +84,24 @@ class CapacitanceModel(Instrument):
         db_name: str = "capa_model_test.db",
         db_folder: str = nt.config["db_folder"],
     ) -> None:
+        """
+        Constructor of CapacitanceModel class.
+
+        Args:
+            name (str): Name identifier to be passed to qc.Instrument
+            charge_nodes (dict): Dictionary with charge nodes of the model,
+                mapping integer node IDs to string labels.
+            voltage_nodes (dict): Dictionary with voltage nodes of the model,
+                mapping integer node IDs to string labels.
+            N (list): Initial charge configuration, i.e. number of charges on
+                each dot. Index of entry corresponds to charge node layout ID.
+            V_v (list): Voltages to set on voltage nodes. Index of entry
+                corresponds to charge node layout ID.
+            C_cc_off_diags (list): Capacitances between charge nodes.
+            C_cv (list): Capacitances between charge and voltage nodes.
+            db_name (str): Name of database to store synthetic data.
+            db_folder (str): Path to folder where database is located.
+        """
 
         self.db_name = db_name
         self.db_folder = db_folder
@@ -146,7 +166,6 @@ class CapacitanceModel(Instrument):
 
         if N is None:
             N = np.zeros(len(self.charge_nodes))
-
         self.add_parameter(
             "N",
             label="charge configuration",
@@ -203,117 +222,13 @@ class CapacitanceModel(Instrument):
             initial_value=0,
         )
 
-    def _get_charge_node_mapping(self) -> Dict[int, str]:
-        return self._charge_node_mapping
-
-    def _set_charge_node_mapping(self, value: Dict[int, str]):
-        self._charge_node_mapping = value
-
-    def _get_N(self) -> List[int]:
-        for inn, c_n in enumerate(self.charge_nodes):
-            self._N[inn] = c_n.n()
-        return self._N
-
-    def _set_N(self, value: List[int]):
-        value = list(value)
-        self._N = value
-        for iv, val in enumerate(value):
-            self.charge_nodes[iv].n(int(val))
-
-    def _get_V_v(self) -> List[float]:
-        for inn, v_n in enumerate(self.voltage_nodes):
-            self._V_v[inn] = v_n.v()
-        return self._V_v
-
-    def _set_V_v(self, value: List[float]):
-        value = list(value)
-        self._V_v = value
-        for iv, val in enumerate(value):
-            self.voltage_nodes[iv].v(val)
-
-    def _get_C_cc(self) -> List[List[float]]:
-        # Get diagonals: sum of all capacitances attached to it.
-        current_C_cc = np.array(self._C_cc)
-        diagonals = self._get_C_cc_diagonals()
-        for dot_ind in range(len(self.charge_nodes)):
-            current_C_cc[dot_ind, dot_ind] = diagonals[dot_ind, dot_ind]
-
-        self._C_cc = current_C_cc.tolist()
-        return self._C_cc
-
-    def _set_C_cc(self, off_diagonals: List[List[float]]):
-
-        self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
-        for dinx, diagonal in enumerate(off_diagonals):
-            if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
-                logger.error(
-                    "CapacitanceModel: Unable to set C_cc. "
-                    + "Please specify off diagonals in a list of "
-                    + "lists: [[1st off diagonal], "
-                    + "[2nd off diagonal]]"
-                )
-            self._C_cc += np.diag(diagonal, k=dinx + 1)
-            self._C_cc += np.diag(diagonal, k=-dinx - 1)
-
-        self._C_cc += self._get_C_cc_diagonals()
-        self._C_cc = self._C_cc.tolist()
-
-    def _get_C_cc_diagonals(self) -> np.ndarray:
-        """
-        Here we assume that every dot is coupled to every other. This means
-        that if three or more dots are aligned the first will have a capacitive
-        coupling to the last. In the same manner, all dots are coupled to the
-        leads. Change if necessary.
-        """
-        self._C_cc
-        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
-        # from other dots:
-        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
-        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
-
-        diag = C_cv_sums + off_diag_sums
-        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
-
-        return np.diag(diag)
-
-    def _get_C_cv(self) -> List[List[float]]:
-        return self._C_cv
-
-    def _set_C_cv(self, value: List[List[float]]):
-        self._C_cv = value
-        # update values in C_cc:
-        _ = self._get_C_cc()
-
-    def _get_C_R(self) -> float:
-        return self._C_r
-
-    def _set_C_R(self, value: float):
-        self._C_r = value
-        try:
-            _ = self._get_C_cc()
-        except Exception:
-            logger.warning(
-                "Setting CapacitanceModel.C_R: Unable to update C_cc"
-            )
-            pass
-
-    def _get_C_L(self) -> float:
-        return self._C_l
-
-    def _set_C_L(self, value: float):
-        self._C_l = value
-        try:
-            _ = self._get_C_cc()
-        except Exception:
-            logger.warning(
-                "Setting CapacitanceModel.C_L: Unable to update C_cc"
-            )
-            pass
-
     def snapshot_base(
         self,
         params_to_skip_update: Optional[Sequence[str]] = None,
     ) -> Dict[Any, Any]:
+        """
+        Pass on QCoDeS snapshot.
+        """
 
         snap = super().snapshot_base(update, params_to_skip_update)
 
@@ -323,23 +238,39 @@ class CapacitanceModel(Instrument):
         self,
         n_index: int,
         value: float,
-        n_type: str = "voltage",
+        node_type: str = "voltage",
     ) -> None:
-        """ Convenience method to set voltages. """
-        if n_type == "voltage":
+        """ Convenience method to set voltages.
+
+        Args:
+            n_index (int): Index of node to set.
+            value (float): Value to set.
+            node_type (str): Which node type to set, either 'voltage' or
+                'charge'.
+        """
+        if node_type == "voltage":
             assert n_index >= 0 and n_index < len(self.voltage_nodes)
             self.voltage_nodes[n_index].v(value)
-        elif n_type == "charge":
+        elif node_type == "charge":
             assert n_index >= 0 and n_index < len(self.charge_nodes)
             self.charge_nodes[n_index].v(value)
         else:
-            logger.error("Unknown node type. Can not set voltage.")
+            logger.error("Unknown node type. Cannot set voltage.")
             raise NotImplementedError
 
     def set_capacitance(
-        self, which_matrix: str, indexes: List[int], value: float
+        self,
+        which_matrix: str,
+        indices: List[int],
+        value: float,
     ) -> None:
-        """ Convenience function to set capacitances. """
+        """ Convenience function to set capacitances.
+        Args:
+            which_matrix (str): String identifier of matrix to set.
+                Either 'cv' or 'cc'.
+            indices (list): Indices of capacitances within the matrix.
+            value (float): Capacitance value to set.
+        """
         if which_matrix not in ["cv", "cc"]:
             logger.error(
                 "Unable to set capacitance. Unknown matrix,"
@@ -347,7 +278,7 @@ class CapacitanceModel(Instrument):
             )
 
         if which_matrix == "cc":
-            if indexes[0] == indexes[1]:
+            if indices[0] == indices[1]:
                 logger.error(
                     "CapacitanceModel: Trying to set diagonals "
                     + "of C_cc matrix which is not possible "
@@ -355,25 +286,35 @@ class CapacitanceModel(Instrument):
                     + "capacitances of the model."
                 )
             C_cc = self.C_cc()
-            C_cc[indexes[0]][indexes[1]] = value
+            C_cc[indices[0]][indices[1]] = value
             self.C_cc(C_cc)
 
         if which_matrix == "cv":
             C_cv = self.C_cv()
-            C_cv[indexes[0]][indexes[1]] = value
+            C_cv[indices[0]][indices[1]] = value
             self.C_cv(C_cv)
 
     def set_Ccv_from_voltage_distance(
         self,
-        v_node_idx: int,
+        voltage_node_idx: int,
         dV: float,
-        dot_indx: int,
+        charge_node_idx: int,
     ) -> None:
         """
-        Formulas relating voltage differences to capacitance
+        Implements formular relating voltage differences to capacitances between
+        charge and voltage nodes.
+
+        Args:
+            voltage_node_idx (int): Voltage node index.
+            dV (float): Voltage difference between two charge transitions.
+            charge_node_idx (int): Charge node index.
         """
         capa_val = -elem_charge * dV
-        self.set_capacitance("cv", [dot_indx, v_node_idx], capa_val)
+        self.set_capacitance(
+            "cv",
+            [charge_node_idx, voltage_node_idx],
+            capa_val,
+        )
 
     def compute_energy(
         self,
@@ -459,7 +400,7 @@ class CapacitanceModel(Instrument):
         """Calculate triple points for charge configuration within N_limits
 
         Args:
-            v_node_idx: Indexes of gates to sweep
+            v_node_idx: indices of gates to sweep
             N_limit: Min and max values of number of electrons in each dot,
                      defining all charge configurations to consider
 
@@ -506,7 +447,7 @@ class CapacitanceModel(Instrument):
         (electron and hole) for one charge configuration.
 
         Args:
-            v_node_idx: Indexes of voltage nodes to be determined
+            v_node_idx: indices of voltage nodes to be determined
             N: Charge configuration, number of electrons in each dot.
 
         Return:
@@ -535,7 +476,7 @@ class CapacitanceModel(Instrument):
             new_voltages: values of new gate voltages, to be replaced in
                           self.V_v. These are the values scipy.optimize.fsolve
                           is solving for
-            v_node_idx: Voltages nodes indexes to which the values above
+            v_node_idx: Voltages nodes indices to which the values above
                         correspond to.
             N: Desired charge configuration, if none supplied self.N is taken.
         """
@@ -567,7 +508,7 @@ class CapacitanceModel(Instrument):
             new_voltages: values of new gate voltages, to be replaced in
                           self.V_v. These are the values scipy.optimize.fsolve
                           is solving for
-            v_node_idx: Voltages nodes indexes to which the values above
+            v_node_idx: Voltages nodes indices to which the values above
                         correspond to.
             N: Desired charge configuration, if none supplied self.N is taken.
         """
@@ -1009,3 +950,113 @@ class CapacitanceModel(Instrument):
         ]
 
         return V_limits
+
+    def _get_charge_node_mapping(self) -> Dict[int, str]:
+        return self._charge_node_mapping
+
+    def _set_charge_node_mapping(self, value: Dict[int, str]):
+        self._charge_node_mapping = value
+
+    def _get_N(self) -> List[int]:
+        for inn, c_n in enumerate(self.charge_nodes):
+            self._N[inn] = c_n.n()
+        return self._N
+
+    def _set_N(self, value: List[int]):
+        value = list(value)
+        self._N = value
+        for iv, val in enumerate(value):
+            self.charge_nodes[iv].n(int(val))
+
+    def _get_V_v(self) -> List[float]:
+        for inn, v_n in enumerate(self.voltage_nodes):
+            self._V_v[inn] = v_n.v()
+        return self._V_v
+
+    def _set_V_v(self, value: List[float]):
+        value = list(value)
+        self._V_v = value
+        for iv, val in enumerate(value):
+            self.voltage_nodes[iv].v(val)
+
+    def _get_C_cc(self) -> List[List[float]]:
+        # Get diagonals: sum of all capacitances attached to it.
+        current_C_cc = np.array(self._C_cc)
+        diagonals = self._get_C_cc_diagonals()
+        for dot_ind in range(len(self.charge_nodes)):
+            current_C_cc[dot_ind, dot_ind] = diagonals[dot_ind, dot_ind]
+
+        self._C_cc = current_C_cc.tolist()
+        return self._C_cc
+
+    def _set_C_cc(self, off_diagonals: List[List[float]]):
+
+        self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
+        for dinx, diagonal in enumerate(off_diagonals):
+            if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
+                logger.error(
+                    "CapacitanceModel: Unable to set C_cc. "
+                    + "Please specify off diagonals in a list of "
+                    + "lists: [[1st off diagonal], "
+                    + "[2nd off diagonal]]"
+                )
+            self._C_cc += np.diag(diagonal, k=dinx + 1)
+            self._C_cc += np.diag(diagonal, k=-dinx - 1)
+
+        self._C_cc += self._get_C_cc_diagonals()
+        self._C_cc = self._C_cc.tolist()
+
+    def _get_C_cc_diagonals(self) -> np.ndarray:
+        """
+        Here we assume that every dot is coupled to every other. This means
+        that if three or more dots are aligned the first will have a capacitive
+        coupling to the last. In the same manner, all dots are coupled to the
+        leads. Change if necessary.
+        """
+        C_cc = self._C_cc
+        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
+        # from other dots:
+        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
+        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
+
+        diag = C_cv_sums + off_diag_sums
+        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
+
+        return np.diag(diag)
+
+    def _get_C_cv(self) -> List[List[float]]:
+        return self._C_cv
+
+    def _set_C_cv(self, value: List[List[float]]):
+        self._C_cv = value
+        # update values in C_cc:
+        _ = self._get_C_cc()
+
+    def _get_C_R(self) -> float:
+        return self._C_r
+
+    def _set_C_R(self, value: float):
+        self._C_r = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_R: Unable to update C_cc"
+            )
+            pass
+
+    def _get_C_L(self) -> float:
+        return self._C_l
+
+    def _set_C_L(self, value: float):
+        self._C_l = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_L: Unable to update C_cc"
+            )
+            pass
+
+
+
