@@ -33,15 +33,41 @@ elem_charge = 1.60217662 * 10e-19
 N_lmt_type = Sequence[Tuple[int, int]]
 
 # TODO: make variable names consistent. E.g: N/c_config/charge_configuration
-# TODO: check C_cc_off_diags. Initialised correctly?
 
 
 class CapacitanceModel(Instrument):
     """
-    Based on https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1
+    Models a weakly coupled quantum dot with well localised charges.
+    It is a classical description based on two assumptions: (1) Coulomb
+    interactions between electrons on dots and in reservoirs are parametrised
+    by constant capacitances. (2) The single-particle energy-level spectrum
+    is considered independent of electron interactions and the number of
+    electrons, meaning that quantum mechanical energy spacings are not taken
+    into account.
+    The system of electrostatic gates, dots and reservoirs is represented by a
+    system of conductors connected via resistors and capacitors
 
-    As in this paper, we call the two types of triple point 'electron' and
-    'hole' triple points.
+    Being based on
+    https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1,
+    the implementation uses the same terminology including charge and
+    voltage nodes, representing quantum dots and electrostatic gates
+    respectively, and electron and hole triple points.
+
+    The capacitor connecting node .. math::`j` and node .. math::`k` has a
+    capacitance .. math::`C_{jk}` and stores a charge .. math::`q_{jk}`.
+    We distinguish between charge and voltage sub-systems, and thus their
+    respective sub-matrices:
+    .. math::
+
+        \mathbf{C} :=
+        \begin{pmatrix}
+        \mathbf{C_{cc}} & \mathbf{C_{cv}} \\
+        \mathbf{C_{vc}} & \mathbf{C_{vv}}
+        \end{pmatrix}
+
+    Diagonal elements of the capacitance matrix, .. math::`C_{jj}', are total
+    capacitances of each node and carry the opposite sign of the matrix's
+    off-diagonal elements
     """
 
     def __init__(
