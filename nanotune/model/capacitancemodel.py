@@ -31,9 +31,8 @@ N_lmt_type = Sequence[Tuple[int, int]]
 
 class CapacitanceModel(Instrument):
     """
-    Implementation of a general capacitance model an arbitrary number of dots
-    and gates. Simulating weakly coupled quantum dots with well localised
-    charges, it is a classical description based on two assumptions: (1) Coulomb
+    Models a weakly coupled quantum dot with well localised charges.
+    It is a classical description based on two assumptions: (1) Coulomb
     interactions between electrons on dots and in reservoirs are parametrised
     by constant capacitances. (2) The single-particle energy-level spectrum
     is considered independent of electron interactions and the number of
