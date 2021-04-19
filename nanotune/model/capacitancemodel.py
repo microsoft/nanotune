@@ -26,9 +26,17 @@ import nanotune as nt
 from nanotune.model.node import Node
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
+=======
+
+LABELS = list(dict(nt.config["core"]["labels"]).keys())
+N_2D = nt.config["core"]["standard_shapes"]["2"]
+N_1D = nt.config["core"]["standard_shapes"]["1"]
+
+>>>>>>> d2c18d05062a8b8f5bf1b2780fdf8bd894ab38a0
 elem_charge = 1.60217662 * 10e-19
 # elem_charge = 1.60217662
 # elem_charge = 1
@@ -229,6 +237,116 @@ class CapacitanceModel(Instrument):
             initial_value=0,
         )
 
+<<<<<<< HEAD
+=======
+    def _get_charge_node_mapping(self) -> Dict[int, str]:
+        return self._charge_node_mapping
+
+    def _set_charge_node_mapping(self, value: Dict[int, str]):
+        self._charge_node_mapping = value
+
+    def _get_N(self) -> List[int]:
+        for inn, c_n in enumerate(self.charge_nodes):
+            self._N[inn] = c_n.n()
+        return self._N
+
+    def _set_N(self, value: List[int]):
+        value = list(value)
+        self._N = value
+        for iv, val in enumerate(value):
+            self.charge_nodes[iv].n(int(val))
+
+    def _get_V_v(self) -> List[float]:
+        for inn, v_n in enumerate(self.voltage_nodes):
+            self._V_v[inn] = v_n.v()
+        return self._V_v
+
+    def _set_V_v(self, value: List[float]):
+        value = list(value)
+        self._V_v = value
+        for iv, val in enumerate(value):
+            self.voltage_nodes[iv].v(val)
+
+    def _get_C_cc(self) -> List[List[float]]:
+        # Get diagonals: sum of all capacitances attached to it.
+        current_C_cc = np.array(self._C_cc)
+        diagonals = self._get_C_cc_diagonals()
+        for dot_ind in range(len(self.charge_nodes)):
+            current_C_cc[dot_ind, dot_ind] = diagonals[dot_ind, dot_ind]
+
+        self._C_cc = current_C_cc.tolist()
+        return self._C_cc
+
+    def _set_C_cc(self, off_diagonals: List[List[float]]):
+
+        self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
+        for dinx, diagonal in enumerate(off_diagonals):
+            if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
+                logger.error(
+                    "CapacitanceModel: Unable to set C_cc. "
+                    + "Please specify off diagonals in a list of "
+                    + "lists: [[1st off diagonal], "
+                    + "[2nd off diagonal]]"
+                )
+            self._C_cc += np.diag(diagonal, k=dinx + 1)
+            self._C_cc += np.diag(diagonal, k=-dinx - 1)
+
+        self._C_cc += self._get_C_cc_diagonals()
+        self._C_cc = self._C_cc.tolist()
+
+    def _get_C_cc_diagonals(self) -> np.ndarray:
+        """
+        Here we assume that every dot is coupled to every other. This means
+        that if three or more dots are aligned the first will have a capacitive
+        coupling to the last. In the same manner, all dots are coupled to the
+        leads. Change if necessary.
+        """
+        C_cc = self._C_cc
+        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
+        # from other dots:
+        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
+        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
+
+        diag = C_cv_sums + off_diag_sums
+        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
+
+        return np.diag(diag)
+
+    def _get_C_cv(self) -> List[List[float]]:
+        return self._C_cv
+
+    def _set_C_cv(self, value: List[List[float]]):
+        self._C_cv = value
+        # update values in C_cc:
+        _ = self._get_C_cc()
+
+    def _get_C_R(self) -> float:
+        return self._C_r
+
+    def _set_C_R(self, value: float):
+        self._C_r = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_R: Unable to update C_cc"
+            )
+            pass
+
+    def _get_C_L(self) -> float:
+        return self._C_l
+
+    def _set_C_L(self, value: float):
+        self._C_l = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_L: Unable to update C_cc"
+            )
+            pass
+
+>>>>>>> d2c18d05062a8b8f5bf1b2780fdf8bd894ab38a0
     def snapshot_base(
         self,
         update: Optional[bool] = True,
@@ -306,6 +424,7 @@ class CapacitanceModel(Instrument):
         self,
         voltage_node_idx: int,
         dV: float,
+<<<<<<< HEAD
         charge_node_idx: int,
     ) -> None:
         """
@@ -323,6 +442,15 @@ class CapacitanceModel(Instrument):
             [charge_node_idx, voltage_node_idx],
             capa_val,
         )
+=======
+        dot_indx: int,
+    ) -> None:
+        """
+        Formulas relating voltage differences to capacitance
+        """
+        capa_val = -elem_charge * dV
+        self.set_capacitance("cv", [dot_indx, v_node_idx], capa_val)
+>>>>>>> d2c18d05062a8b8f5bf1b2780fdf8bd894ab38a0
 
     def compute_energy(
         self,
@@ -959,6 +1087,7 @@ class CapacitanceModel(Instrument):
 
         return V_limits
 
+<<<<<<< HEAD
     def _get_charge_node_mapping(self) -> Dict[int, str]:
         return self._charge_node_mapping
 
@@ -1068,3 +1197,7 @@ class CapacitanceModel(Instrument):
 
 
 
+=======
+
+
+>>>>>>> d2c18d05062a8b8f5bf1b2780fdf8bd894ab38a0
