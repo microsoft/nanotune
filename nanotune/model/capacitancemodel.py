@@ -31,8 +31,9 @@ N_lmt_type = Sequence[Tuple[int, int]]
 
 class CapacitanceModel(Instrument):
     """
-    Models a weakly coupled quantum dot with well localised charges.
-    It is a classical description based on two assumptions: (1) Coulomb
+    Implementation of a general capacitance model an arbitrary number of dots
+    and gates. Simulating weakly coupled quantum dots with well localised
+    charges, it is a classical description based on two assumptions: (1) Coulomb
     interactions between electrons on dots and in reservoirs are parametrised
     by constant capacitances. (2) The single-particle energy-level spectrum
     is considered independent of electron interactions and the number of
@@ -1056,6 +1057,62 @@ class CapacitanceModel(Instrument):
                 )
             self._C_cc += np.diag(diagonal, k=dinx + 1)
             self._C_cc += np.diag(diagonal, k=-dinx - 1)
+
+        self._C_cc += self._get_C_cc_diagonals()
+        self._C_cc = self._C_cc.tolist()
+
+    def _get_C_cc_diagonals(self) -> np.ndarray:
+        """
+        Here we assume that every dot is coupled to every other. This means
+        that if three or more dots are aligned the first will have a capacitive
+        coupling to the last. In the same manner, all dots are coupled to the
+        leads. Change if necessary.
+        """
+        C_cc = self._C_cc
+        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
+        # from other dots:
+        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
+        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
+
+        diag = C_cv_sums + off_diag_sums
+        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
+
+        return np.diag(diag)
+
+    def _get_C_cv(self) -> List[List[float]]:
+        return self._C_cv
+
+    def _set_C_cv(self, value: List[List[float]]):
+        self._C_cv = value
+        # update values in C_cc:
+        _ = self._get_C_cc()
+
+    def _get_C_R(self) -> float:
+        return self._C_r
+
+    def _set_C_R(self, value: float):
+        self._C_r = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_R: Unable to update C_cc"
+            )
+            pass
+
+    def _get_C_L(self) -> float:
+        return self._C_l
+
+    def _set_C_L(self, value: float):
+        self._C_l = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.C_L: Unable to update C_cc"
+            )
+            pass
+
 
         self._C_cc += self._get_C_cc_diagonals()
         self._C_cc = self._C_cc.tolist()
