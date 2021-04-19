@@ -240,7 +240,7 @@ class CapacitanceModel(Instrument):
         value: float,
         node_type: str = "voltage",
     ) -> None:
-        """ Convenience method to set voltages.
+        """Convenience method to set voltages.
 
         Args:
             n_index (int): Index of node to set.
@@ -264,7 +264,8 @@ class CapacitanceModel(Instrument):
         indices: List[int],
         value: float,
     ) -> None:
-        """ Convenience function to set capacitances.
+        """Convenience function to set capacitances.
+
         Args:
             which_matrix (str): String identifier of matrix to set.
                 Either 'cv' or 'cc'.
@@ -300,9 +301,8 @@ class CapacitanceModel(Instrument):
         dV: float,
         charge_node_idx: int,
     ) -> None:
-        """
-        Implements formular relating voltage differences to capacitances between
-        charge and voltage nodes.
+        """Implements formular relating voltage differences to capacitances
+        between charge and voltage nodes.
 
         Args:
             voltage_node_idx (int): Voltage node index.
@@ -321,7 +321,16 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """ Compute the total energy of dots """
+        """Compute the total energy of dots
+
+        Args:
+            N (list): charge configuration, i.e. number of charges on each
+                charge node.
+            V_v (list): Voltages to set on voltages nodes.
+
+        Returns:
+            float: energy of the system
+        """
         if N is None:
             N_self = self.N()
             N = np.array(N_self).reshape(len(N_self), 1)
@@ -341,8 +350,13 @@ class CapacitanceModel(Instrument):
         self,
         V_v: Optional[Sequence[float]] = None,
     ) -> List[int]:
-        """
-        Determine N by minimizing the energy
+        """Determines N by minimizing the total energy of the system.
+
+        Args:
+            V_v (list): Voltages to set on voltages nodes.
+
+        Returns:
+            list: Charge state, i.e. number of electrons on each charge node.
         """
         if V_v is None:
             V_v = self.V_v()
@@ -394,20 +408,20 @@ class CapacitanceModel(Instrument):
 
     def get_triplepoints(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N_limits: N_lmt_type,
     ) -> Tuple[np.ndarray, np.ndarray, List[List[int]]]:
-        """Calculate triple points for charge configuration within N_limits
+        """Calculates triple points for charge configuration within N_limits
 
         Args:
-            v_node_idx: indices of gates to sweep
+            voltage_node_idx: indices of gates to sweep
             N_limit: Min and max values of number of electrons in each dot,
                      defining all charge configurations to consider
 
         Return:
-            List of electron charge configurations (first array) and hole
-            triple points (second array).
-
+            np.array: Coordinates of electron triple points
+            np.array: Coordinates of hole triple points
+            list: List of electron charge configurations
         """
 
         if len(N_limits) > len(self.N()):
@@ -422,14 +436,14 @@ class CapacitanceModel(Instrument):
 
         c_configs = [list(item) for item in itertools.product(*c_configs)]
 
-        coordinates_etp = np.empty([len(c_configs), len(v_node_idx)])
-        coordinates_htp = np.empty([len(c_configs), len(v_node_idx)])
+        coordinates_etp = np.empty([len(c_configs), len(voltage_node_idx)])
+        coordinates_htp = np.empty([len(c_configs), len(voltage_node_idx)])
 
         for ic, c_config in enumerate(c_configs):
             # setting M mostly for monitor purposes
             self.N(list(c_config))
-            x_etp, x_htp = self.calculate_triplepoint(
-                v_node_idx, np.array(c_config)
+            x_etp, x_htp = self.calculate_triplepoints(
+                voltage_node_idx, np.array(c_config)
             )
 
             coordinates_etp[ic] = x_etp
@@ -437,54 +451,66 @@ class CapacitanceModel(Instrument):
 
         return np.array(coordinates_etp), np.array(coordinates_htp), c_configs
 
-    def calculate_triplepoint(
+    def calculate_triplepoints(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Sequence[int],
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Determine coordinates in voltage space of triple points
-        (electron and hole) for one charge configuration.
+        """Determines coordinates in voltage space of triple points
+        (electron and hole) for a single charge configuration.
 
         Args:
-            v_node_idx: indices of voltage nodes to be determined
-            N: Charge configuration, number of electrons in each dot.
+            voltage_node_idx (list): Indices of voltage nodes to be determined
+            N (list): Charge configuration, number of electrons of each charge
+                node.
 
         Return:
-            Coordinates of electron (first array) and hole (second array)
-            triple points.
+            np.array: Coordinates of electron triple points.
+            np.array: Coordinates of hole triple points.
         """
-        e_tp = partial(self.triplepoint_e, v_node_idx=v_node_idx, N=N)
-        h_tp = partial(self.triplepoint_h, v_node_idx=v_node_idx, N=N)
+        e_tp = partial(
+            self.mu_electron_triplepoints,
+            voltage_node_idx=voltage_node_idx,
+            N=N,
+        )
+        h_tp = partial(
+            self.mu_hole_triplepoints,
+            voltage_node_idx=voltage_node_idx,
+            N=N,
+        )
 
-        x_init = np.array(self.V_v())[v_node_idx]
+        x_init = np.array(self.V_v())[voltage_node_idx]
 
         x_etp = sc.optimize.fsolve(e_tp, x_init)
         x_htp = sc.optimize.fsolve(h_tp, x_init)
 
         return x_etp, x_htp
 
-    def triplepoint_e(
+    def mu_electron_triplepoints(
         self,
         new_voltages: Sequence[float],
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
     ) -> np.ndarray:
-        """Calculate chemical potentials of all dots for charge configuration
-            N, corresponding to electron triple points. mu_j(N)
+        """Calculates mu_j(N): chemical potentials of all charge nodes for given
+        charge configuration N and corresponding to electron triple points.
+
         Args:
-            new_voltages: values of new gate voltages, to be replaced in
-                          self.V_v. These are the values scipy.optimize.fsolve
-                          is solving for
-            v_node_idx: Voltages nodes indices to which the values above
-                        correspond to.
-            N: Desired charge configuration, if none supplied self.N is taken.
+            new_voltages (list): Voltages to set on voltage nodes.
+            voltage_node_idx (list): Voltage node indices to which the values
+                in new_voltages correspond to.
+            N (list): Desired charge configuration, optional. If none supplied
+                self.N() is taken.
+
+        Returns:
+            np.array: Chemical potentials of electron triple points
+                corresponding to electron triple points.
         """
         if N is None:
             N = self.N()
 
         V_v = np.array(self.V_v())
-        V_v[v_node_idx] = new_voltages
+        V_v[voltage_node_idx] = new_voltages
 
         I_mat = np.eye(len(N))
 
@@ -496,27 +522,29 @@ class CapacitanceModel(Instrument):
         out = np.array(out).flatten()
         return out
 
-    def triplepoint_h(
+    def mu_hole_triplepoints(
         self,
         new_voltages: Sequence[float],
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
     ) -> np.ndarray:
-        """Calculate chemical potentials of all dots for charge configuration
-            N, corresponding to hole triple points, mu_j(N + e_hat_i)
+        """Calculates mu_j(N + e_hat_i): chemical potentials of all charge nodes
+            for given charge configuration N and corresponding to hole triple
+            points.
+
         Args:
-            new_voltages: values of new gate voltages, to be replaced in
-                          self.V_v. These are the values scipy.optimize.fsolve
-                          is solving for
-            v_node_idx: Voltages nodes indices to which the values above
-                        correspond to.
-            N: Desired charge configuration, if none supplied self.N is taken.
+            new_voltages (list): values of new gate voltages, to be replaced in
+                self.V_v. These are the values scipy.optimize.fsolve is solving
+                for
+            voltage_node_idx (list): Voltages nodes indices to which the values
+                above correspond to.
+            N: Desired charge configuration, if none supplied self.N() is taken.
         """
 
         if N is None:
             N = np.array(self.N())
         V_v = np.array(self.V_v())
-        V_v[v_node_idx] = new_voltages
+        V_v[voltage_node_idx] = new_voltages
 
         I_mat = np.eye(len(N))
         out = []
@@ -539,16 +567,16 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-
-        """The chemical potential of dot dot_id for a given charge and voltage
-        configuration.
+        """Calculates chemical potential of a specific charge node for a given
+        charge and voltage configuration.
 
         Args:
-            N: Number of electrons in each dot
-            V_v: voltages node (gate) voltages
+            N (list): Charge configuration, i.e. the number of electrons on each
+                charge node.
+            V_v: Voltages to set on (all) voltage nodes.
 
         Returns:
-            chemical potential value
+            np.array: Chemical potential.
         """
 
         if N is None:
@@ -571,8 +599,8 @@ class CapacitanceModel(Instrument):
 
     def sweep_voltages(
         self,
-        v_node_idx: Sequence[int],  # the one we want to sweep
-        v_ranges: Sequence[Tuple[float, float]],
+        voltage_node_idx: Sequence[int],  # the one we want to sweep
+        voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
         broaden: bool = True,
@@ -586,19 +614,35 @@ class CapacitanceModel(Instrument):
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
     ) -> Optional[int]:
+        """Determine signal peaks by computing the energy
+
+        Args:
+            voltage_node_idx (list):
+            voltage_ranges (list):
+            n_steps (list):
+            line_intensity (float):
+            broaden (bool): Default is True
+            add_noise
+            kernel_widths
+            target_snr_db
+            e_temp
+            normalize
+            single_dot
+            known_quality
+            add_charge_jumps
+            jump_freq
+
         """
-        Determine signal peaks by computing the energy
-        """
-        self.set_voltage(v_node_idx[0], np.min(v_ranges[0]))
-        self.set_voltage(v_node_idx[1], np.min(v_ranges[1]))
-        self.determine_N()
+        self.set_voltage(voltage_node_idx[0], np.min(voltage_ranges[0]))
+        self.set_voltage(voltage_node_idx[1], np.min(voltage_ranges[1]))
+        N_old = self.determine_N()
 
         voltage_x = np.linspace(
-            np.min(v_ranges[0]), np.max(v_ranges[0]), n_steps[0]
+            np.min(voltage_ranges[0]), np.max(voltage_ranges[0]), n_steps[0]
         )
 
         voltage_y = np.linspace(
-            np.min(v_ranges[1]), np.max(v_ranges[1]), n_steps[1]
+            np.min(voltage_ranges[1]), np.max(voltage_ranges[1]), n_steps[1]
         )
         signal = np.zeros(n_steps)
 
@@ -620,11 +664,11 @@ class CapacitanceModel(Instrument):
             x = np.zeros(n_steps)
 
         for ivx, x_val in enumerate(voltage_x):
-            self.set_voltage(v_node_idx[1], voltage_y[0])
+            self.set_voltage(voltage_node_idx[1], voltage_y[0])
             # N_old = self.determine_N()
-            self.set_voltage(v_node_idx[0], x_val)
+            self.set_voltage(voltage_node_idx[0], x_val)
             for ivy, y_val in enumerate(voltage_y):
-                self.set_voltage(v_node_idx[1], y_val)
+                self.set_voltage(voltage_node_idx[1], y_val)
                 N_curr = self.determine_N()
                 n_idx = int(np.random.randint(len(N_curr), size=1))
                 # add charge jumps if desired:
@@ -662,8 +706,8 @@ class CapacitanceModel(Instrument):
         else:
             regime = "doubledot"
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx[0]].v,
-             self.voltage_nodes[v_node_idx[1]].v],
+            [self.voltage_nodes[voltage_node_idx[0]].v,
+             self.voltage_nodes[voltage_node_idx[1]].v],
             [voltage_x, voltage_y],
             signal,
             nt_label=[regime],
@@ -674,7 +718,7 @@ class CapacitanceModel(Instrument):
 
     def sweep_voltage(
         self,
-        v_node_idx: int,  # the one we want to sweep
+        voltage_node_idx: int,  # the one we want to sweep
         v_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
@@ -686,12 +730,12 @@ class CapacitanceModel(Instrument):
         """
         Use self.determine_N to detect charge transitions
         """
-        self.set_voltage(v_node_idx, np.min(v_range))
+        self.set_voltage(voltage_node_idx, np.min(v_range))
         signal = np.zeros(n_steps)
 
         voltage_x = np.linspace(np.min(v_range), np.max(v_range), n_steps)
         for iv, v_val in enumerate(voltage_x):
-            self.set_voltage(v_node_idx, v_val)
+            self.set_voltage(voltage_node_idx, v_val)
             N_current = self.determine_N()
             self.N(N_current)
 
@@ -709,7 +753,7 @@ class CapacitanceModel(Instrument):
             signal = signal / np.max(signal)
 
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx].v],
+            [self.voltage_nodes[voltage_node_idx].v],
             [voltage_x], signal, nt_label=["coulomboscillation"],
         )
 
@@ -890,7 +934,7 @@ class CapacitanceModel(Instrument):
 
     def determine_sweep_voltages(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         V_v: Optional[Sequence[float]] = None,
         N_limits: Optional[N_lmt_type] = None,
     ) -> List[List[float]]:
@@ -908,13 +952,13 @@ class CapacitanceModel(Instrument):
 
         def eng_sub_fct(N, swept_voltages):
             curr_V = V_v
-            for iv, v_to_sweep in enumerate(v_node_idx):
+            for iv, v_to_sweep in enumerate(voltage_node_idx):
                 curr_V[v_to_sweep] = swept_voltages[iv]
             return self.compute_energy(N=N, V_v=curr_V)
 
         eng_fct = partial(eng_sub_fct, N_init)
         x0 = []
-        for v_to_sweep in v_node_idx:
+        for v_to_sweep in voltage_node_idx:
             x0.append(V_v[v_to_sweep])
         res = sc.optimize.minimize(
             eng_fct,
