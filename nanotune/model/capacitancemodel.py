@@ -329,7 +329,14 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """Compute the total energy of dots
+        """Compute the total energy of the system using:
+
+        ..math::
+
+            U = \frac{1}{2} \vec{Q_{c}}^{T} \mathbf{C^{-1}_{cc}} \vec{Q_{c}}
+            + \frac{1}{2} \vec{V^{T}_{v}} \mathbf{C_{vc}} \mathbf{C_{cc}^{-1} } \mathbf{C_{cv}} \vec{V}_{v}
+            - \vec{Q^{T}_{c}} \mathbf{C^{-1}_{cc}} \mathbf{C_{cv}} \vec{V}_{v}.
+
 
         Args:
             N (list): charge configuration, i.e. number of charges on each
@@ -375,8 +382,6 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -576,7 +581,13 @@ class CapacitanceModel(Instrument):
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
         """Calculates chemical potential of a specific charge node for a given
-        charge and voltage configuration.
+        charge and voltage configuration. Using:
+
+        .. math::
+
+            \mu_{j}(\vec{N}, \vec{V}_{v})  = \frac{-q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+				+ q^{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+				+ q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v}.
 
         Args:
             N (list): Charge configuration, i.e. the number of electrons on each
