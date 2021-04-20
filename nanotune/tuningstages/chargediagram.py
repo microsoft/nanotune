@@ -17,7 +17,7 @@ DOT_LABLE_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
 
 class ChargeDiagram(TuningStage):
-    """has a do_at_each for custom actions between setpoints"""
+    """ """
 
     def __init__(
         self,
@@ -176,84 +176,84 @@ class ChargeDiagram(TuningStage):
         """
         return DotFit
 
-    def get_next_actions(self,
+    def get_range_update_directives(self,
                          readout_method_to_use: Optional[str] = 'dc_current',
                          ) -> Tuple[List[str], List[str]]:
         """
-        data fit returns next actions
+        data fit returns next range_update_directives
 
         check if we reached safety limits and remove corresponding action
         if it is the case
         """
-        fit_actions = self.current_fit.next_actions[readout_method_to_use]
+        fit_range_update_directives = self.current_fit.range_update_directives[readout_method_to_use]
 
         issues = []
-        actions = []
+        range_update_directives = []
         gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        if "x more negative" in fit_actions:
+        if "x more negative" in fit_range_update_directives:
             gate = gates_to_sweep[0]
             d_n = abs(self.current_ranges[0][0] - gate.safety_range()[0])
             if d_n > 0.015:
-                actions.append("x more negative")
+                range_update_directives.append("x more negative")
             else:
                 issues.append("x reached negative voltage limit")
 
-        if "x more positive" in fit_actions:
+        if "x more positive" in fit_range_update_directives:
             gate = gates_to_sweep[0]
             d_p = abs(self.current_ranges[0][1] - gate.safety_range()[1])
             if d_p > 0.015:
-                actions.append("x more positive")
+                range_update_directives.append("x more positive")
             else:
                 issues.append("x reached positive voltage limit")
 
-        if "y more negative" in fit_actions:
+        if "y more negative" in fit_range_update_directives:
             gate = gates_to_sweep[1]
             d_n = abs(self.current_ranges[1][0] - gate.safety_range()[0])
             if d_n > 0.015:
-                actions.append("y more negative")
+                range_update_directives.append("y more negative")
             else:
                 issues.append("y reached negative voltage limit")
 
-        if "y more positive" in fit_actions:
+        if "y more positive" in fit_range_update_directives:
             gate = gates_to_sweep[1]
             d_p = abs(self.current_ranges[1][1] - gate.safety_range()[1])
             if d_p > 0.015:
-                actions.append("y more positive")
+                range_update_directives.append("y more positive")
             else:
                 issues.append("y reached positive voltage limit")
 
-        return actions, issues
+        return range_update_directives, issues
 
     def update_current_ranges(
         self,
-        actions: List[str],
+        range_update_directives: List[str],
     ) -> None:
         """
         Currently either shifting the window or making it larger.
         """
-        all_actions = ["x more negative", "x more positive",
+        all_range_update_directives = ["x more negative", "x more positive",
                        "y more negative", "y more positive"]
-        for action in actions:
-            if action not in all_actions:
+        for directive in range_update_directives:
+            if directive not in all_range_update_directives:
                 logger.error(
                     (f'{self.stage}: Unknown action.'
                      'Cannot update measurement setting')
                 )
 
-        if "x more negative" in actions:
+        if "x more negative" in range_update_directives:
             self._update_range(0, "negative")
 
-        if "x more positive" in actions:
+        if "x more positive" in range_update_directives:
             self._update_range(0, "positive")
 
-        if "y more negative" in actions:
+        if "y more negative" in range_update_directives:
             self._update_range(1, "negative")
 
-        if "y more positive" in actions:
+        if "y more positive" in range_update_directives:
             self._update_range(1, "positive")
         else:
             logger.error(
-                (f'{self.stage}: Unknown action.'
+                (f'{self.stage}: Unknown range update directive.'
                  'Cannot update measurement setting')
             )
 

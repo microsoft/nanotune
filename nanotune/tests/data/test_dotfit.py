@@ -26,11 +26,11 @@ def test_dotfit_init(nt_dataset_doubledot, tmp_path):
         getattr(df, attr)
 
 
-def test_dotfit_next_actions(nt_dataset_doubledot, tmp_path):
+def test_dotfit_range_update_directives(nt_dataset_doubledot, tmp_path):
     df = DotFit(1, "temp.db", db_folder=str(tmp_path), signal_thresholds=[0.03, 0.4])
-    print(df.next_actions)
-    assert not df.next_actions["dc_current"]
-    assert not df.next_actions["dc_sensor"]
+    print(df.range_update_directives)
+    assert not df.range_update_directives["dc_current"]
+    assert not df.range_update_directives["dc_sensor"]
 
     edge = df.get_edge("left vertical", use_raw_data=False)
     assert np.max(edge) > 0.24
@@ -49,14 +49,14 @@ def test_dotfit_next_actions(nt_dataset_doubledot, tmp_path):
     assert np.min(edge) < 0.03
 
     df.signal_thresholds = [0.1, 0.2]
-    df._next_actions = {}
-    expected_actions = ["x more negative", "y more negative"]
-    assert sorted(df.next_actions["dc_current"]) == ["x more negative", "y more negative"]
+    df._range_update_directives = {}
+    expected_range_update_directives = ["x more negative", "y more negative"]
+    assert sorted(df.range_update_directives["dc_current"]) == ["x more negative", "y more negative"]
 
     df.signal_thresholds = [0.5, 0.7]
-    df._next_actions = {}
-    expected_actions = ["x more positive", "y more positive"]
-    assert sorted(df.next_actions["dc_current"]) == expected_actions
+    df._range_update_directives = {}
+    expected_range_update_directives = ["x more positive", "y more positive"]
+    assert sorted(df.range_update_directives["dc_current"]) == expected_range_update_directives
 
 
 def test_dotfit_fit(nt_dataset_doubledot, tmp_path):

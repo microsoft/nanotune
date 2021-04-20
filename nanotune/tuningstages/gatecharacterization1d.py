@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class GateCharacterization1D(TuningStage):
-    """has a do_at_each for custom actions between setpoints
-    will change voltage of current gate until either pinchoff is found or
-    safety ranges are reached
+    """
     """
 
     def __init__(
@@ -70,17 +68,17 @@ class GateCharacterization1D(TuningStage):
 
     def update_current_ranges(
         self,
-        actions: List[str],
+        range_update_directives: List[str],
     ) -> None:
         """"""
-        for action in actions:
-            if action not in ["x more negative", "x more positive"]:
-                logger.error((f'{self.stage}: Unknown action.'
+        for directives in range_update_directives:
+            if directives not in ["x more negative", "x more positive"]:
+                logger.error((f'{self.stage}: Unknown range update directives.'
                     'Cannot update measurement setting'))
 
-        if "x more negative" in actions:
+        if "x more negative" in range_update_directives:
             self._update_range(0, 0)
-        if "x more positive" in actions:
+        if "x more positive" in range_update_directives:
             self._update_range(0, 1)
 
 
@@ -92,35 +90,35 @@ class GateCharacterization1D(TuningStage):
         sign = (-1) ** (range_id + 1)
         self.current_ranges[gate_id][range_id] += sign * v_change
 
-    def get_next_actions(self) -> Tuple[List[str], List[str]]:
+    def get_range_update_directives(self) -> Tuple[List[str], List[str]]:
         """
-        Define next actions if quality of current fit is sub-optimal.
+        Define range_update_directives if quality of current fit is sub-optimal.
         First: try to sweep the current gate more negative.
         If we are speeing to its min_v, we set the auxiliary_gate to min_v
         No intermediate tries, just being efficient.
         """
-        fit_actions = self.current_fit.next_actions
+        fit_range_update_directives = self.current_fit.range_update_directives
         safety_range = self.gate.safety_range()
 
         neg_range_avail = abs(self.current_ranges[0][0] - safety_range[0])
         pos_range_avail = abs(self.current_ranges[0][1] - safety_range[1])
 
-        actions = []
+        range_update_directives = []
         issues = []
 
-        if "x more negative" in fit_actions:
+        if "x more negative" in fit_range_update_directives:
             if neg_range_avail >= 0.1:
-                actions.append("x more negative")
+                range_update_directives.append("x more negative")
             else:
                 issues.append("negative safety voltage reached")
 
-        if "x more positive" in fit_actions:
+        if "x more positive" in fit_range_update_directives:
             if pos_range_avail >= 0.1:
-                actions.append("x more positive")
+                range_update_directives.append("x more positive")
             else:
                 issues.append("positive safety voltage reached")
 
-        return actions, issues
+        return range_update_directives, issues
 
     def clean_up(self) -> None:
         """"""

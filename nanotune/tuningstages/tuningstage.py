@@ -18,6 +18,8 @@ from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint, compute_linear_setpoints
+from .base_tasks import save_predicted_category
+
 logger = logging.getLogger(__name__)
 SETPOINT_METHODS = nt.config["core"]["setpoint_methods"]
 data_dimensions = {
@@ -108,7 +110,7 @@ class TuningStage(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_next_actions(self) -> Tuple[List[str], List[str]]:
+    def get_range_update_directives(self) -> Tuple[List[str], List[str]]:
         """
         The fit is telling us what we need to to
         Return "false" as second argument if we should abandon the case
@@ -118,7 +120,7 @@ class TuningStage(metaclass=ABCMeta):
     @abstractmethod
     def update_current_ranges(
         self,
-        actions: List[str],
+        range_update_directives: List[str],
     ) -> None:
         """"""
 
@@ -135,14 +137,6 @@ class TuningStage(metaclass=ABCMeta):
     @abstractmethod
     def check_quality(self) -> bool:
         """"""
-
-    def save_predicted_category(self):
-        """"""
-        ds = load_by_id(self.current_id)
-        nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-
-        nt_meta["predicted_category"] = int(self.current_quality)
-        ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
 
     def clean_up(self) -> None:
         """"""
@@ -282,7 +276,7 @@ class TuningStage(metaclass=ABCMeta):
             self.additional_post_measurement_actions()
 
             self.current_quality = self.check_quality()
-            self.save_predicted_category()
+            save_predicted_category(self.current_id, self.current_quality)
 
             if self.current_quality:
                 logger.info("Good result found.")
@@ -298,15 +292,17 @@ class TuningStage(metaclass=ABCMeta):
                 done = True
                 termination_reasons = []
             elif self.update_settings:
-                actions, termination_reasons = self.get_next_actions()
+                (range_update_directives,
+                 termination_reasons) = self.get_range_update_directives()
                 logger.info(
-                    self.stage + 'next actions: ' + ', '.join(actions)
+                    (self.stage + 'next range update directives: '
+                     ', '.join(range_update_directives))
                 )
-                if not actions:
+                if not range_update_directives:
                     done = True
                     success = False
                 else:
-                    self.update_current_ranges(actions)
+                    self.update_current_ranges(range_update_directives)
                     done = False
                     success = False
 
