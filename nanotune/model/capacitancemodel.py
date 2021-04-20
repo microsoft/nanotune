@@ -33,7 +33,6 @@ elem_charge = 1.60217662 * 10e-19
 # elem_charge = 1.60217662
 # elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
-# TODO: make variable names consistent. E.g: N/c_config/charge_configuration
 
 
 class CapacitanceModel(Instrument):
@@ -84,7 +83,7 @@ class CapacitanceModel(Instrument):
         name: str,
         charge_nodes: Optional[Dict[int, str]] = None,
         voltage_nodes: Optional[Dict[int, str]] = None,
-        N: Optional[Sequence[int]] = None,  # charge configuration
+        N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
         C_cc_off_diags: Optional[Sequence[float]] = None,
         C_cv: Optional[Sequence[Sequence[float]]] = None,
@@ -161,15 +160,6 @@ class CapacitanceModel(Instrument):
             C_cc_off_diags = []
             for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
                 C_cc_off_diags.append([0.0])
-
-        self.add_parameter(
-            "charge_node_mapping",
-            label="charge node name mapping",
-            unit=None,
-            get_cmd=self._get_charge_node_mapping,
-            set_cmd=self._set_charge_node_mapping,
-            initial_value=charge_nodes,
-        )
 
         if N is None:
             N = np.zeros(len(self.charge_nodes))
@@ -605,42 +595,50 @@ class CapacitanceModel(Instrument):
 
         return pot
 
-    def sweep_voltages(
+    def sweep_voltages2D(
         self,
-        voltage_node_idx: Sequence[int],  # the one we want to sweep
+        voltage_node_idx: Sequence[int],
         voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
-        broaden: bool = True,
-        add_noise: bool = True,
-        kernel_widths: Tuple[float, float] = (1.0, 1.0),
-        target_snr_db: float = 10,
+        kernel_widths: Sequence[float] = [1.0, 1.0],
+        target_snr_db: float = 1,
         e_temp: float = 1e-20,
-        normalize: bool = True,
-        single_dot: bool = False,
-        known_quality: Optional[int] = None,
+        known_regime: str = 'doubledot',
+        known_quality: int = 1,
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
     ) -> Optional[int]:
-        """Determine signal peaks by computing the energy
+        """Sweep two voltage nodes to measure a charge diagram. Determines
+        charge transitions by computing the number of degeneracies using
+        get_number_of_degeneracies. Applies a Gaussien filter to broaden
+        transitions and adds random normal noise and optionally charge jumps.
+        The diagram is saved into .db using QCoDeS.
 
         Args:
-            voltage_node_idx (list):
-            voltage_ranges (list):
-            n_steps (list):
-            line_intensity (float):
-            broaden (bool): Default is True
-            add_noise
-            kernel_widths
-            target_snr_db
-            e_temp
-            normalize
-            single_dot
-            known_quality
-            add_charge_jumps
-            jump_freq
+            voltage_node_idx (list): Voltage node indices to sweep.
+            voltage_ranges (list): Voltage ranges to sweep.
+            n_steps (list): Number of steps of the measurement.
+            line_intensity (float): Multiplication factor of number of
+                degeneracies, resulting in the desired peak hight before
+                normalization.
+            kernel_widths (list): Sigmas of Gaussian filter used for broadening
+                of charge transitions.
+            target_snr_db (float): Target signal-to-noise ratio used to
+                calculate amplitude of random normal noise.
+            e_temp (float): Electron temperature, used as absolute tolerance in
+                energy at which two charge states count as degenerate.
+            known_regime (str): Label to be saved in metadata.
+            known_quality (str): Quality to be saved in metadata.
+            add_charge_jumps (bool): Whether or not to add random charge jumps.
+            jump_freq (float): Average frequency at which optional charge jumps
+                should occur.
 
+        Returns:
+            int: QCoDeS data run ID.
         """
+
+        assert known_regime in nt.config['core']['labels'].keys()
         self.set_voltage(voltage_node_idx[0], np.min(voltage_ranges[0]))
         self.set_voltage(voltage_node_idx[1], np.min(voltage_ranges[1]))
         N_old = self.determine_N()
@@ -655,7 +653,7 @@ class CapacitanceModel(Instrument):
         signal = np.zeros(n_steps)
 
         if add_charge_jumps:
-            x = np.ones(n_steps)
+            additional_charges = np.ones(n_steps)
             s = 1
             trnsp = np.random.randint(2, size=1)
 
@@ -665,83 +663,89 @@ class CapacitanceModel(Instrument):
                 for iy in range(n_steps[1]):
                     if poisson[ix, iy] == 1:
                         s *= -1
-                    x[ix, iy] *= s
-            x = np.array(x)
-            x = (x + 1) / 2
+                    additional_charges[ix, iy] *= s
+            additional_charges = np.array(additional_charges)
+            additional_charges = (additional_charges + 1) / 2
         else:
-            x = np.zeros(n_steps)
+            additional_charges = np.zeros(n_steps)
 
         for ivx, x_val in enumerate(voltage_x):
             self.set_voltage(voltage_node_idx[1], voltage_y[0])
-            # N_old = self.determine_N()
             self.set_voltage(voltage_node_idx[0], x_val)
+
             for ivy, y_val in enumerate(voltage_y):
                 self.set_voltage(voltage_node_idx[1], y_val)
+
                 N_curr = self.determine_N()
                 n_idx = int(np.random.randint(len(N_curr), size=1))
-                # add charge jumps if desired:
-                N_curr[n_idx] += x[ivx, ivy]
+                N_curr[n_idx] += additional_charges[ivx, ivy]
                 self.N(N_curr)
 
                 n_degen = self.get_number_of_degeneracies(
                     N_current=N_curr,
                     e_temp=e_temp,
                 )
-                if single_dot:
+                if known_regime == 'singledot':
                     n_degen = np.min([1, n_degen])
-
                 signal[ivx, ivy] = n_degen * line_intensity
 
-        xm, ym = np.meshgrid(voltage_x, voltage_y)
-        if broaden:
-            signal = self._make_it_real(signal, kernel_widths=kernel_widths)
-        if add_noise:
-            signal = self._add_noise(signal, target_snr_db=target_snr_db)
+        signal = self._make_it_real(signal, kernel_widths=kernel_widths)
+        signal = self._add_noise(signal, target_snr_db=target_snr_db)
+        signal = signal / np.max(signal)
 
-        if normalize:
-            signal = signal / np.max(signal)
-
-        if known_quality is None:
-            if target_snr_db > 2:
-                quality = 1
-            else:
-                quality = 0
-        else:
-            quality = known_quality
-
-        if single_dot:
-            regime = "singledot"
-        else:
-            regime = "doubledot"
         dataid = self._save_to_db(
             [self.voltage_nodes[voltage_node_idx[0]].v,
              self.voltage_nodes[voltage_node_idx[1]].v],
             [voltage_x, voltage_y],
             signal,
-            nt_label=[regime],
-            quality=quality,
+            nt_label=[known_regime],
+            quality=known_quality,
         )
 
         return dataid
 
     def sweep_voltage(
         self,
-        voltage_node_idx: int,  # the one we want to sweep
-        v_range: Sequence[float],
+        voltage_node_idx: int,
+        voltage_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
         e_temp: float = 1e-20,
+        known_quality: int = 1,
         kernel_width: Sequence[float] = [1.0],
         target_snr_db: float = 10.0,
-        normalize: bool = True,
+
     ) -> Optional[int]:
+        """Sweep one voltage to measure Coulomb oscillations. Determines
+        charge transitions by computing the number of degeneracies using
+        get_number_of_degeneracies. Applies a Gaussien filter to broaden
+        transitions and adds random normal noise and optionally charge jumps.
+        The diagram is saved into .db using QCoDeS.
+
+        Args:
+            voltage_node_idx (int): Voltage node indices to sweep.
+            voltage_ranges (list): Voltage ranges to sweep.
+            n_steps (int): Number of steps of the measurement.
+            line_intensity (float): Multiplication factor of number of
+                degeneracies, resulting in the desired peak hight before
+                normalization.
+            e_temp (float): Electron temperature, used as absolute tolerance in
+                energy at which two charge states count as degenerate.
+            known_quality (str): Quality to be saved in metadata.
+            add_charge_jumps (bool): Whether or not to add random charge jumps.
+            jump_freq (float): Average frequency at which optional charge jumps
+                should occur.
+
+        Returns:
+            int: QCoDeS data run ID.
         """
-        Use self.determine_N to detect charge transitions
-        """
-        self.set_voltage(voltage_node_idx, np.min(v_range))
+
+        self.set_voltage(voltage_node_idx, np.min(voltage_range))
         signal = np.zeros(n_steps)
 
-        voltage_x = np.linspace(np.min(v_range), np.max(v_range), n_steps)
+        voltage_x = np.linspace(
+            np.min(voltage_range), np.max(voltage_range), n_steps
+        )
         for iv, v_val in enumerate(voltage_x):
             self.set_voltage(voltage_node_idx, v_val)
             N_current = self.determine_N()
@@ -757,12 +761,13 @@ class CapacitanceModel(Instrument):
         signal = self._make_it_real(signal, kernel_widths=kernel_width)
         signal = self._add_noise(signal, target_snr_db=target_snr_db)
 
-        if normalize:
-            signal = signal / np.max(signal)
+        signal = signal / np.max(signal)
 
         dataid = self._save_to_db(
             [self.voltage_nodes[voltage_node_idx].v],
-            [voltage_x], signal, nt_label=["coulomboscillation"],
+            [voltage_x], signal,
+            nt_label=["coulomboscillation"],
+            quality=known_quality,
         )
 
         return dataid
@@ -773,8 +778,20 @@ class CapacitanceModel(Instrument):
         V_v: Optional[Sequence[float]] = None,
         e_temp: float = 1e-21,
     ) -> int:
-        """
-        Excludes chareg states with negative number of charges
+        """Computes the number of degeneracies for a given voltage
+        configuration by comparing energies of charge configurations with +/-
+        one charge for the same voltage combination. If energies differ in
+        <= e_temp, they count as degenerate.
+
+        Args:
+            N_current (list): Current charge state, i.e. number of charges on
+                charge nodes.
+            V_v (list): Voltages of all voltage nodes.
+            e_temp (float): Electron temperature, used as absolute tolerance in
+                energy at which two charge states count as degenerate.
+
+        Returns:
+            int: Number of degeneracies.
         """
         n_dots = len(self.charge_nodes)
 
@@ -817,21 +834,22 @@ class CapacitanceModel(Instrument):
     def _make_it_real(
         self,
         diagram: np.ndarray,
-        kernel_widths: Sequence[float] = [3.0, 3.0],
+        kernel_widths: Union[float, Sequence[float]] = [3.0, 3.0],
     ) -> np.ndarray:
-        """Make the tickfigure diagram more real by convolving it with a
-        Gaussian. Currently for 2D diagrams only.
+        """Uses a Gaussian filter to broadedn a stickfigure diagram.
 
         Args:
-            diagram: The previously computed stickfigure diagram
-            kernel_width: Width of the Gaussian kernel.
+            diagram (np.ndarray): The previously computed stickfigure diagram
+            kernel_width (list, float): Width of the Gaussian kernel. Can be a
+                single number or list of the same lenght as the diagram's
+                dimensions.
 
         Return:
-            Gaussian blurred diagram.
+            np.ndarray: Gaussian blurred diagram.
         """
         org_shape = diagram.shape
         diagram = gaussian_filter(
-            diagram, sigma=kernel_widths[0], mode="constant", truncate=1
+            diagram, sigma=kernel_widths, mode="constant", truncate=1
         )
 
         return resize(diagram, org_shape)
@@ -841,14 +859,15 @@ class CapacitanceModel(Instrument):
         diagram: np.ndarray,
         target_snr_db: float = 10.0,
     ) -> np.ndarray:
-        """Add noise to charge diagram to match the desired signal to noise
-        ratio.
+        """Adds normally distributed random noise to a diagram to match the
+        desired signal to noise ratio.
 
         Args:
-            diagram: Noise free diagram
-            target_snr_db: Target signal to noise ratio in dB
+            diagram (np.ndarray): Noise free diagram
+            target_snr_db (float): Target signal to noise ratio in dB
+
         Return:
-            Noisy diagram
+            np.ndarray: Diagram with normally distributed random noise added.
         """
 
         d_shape = diagram.shape
@@ -871,9 +890,22 @@ class CapacitanceModel(Instrument):
         data: np.ndarray,
         nt_label: Sequence[str],
         quality: int = 1,
-        write_period: int = 10,
     ) -> Union[None, int]:
-        """ Save data to database. Returns run id. """
+        """Save data to a database using QCoDeS.
+
+        Args:
+            parameters (list): List of QCoDeS parameters to register for
+                measurement.
+            setpoints (list): List of setpoints, i.e. voltage values.
+            data (np.ndarray): The measurement to save.
+            nt_label (list): List of machine learning/nanotune labels to save.
+            quality (int): The measurement's quality, to be saved as metadata.
+
+        Returns:
+            int: QCoDeS data run id.
+        """
+        # TODO: Save the data as arrays and remove for loops. To be updated to
+        # new QCoDeS data formats
 
         dummy_lockin = DummyInstrument("dummy_lockin", gates=["R"])
         if len(parameters) not in [1, 2]:
@@ -946,13 +978,24 @@ class CapacitanceModel(Instrument):
         V_v: Optional[Sequence[float]] = None,
         N_limits: Optional[N_lmt_type] = None,
     ) -> List[List[float]]:
-        """
-        Determine N by minimizing energy
+        """ Determines voltages to sweep to measure specific charge transitions.
+
+        Args:
+            voltage_node_idx (list): Indices of voltages nodes to sweep.
+            V_v (list): Voltage configuration of all gates.
+            N_limits: Charge configuration ranges to measure. E.g. for a double
+                dot to sweep over empty dots to both having 3 electrons:
+                [(0, 3), (0, 3)]
+
+        Returns:
+            list: Nested list of voltages limits to sweep. Example double dot:
+                [[gate1_min_voltage, gate1_max_voltage],
+                 [gate2_min_voltage, gate2_max_voltage]]
         """
         if V_v is None:
             V_v = self.V_v()
         if N_limits is None:
-            N_limits = [(0, 1)] * len(self.N())  # [(0, 1), (0, 1)]
+            N_limits = [(0, 1)] * len(self.N())
 
         N_init = []
         for did in range(len(N_limits)):
@@ -971,8 +1014,6 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -989,8 +1030,6 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -1003,36 +1042,37 @@ class CapacitanceModel(Instrument):
 
         return V_limits
 
-    def _get_charge_node_mapping(self) -> Dict[int, str]:
-        return self._charge_node_mapping
-
-    def _set_charge_node_mapping(self, value: Dict[int, str]):
-        self._charge_node_mapping = value
-
     def _get_N(self) -> List[int]:
+        """ QCoDeS parameter getter for charge configuration N. """
         for inn, c_n in enumerate(self.charge_nodes):
             self._N[inn] = c_n.n()
         return self._N
 
     def _set_N(self, value: List[int]):
+        """ QCoDeS parameter setter for charge configuration N. """
         value = list(value)
         self._N = value
         for iv, val in enumerate(value):
             self.charge_nodes[iv].n(int(val))
 
     def _get_V_v(self) -> List[float]:
+        """ QCoDeS parameter getter for voltage configuration V_v. """
         for inn, v_n in enumerate(self.voltage_nodes):
             self._V_v[inn] = v_n.v()
         return self._V_v
 
     def _set_V_v(self, value: List[float]):
+        """ QCoDeS parameter setter for voltage configuration V_v. """
         value = list(value)
         self._V_v = value
         for iv, val in enumerate(value):
             self.voltage_nodes[iv].v(val)
 
     def _get_C_cc(self) -> List[List[float]]:
-        # Get diagonals: sum of all capacitances attached to it.
+        """ QCoDeS parameter getter for dot capacitance matrix C_cc. Diagonals
+        of C_cc is the sum of all capacitances connected to the respective
+        charge node, calculated in _get_C_cc_diagonals.
+        """
         current_C_cc = np.array(self._C_cc)
         diagonals = self._get_C_cc_diagonals()
         for dot_ind in range(len(self.charge_nodes)):
@@ -1042,7 +1082,7 @@ class CapacitanceModel(Instrument):
         return self._C_cc
 
     def _set_C_cc(self, off_diagonals: List[List[float]]):
-
+        """ QCoDeS parameter setter for dot capacitance matrix C_cc. """
         self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
         for dinx, diagonal in enumerate(off_diagonals):
             if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
@@ -1059,8 +1099,8 @@ class CapacitanceModel(Instrument):
         self._C_cc = self._C_cc.tolist()
 
     def _get_C_cc_diagonals(self) -> np.ndarray:
-        """
-        Here we assume that every dot is coupled to every other. This means
+        """Getter for diagonal values of dot capacitance matrix C_cc.
+        We assume that every dot is coupled to every other, meaning that
         that if three or more dots are aligned the first will have a capacitive
         coupling to the last. In the same manner, all dots are coupled to the
         leads. Change if necessary.
@@ -1077,17 +1117,24 @@ class CapacitanceModel(Instrument):
         return np.diag(diag)
 
     def _get_C_cv(self) -> List[List[float]]:
+        """ QCoDeS parameter getter for dot capacitance matrix C_cv. """
         return self._C_cv
 
     def _set_C_cv(self, value: List[List[float]]):
+        """ QCoDeS parameter setter for dot capacitance matrix C_cv. Updates dot
+        capacitance matrix C_cc as its diagonals depend on C_cv
+        """
         self._C_cv = value
-        # update values in C_cc:
         _ = self._get_C_cc()
 
     def _get_C_R(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance R(right). """
         return self._C_r
 
     def _set_C_R(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance R(right). Updates dot
+        capacitance matrix C_cc as its diagonals depend on C_R
+        """
         self._C_r = value
         try:
             _ = self._get_C_cc()
@@ -1098,9 +1145,13 @@ class CapacitanceModel(Instrument):
             pass
 
     def _get_C_L(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance L(eft). """
         return self._C_l
 
     def _set_C_L(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance L(eft). Updates dot
+        capacitance matrix C_cc as its diagonals depend on C_L
+        """
         self._C_l = value
         try:
             _ = self._get_C_cc()
@@ -1109,6 +1160,3 @@ class CapacitanceModel(Instrument):
                 "Setting CapacitanceModel.C_L: Unable to update C_cc"
             )
             pass
-
-
-
