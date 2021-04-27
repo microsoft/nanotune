@@ -33,7 +33,7 @@ class DataFit(ABC, Dataset):
             db_folder=db_folder,
         )
         self._features: Dict[str, Any] = {}
-        self._range_update_directives: Dict[str, List[str]] = {}
+        self._range_update_directives: List[str] = []
 
     @property
     def features(self) -> Dict[str, Any]:
@@ -48,7 +48,7 @@ class DataFit(ABC, Dataset):
         pass
 
     @property
-    def range_update_directives(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """"""
         return self._range_update_directives
 

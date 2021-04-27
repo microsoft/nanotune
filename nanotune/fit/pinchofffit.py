@@ -86,18 +86,16 @@ class PinchoffFit(DataFit):
         self._normalized_voltage = np.linspace(0, 1, n_points)
 
     @property
-    def range_update_directives(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """"""
         if not self._low_signal:
             self.compute_transition_interval()
-        self._range_update_directives = {}
+        self._range_update_directives = []
         for read_meth in self.readout_methods:
-            self._range_update_directives[read_meth] = []
-
             if self._high_signal[read_meth] < 0.8:
-                self._range_update_directives[read_meth].append("x more negative")
+                self._range_update_directives.clearappend("x more negative")
             if self._low_signal[read_meth] > 0.2:
-                self._range_update_directives[read_meth].append("x more positive")
+                self._range_update_directives.append("x more positive")
 
         return self._range_update_directives
 

@@ -84,7 +84,7 @@ class DotFit(DataFit):
         self.triple_points: Optional[Dict[str, np.ndarray]] = None
 
     @property
-    def range_update_directives(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """
         signal_type: If more than one signal type (i.e dc, dc_sensor or rf)
         have been measured, select which one to use to perform the edge
@@ -96,23 +96,22 @@ class DotFit(DataFit):
         if not self._range_update_directives:
 
             for read_meth in self.readout_methods:
-                self._range_update_directives[read_meth] = []
                 left_vertical = self.get_edge("left vertical", read_meth)
                 bottom_horizontal = self.get_edge("bottom horizontal", read_meth)
                 right_vertical = self.get_edge("right vertical", read_meth)
                 top_horizontal = self.get_edge("top horizontal", read_meth)
 
                 if np.max(left_vertical) > self.signal_thresholds[1]:
-                    self._range_update_directives[read_meth].append("x more negative")
+                    self._range_update_directives.append("x more negative")
 
                 if np.max(bottom_horizontal) > self.signal_thresholds[1]:
-                    self._range_update_directives[read_meth].append("y more negative")
+                    self._range_update_directives.append("y more negative")
 
                 if np.max(right_vertical) < self.signal_thresholds[0]:
-                    self._range_update_directives[read_meth].append("x more positive")
+                    self._range_update_directives.append("x more positive")
 
                 if np.max(top_horizontal) < self.signal_thresholds[0]:
-                    self._range_update_directives[read_meth].append("y more positive")
+                    self._range_update_directives.append("y more positive")
 
         return self._range_update_directives
 
