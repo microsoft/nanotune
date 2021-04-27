@@ -1,11 +1,13 @@
 import logging
 import json
 import time
-import datetime
 import copy
 import numpy as np
+from functools import partial
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Tuple, List, Dict, Any, Sequence, Union, Generator
+from typing import (
+    Optional, Tuple, List, Dict, Any, Sequence, Union, Generator, Callable,
+)
 from contextlib import contextmanager
 
 import qcodes as qc
@@ -29,6 +31,8 @@ from .base_tasks import (
     get_measurement_features,
     take_data_add_metadata,
     print_tuningstage_status,
+    run_stage,
+    iterate_stage,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,7 +42,6 @@ data_dimensions = {
     'chargediagram': 2,
     'coulomboscillations': 1,
 }
-
 
 
 class TuningStage(metaclass=ABCMeta):
@@ -86,9 +89,8 @@ class TuningStage(metaclass=ABCMeta):
         self.update_settings = update_settings
 
         self.current_ranges: List[Tuple[float, float]] = []
+        self.safety_ranges: List[Tuple[float, float]] = []
         self.current_setpoints: List[List[float]] = []
-        self.result_ids: List[int] = []
-        # self.current_id: int = -1
         self.max_count = 10
 
         for gate in self.setpoint_settings['gates_to_sweep']:
@@ -115,6 +117,7 @@ class TuningStage(metaclass=ABCMeta):
 
             gate.current_valid_range(curr_rng)
             self.current_ranges.append(curr_rng)
+            self.safety_ranges.append(gate.safety_range())
 
     @property
     @abstractmethod
@@ -123,41 +126,46 @@ class TuningStage(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_range_update_directives(self) -> Tuple[List[str], List[str]]:
-        """
-        The fit is telling us what we need to to
-        Return "false" as second argument if we should abandon the case
-        """
-        pass
+    def conclude_iteration(
+        self,
+        tuning_result: TuningResult,
+        voltage_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+        count: int,
+        n_iterations: int,
+    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+        """ """
 
     @abstractmethod
-    def update_current_ranges(
-    # def get_new_voltage_ranges(
+    def verify_classification_result(
         self,
-        range_update_directives: List[str],
-    ) -> List[List[float]]:
-        """"""
+        ml_result: Dict[str, int],
+    ) -> bool:
+        """ """
 
-    def save_features(
+    def save_machine_learning_result(
         self,
         current_id: int,
+        ml_result: Dict[str, int],
         ):
         """ """
+
         save_extracted_features(
             self.fit_class,
             current_id,
             self.data_settings['db_name'],
             db_folder=self.data_settings['db_folder'],
-            fit_options=self.fit_options,
         )
+        for result_type, result_value in ml_result.items():
+            save_classification_result(
+                current_id,
+                result_type,
+                result_value,
+            )
 
     @abstractmethod
-    def check_quality(self, run_id: int) -> bool:
-        """"""
-
-    @abstractmethod
-    def predict_regime(self, run_id: int) -> bool:
-        """"""
+    def machine_learning_task(self, run_id) -> Dict[str, Any]:
+        """ """
 
     def clean_up(self) -> None:
         """"""
@@ -174,45 +182,34 @@ class TuningStage(metaclass=ABCMeta):
         """"""
         return False
 
-    def compute_setpoints(self) -> List[List[float]]:
+    def compute_setpoints(
+        self,
+        voltage_ranges: List[Tuple[float, float]],
+    ) -> List[List[float]]:
         """
         """
 
-        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        self.current_ranges = swap_range_limits_if_needed(
-            gates_to_sweep,
-            self.current_ranges,
-        )
         setpoints = compute_linear_setpoints(
-            self.current_ranges,
+            voltage_ranges,
             self.setpoint_settings['voltage_precision'],
         )
         return setpoints
 
-    @contextmanager
-    def set_up_gates_for_measurement(self) -> Generator[None, None, None]:
-        """ Ramp gates to start values before turning off ramping
-        deactivate ramp - setpoints are calculated such that
-        voltage differences do not exceed max_jump
-        """
-        for gg, gate in enumerate(self.setpoint_settings['gates_to_sweep']):
-            gate.dc_voltage(self.current_setpoints[gg][0])
-            gate.use_ramp(False)
-            d = 0.01
-            if self.measurement_options is not None:
-                for read_method in self.readout_methods.keys():
-                    options = self.measurement_options[read_method]
-                    try:
-                        d = max(d, float(options["delay"]))
-                    except KeyError:
-                        pass
-            gate.post_delay(d)
-        try:
-            yield
-        finally:
-            for gate in self.setpoint_settings['gates_to_sweep']:
-                gate.use_ramp(True)
-                gate.post_delay(0)
+    def show_result(
+        self,
+        plot_result: bool,
+        current_id: int,
+        tuning_result: TuningResult,
+    ) -> None:
+        """ """
+        if plot_result:
+            plot_fit(
+                self.fit_class,
+                current_id,
+                self.data_settings['db_name'],
+                db_folder=self.data_settings['db_folder'],
+            )
+        print_tuningstage_status(tuning_result)
 
     def prepare_nt_metadata(self) -> Dict[str, Any]:
         nt_meta = prepare_metadata(
@@ -240,108 +237,44 @@ class TuningStage(metaclass=ABCMeta):
 
         return run_id
 
-    def _run_stage(
+    def run_stage(
         self,
-        plot_measurements: bool = True,
-    ) -> Tuple[bool, List[str]]:
+        plot_result: Optional[bool] = True,
+    ) -> TuningResult:
         """"""
-        done = False
-        count = 0
-        termination_reasons: List[str] = []
-        range_update_directives: List[str] = []
 
         nt.set_database(
             self.data_settings['db_name'],
             db_folder=self.data_settings['db_folder']
         )
 
-        while not done:
-            count += 1
-            logger.info("Iteration no " + str(count))
+        self.current_ranges = swap_range_limits_if_needed(
+            self.setpoint_settings['gates_to_sweep'],
+            self.current_ranges,
+        )
 
-            self.current_setpoints = self.compute_setpoints()
-            current_id = self.measure(self.current_setpoints)
+        run_stage_tasks = [
+            self.compute_setpoints,
+            self.measure,
+            self.machine_learning_task,
+            self.save_machine_learning_result,
+            self.verify_classification_result,
+        ]
 
-            self.result_ids.append(current_id)
-            self.save_features(current_id)
-            self.additional_post_measurement_actions()
+        tuning_result = iterate_stage(
+            self.stage,
+            self.current_ranges,
+            self.safety_ranges,
+            run_stage,
+            run_stage_tasks,  # type: ignore
+            self.conclude_iteration,
+            partial(self.show_result, plot_result),
+            self.max_count,
+        )
 
-            measurement_quality = self.check_quality(current_id)
-            save_classification_result(
-                current_id,
-                "predicted_quality",
-                measurement_quality,
-            )
-            predicted_regime = self.predict_regime(current_id)
-            save_classification_result(
-                current_id,
-                "predicted_regime",
-                predicted_regime,
-            )
-
-            if plot_measurements:
-                plot_fit(
-                    self.fit_class,
-                    current_id,
-                    self.data_settings['db_name'],
-                    db_folder=self.data_settings['db_folder'],
-                )
-
-            success = bool(measurement_quality)
-            if success:
-                done = True
-                termination_reasons = []
-            elif self.update_settings:
-                (range_update_directives,
-                 termination_reasons) = self.get_range_update_directives()
-
-                if not range_update_directives:
-                    done = True
-                    success = False
-                else:
-                    self.update_current_ranges(range_update_directives)
-                    done = False
-                    success = False
-
-            if count >= self.max_count:
-                done = True
-                success = False
-                termination_reasons.append("max count reached")
-
-            print_tuningstage_status(
-                self.stage,
-                success,
-                predicted_regime,
-                range_update_directives,
-                termination_reasons,
-            )
+        tuning_result.db_name = self.data_settings['db_name']
+        tuning_result.db_folder = self.data_settings['db_folder']
 
         self.clean_up()
-        return success, termination_reasons
-
-    def run_stage(
-        self,
-        plot_measurements: bool = True,
-    ) -> TuningResult:
-        """
-        """
-        success, termination_reasons = self._run_stage(
-            plot_measurements=plot_measurements
-        )
-
-        tuning_result = TuningResult(
-            self.stage,
-            success,
-            termination_reasons=termination_reasons,
-            data_ids=self.result_ids,
-            db_name=self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
-            features=get_measurement_features(
-                self.result_ids[-1],
-                self.data_settings['db_name'],
-                db_folder=self.data_settings['db_folder'],
-            ),
-            timestamp=datetime.datetime.now().isoformat(),
-        )
-
         return tuning_result
+

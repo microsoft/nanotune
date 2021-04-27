@@ -6,12 +6,13 @@ import json
 import copy
 import time
 import logging
+import datetime
 import numpy as np
 from math import floor
 from string import Template
 from typing import (
     Optional, Tuple, List, Dict, Any, Sequence, Union, Generator,
-    Callable,
+    Callable, Type,
 )
 from contextlib import contextmanager
 import matplotlib.pyplot as plt
@@ -25,14 +26,15 @@ from nanotune.classification.classifier import Classifier
 from nanotune.fit.datafit import DataFit
 from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint
+from nanotune.device_tuner.tuningresult import TuningResult
 logger = logging.getLogger(__name__)
 
 
 def save_classification_result(
     run_id: int,
-    result_type: Union[str, int],
+    result_type: str,
     result: Union[bool, int],
-    meta_tag: Optional[str] = nt.meta_tag,
+    meta_tag: str = nt.meta_tag,
 ) -> None:
     """Saves a classification result such as quality or regime to metadata.
 
@@ -77,11 +79,10 @@ def check_measurement_quality(
 
 
 def save_extracted_features(
-    fit_class: DataFit,
+    fit_class: Type[DataFit],
     run_id: int,
     db_name: str,
     db_folder: Optional[str],
-    fit_options: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Performs a data fit and saves extracted features into metadata of the
     QCoDeS dataset.
@@ -93,13 +94,9 @@ def save_extracted_features(
         db_folder: Path to folder containing database db_name.
     """
 
-    if fit_options is None:
-        fit_options = {}
-
     fit = fit_class(
         run_id,
         db_name,
-        **fit_options,
         db_folder=db_folder,
     )
     fit.find_fit()
@@ -180,8 +177,8 @@ def set_gate_post_delay(
 
 def swap_range_limits_if_needed(
     gates_to_sweep: List[Gate],
-    current_ranges: List[Tuple[float]],
-) -> List[Tuple[float]]:
+    current_ranges: List[Tuple[float, float]],
+) -> List[Tuple[float, float]]:
     """
     Order of current_ranges corresponds to order of gates_to_sweep.
     swaps limits such that starting point will be closest to current voltage.
@@ -270,7 +267,7 @@ def add_metadata_to_dict(
     Returns:
         dict: New metadata dictionary.
     """
-
+    new_meta_dict = copy.deepcopy(meta_dict)
     for key, value in additional_metadata.items():
         try:
             dump = json.dumps(value, cls=NumpyJSONEncoder)
@@ -278,7 +275,9 @@ def add_metadata_to_dict(
             raise TypeError(
                 f'Adding non-serializable value to meta dict: {value}.'
             )
-        meta_dict[key] = value
+        new_meta_dict[key] = value
+
+    return new_meta_dict
 
 
 def save_metadata(
@@ -303,7 +302,7 @@ def save_metadata(
 def get_elapsed_time(
     start_time: float,
     end_time: float,
-    format_template: Template = '$hours h $minutes min $seconds s',
+    format_template: Template = Template('$hours h $minutes min $seconds s'),
 ) -> Tuple[float, str]:
     """Returns the elapsed time in seconds and as a formatted string ready to be
     logged/printed.
@@ -323,7 +322,7 @@ def get_elapsed_time(
     hours, minutes = divmod(elapsed_time, 3600)
     minutes, seconds = divmod(minutes, 60)
 
-    formatted_time = Template(format_template).substitute(
+    formatted_time = format_template.substitute(
         hours=str(hours),
         minutes=str(minutes),
         seconds=str(seconds))
@@ -332,8 +331,8 @@ def get_elapsed_time(
 
 
 def plot_fit(
-    fit_class: DataFit,
-    run_id: str,
+    fit_class: Type[DataFit],
+    run_id: int,
     db_name: str,
     db_folder: Optional[str] = None,
 ) -> None:
@@ -352,33 +351,21 @@ def plot_fit(
 
 
 def print_tuningstage_status(
-    stage: str,
-    measurement_quality: bool,
-    predicted_regime: str,
-    range_update_directives: List[str],
-    termination_reasons: List[str],
+    tuning_result: TuningResult,
 ) -> None:
     """Prints a tuningstage status on info level of a python logger.
 
     Args:
-        stage: Type of stage.
-        measurement_quality: Predicted quality of the last measurement.
-        predicted_regime: Predicted quality of the last measurement.
-        range_update_directions: Directives to update voltage ranges of
-            gates swept during current tuning stage.
-        termination_reasons: Potential reasons why the current tuning stage is
-            going to stop.
-    """
-
-    qual = 'good' if measurement_quality else 'poor'
+        tuning_result: TuningResult instance.
+    # """
+    # TODO: fix string
     msg = (
-        stage + ': ' + qual + ' result measured.' + '\n',
-        'predicted regime: ' + predicted_regime + '\n',
-        'voltage range updates to do: ' + ', '.join(range_update_directives),
-        '\n',
-        'termination reasons: ' + ', '.join(termination_reasons) + '\n'
+        f"{tuning_result.stage}: {tuning_result.success} result measured.\n",
+        f"predicted regime: {tuning_result.ml_result['regime']}\n",
+        "termination reasons: " + ", ".join(tuning_result.termination_reasons)
     )
     logger.info(msg)
+    print(msg)
 
 
 def take_data_add_metadata(
@@ -388,7 +375,7 @@ def take_data_add_metadata(
     pre_measurement_metadata: Dict[str, Any],
     finish_early_check: Optional[Callable[[Dict[str, float]], bool]] = None,
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
-    meta_tag: Optional[str] = nt.meta_tag,
+    meta_tag: str = nt.meta_tag,
 ) -> int:
     """
     Args:
@@ -433,6 +420,213 @@ def take_data_add_metadata(
     )
 
     return run_id
+
+
+def run_stage(
+    stage: str,
+    voltage_ranges: List[Tuple[float, float]],
+    compute_setpoint_task: Callable[
+        [List[Tuple[float, float]]], Sequence[Sequence[float]]
+    ],
+    measure_task: Callable[[Sequence[Sequence[float]]], int],
+    machine_learning_task: Callable[[int], Any],
+    save_machine_learning_result: Callable[[int, Any], None],
+    validate_result: Callable[[Any], bool],
+) -> TuningResult:
+    """Executes basic tasks of a tuning stage using functions supplied as input:
+        - computes setpoints
+        - perform the actual measurement, i.e. take data
+        - perform a machine learning task, e.g. classification
+        - validate the machine learning result, e.g. check if a good regime was
+            found
+        - collect all information in a TuningResult instance.
+    It does not set back voltages to initial values.
+
+    Args:
+        stage: Name/indentifier of the tuning stage.
+        voltage_ranges: List of voltages ranges to sweep.
+        compute_setpoint_task: Function computing setpoints.
+        measure_task: Functions taking data.
+        machine_learning_task: Function performing the required machine learning
+            task.
+        save_machine_learning_result: Function saving machine learning result.
+            E.g. save prediction to metadata of the dataset.
+        validate_result: Function validating the machine learning
+            result/prediction.
+
+    Returns:
+        TuningResult: Currently without db_name and db_folder set.
+    """
+
+    termination_reasons: List[str] = []
+    current_setpoints = compute_setpoint_task(voltage_ranges)
+    current_id = measure_task(current_setpoints)
+
+    ml_result = machine_learning_task(current_id)
+    save_machine_learning_result(current_id, ml_result)
+    success = validate_result(ml_result)
+
+    tuning_result = TuningResult(
+        stage,
+        success,
+        termination_reasons=[],
+        data_ids=[current_id],
+        ml_result=ml_result,
+        timestamp=datetime.datetime.now().isoformat(),
+    )
+
+    return tuning_result
+
+
+def iterate_stage(
+    stage: str,
+    voltage_ranges: List[Tuple[float, float]],
+    safety_voltage_ranges: List[Tuple[float, float]],
+    run_stage: Callable[[str,
+                         List[Tuple[float, float]],
+                         Callable[[List[Tuple[float, float]]],
+                                   Sequence[Sequence[float]]],
+                         Callable[[Sequence[Sequence[float]]], int],
+                         Callable[[int], Any], Callable[[int, Any], None],
+                         Callable[[Any], bool]],
+                        TuningResult],
+    run_stage_tasks: Tuple[Callable[[List[Tuple[float, float]]],
+                                   Sequence[Sequence[float]]],
+                         Callable[[Sequence[Sequence[float]]], int],
+                         Callable[[int], Any], Callable[[int, Any], None],
+                         Callable[[Any], bool]],
+    conclude_iteration: Callable[[TuningResult,
+                                 List[Tuple[float, float]],
+                                 List[Tuple[float, float]], int, int,
+                                 ],
+                                 Tuple[bool, List[Tuple[float, float]],
+                                    List[str]],
+                                 ],
+    display_result: Callable[[int, TuningResult], None],
+    n_iterations: int,
+) -> TuningResult:
+    """Performs several iterations of a run_stage function, a sequence of basic
+    tasks of a tuning stage. If desired, and implemented in conclude_iteration,
+    new voltage ranges to sweep are determined for the iteration. Issues
+    encountered are saved in the TuningStage instance under termination_reasons.
+    It does not set back voltages to initial values.
+
+    Args:
+        stage: Name/indentifier of the tuning stage.
+        voltage_ranges: List of voltages ranges to sweep.
+        run_stage: Function executing the sequence of steps of a tuning stage.
+        run_stage_tasks: All input functions of run_stage.
+        conclude_iteration: Function checking the outcome of an iteration and
+            possibly adjusting voltage ranges if needed. Returns a list of
+            termination reasons if the current iteration is to be abandoned.
+        display_result: Function to show result of the current iteration.
+        n_iterations: Maximum number of iterations to perform abandoning.
+
+    Returns:
+        TuningResult: Tuning results of the last iteration, with the dataids
+            field containing QCoDeS run IDs of all datasets measured.
+    """
+
+    done = False
+    count = 0
+    run_ids = []
+
+    while not done:
+        count += 1
+        tuning_result = run_stage(stage, voltage_ranges, *run_stage_tasks)
+        run_ids += tuning_result.data_ids
+
+        done, voltage_ranges, termination_reasons = conclude_iteration(
+            tuning_result,
+            voltage_ranges,
+            safety_voltage_ranges,
+            count,
+            n_iterations,
+        )
+        tuning_result.termination_reasons = termination_reasons
+
+        display_result(tuning_result.data_ids[-1], tuning_result)
+
+    tuning_result.data_ids = sorted(list(set(run_ids)))
+
+    return tuning_result
+
+
+def conclude_iteration_with_range_update(
+    tuning_result: TuningResult,
+    current_voltage_ranges: List[Tuple[float, float]],
+    safety_voltage_ranges: List[Tuple[float, float]],
+    get_range_update_directives: Callable[[int,
+                                           List[Tuple[float, float]],
+                                           List[Tuple[float, float]]],
+                                          Tuple[List[str], List[str]]],
+    get_new_current_ranges: Callable[[List[Tuple[float, float]],
+                                      List[Tuple[float, float]], List[str]],
+                                     List[Tuple[float, float]]],
+    count: int,
+    n_iterations: int,
+) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    """Implements a conclude_iteration function for iterate_stage, which
+    determines new voltage ranges if the last measurement was not successful.
+
+    Args:
+        tuning_result: Tuning result of current run_stage iteration.
+        current_voltage_ranges: List of the last voltage ranges swep.
+        safety_voltage_ranges: List of safety voltages for each voltage
+            parameter swept.
+        get_range_update_directives: Function to compile a list of directives
+            indicating how voltages need to be changed.
+        get_new_current_ranges: Function applying list of range change
+            directives and returning new voltage ranges.
+        count: Current iteration number.
+        n_iterations: Maximum number of tuning stage runs to perform.
+
+    """
+
+    new_voltage_ranges: List[Tuple[float, float]] = []
+    success = tuning_result.success
+    if success:
+        done = True
+        termination_reasons: List[str] = []
+    else:
+        (range_update_directives,
+         termination_reasons) = get_range_update_directives(
+            tuning_result.data_ids[-1],
+            current_voltage_ranges,
+            safety_voltage_ranges,
+        )
+
+        if not range_update_directives:
+            done = True
+        else:
+            new_voltage_ranges = get_new_current_ranges(
+                current_voltage_ranges,
+                safety_voltage_ranges,
+                range_update_directives
+            )
+            done = False
+
+    if count >= n_iterations:
+        done = True
+        termination_reasons.append("max count reached")
+
+    return done, new_voltage_ranges, termination_reasons
+
+
+def get_fit_range_update_directives(
+    fit_class: Type[DataFit],
+    run_id: int,
+    db_name: str,
+    db_folder: Optional[str],
+) -> List[str]:
+    """ """
+
+    fit = fit_class(
+        run_id,
+        db_name,
+        db_folder=db_folder,
+    )
+    return fit.range_update_directives
 
 
 

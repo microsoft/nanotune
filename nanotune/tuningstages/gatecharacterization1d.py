@@ -7,7 +7,17 @@ import nanotune as nt
 from nanotune.device.gate import Gate
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
+from .base_tasks import (
+    check_measurement_quality,
+    conclude_iteration_with_range_update,
+    get_fit_range_update_directives,
+)
+from .gatecharacterization_tasks import (
+    get_new_gatecharacterization_range,
+    get_range_directives_gatecharacterization,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +50,7 @@ class GateCharacterization1D(TuningStage):
             fit_options=fit_options,
         )
 
-        self.clf = classifier
+        self.classifier = classifier
         self.noise_level = noise_level
         self._recent_signals: List[float] = []
         if isinstance(self.setpoint_settings['gates_to_sweep'], Gate):
@@ -57,66 +67,95 @@ class GateCharacterization1D(TuningStage):
         """
         return PinchoffFit
 
-    def check_quality(self) -> bool:
+    def machine_learning_task(self, run_id) -> Dict[str, Any]:
+        """ """
+        ml_result: Dict[str, Any] = {}
+        ml_result['quality'] = self.check_quality(run_id)
+        ml_result['regime'] = 'pinchoff'
+        return ml_result
+
+    def check_quality(self, run_id: int) -> bool:
         """"""
-        found_dots = self.clf.predict(
-            self.current_id,
+        qual = check_measurement_quality(
+            self.classifier,
+            run_id,
             self.data_settings['db_name'],
-            self.data_settings['db_folder'],
-            )
-        return any(found_dots)
-
-    def update_current_ranges(
-        self,
-        range_update_directives: List[str],
-    ) -> None:
-        """"""
-        for directives in range_update_directives:
-            if directives not in ["x more negative", "x more positive"]:
-                logger.error((f'{self.stage}: Unknown range update directives.'
-                    'Cannot update measurement setting'))
-
-        if "x more negative" in range_update_directives:
-            self._update_range(0, 0)
-        if "x more positive" in range_update_directives:
-            self._update_range(0, 1)
-
-
-    def _update_range(self, gate_id, range_id):
-        v_change = abs(
-            self.current_ranges[gate_id][range_id]
-            - self.gate.safety_range()[range_id]
+            db_folder=self.data_settings['db_folder'],
         )
-        sign = (-1) ** (range_id + 1)
-        self.current_ranges[gate_id][range_id] += sign * v_change
+        return qual
 
-    def get_range_update_directives(self) -> Tuple[List[str], List[str]]:
+
+    def conclude_iteration(
+        self,
+        tuning_result: TuningResult,
+        voltage_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+        count: int,
+        n_iterations: int,
+    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+        """ """
+
+        (done,
+        new_voltage_ranges,
+        termination_reasons) = conclude_iteration_with_range_update(
+            tuning_result,
+            voltage_ranges,
+            safety_voltage_ranges,
+            self.get_range_update_directives,
+            get_new_gatecharacterization_range,
+            count,
+            n_iterations,
+        )
+        return done, new_voltage_ranges, termination_reasons
+
+
+    def verify_classification_result(
+        self,
+        ml_result: Dict[str, int],
+    ) -> bool:
+        """ """
+        return bool(ml_result['quality'])
+
+
+    # def get_new_current_ranges(
+    #     self,
+    #     current_ranges: List[Tuple[float, float]],
+    #     safety_ranges: List[Tuple[float, float]],
+    #     range_update_directives: List[str],
+    # ) -> List[Tuple[float, float]]:
+    #     """"""
+
+    #     new_current_ranges = get_new_gatecharacterization_range(
+    #         current_ranges,
+    #         safety_ranges,
+    #         range_update_directives,
+    #     )
+    #     return new_current_ranges
+
+    def get_range_update_directives(
+        self,
+        current_id: int,
+        current_ranges: List[Tuple[float, float]],
+        safety_ranges: List[Tuple[float, float]],
+        ) -> Tuple[List[str], List[str]]:
         """
         Define range_update_directives if quality of current fit is sub-optimal.
         First: try to sweep the current gate more negative.
         If we are speeing to its min_v, we set the auxiliary_gate to min_v
         No intermediate tries, just being efficient.
         """
-        fit_range_update_directives = self.current_fit.range_update_directives
-        safety_range = self.gate.safety_range()
-
-        neg_range_avail = abs(self.current_ranges[0][0] - safety_range[0])
-        pos_range_avail = abs(self.current_ranges[0][1] - safety_range[1])
-
-        range_update_directives = []
-        issues = []
-
-        if "x more negative" in fit_range_update_directives:
-            if neg_range_avail >= 0.1:
-                range_update_directives.append("x more negative")
-            else:
-                issues.append("negative safety voltage reached")
-
-        if "x more positive" in fit_range_update_directives:
-            if pos_range_avail >= 0.1:
-                range_update_directives.append("x more positive")
-            else:
-                issues.append("positive safety voltage reached")
+        fit_range_update_directives = get_fit_range_update_directives(
+            self.fit_class,
+            current_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
+        (range_update_directives,
+         issues) = get_range_directives_gatecharacterization(
+            fit_range_update_directives,
+            self.current_ranges,
+            [self.gate.safety_range()],
+        )
 
         return range_update_directives, issues
 
