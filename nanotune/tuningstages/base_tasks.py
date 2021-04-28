@@ -63,7 +63,7 @@ def check_measurement_quality(
     db_name: str,
     db_folder: str,
 ) -> bool:
-    """Apply supplied classifer to determine a measurement's quality.
+    """Applies supplied classifer to determine a measurement's quality.
 
     Args:
         classifier: Pretrained classifier to use for quality prediction.
@@ -159,8 +159,8 @@ def set_gate_post_delay(
     post_delay: Union[float, List[float]],
 ) -> None:
     """
-    Set it before a measurement to ensure electron settled before taking a
-    measurement point.
+    Set gate post delay before a measurement to ensure teh electron gas settles
+    before taking a measurement point.
 
     Args:
         gates_to_sweep: Gates to sweep in measurement.
@@ -179,15 +179,18 @@ def swap_range_limits_if_needed(
     gates_to_sweep: List[Gate],
     current_ranges: List[Tuple[float, float]],
 ) -> List[Tuple[float, float]]:
-    """
-    Order of current_ranges corresponds to order of gates_to_sweep.
-    swaps limits such that starting point will be closest to current voltage.
-    To save time and avoid unecessary ramping.
+    """Saw start and end points of a sweep depending on the current voltages set
+    on gates. To save time and avoid unecessary ramping.
+    Order of current_ranges needs to be the same as the order of gates in
+    gates_to_sweep.
 
     Args:
         gates_to_sweep: Gates to sweep in measurement.
         current_ranges: Current voltages ranges to sweep. The order in which
             ranges appear in the list is the as in gates_to_sweep.
+
+    Returns:
+        list: Voltage ranges to sweep.
     """
 
     new_ranges = copy.deepcopy(current_ranges)
@@ -357,8 +360,8 @@ def print_tuningstage_status(
 
     Args:
         tuning_result: TuningResult instance.
-    # """
-    # TODO: fix string
+    """
+
     msg = (
         f"{tuning_result.stage}: {tuning_result.success} result measured.\n",
         f"predicted regime: {tuning_result.ml_result['regime']}\n",
@@ -377,7 +380,8 @@ def take_data_add_metadata(
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
     meta_tag: str = nt.meta_tag,
 ) -> int:
-    """
+    """Takes 1D or 2D data and saves relevant metadata into the dataset.
+
     Args:
         gates_to_sweep: List of nt.Gate to sweep.
         parameters_to_measure: List of qc.Parameters to read out.

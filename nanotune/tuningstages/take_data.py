@@ -19,7 +19,8 @@ def take_data(
     metadata_addon: Optional[Tuple[str, Dict[str, Any]]] = None,
 ) -> Tuple[int, List[int]]:
     """
-    Take data for 1 or 2D data
+    Take 1D or 2D measurements with QCoDeS.
+
     Args:
         parameters_to_sweep:
         parameters_to_measure:
@@ -27,6 +28,12 @@ def take_data(
         finish_early_check:
         metadata_addon: string with tag under which it will be added
             and metadata iself. To save some important metadata before measuring
+
+    Returns:
+        int:
+        list: List of the number of points measured in each dimension. If the
+            measurement has been stopped early, these will differ from the
+            number of setpoints.
     """
     if do_at_inner_setpoint is None:
         do_at_inner_setpoint = do_nothing
@@ -101,14 +108,23 @@ def take_data(
 
 
 def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+    """Default function used at inner setpoints in ```take_data```, not doing
+    anything.
+    """
+
     pass
 
 
-def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+def ramp_to_setpoint(
+    param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+    """Ramps nanotune gates (or other instrument parameter with 'use_ramp'
+    attribute)to a new setpoint. Sets `use_ramp` back to false after ramping.
+
+    Args:
+        param_setpoint_input: Tuple of the QCoDeS parameter and its new
+        setpoint.
     """
-    Ramp nanotune gate (or other instrument parameter with 'use_ramp' attribute)
-    to new setpoint. Set `use_ramp` back to false
-    """
+
     qcodes_parameter = param_setpoint_input[0]
     voltage = param_setpoint_input[1]
     try:

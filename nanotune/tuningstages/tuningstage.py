@@ -18,7 +18,7 @@ from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint
-from .base_tasks import (
+from .base_tasks import (  # update docstrings if import path changes
     save_classification_result,
     save_extracted_features,
     set_up_gates_for_measurement,
@@ -111,7 +111,9 @@ class TuningStage(metaclass=ABCMeta):
     @property
     @abstractmethod
     def fit_class(self):
-        """To be specified in child classes. It is  """
+        """To be specified in child classes. It specifies which data fitting
+        class should be used to perform a fit.
+        """
         pass
 
     @abstractmethod
@@ -120,10 +122,34 @@ class TuningStage(metaclass=ABCMeta):
         tuning_result: TuningResult,
         voltage_ranges: List[Tuple[float, float]],
         safety_voltage_ranges: List[Tuple[float, float]],
-        count: int,
-        n_iterations: int,
+        current_iteration: int,
+        max_n_iterations: int,
     ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
-        """ """
+        """Method checking if one iteration of a run_stage measurement cycle has
+        been successful. An iteration of such a measurement cycle takes data,
+        performs a machine learning task, verifies and saves the machine
+        learning result. If a repetition of this cycle is supported, then
+        ``conclude_iteration`` determines whether another iteration should take
+        place and which voltage ranges need to be measured.
+        Each child class needs to implement the body of this method, tailoring
+        it to the respective tuning stage.
+
+        Args:
+            tuning_result: Result of the last run_stage measurement cycle.
+            voltage_ranges: Voltage ranges last swept.
+            safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
+                range that could be swept.
+            current_iteration: Number of current iteration.
+            max_n_iterations: Maximum number of iterations to perform before
+                abandoning.
+
+        Returns:
+            bool: Whether this is the last iteration and the stage is done/to
+                be stopped.
+            list: New voltage ranges to sweep if the stage is not done.
+            list: List of strings indicating any possible failure modes.
+        """
+
         pass
 
     @abstractmethod
@@ -131,7 +157,17 @@ class TuningStage(metaclass=ABCMeta):
         self,
         ml_result: Dict[str, int],
     ) -> bool:
-        """ """
+        """Verifies if the desired measurement quality or regime has been found.
+        Needs to be implemented by child classed to account for the different
+        regimes or measurements they are dealing with.
+
+        Args:
+            ml_result: Result returned by ``machine_learning_task``.
+
+        Returns:
+            bool: Whether the desired outcome has been found.
+        """
+
         pass
 
     @abstractmethod
@@ -139,15 +175,26 @@ class TuningStage(metaclass=ABCMeta):
         self,
         run_id: int,
     ) -> Dict[str, Any]:
-        """ """
+        """The machine learning task to perform after a measurement.
+
+        Args:
+            run_id: QCoDeS data run ID.
+        """
+
         pass
 
     def save_machine_learning_result(
         self,
-        current_id: int,
+        run_id: int,
         ml_result: Dict[str, int],
-        ):
-        """ """
+    ) -> None:
+        """Saves the result returned by ```machine_learning_task```: the
+        extracted features are stored into metadata of the respective dataset.
+
+        Args:
+            run_id: QCoDeS data run ID.
+            ml_result: Result returned by ``machine_learning_task``.
+        """
 
         save_extracted_features(
             self.fit_class,
@@ -163,21 +210,41 @@ class TuningStage(metaclass=ABCMeta):
             )
 
     def clean_up(self) -> None:
-        """"""
+        """Any tasks needed to be performed after all iterations of measurement
+        cycles are done. For example: set voltages back to their initial values.
+        """
+
         pass
 
     def finish_early(
         self,
         current_output_dict: Dict[str, float],
     ) -> bool:
-        """"""
+        """Checks if the current data taking can be stopped. E.g. if the device
+        is pinched off entirely.
+
+        Args:
+            current_output_dict: Dictionary mapping a string indicating the
+                readout method to the respective value last measured.
+
+        Returns:
+            bool: Whether the current data taking procedure can be stopped.
+        """
+
         return False
 
     def compute_setpoints(
         self,
         voltage_ranges: List[Tuple[float, float]],
     ) -> List[List[float]]:
-        """
+        """Computes setpoints for the next measurement. Unless this method is
+        overwritten in a child class, linearly spaced setpoints are computed.
+
+        Args:
+            voltage_ranges: Voltages ranges to sweep.
+
+        Returns:
+            list: List of lists with setpoints.
         """
 
         setpoints = compute_linear_setpoints(
@@ -192,7 +259,14 @@ class TuningStage(metaclass=ABCMeta):
         current_id: int,
         tuning_result: TuningResult,
     ) -> None:
-        """ """
+        """Displays tuning result and optionally plots the fitting result.
+
+        Args:
+            plot_result: Bool indicating whether the data fit should be plotted.
+            current_id: QCoDeS data run ID.
+            tuning_result: Result of a tuning stage run.
+        """
+
         if plot_result:
             plot_fit(
                 self.fit_class,
@@ -203,7 +277,14 @@ class TuningStage(metaclass=ABCMeta):
         print_tuningstage_status(tuning_result)
 
     def prepare_nt_metadata(self) -> Dict[str, Any]:
-        """ """
+        """Sets up a metadata dictionary with fields known prior to a
+        measurement set. Wraps ```prepare_metadata``` in .base_tasks.py.
+
+        Returns:
+            dict: Metadata dict with fields known prior to a measurement filled
+                in.
+        """
+
         nt_meta = prepare_metadata(
             self.setpoint_settings['gates_to_sweep'][0].parent.name,
             self.data_settings['normalization_constants'],
@@ -215,7 +296,14 @@ class TuningStage(metaclass=ABCMeta):
         self,
         setpoints: List[List[float]],
     ) -> int:
-        """
+        """Takes 1D or 2D data and saves relevant metadata into the dataset.
+        Wraps ```take_data_add_metadata``` in .base_tasks.py.
+
+        Args:
+            setpoints: Setpoints to measure.
+
+        Returns:
+            int: QCoDeS data run ID.
         """
 
         run_id = take_data_add_metadata(
@@ -235,7 +323,29 @@ class TuningStage(metaclass=ABCMeta):
         max_iterations: int = 10,
         plot_result: bool = True,
     ) -> TuningResult:
-        """"""
+        """Performs iterations of a basic measurement cycle of a tuning stage.
+        It wraps ```iterate_stage``` in .base_tasks.py. One measurement cycle
+        does the following subtasks:
+        - computes setpoints
+        - perform the actual measurement, i.e. take data
+        - perform a machine learning task, e.g. classification
+        - validate the machine learning result, e.g. check if a good regime was
+            found
+        - collect all information in a TuningResult instance.
+
+        At each iteration, ```conclude_iteration``` check whether another
+        measurement cycle will be performed.
+        At the very end, ```clean_up``` does the desired post-measurement task.
+
+        Args:
+            iterate:
+            max_iterations:
+            plot_result:
+
+        Returns:
+            TuningResult: Tuning results of the last iteration, with the dataids
+            field containing QCoDeS run IDs of all datasets measured.
+        """
 
         nt.set_database(
             self.data_settings['db_name'],
