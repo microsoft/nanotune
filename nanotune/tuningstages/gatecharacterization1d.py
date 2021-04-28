@@ -87,7 +87,7 @@ class GateCharacterization1D(TuningStage):
         voltage_ranges: List[Tuple[float, float]],
         safety_voltage_ranges: List[Tuple[float, float]],
         count: int,
-        n_iterations: int,
+        max_n_iterations: int,
     ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
         """ """
 
@@ -100,7 +100,7 @@ class GateCharacterization1D(TuningStage):
             self.get_range_update_directives,
             get_new_gatecharacterization_range,
             count,
-            n_iterations,
+            max_n_iterations,
         )
         return done, new_voltage_ranges, termination_reasons
 
