@@ -25,9 +25,6 @@ class ChargeDiagram(TuningStage):
         setpoint_settings: Dict[str, Any],
         readout_methods: Dict[str, qc.Parameter],
         classifiers: Dict[str, Classifier],
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        fit_options: Optional[Dict[str, Any]] = None,
-        update_settings: bool = True,
         range_change: float = 30,  # in percent
     ) -> None:
         """"""
@@ -45,9 +42,6 @@ class ChargeDiagram(TuningStage):
             data_settings,
             setpoint_settings,
             readout_methods,
-            measurement_options=measurement_options,
-            update_settings=update_settings,
-            fit_options=fit_options,
         )
 
         self.segmented_ids: List[int] = []

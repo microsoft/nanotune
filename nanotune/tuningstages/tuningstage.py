@@ -34,95 +34,84 @@ from .base_tasks import (
     run_stage,
     iterate_stage,
 )
-
 logger = logging.getLogger(__name__)
-SETPOINT_METHODS = nt.config["core"]["setpoint_methods"]
-data_dimensions = {
-    'gatecharacterization1d': 1,
-    'chargediagram': 2,
-    'coulomboscillations': 1,
-}
 
 
 class TuningStage(metaclass=ABCMeta):
+    """Base class implementing the common sequence of a tuning stage.
+
+    Attributes:
+        stage: String identifier indicating which stage it implements, e.g.
+            gatecharacterization.
+        data_settings: Dictionary with information about data, e.g. where it
+            should be saved and how it should be normalized.
+            Required fields are 'db_name', 'db_folder' and
+            'normalization_constants'.
+        setpoint_settings: Dictionary with information about how to compute
+            setpoints. Required fields are 'gates_to_sweep' and
+            'voltage_precision'.
+        readout_methods: Dictionary mapping string identifiers such as
+            'dc_current' to QCoDeS parameters measuring/returning the desired
+            quantity (e.g. current throught the device).
+        current_ranges: List of voltages ranges (tuples of floats) to measure.
+        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+            which gates don't blow up.
+        fit_class: Abstract property, to be specified in child classes. It is
+            the class that should perform the data fitting, e.g. PinchoffFit.
     """
-    readout_methods = {'dc_current': qc.Parameter,
-                    'dc_sensor': qc.Parameter}
-    }
-    setpoint_settings = {
-        'voltage_precision':
-        'gates_to_sweep':
-    }
-    measurement_options = {
-        'dc_current': {'delay': 0.1,
-                        'inter_delay': 0.1,
-    }
-    }
-    data_settings = {
-        'db_name': '',
-        'normalization_constants': {},
-        'db_folder': '',
-    }
-    fit_options = {},
-    """
+
     def __init__(
         self,
         stage: str,
         data_settings: Dict[str, Any],
         setpoint_settings: Dict[str, Any],
         readout_methods: Dict[str, qc.Parameter],
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        update_settings: bool = True,
-        fit_options: Optional[Dict[str, Any]] = None,
     ) -> None:
-        self._D = data_dimensions[stage]
+        """Initializes the base class of a tuning stage. Voltages to sweep and
+        safety voltages are determined from the list of gates in
+        setpoint_settings.
+
+        Args:
+            stage: String identifier indicating which stage it implements, e.g.
+                gatecharacterization.
+            data_settings: Dictionary with information about data, e.g. where it
+                should be saved and how it should be normalized.
+                Required fields are 'db_name', 'db_folder' and
+                'normalization_constants'.
+            setpoint_settings: Dictionary with information about how to compute
+                setpoints. Fie
+            readout_methods: Dictionary mapping string identifiers such as
+                'dc_current' to QCoDeS parameters measuring/returning the
+                desired quantity (e.g. current throught the device).
+        """
+
+        self.stage = stage
         self.data_settings = data_settings
         self.setpoint_settings = setpoint_settings
         self.readout_methods = readout_methods
-        self.measurement_options = measurement_options
-        if fit_options is None:
-            fit_options = {}
-        self.fit_options = fit_options
-
-        self.stage = stage
-
-        self.update_settings = update_settings
 
         self.current_ranges: List[Tuple[float, float]] = []
         self.safety_ranges: List[Tuple[float, float]] = []
-        self.current_setpoints: List[List[float]] = []
-        self.max_count = 10
 
         for gate in self.setpoint_settings['gates_to_sweep']:
-            if not gate.current_valid_range():
+            curr_rng = gate.current_valid_range()
+            sfty_rng = gate.safety_range()
+            if not curr_rng:
                 logger.warning(
-                    "No current valid ranges for "
-                    + gate.name
-                    + " given. Taking entire range."
+                    "No current valid ranges for " + gate.name + ". "
+                    + "Taking safety range."
                 )
-                curr_rng = gate.safety_range()
+                if isinstance(sfty_rng, list):
+                    sfty_rng = tuple(sfty_rng)
+                curr_rng = sfty_rng
 
-            else:
-                # sweep to max ranges if current valid range is close to save
-                # us a potential second 2D sweep
-                curr_rng = np.array(gate.current_valid_range())
-                sfty_rng = np.array(gate.safety_range())
-
-                close = np.isclose(curr_rng, sfty_rng, 0.05)
-                for idx, isclose in enumerate(close):
-                    if isclose:
-                        curr_rng[idx] = sfty_rng[idx]
-                if isinstance(curr_rng, np.ndarray):
-                    curr_rng = curr_rng.tolist()
-
-            gate.current_valid_range(curr_rng)
             self.current_ranges.append(curr_rng)
-            self.safety_ranges.append(gate.safety_range())
+            self.safety_ranges.append(sfty_rng)
 
     @property
     @abstractmethod
     def fit_class(self):
-        """"""
+        """To be specified in child classes. It is  """
         pass
 
     @abstractmethod
@@ -135,6 +124,7 @@ class TuningStage(metaclass=ABCMeta):
         n_iterations: int,
     ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
         """ """
+        pass
 
     @abstractmethod
     def verify_classification_result(
@@ -142,6 +132,15 @@ class TuningStage(metaclass=ABCMeta):
         ml_result: Dict[str, int],
     ) -> bool:
         """ """
+        pass
+
+    @abstractmethod
+    def machine_learning_task(
+        self,
+        run_id: int,
+    ) -> Dict[str, Any]:
+        """ """
+        pass
 
     def save_machine_learning_result(
         self,
@@ -163,15 +162,7 @@ class TuningStage(metaclass=ABCMeta):
                 result_value,
             )
 
-    @abstractmethod
-    def machine_learning_task(self, run_id) -> Dict[str, Any]:
-        """ """
-
     def clean_up(self) -> None:
-        """"""
-        pass
-
-    def additional_post_measurement_actions(self) -> None:
         """"""
         pass
 
@@ -212,6 +203,7 @@ class TuningStage(metaclass=ABCMeta):
         print_tuningstage_status(tuning_result)
 
     def prepare_nt_metadata(self) -> Dict[str, Any]:
+        """ """
         nt_meta = prepare_metadata(
             self.setpoint_settings['gates_to_sweep'][0].parent.name,
             self.data_settings['normalization_constants'],
@@ -239,7 +231,9 @@ class TuningStage(metaclass=ABCMeta):
 
     def run_stage(
         self,
-        plot_result: Optional[bool] = True,
+        iterate: bool = True,
+        max_iterations: int = 10,
+        plot_result: bool = True,
     ) -> TuningResult:
         """"""
 
@@ -260,6 +254,8 @@ class TuningStage(metaclass=ABCMeta):
             self.save_machine_learning_result,
             self.verify_classification_result,
         ]
+        if not iterate:
+            max_iterations = 1
 
         tuning_result = iterate_stage(
             self.stage,
@@ -269,7 +265,7 @@ class TuningStage(metaclass=ABCMeta):
             run_stage_tasks,  # type: ignore
             self.conclude_iteration,
             partial(self.show_result, plot_result),
-            self.max_count,
+            max_iterations,
         )
 
         tuning_result.db_name = self.data_settings['db_name']

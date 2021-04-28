@@ -32,9 +32,7 @@ class GateCharacterization1D(TuningStage):
         setpoint_settings: Dict[str, Any],
         readout_methods: Dict[str, qc.Parameter],
         classifier: Classifier,
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
         fit_options: Optional[Dict[str, Any]] = None,
-        update_settings: bool = True,
         noise_level: float = 0.001,  # compares to normalised signal
     ) -> None:
         """
@@ -45,8 +43,6 @@ class GateCharacterization1D(TuningStage):
             data_settings,
             setpoint_settings,
             readout_methods,
-            measurement_options=measurement_options,
-            update_settings=update_settings,
             fit_options=fit_options,
         )
 
