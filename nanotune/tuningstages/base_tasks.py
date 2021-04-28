@@ -503,7 +503,7 @@ def iterate_stage(
                                     List[str]],
                                  ],
     display_result: Callable[[int, TuningResult], None],
-    n_iterations: int,
+    max_n_iterations: int,
 ) -> TuningResult:
     """Performs several iterations of a run_stage function, a sequence of basic
     tasks of a tuning stage. If desired, and implemented in conclude_iteration,
@@ -520,7 +520,7 @@ def iterate_stage(
             possibly adjusting voltage ranges if needed. Returns a list of
             termination reasons if the current iteration is to be abandoned.
         display_result: Function to show result of the current iteration.
-        n_iterations: Maximum number of iterations to perform abandoning.
+        max_n_iterations: Maximum number of iterations to perform abandoning.
 
     Returns:
         TuningResult: Tuning results of the last iteration, with the dataids
@@ -528,11 +528,11 @@ def iterate_stage(
     """
 
     done = False
-    count = 0
+    current_iteration = 0
     run_ids = []
 
     while not done:
-        count += 1
+        current_iteration += 1
         tuning_result = run_stage(stage, voltage_ranges, *run_stage_tasks)
         run_ids += tuning_result.data_ids
 
@@ -541,7 +541,7 @@ def iterate_stage(
             voltage_ranges,
             safety_voltage_ranges,
             count,
-            n_iterations,
+            max_n_iterations,
         )
         tuning_result.termination_reasons = termination_reasons
 
@@ -564,7 +564,7 @@ def conclude_iteration_with_range_update(
                                       List[Tuple[float, float]], List[str]],
                                      List[Tuple[float, float]]],
     count: int,
-    n_iterations: int,
+    max_n_iterations: int,
 ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
     """Implements a conclude_iteration function for iterate_stage, which
     determines new voltage ranges if the last measurement was not successful.
@@ -579,7 +579,7 @@ def conclude_iteration_with_range_update(
         get_new_current_ranges: Function applying list of range change
             directives and returning new voltage ranges.
         count: Current iteration number.
-        n_iterations: Maximum number of tuning stage runs to perform.
+        max_n_iterations: Maximum number of tuning stage runs to perform.
 
     """
 
@@ -606,9 +606,9 @@ def conclude_iteration_with_range_update(
             )
             done = False
 
-    if count >= n_iterations:
+    if current_iteration >= max_n_iterations:
         done = True
-        termination_reasons.append("max count reached")
+        termination_reasons.append("max current_iteration reached")
 
     return done, new_voltage_ranges, termination_reasons
 
