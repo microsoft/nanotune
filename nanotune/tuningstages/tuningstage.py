@@ -18,7 +18,7 @@ from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint
-from .base_tasks import (  # update docstrings if import path changes
+from .base_tasks import (  # please update docstrings if import path changes
     save_classification_result,
     save_extracted_features,
     set_up_gates_for_measurement,
@@ -33,6 +33,8 @@ from .base_tasks import (  # update docstrings if import path changes
     print_tuningstage_status,
     run_stage,
     iterate_stage,
+    get_current_voltages,
+    set_voltages,
 )
 logger = logging.getLogger(__name__)
 
@@ -111,7 +113,7 @@ class TuningStage(metaclass=ABCMeta):
     @property
     @abstractmethod
     def fit_class(self):
-        """To be specified in child classes. It specifies which data fitting
+        """To be specified in child classes. It is the data fitting
         class should be used to perform a fit.
         """
         pass
@@ -198,23 +200,16 @@ class TuningStage(metaclass=ABCMeta):
 
         save_extracted_features(
             self.fit_class,
-            current_id,
+            run_id,
             self.data_settings['db_name'],
             db_folder=self.data_settings['db_folder'],
         )
         for result_type, result_value in ml_result.items():
             save_classification_result(
-                current_id,
+                run_id,
                 result_type,
                 result_value,
             )
-
-    def clean_up(self) -> None:
-        """Any tasks needed to be performed after all iterations of measurement
-        cycles are done. For example: set voltages back to their initial values.
-        """
-
-        pass
 
     def finish_early(
         self,
@@ -367,6 +362,9 @@ class TuningStage(metaclass=ABCMeta):
         if not iterate:
             max_iterations = 1
 
+        initial_voltages = get_current_voltages(
+            self.setpoint_settings['gates_to_sweep']
+        )
         tuning_result = iterate_stage(
             self.stage,
             self.current_ranges,
@@ -377,10 +375,13 @@ class TuningStage(metaclass=ABCMeta):
             partial(self.show_result, plot_result),
             max_iterations,
         )
+        set_voltages(
+            self.setpoint_settings['gates_to_sweep'],
+            initial_voltages,
+        )
 
         tuning_result.db_name = self.data_settings['db_name']
         tuning_result.db_folder = self.data_settings['db_folder']
 
-        self.clean_up()
         return tuning_result
 

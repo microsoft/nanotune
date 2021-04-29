@@ -55,11 +55,6 @@ class ChargeDiagram(TuningStage):
         self.min_change = 0.1  # in volt
         self.classifiers = classifiers
 
-    def clean_up(self) -> None:
-        """"""
-        for ig, gate in enumerate(self.setpoint_settings['gates_to_sweep']):
-            gate.dc_voltage(self.init_gate_values[ig])
-
     def check_quality(self) -> bool:
         """
         Checks quality of segments of a dataset. Returns true if any segment
