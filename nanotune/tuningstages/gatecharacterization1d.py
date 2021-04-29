@@ -60,12 +60,12 @@ class GateCharacterization1D(TuningStage):
         setpoint_settings: Dict[str, Any],
         readout_methods: Dict[str, qc.Parameter],
         classifier: Classifier,
-        fit_options: Optional[Dict[str, Any]] = None,
         noise_level: float = 0.001,  # compares to normalised signal
         main_readout_method: str = 'dc_current',
         voltage_interval_to_track = 0.3,
     ) -> None:
-        """
+        """Initializes a gate characterization tuning stage.
+
         Args:
             stage: String identifier indicating which stage it implements, e.g.
                 gatecharacterization.
