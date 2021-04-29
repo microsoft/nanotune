@@ -544,7 +544,7 @@ def iterate_stage(
             tuning_result,
             voltage_ranges,
             safety_voltage_ranges,
-            count,
+            current_iteration,
             max_n_iterations,
         )
         tuning_result.termination_reasons = termination_reasons
@@ -567,7 +567,7 @@ def conclude_iteration_with_range_update(
     get_new_current_ranges: Callable[[List[Tuple[float, float]],
                                       List[Tuple[float, float]], List[str]],
                                      List[Tuple[float, float]]],
-    count: int,
+    current_iteration: int,
     max_n_iterations: int,
 ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
     """Implements a conclude_iteration function for iterate_stage, which
@@ -582,7 +582,7 @@ def conclude_iteration_with_range_update(
             indicating how voltages need to be changed.
         get_new_current_ranges: Function applying list of range change
             directives and returning new voltage ranges.
-        count: Current iteration number.
+        current_iteration: Current iteration number.
         max_n_iterations: Maximum number of tuning stage runs to perform.
 
     """
@@ -617,13 +617,58 @@ def conclude_iteration_with_range_update(
     return done, new_voltage_ranges, termination_reasons
 
 
+def get_current_voltages(
+    gates: List[nt.Gate],
+) -> List[float]:
+    """Returns a list of voltages set to the gates in ``gates``.
+
+    Args:
+        gates: List of gates, i.e. instances of nt.Gate.
+
+    Returns:
+        list: List of gate voltages, in the same order as gates in `gates``.
+    """
+
+    current_voltages = []
+    for gate in gates:
+        current_voltages.append(gate.dc_voltage)
+    return current_voltages
+
+
+def set_voltages(
+    gates: List[nt.Gate],
+    voltages_to_set: List[float],
+) -> None:
+    """Set voltages in ``voltages_to_set`` to gates in ``gates``.
+
+    Args:
+        gates: List of gates, i.e. instances of nt.Gate.
+        voltages_to_set: List of voltages, in the same order as gates in
+            ``gates``.
+    """
+
+    for gate, voltage in zip(gates, voltages_to_set):
+        gate.dc_voltage(voltage)
+
+
 def get_fit_range_update_directives(
     fit_class: Type[DataFit],
     run_id: int,
     db_name: str,
     db_folder: Optional[str],
 ) -> List[str]:
-    """ """
+    """Returns voltage range update directives determined from a fit.
+
+    Args:
+        fit_class: Data fit class to use for fitting.
+        run_id: QCoDeS data run ID.
+        db_name: Database name.
+        db_folder: Path to folder where database is saved.
+
+    Returns:
+        list: List of strings indicating in which direction voltage ranges of
+            the gates swept need to be changed.
+    """
 
     fit = fit_class(
         run_id,
