@@ -100,20 +100,6 @@ def get_range_directives_gatecharacterization(
     return range_update_directives, issues
 
 
-def set_back_gate(
-    gate: Gate,
-) -> None:
-    """Set gate voltage to the upper safety value. Can be used for example after
-    a gate characterization, to ensure that subsequent characterizations are not
-    affected by other gates being set to negative voltages.
-
-    Args:
-        gate: nanotune Gate instance corresponding to a physical gate.
-
-    """
-    gate.dc_voltage(gate.safety_range()[1])
-
-
 def finish_early_pinched_off(
     last_measurement_strength: float,
     normalization_constant: Tuple[float, float],
