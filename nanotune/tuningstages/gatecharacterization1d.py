@@ -17,7 +17,6 @@ from .base_tasks import ( # please update docstrings if import path changes
 from .gatecharacterization_tasks import (
     get_new_gatecharacterization_range,
     get_range_directives_gatecharacterization,
-    set_gate_to_highest,
     finish_early_pinched_off,
 )
 
@@ -40,7 +39,7 @@ class GateCharacterization1D(TuningStage):
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
-        current_ranges: List of voltages ranges (tuples of floats) to measure.
+        current_voltage_ranges: List of voltages ranges (tuples of floats) to measure.
         safety_ranges: List of satefy voltages ranges, i.e. safety limits within
             which gates don't blow up.
         classifier: Pre-trained nt.Classifier predicting the quality of a
@@ -115,7 +114,10 @@ class GateCharacterization1D(TuningStage):
         """
         return PinchoffFit
 
-    def machine_learning_task(self, run_id) -> Dict[str, Any]:
+    def machine_learning_task(
+        self,
+        run_id: int,
+    ) -> Dict[str, Any]:
         """Executes the post-measurement machine learning task, a binary
         classification predicting the quality of the measurement. The
         result is saved in a dictionary with 'quality' and 'regime' keys, the
@@ -159,7 +161,7 @@ class GateCharacterization1D(TuningStage):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        voltage_ranges: List[Tuple[float, float]],
+        current_voltage_ranges: List[Tuple[float, float]],
         safety_voltage_ranges: List[Tuple[float, float]],
         current_iteration: int,
         max_n_iterations: int,
@@ -171,12 +173,12 @@ class GateCharacterization1D(TuningStage):
         ``conclude_iteration`` determines whether another iteration should take
         place and which voltage ranges need to be measured.
         It wraps conclude_iteration_with_range_update in .base_tasks.py and
-        resets self._recent_readout_output. self._recent_readout_output is used
-        in self.finish_early to detect a pinched-off regime.
+        resets self._recent_readout_output. ``self._recent_readout_output`` is
+        used in ``self.finish_early`` to detect a pinched-off regime.
 
         Args:
             tuning_result: Result of the last run_stage measurement cycle.
-            voltage_ranges: Voltage ranges last swept.
+            current_voltage_ranges: Voltage ranges last swept.
             safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
                 range that could be swept.
             current_iteration: Number of current iteration.
@@ -194,11 +196,11 @@ class GateCharacterization1D(TuningStage):
         new_voltage_ranges,
         termination_reasons) = conclude_iteration_with_range_update(
             tuning_result,
-            voltage_ranges,
+            current_voltage_ranges,
             safety_voltage_ranges,
             self.get_range_update_directives,
             get_new_gatecharacterization_range,
-            count,
+            current_iteration,
             max_n_iterations,
         )
         self._recent_readout_output = []
@@ -207,26 +209,26 @@ class GateCharacterization1D(TuningStage):
     def get_range_update_directives(
         self,
         run_id: int,
-        current_ranges: List[Tuple[float, float]],
+        current_voltage_ranges: List[Tuple[float, float]],
         safety_ranges: List[Tuple[float, float]],
         ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data
-        fit using get_fit_range_update_directives defined in .base_tasks.py and
-        then checks if they can be put into action using
-        get_range_directives_gatecharacterization defined in
+        fit using ``get_fit_range_update_directives`` defined in .base_tasks.py
+        and then checks if they can be put into action using
+        ``get_range_directives_gatecharacterization`` defined in
         gatecharacterization_tasks.py. The check looks at whether safety ranges
         have been reached already, or whether a voltage range extension is
         possible.
 
         Args:
             run_id: QCoDeS data run ID.
-            current_ranges: Last voltage range swept.
+            current_voltage_ranges: Last voltage range swept.
             safety_ranges: Safety range of the gate swept.
 
         """
-        if isinstance(current_ranges, tuple):
-            current_ranges = [current_ranges]
+        if isinstance(current_voltage_ranges, tuple):
+            current_voltage_ranges = [current_voltage_ranges]
         if isinstance(safety_ranges, tuple):
             safety_ranges = [safety_ranges]
 
@@ -239,7 +241,7 @@ class GateCharacterization1D(TuningStage):
         (range_update_directives,
          issues) = get_range_directives_gatecharacterization(
             fit_range_update_directives,
-            current_ranges,
+            current_voltage_ranges,
             safety_ranges,
         )
 

@@ -484,7 +484,7 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
-    voltage_ranges: List[Tuple[float, float]],
+    current_voltage_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
     run_stage: Callable[[str,
                          List[Tuple[float, float]],
@@ -517,7 +517,7 @@ def iterate_stage(
 
     Args:
         stage: Name/indentifier of the tuning stage.
-        voltage_ranges: List of voltages ranges to sweep.
+        current_voltage_ranges: List of voltages ranges to sweep.
         run_stage: Function executing the sequence of steps of a tuning stage.
         run_stage_tasks: All input functions of run_stage.
         conclude_iteration: Function checking the outcome of an iteration and
@@ -537,12 +537,12 @@ def iterate_stage(
 
     while not done:
         current_iteration += 1
-        tuning_result = run_stage(stage, voltage_ranges, *run_stage_tasks)
+        tuning_result = run_stage(stage, current_voltage_ranges, *run_stage_tasks)
         run_ids += tuning_result.data_ids
 
-        done, voltage_ranges, termination_reasons = conclude_iteration(
+        done, current_voltage_ranges, termination_reasons = conclude_iteration(
             tuning_result,
-            voltage_ranges,
+            current_voltage_ranges,
             safety_voltage_ranges,
             current_iteration,
             max_n_iterations,
@@ -618,7 +618,7 @@ def conclude_iteration_with_range_update(
 
 
 def get_current_voltages(
-    gates: List[nt.Gate],
+    gates: List[Gate],
 ) -> List[float]:
     """Returns a list of voltages set to the gates in ``gates``.
 
@@ -631,12 +631,12 @@ def get_current_voltages(
 
     current_voltages = []
     for gate in gates:
-        current_voltages.append(gate.dc_voltage)
+        current_voltages.append(gate.dc_voltage())
     return current_voltages
 
 
 def set_voltages(
-    gates: List[nt.Gate],
+    gates: List[Gate],
     voltages_to_set: List[float],
 ) -> None:
     """Set voltages in ``voltages_to_set`` to gates in ``gates``.
