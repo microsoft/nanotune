@@ -138,7 +138,7 @@ typing-extensions==3.7.4.3
 urllib3==1.26.4
 wcwidth==0.2.5
 webencodings==0.5.1
-websockets==8.1
+websockets==9.0.1
 Werkzeug==1.0.1
 widgetsnbextension==3.5.1
 wrapt==1.12.1
