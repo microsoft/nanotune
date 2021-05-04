@@ -1,6 +1,6 @@
 {
     "username": "nt_user",
-    "main_db": "experiments.db",
+    "db_name": "experiments.db",
     "db_folder": ".",
     "device": {
         "doubledot_2D": ["top_barrier", "left_barrier", "left_plunger",
