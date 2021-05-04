@@ -8,14 +8,22 @@ import time
 import logging
 import datetime
 import numpy as np
-from math import floor
 from string import Template
 from typing import (
-    Optional, Tuple, List, Dict, Any, Sequence, Union, Generator,
-    Callable, Type,
+    Optional,
+    Tuple,
+    List,
+    Dict,
+    Any,
+    Sequence,
+    Union,
+    Generator,
+    Callable,
+    Type,
 )
 from contextlib import contextmanager
 import matplotlib.pyplot as plt
+from sqlite3 import OperationalError
 
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
@@ -49,7 +57,10 @@ def save_classification_result(
     """
 
     ds = load_by_id(run_id)
-    nt_meta = json.loads(ds.get_metadata(meta_tag))
+    try:
+        nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
+    except (RuntimeError, TypeError, OperationalError) as r:
+        nt_meta = {}
 
     if not result_type.startswith("predicted"):
         result_type = "predicted_" + result_type
@@ -60,8 +71,8 @@ def save_classification_result(
 def check_measurement_quality(
     classifier: Classifier,
     run_id: int,
-    db_name: str,
-    db_folder: str,
+    db_name: Optional[str] = None,
+    db_folder: Optional[str] = None,
 ) -> bool:
     """Applies supplied classifer to determine a measurement's quality.
 
@@ -74,6 +85,11 @@ def check_measurement_quality(
     Returns:
         bool: Predicted measurement quality.
     """
+    if db_name is None:
+        db_name, db_folder = nt.get_database()
+    elif db_folder is None:
+        _, db_folder = nt.get_database()
+
     quality = classifier.predict(run_id, db_name, db_folder)
     return any(quality)
 
@@ -159,7 +175,7 @@ def set_gate_post_delay(
     post_delay: Union[float, List[float]],
 ) -> None:
     """
-    Set gate post delay before a measurement to ensure teh electron gas settles
+    Set gate post delay before a measurement to ensure the electron gas settles
     before taking a measurement point.
 
     Args:
@@ -177,7 +193,7 @@ def set_gate_post_delay(
 
 def swap_range_limits_if_needed(
     gates_to_sweep: List[Gate],
-    current_ranges: List[Tuple[float, float]],
+    current_voltage_ranges: List[Tuple[float, float]],
 ) -> List[Tuple[float, float]]:
     """Saw start and end points of a sweep depending on the current voltages set
     on gates. To save time and avoid unecessary ramping.
@@ -193,8 +209,8 @@ def swap_range_limits_if_needed(
         list: Voltage ranges to sweep.
     """
 
-    new_ranges = copy.deepcopy(current_ranges)
-    for gate_idx, c_range in enumerate(current_ranges):
+    new_ranges = copy.deepcopy(current_voltage_ranges)
+    for gate_idx, c_range in enumerate(current_voltage_ranges):
         diff1 = abs(c_range[1] - gates_to_sweep[gate_idx].dc_voltage())
         diff2 = abs(c_range[0] - gates_to_sweep[gate_idx].dc_voltage())
 
@@ -222,7 +238,7 @@ def compute_linear_setpoints(
     setpoints_all = []
     for gg, c_range in enumerate(ranges):
         delta = abs(c_range[1] - c_range[0])
-        n_points = int(floor(delta / voltage_precision))
+        n_points = int(round(delta / voltage_precision))
         setpoints = np.linspace(c_range[0], c_range[1], n_points)
         setpoints_all.append(setpoints)
     return setpoints_all
@@ -311,9 +327,10 @@ def get_elapsed_time(
     logged/printed.
 
     Args:
-        start_time:
-        end_time:
-        format_template: A string Template
+        start_time: Start time of event which is being timed.
+        end_time: Time at which the timed event finished.
+        format_template: A string Template which needs to contain '$hours',
+            '$minutes' and $'seconds' as substrings.
 
     Returns:
         float: Elapsed time in seconds,

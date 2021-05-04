@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, List, Tuple, Sequence, Any
 import numpy as np
 import xarray as xr
+from sqlite3 import OperationalError
 
 from qcodes.dataset.experiment_container import load_by_id
 
@@ -58,7 +59,7 @@ class DataFit(ABC, Dataset):
         ds = load_by_id(self.qc_run_id)
         try:
             nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-        except (RuntimeError, TypeError) as r:
+        except (RuntimeError, TypeError, OperationalError) as r:
             nt_meta = {}
         nt_meta["features"] = self.features
         ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
