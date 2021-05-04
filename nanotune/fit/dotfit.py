@@ -199,7 +199,7 @@ class DotFit(DataFit):
         self,
         segment_db_name: str,
         segment_db_folder: Optional[str] = None,
-    ) -> Dict[int, Dict[str, Dict[str, Tuple[float, float]]]]:
+    ) -> Dict[int, Dict[str, Any]]:
         """
         Save each mesh in a new dataset in given databases
 
@@ -225,7 +225,7 @@ class DotFit(DataFit):
 
 
         original_params = self.qc_parameters
-        segment_info: Dict[int, Dict[str, Dict[str, Tuple[float, float]]]] = {}
+        segment_info: Dict[int, Dict[str, Any]] = {}
 
         with nt.switch_database(segment_db_name, segment_db_folder):
             for segment in self.segmented_data:
@@ -244,7 +244,7 @@ class DotFit(DataFit):
                     paramtype="array",
                 )
                 result: List[List[Tuple[str, np.ndarray]]] = []
-                ranges: Dict[str, Dict[str, Tuple[float, float]]] = {}
+                ranges: List[Tuple[float, float()]] = []
                 m_params = [str(it) for it in list(segment.data_vars)]
                 for ip, param_name in enumerate(m_params):
                     coord_names = list(segment.coords)
@@ -257,9 +257,7 @@ class DotFit(DataFit):
 
                     range_x = (np.min(voltage_x), np.max(voltage_x))
                     range_y = (np.min(voltage_y), np.max(voltage_y))
-                    ranges[param_name] = {}
-                    ranges[param_name]["range_x"] = range_x
-                    ranges[param_name]["range_y"] = range_y
+                    ranges = [range_x, range_y]
 
                     setpoints = self.raw_data[param_name].depends_on
                     meas.register_custom_parameter(
@@ -295,7 +293,8 @@ class DotFit(DataFit):
                         + "ID: "
                         + str(datasaver.run_id)
                     )
-                    segment_info[datasaver.run_id] = ranges
+                    segment_info[datasaver.run_id] = {}
+                    segment_info[datasaver.run_id]['voltage_ranges'] = ranges
 
         return segment_info
 
