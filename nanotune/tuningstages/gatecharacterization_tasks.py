@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_new_gatecharacterization_range(
-    current_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
     range_update_directives: List[str],
 ) -> List[Tuple[float, float]]:
@@ -33,10 +33,10 @@ def get_new_gatecharacterization_range(
         Tuple: New voltage range.
     """
 
-    assert len(current_voltage_ranges) == 1
+    assert len(current_valid_ranges) == 1
     assert len(safety_voltage_ranges) == 1
 
-    new_min, new_max = current_voltage_ranges[0]
+    new_min, new_max = current_valid_ranges[0]
     safety_range = safety_voltage_ranges[0]
 
     for directive in range_update_directives:
@@ -53,7 +53,7 @@ def get_new_gatecharacterization_range(
 
 def get_range_directives_gatecharacterization(
     fit_range_update_directives: List[str],
-    current_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
 ) -> Tuple[List[str], List[str]]:
     """Determines voltage range directives to update ranges for a subsequent
@@ -73,7 +73,7 @@ def get_range_directives_gatecharacterization(
     """
 
     safety_v_range = safety_voltage_ranges[0]
-    current_v_range = current_voltage_ranges[0]
+    current_v_range = current_valid_ranges[0]
 
     neg_range_avail = abs(current_v_range[0] - safety_v_range[0])
     pos_range_avail = abs(current_v_range[1] - safety_v_range[1])

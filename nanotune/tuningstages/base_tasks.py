@@ -200,25 +200,25 @@ def set_post_delay(
 
 def swap_range_limits_if_needed(
     current_voltages: List[float],
-    current_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: List[Tuple[float, float]],
 ) -> List[Tuple[float, float]]:
     """Saw start and end points of a sweep depending on the current voltages set
     on gates. To save time and avoid unnecessary ramping.
-    Order of current_voltages and current_voltage_ranges has to match, i.e. the
+    Order of current_voltages and current_valid_ranges has to match, i.e. the
     voltage value and range at a particular index come from the same voltage
     parameter/gate.
 
     Args:
         current_voltages: List of voltages currently set to the voltage
             parameters/gates of interest.
-        current_voltage_ranges: Current voltages ranges to sweep.
+        current_valid_ranges: Current voltages ranges to sweep.
 
     Returns:
         list: Voltage ranges to sweep.
     """
 
-    new_ranges = copy.deepcopy(current_voltage_ranges)
-    for idx, c_range in enumerate(current_voltage_ranges):
+    new_ranges = copy.deepcopy(current_valid_ranges)
+    for idx, c_range in enumerate(current_valid_ranges):
         diff1 = abs(c_range[1] - current_voltages[idx])
         diff2 = abs(c_range[0] - current_voltages[idx])
 
@@ -515,7 +515,7 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
-    current_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
     run_stage: Callable[[str,
                          List[Tuple[float, float]],
@@ -548,7 +548,7 @@ def iterate_stage(
 
     Args:
         stage: Name/indentifier of the tuning stage.
-        current_voltage_ranges: List of voltages ranges to sweep.
+        current_valid_ranges: List of voltages ranges to sweep.
         run_stage: Function executing the sequence of steps of a tuning stage.
         run_stage_tasks: All input functions of run_stage.
         conclude_iteration: Function checking the outcome of an iteration and
@@ -568,12 +568,12 @@ def iterate_stage(
 
     while not done:
         current_iteration += 1
-        tuning_result = run_stage(stage, current_voltage_ranges, *run_stage_tasks)
+        tuning_result = run_stage(stage, current_valid_ranges, *run_stage_tasks)
         run_ids += tuning_result.data_ids
 
-        done, current_voltage_ranges, termination_reasons = conclude_iteration(
+        done, current_valid_ranges, termination_reasons = conclude_iteration(
             tuning_result,
-            current_voltage_ranges,
+            current_valid_ranges,
             safety_voltage_ranges,
             current_iteration,
             max_n_iterations,
@@ -589,7 +589,7 @@ def iterate_stage(
 
 def conclude_iteration_with_range_update(
     tuning_result: TuningResult,
-    current_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
     get_range_update_directives: Callable[[int,
                                            List[Tuple[float, float]],
@@ -606,7 +606,7 @@ def conclude_iteration_with_range_update(
 
     Args:
         tuning_result: Tuning result of current run_stage iteration.
-        current_voltage_ranges: List of the last voltage ranges swep.
+        current_valid_ranges: List of the last voltage ranges swep.
         safety_voltage_ranges: List of safety voltages for each voltage
             parameter swept.
         get_range_update_directives: Function to compile a list of directives
@@ -627,7 +627,7 @@ def conclude_iteration_with_range_update(
         (range_update_directives,
          termination_reasons) = get_range_update_directives(
             tuning_result.data_ids[-1],
-            current_voltage_ranges,
+            current_valid_ranges,
             safety_voltage_ranges,
         )
 
@@ -635,7 +635,7 @@ def conclude_iteration_with_range_update(
             done = True
         else:
             new_voltage_ranges = get_new_current_ranges(
-                current_voltage_ranges,
+                current_valid_ranges,
                 safety_voltage_ranges,
                 range_update_directives
             )

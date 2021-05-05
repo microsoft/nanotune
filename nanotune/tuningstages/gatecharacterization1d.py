@@ -34,11 +34,11 @@ class GateCharacterization1D(TuningStage):
             'normalization_constants'.
         setpoint_settings: Dictionary with information about how to compute
             setpoints. Required keys are 'parameters_to_sweep',
-            'safety_voltages', 'current_voltage_ranges' and 'voltage_precision'.
+            'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
-        current_voltage_ranges: List of voltages ranges (tuples of floats) to measure.
+        current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
         safety_ranges: List of satefy voltages ranges, i.e. safety limits within
             which gates don't blow up.
         classifier: Pre-trained nt.Classifier predicting the quality of a
@@ -158,7 +158,7 @@ class GateCharacterization1D(TuningStage):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: List[Tuple[float, float]],
         safety_voltage_ranges: List[Tuple[float, float]],
         current_iteration: int,
         max_n_iterations: int,
@@ -175,7 +175,7 @@ class GateCharacterization1D(TuningStage):
 
         Args:
             tuning_result: Result of the last run_stage measurement cycle.
-            current_voltage_ranges: Voltage ranges last swept.
+            current_valid_ranges: Voltage ranges last swept.
             safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
                 range that could be swept.
             current_iteration: Number of current iteration.
@@ -193,7 +193,7 @@ class GateCharacterization1D(TuningStage):
         new_voltage_ranges,
         termination_reasons) = conclude_iteration_with_range_update(
             tuning_result,
-            current_voltage_ranges,
+            current_valid_ranges,
             safety_voltage_ranges,
             self.get_range_update_directives,
             get_new_gatecharacterization_range,
@@ -206,7 +206,7 @@ class GateCharacterization1D(TuningStage):
     def get_range_update_directives(
         self,
         run_id: int,
-        current_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: List[Tuple[float, float]],
         safety_ranges: List[Tuple[float, float]],
         ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
@@ -220,12 +220,12 @@ class GateCharacterization1D(TuningStage):
 
         Args:
             run_id: QCoDeS data run ID.
-            current_voltage_ranges: Last voltage range swept.
+            current_valid_ranges: Last voltage range swept.
             safety_ranges: Safety range of gate swept.
 
         """
-        if isinstance(current_voltage_ranges, tuple):
-            current_voltage_ranges = [current_voltage_ranges]
+        if isinstance(current_valid_ranges, tuple):
+            current_valid_ranges = [current_valid_ranges]
         if isinstance(safety_ranges, tuple):
             safety_ranges = [safety_ranges]
 
@@ -238,7 +238,7 @@ class GateCharacterization1D(TuningStage):
         (range_update_directives,
          issues) = get_range_directives_gatecharacterization(
             fit_range_update_directives,
-            current_voltage_ranges,
+            current_valid_ranges,
             safety_ranges,
         )
 

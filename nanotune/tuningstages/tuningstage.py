@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 SetpointSettingsDict = TypedDict(
     'Setpoint_setting_type', {
         'parameters_to_sweep': List[qc.Parameter],
-        'current_voltage_ranges': List[Tuple[float, float]],
+        'current_valid_ranges': List[Tuple[float, float]],
         'safety_ranges': List[Tuple[float, float]],
         'voltage_precision': float,
         },
@@ -59,11 +59,11 @@ class TuningStage(metaclass=ABCMeta):
             'normalization_constants'.
         setpoint_settings: Dictionary with information about how to compute
             setpoints. Required keys are 'parameters_to_sweep',
-            'safety_voltages', 'current_voltage_ranges' and 'voltage_precision'.
+            'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
-        current_voltage_ranges: List of voltages ranges (tuples of floats) to measure.
+        current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
         safety_ranges: List of satefy voltages ranges, i.e. safety limits within
             which gates don't blow up.
         fit_class: Abstract property, to be specified in child classes. It is
@@ -89,7 +89,7 @@ class TuningStage(metaclass=ABCMeta):
                 Required fields are 'db_name', 'db_folder' and
                 'normalization_constants'.
             setpoint_settings: Dictionary with information about how to compute
-                setpoints. Required keys are 'current_voltage_ranges',
+                setpoints. Required keys are 'current_valid_ranges',
                 'safety_ranges', 'parameters_to_sweep'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
@@ -101,8 +101,8 @@ class TuningStage(metaclass=ABCMeta):
         self.setpoint_settings = setpoint_settings
         self.readout_methods = readout_methods
 
-        ranges = self.setpoint_settings['current_voltage_ranges']
-        self.current_voltage_ranges = ranges
+        ranges = self.setpoint_settings['current_valid_ranges']
+        self.current_valid_ranges = ranges
         self.safety_ranges = self.setpoint_settings['safety_ranges']
 
     @property
@@ -117,7 +117,7 @@ class TuningStage(metaclass=ABCMeta):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: List[Tuple[float, float]],
         safety_voltage_ranges: List[Tuple[float, float]],
         current_iteration: int,
         max_n_iterations: int,
@@ -133,7 +133,7 @@ class TuningStage(metaclass=ABCMeta):
 
         Args:
             tuning_result: Result of the last run_stage measurement cycle.
-            current_voltage_ranges: Voltage ranges last swept.
+            current_valid_ranges: Voltage ranges last swept.
             safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
                 range that could be swept.
             current_iteration: Number of current iteration.
@@ -225,20 +225,20 @@ class TuningStage(metaclass=ABCMeta):
 
     def compute_setpoints(
         self,
-        current_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: List[Tuple[float, float]],
     ) -> List[List[float]]:
         """Computes setpoints for the next measurement. Unless this method is
         overwritten in a child class, linearly spaced setpoints are computed.
 
         Args:
-            current_voltage_ranges: Voltages ranges to sweep.
+            current_valid_ranges: Voltages ranges to sweep.
 
         Returns:
             list: List of lists with setpoints.
         """
 
         setpoints = compute_linear_setpoints(
-            current_voltage_ranges,
+            current_valid_ranges,
             self.setpoint_settings['voltage_precision'],
         )
         return setpoints
@@ -347,9 +347,9 @@ class TuningStage(metaclass=ABCMeta):
             self.setpoint_settings['parameters_to_sweep']
         )
 
-        self.current_voltage_ranges = swap_range_limits_if_needed(
+        self.current_valid_ranges = swap_range_limits_if_needed(
             initial_voltages,
-            self.current_voltage_ranges,
+            self.current_valid_ranges,
         )
 
         run_stage_tasks = [
@@ -364,7 +364,7 @@ class TuningStage(metaclass=ABCMeta):
 
         tuning_result = iterate_stage(
             self.stage,
-            self.current_voltage_ranges,
+            self.current_valid_ranges,
             self.safety_ranges,
             run_stage,
             run_stage_tasks,  # type: ignore
