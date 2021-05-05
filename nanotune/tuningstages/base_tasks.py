@@ -32,7 +32,6 @@ from qcodes.utils.helpers import NumpyJSONEncoder
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.fit.datafit import DataFit
-from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint
 from nanotune.device_tuner.tuningresult import TuningResult
 logger = logging.getLogger(__name__)
@@ -142,80 +141,89 @@ def get_measurement_features(
 
 @contextmanager
 def set_up_gates_for_measurement(
-    gates_to_sweep: List[Gate],
+    parameters_to_sweep: List[qc.Parameter],
     setpoints: List[List[float]],
 ) -> Generator[None, None, None]:
-    """Context manager setting up nanotune gates for a measurement. It ramps the
-    gates to their first setpoint before deactivating ramping and yielding a
-    generator. At the end, typically after a measurement, ramping is activated
-    again.
-    Set a post_delay optionally, to make sure the electron gas is settled before
-    taking a data point.
+    """Context manager setting up gates before a measurement. It ramps them
+    to their first setpoint before deactivating ramping (if supported) and
+    yields a generator. At the end, typically after a measurement, ramping is
+    activated again. If the input parameters do not belong to a nanotune Gate,
+    ramping is not deactivated.
 
     Args:
-        gates_to_sweep: Gates to sweep in measurement.
-        setpoints: Measurement setpoints
+        parameters_to_sweep: Voltage parameters of gates which are to be swept
+        in the measurement.
+        setpoints: Measurement setpoints.
 
     Returns:
         generator yielding None
     """
 
-    for ig, gate in enumerate(gates_to_sweep):
-        gate.dc_voltage(setpoints[ig][0])
-        gate.use_ramp(False)
+    for idx, param in enumerate(parameters_to_sweep):
+        param(setpoints[idx][0])
+        if hasattr(param.instrument, 'use_ramp'):
+            param.instrument.use_ramp(False)
+        else:
+            logger.info('Not turning off ramping when setting up gates.')
     try:
         yield
     finally:
-        for ig, gate in enumerate(gates_to_sweep):
-            gate.use_ramp(True)
+        for idx, param in enumerate(parameters_to_sweep):
+            if hasattr(param.instrument, 'use_ramp'):
+                param.instrument.use_ramp(True)
 
 
-def set_gate_post_delay(
-    gates_to_sweep: List[Gate],
+def set_post_delay(
+    parameters: List[qc.Parameter],
     post_delay: Union[float, List[float]],
 ) -> None:
     """
-    Set gate post delay before a measurement to ensure the electron gas settles
-    before taking a measurement point.
+    Set qc.Parameter post delay. Can be used before a measurement to set a
+    waiting time after a voltage has been set to ensure the electron gas
+    settles before taking a measurement point.
 
     Args:
-        gates_to_sweep: Gates to sweep in measurement.
-        post_delay
+        parameters: List of QCoDeS parameters.
+        post_delay: Post delay to set. Single value input if all parameters
+            should have the set post_delay, list of values if they require
+            different values.
     """
-    if isinstance(post_delay, float):
-        post_delay = len(gates_to_sweep) * [post_delay]
-    else:
-        assert len(post_delay) == len(gates_to_sweep)
 
-    for ig, gate in enumerate(gates_to_sweep):
-        gate.post_delay(post_delay[ig])
+    if isinstance(post_delay, float):
+        post_delay = len(parameters) * [post_delay]
+    else:
+        assert len(post_delay) == len(parameters)
+
+    for ig, param in enumerate(parameters):
+        param.post_delay(post_delay[ig])
 
 
 def swap_range_limits_if_needed(
-    gates_to_sweep: List[Gate],
+    current_voltages: List[float],
     current_voltage_ranges: List[Tuple[float, float]],
 ) -> List[Tuple[float, float]]:
     """Saw start and end points of a sweep depending on the current voltages set
-    on gates. To save time and avoid unecessary ramping.
-    Order of current_ranges needs to be the same as the order of gates in
-    gates_to_sweep.
+    on gates. To save time and avoid unnecessary ramping.
+    Order of current_voltages and current_voltage_ranges has to match, i.e. the
+    voltage value and range at a particular index come from the same voltage
+    parameter/gate.
 
     Args:
-        gates_to_sweep: Gates to sweep in measurement.
-        current_ranges: Current voltages ranges to sweep. The order in which
-            ranges appear in the list is the as in gates_to_sweep.
+        current_voltages: List of voltages currently set to the voltage
+            parameters/gates of interest.
+        current_voltage_ranges: Current voltages ranges to sweep.
 
     Returns:
         list: Voltage ranges to sweep.
     """
 
     new_ranges = copy.deepcopy(current_voltage_ranges)
-    for gate_idx, c_range in enumerate(current_voltage_ranges):
-        diff1 = abs(c_range[1] - gates_to_sweep[gate_idx].dc_voltage())
-        diff2 = abs(c_range[0] - gates_to_sweep[gate_idx].dc_voltage())
+    for idx, c_range in enumerate(current_voltage_ranges):
+        diff1 = abs(c_range[1] - current_voltages[idx])
+        diff2 = abs(c_range[0] - current_voltages[idx])
 
         if diff1 < diff2:
-            new_ranges[gate_idx] = (c_range[1], c_range[0])
+            new_ranges[idx] = (c_range[1], c_range[0])
 
     return new_ranges
 
@@ -229,7 +237,7 @@ def compute_linear_setpoints(
     a minimum resolution required for ML purposes.
 
     Args:
-        ranges: Voltage ranges for all gates to sweep.
+        ranges: Voltage ranges for all voltage parameters/gates to sweep.
 
     Returns:
         list: Linearly spaced setpoints.
@@ -286,6 +294,7 @@ def add_metadata_to_dict(
     Returns:
         dict: New metadata dictionary.
     """
+
     new_meta_dict = copy.deepcopy(meta_dict)
     for key, value in additional_metadata.items():
         try:
@@ -378,18 +387,23 @@ def print_tuningstage_status(
     Args:
         tuning_result: TuningResult instance.
     """
+    quality = 'Good' if tuning_result.success else 'Poor'
+    if not tuning_result.termination_reasons:
+        t_reasons = "None"
+    else:
+        t_reasons = ", ".join(tuning_result.termination_reasons)
 
     msg = (
-        f"{tuning_result.stage}: {tuning_result.success} result measured.\n",
-        f"predicted regime: {tuning_result.ml_result['regime']}\n",
-        "termination reasons: " + ", ".join(tuning_result.termination_reasons)
+        f"{tuning_result.stage}: {quality} result measured. " \
+        f"Regime: {tuning_result.ml_result['regime']}. " \
+        "Termination reasons: " + t_reasons + ". "
     )
     logger.info(msg)
     print(msg)
 
 
 def take_data_add_metadata(
-    gates_to_sweep: List[Gate],
+    parameters_to_sweep: List[qc.Parameter],
     parameters_to_measure: List[qc.Parameter],
     setpoints: List[List[float]],
     pre_measurement_metadata: Dict[str, Any],
@@ -397,11 +411,11 @@ def take_data_add_metadata(
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
     meta_tag: str = nt.meta_tag,
 ) -> int:
-    """Takes 1D or 2D data and saves relevant metadata into the dataset.
+    """Takes 1D or 2D data and saves relevant metadata to the dataset.
 
     Args:
-        gates_to_sweep: List of nt.Gate to sweep.
-        parameters_to_measure: List of qc.Parameters to read out.
+        parameters_to_sweep: List of qc.Parameters to sweep.
+        parameters_to_measure: List of qc.Parameter to read out.
         setpoints: Voltage setpoints to measure.
         pre_measurement_metadata: Metadata dictionary to be saved before a
             measurement starts.
@@ -418,9 +432,9 @@ def take_data_add_metadata(
     """
 
     start_time = time.time()
-    with set_up_gates_for_measurement(gates_to_sweep, setpoints):
+    with set_up_gates_for_measurement(parameters_to_sweep, setpoints):
         run_id, n_measured = take_data(
-            [gate.dc_voltage for gate in gates_to_sweep],
+            parameters_to_sweep,
             parameters_to_measure,
             setpoints,
             finish_early_check=finish_early_check,
@@ -635,37 +649,35 @@ def conclude_iteration_with_range_update(
 
 
 def get_current_voltages(
-    gates: List[Gate],
+    parameters: List[qc.Parameter],
 ) -> List[float]:
-    """Returns a list of voltages set to the gates in ``gates``.
+    """Returns the values set to parameters in ``parameters``.
 
     Args:
-        gates: List of gates, i.e. instances of nt.Gate.
+        parameters: List of QCoDeS parameters, i.e. voltage parameters of gates.
 
     Returns:
-        list: List of gate voltages, in the same order as gates in `gates``.
+        list: Values set the input parameters are at, in the same order as
+        parameters in ``parameters``.
     """
 
-    current_voltages = []
-    for gate in gates:
-        current_voltages.append(gate.dc_voltage())
-    return current_voltages
+    return [param() for param in parameters]
 
 
 def set_voltages(
-    gates: List[Gate],
+    parameters: List[qc.Parameter],
     voltages_to_set: List[float],
 ) -> None:
-    """Set voltages in ``voltages_to_set`` to gates in ``gates``.
+    """Set voltages in ``voltages_to_set`` to voltage parameters in
+    ``parameters``.
 
     Args:
-        gates: List of gates, i.e. instances of nt.Gate.
-        voltages_to_set: List of voltages, in the same order as gates in
-            ``gates``.
+        parameters: List of QCoDeS parameters, i.e. voltage parameters of gates.
+        voltages_to_set: List of voltages, in the same order as parameters in
+            ``parameters``.
     """
 
-    for gate, voltage in zip(gates, voltages_to_set):
-        gate.dc_voltage(voltage)
+    [param(value) for param, value in zip(parameters, voltages_to_set)]
 
 
 def get_fit_range_update_directives(

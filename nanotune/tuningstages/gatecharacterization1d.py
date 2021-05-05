@@ -4,9 +4,8 @@ import copy
 import qcodes as qc
 
 import nanotune as nt
-from nanotune.device.gate import Gate
 from nanotune.fit.pinchofffit import PinchoffFit
-from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.tuningstages.tuningstage import TuningStage, SetpointSettingsDict
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
 from .base_tasks import ( # please update docstrings if import path changes
@@ -34,8 +33,8 @@ class GateCharacterization1D(TuningStage):
             Required fields are 'db_name', 'db_folder' and
             'normalization_constants'.
         setpoint_settings: Dictionary with information about how to compute
-            setpoints. Required fields are 'gates_to_sweep' and
-            'voltage_precision'.
+            setpoints. Required keys are 'parameters_to_sweep',
+            'safety_voltages', 'current_voltage_ranges' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
@@ -49,14 +48,13 @@ class GateCharacterization1D(TuningStage):
         main_readout_method: Readout method to use for early finish check.
         voltage_interval_to_track: Voltage interval over which the measured
             output is checked
-        gate: The gate to sweep, an instance of nt.Gate.
         fit_class: PinchoffFit.
     """
 
     def __init__(
         self,
         data_settings: Dict[str, Any],
-        setpoint_settings: Dict[str, Any],
+        setpoint_settings: SetpointSettingsDict,
         readout_methods: Dict[str, qc.Parameter],
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
@@ -100,12 +98,11 @@ class GateCharacterization1D(TuningStage):
         self.voltage_interval_to_track = voltage_interval_to_track
 
         self._recent_readout_output: List[float] = []
-        if isinstance(self.setpoint_settings['gates_to_sweep'], Gate):
-            gate_list = [self.setpoint_settings['gates_to_sweep']]
-            self.setpoint_settings['gates_to_sweep'] = gate_list
+        params = self.setpoint_settings['parameters_to_sweep']
+        if isinstance(params, qc.Parameter):
+            self.setpoint_settings['parameters_to_sweep'] = [params]
 
-        assert len(self.setpoint_settings['gates_to_sweep']) == 1
-        self.gate = self.setpoint_settings['gates_to_sweep'][0]
+        assert len(self.setpoint_settings['parameters_to_sweep']) == 1
 
     @property
     def fit_class(self):
@@ -224,7 +221,7 @@ class GateCharacterization1D(TuningStage):
         Args:
             run_id: QCoDeS data run ID.
             current_voltage_ranges: Last voltage range swept.
-            safety_ranges: Safety range of the gate swept.
+            safety_ranges: Safety range of gate swept.
 
         """
         if isinstance(current_voltage_ranges, tuple):

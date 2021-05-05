@@ -8,6 +8,7 @@ from abc import ABCMeta, abstractmethod
 from typing import (
     Optional, Tuple, List, Dict, Any, Sequence, Union, Generator, Callable,
 )
+from typing_extensions import TypedDict
 from contextlib import contextmanager
 
 import qcodes as qc
@@ -16,7 +17,6 @@ from qcodes.dataset.experiment_container import load_by_id
 from qcodes.instrument.visa import VisaInstrument
 from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
-from nanotune.device.gate import Gate
 from .take_data import take_data, ramp_to_setpoint
 from .base_tasks import (  # please update docstrings if import path changes
     save_classification_result,
@@ -37,6 +37,14 @@ from .base_tasks import (  # please update docstrings if import path changes
     set_voltages,
 )
 logger = logging.getLogger(__name__)
+SetpointSettingsDict = TypedDict(
+    'Setpoint_setting_type', {
+        'parameters_to_sweep': List[qc.Parameter],
+        'current_voltage_ranges': List[Tuple[float, float]],
+        'safety_ranges': List[Tuple[float, float]],
+        'voltage_precision': float,
+        },
+    )
 
 
 class TuningStage(metaclass=ABCMeta):
@@ -50,8 +58,8 @@ class TuningStage(metaclass=ABCMeta):
             Required fields are 'db_name', 'db_folder' and
             'normalization_constants'.
         setpoint_settings: Dictionary with information about how to compute
-            setpoints. Required fields are 'gates_to_sweep' and
-            'voltage_precision'.
+            setpoints. Required keys are 'parameters_to_sweep',
+            'safety_voltages', 'current_voltage_ranges' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
@@ -66,11 +74,11 @@ class TuningStage(metaclass=ABCMeta):
         self,
         stage: str,
         data_settings: Dict[str, Any],
-        setpoint_settings: Dict[str, Any],
+        setpoint_settings: SetpointSettingsDict,
         readout_methods: Dict[str, qc.Parameter],
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
-        safety voltages are determined from the list of gates in
+        safety voltages are determined from the list of parameters in
         setpoint_settings.
 
         Args:
@@ -81,7 +89,8 @@ class TuningStage(metaclass=ABCMeta):
                 Required fields are 'db_name', 'db_folder' and
                 'normalization_constants'.
             setpoint_settings: Dictionary with information about how to compute
-                setpoints. Fie
+                setpoints. Required keys are 'current_voltage_ranges',
+                'safety_ranges', 'parameters_to_sweep'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -92,23 +101,9 @@ class TuningStage(metaclass=ABCMeta):
         self.setpoint_settings = setpoint_settings
         self.readout_methods = readout_methods
 
-        self.current_voltage_ranges: List[Tuple[float, float]] = []
-        self.safety_ranges: List[Tuple[float, float]] = []
-
-        for gate in self.setpoint_settings['gates_to_sweep']:
-            curr_rng = gate.current_valid_range()
-            sfty_rng = gate.safety_range()
-            if not curr_rng:
-                logger.warning(
-                    "No current valid ranges for " + gate.name + ". "
-                    + "Taking safety range."
-                )
-                if isinstance(sfty_rng, list):
-                    sfty_rng = tuple(sfty_rng)
-                curr_rng = sfty_rng
-
-            self.current_voltage_ranges.append(curr_rng)
-            self.safety_ranges.append(sfty_rng)
+        ranges = self.setpoint_settings['current_voltage_ranges']
+        self.current_voltage_ranges = ranges
+        self.safety_ranges = self.setpoint_settings['safety_ranges']
 
     @property
     @abstractmethod
@@ -279,9 +274,10 @@ class TuningStage(metaclass=ABCMeta):
             dict: Metadata dict with fields known prior to a measurement filled
                 in.
         """
-
+        example_param = self.setpoint_settings['parameters_to_sweep'][0]
+        device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
-            self.setpoint_settings['gates_to_sweep'][0].parent.name,
+            device_name,
             self.data_settings['normalization_constants'],
             self.readout_methods
         )
@@ -302,7 +298,7 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         run_id = take_data_add_metadata(
-            self.setpoint_settings['gates_to_sweep'],
+            self.setpoint_settings['parameters_to_sweep'],
             list(self.readout_methods.values()),
             setpoints,
             finish_early_check=self.finish_early,
@@ -347,8 +343,12 @@ class TuningStage(metaclass=ABCMeta):
             db_folder=self.data_settings['db_folder']
         )
 
+        initial_voltages = get_current_voltages(
+            self.setpoint_settings['parameters_to_sweep']
+        )
+
         self.current_voltage_ranges = swap_range_limits_if_needed(
-            self.setpoint_settings['gates_to_sweep'],
+            initial_voltages,
             self.current_voltage_ranges,
         )
 
@@ -362,9 +362,6 @@ class TuningStage(metaclass=ABCMeta):
         if not iterate:
             max_iterations = 1
 
-        initial_voltages = get_current_voltages(
-            self.setpoint_settings['gates_to_sweep']
-        )
         tuning_result = iterate_stage(
             self.stage,
             self.current_voltage_ranges,
@@ -376,7 +373,7 @@ class TuningStage(metaclass=ABCMeta):
             max_iterations,
         )
         set_voltages(
-            self.setpoint_settings['gates_to_sweep'],
+            self.setpoint_settings['parameters_to_sweep'],
             initial_voltages,
         )
 
