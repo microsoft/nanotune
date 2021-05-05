@@ -94,7 +94,7 @@ pycparser==2.20
 Pygments==2.8.1
 pyparsing==2.4.7
 pyrsistent==0.17.3
-pytest==6.2.3
+pytest==6.2.4
 pytest-cov==2.11.1
 pytest-forked==1.3.0
 pytest-xdist==2.2.1
