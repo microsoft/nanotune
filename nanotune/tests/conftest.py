@@ -151,6 +151,17 @@ def _make_dummy_device(experiment, tmp_path):
 
 
 @pytest.fixture(scope="function", params=["numeric"])
+def qc_dataset_pinchoff(experiment, request):
+    """"""
+    datasaver = save_1Ddata_with_qcodes(generate_pinchoff_data, None)
+
+    try:
+        yield datasaver.dataset
+    finally:
+        datasaver.dataset.conn.close()
+
+
+@pytest.fixture(scope="function", params=["numeric"])
 def nt_dataset_pinchoff(experiment, request):
     """"""
     datasaver = save_1Ddata_with_qcodes(

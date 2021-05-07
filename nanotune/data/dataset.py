@@ -127,7 +127,8 @@ class Dataset:
 
     def from_qcodes_dataset(self):
         """ Load data from qcodes dataset """
-        qc_dataset = load_by_id(self.qc_run_id)
+        # qc_dataset = load_by_id(self.qc_run_id)
+        qc_dataset = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
         self.exp_id = qc_dataset.exp_id
         self.guid = qc_dataset.guid
         self.qc_parameters = qc_dataset.get_parameters()

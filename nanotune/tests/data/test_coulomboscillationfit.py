@@ -7,7 +7,7 @@ import numpy as np
 from qcodes.dataset.experiment_container import load_by_id
 import nanotune as nt
 from nanotune.fit.coulomboscillationfit import CoulombOscillationFit
- 
+
 rtol = 1e-05
 
 
@@ -25,10 +25,10 @@ def test_coulomboscillationfit_init(nt_dataset_coulomboscillation, tmp_path):
         getattr(co, attr)
 
 
-def test_coulomboscillationfit_next_actions(nt_dataset_coulomboscillation, tmp_path):
+def test_coulomboscillationfit_range_update_directives(nt_dataset_coulomboscillation, tmp_path):
     co = CoulombOscillationFit(1, "temp.db", db_folder=str(tmp_path))
     with pytest.raises(NotImplementedError):
-        co.next_actions
+        co.range_update_directives
 
 
 def test_coulomboscillationfit_features(nt_dataset_coulomboscillation, tmp_path):

@@ -4,7 +4,6 @@ from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.tests.mock_classifier import MockClassifer
 atol = 1e-05
 
-# check that setpoints do not exceed max_ramp of each gate
 
 
 def test_gatecharacterizaton1D_run(gatecharacterization1D_settings, experiment):
@@ -14,10 +13,8 @@ def test_gatecharacterizaton1D_run(gatecharacterization1D_settings, experiment):
         update_settings=False,
     )
 
-    tuning_result = pinchoff.run_stage(plot_measurements=False)
-    print(tuning_result)
+    tuning_result = pinchoff.run_stage(plot_result=False)
     assert tuning_result.success
     assert not tuning_result.termination_reasons
-    features = tuning_result.features
+    ml_result = tuning_result.ml_result
 
-    # assert np.isclose(features['dc_current']['amplitude'], 0.5002276487208445, atol=atol)
