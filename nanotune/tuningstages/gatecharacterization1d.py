@@ -5,7 +5,12 @@ import qcodes as qc
 
 import nanotune as nt
 from nanotune.fit.pinchofffit import PinchoffFit
-from nanotune.tuningstages.tuningstage import TuningStage, SetpointSettingsDict
+from nanotune.tuningstages.tuningstage import (
+    TuningStage,
+    SetpointSettingsDict,
+    DataSettingsDict,
+    ReadoutMethodsDict,
+)
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
 from .base_tasks import ( # please update docstrings if import path changes
@@ -26,15 +31,15 @@ class GateCharacterization1D(TuningStage):
     """Tuning stage performing individual gate characterizations.
 
     Attributes:
-        stage: String identifier indicating which stage it implements, e.g.
+        stage: String indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it
             should be saved and how it should be normalized.
             Required fields are 'db_name', 'db_folder' and
             'normalization_constants'.
-        setpoint_settings: Dictionary with information about how to compute
-            setpoints. Required keys are 'parameters_to_sweep',
-            'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
+        setpoint_settings: Dictionary with information required to compute
+            setpoints. Necessary keys are 'current_valid_ranges',
+            'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
@@ -48,12 +53,13 @@ class GateCharacterization1D(TuningStage):
         main_readout_method: Readout method to use for early finish check.
         voltage_interval_to_track: Voltage interval over which the measured
             output is checked
-        fit_class: PinchoffFit.
+        fit_class: Returns the class used to perform data fitting, i.e.
+            PinchoffFit.
     """
 
     def __init__(
         self,
-        data_settings: Dict[str, Any],
+        data_settings: DataSettingsDict,
         setpoint_settings: SetpointSettingsDict,
         readout_methods: Dict[str, qc.Parameter],
         classifier: Classifier,
@@ -64,14 +70,13 @@ class GateCharacterization1D(TuningStage):
         """Initializes a gate characterization tuning stage.
 
         Args:
-            stage: String identifier indicating which stage it implements, e.g.
-                gatecharacterization.
             data_settings: Dictionary with information about data, e.g. where it
                 should be saved and how it should be normalized.
                 Required fields are 'db_name', 'db_folder' and
                 'normalization_constants'.
-            setpoint_settings: Dictionary with information about how to compute
-                setpoints. Fie
+            setpoint_settings: Dictionary with information required to compute
+                setpoints. Necessary keys are 'current_valid_ranges',
+                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -139,7 +144,7 @@ class GateCharacterization1D(TuningStage):
         ml_result['regime'] = 'pinchoff'
         return ml_result
 
-    def verify_classification_result(
+    def verify_machine_learning_result(
         self,
         ml_result: Dict[str, int],
     ) -> bool:
@@ -186,7 +191,7 @@ class GateCharacterization1D(TuningStage):
             bool: Whether this is the last iteration and the stage is done/to
                 be stopped.
             list: New voltage ranges to sweep if the stage is not done.
-            list: List of strings indicating any possible failure modes.
+            list: List of strings indicating failure modes.
         """
 
         (done,
@@ -208,7 +213,7 @@ class GateCharacterization1D(TuningStage):
         run_id: int,
         current_valid_ranges: List[Tuple[float, float]],
         safety_ranges: List[Tuple[float, float]],
-        ) -> Tuple[List[str], List[str]]:
+    ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data
         fit using ``get_fit_range_update_directives`` defined in .base_tasks.py
@@ -223,7 +228,11 @@ class GateCharacterization1D(TuningStage):
             current_valid_ranges: Last voltage range swept.
             safety_ranges: Safety range of gate swept.
 
+        Returns:
+            list: List with range update directives.
+            list: List with issues encountered.
         """
+
         if isinstance(current_valid_ranges, tuple):
             current_valid_ranges = [current_valid_ranges]
         if isinstance(safety_ranges, tuple):
