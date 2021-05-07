@@ -59,7 +59,7 @@ class DotFit(DataFit):
         db_name: str,
         save_figures: bool = True,
         db_folder: Optional[str] = None,
-        delta_mesh: float = 0.05,
+        segment_size: float = 0.05,
         signal_thresholds: List[float] = [0.004, 0.1],
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
     ) -> None:
@@ -77,7 +77,7 @@ class DotFit(DataFit):
         )
 
         self.signal_thresholds = signal_thresholds
-        self.delta_mesh = delta_mesh
+        self.segment_size = segment_size
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
 
@@ -153,11 +153,11 @@ class DotFit(DataFit):
             # round to 8 digits to avoid e.g 0.0999999999/0.05
             # to be floored to 1
             vx_span = round(vx_span, 8)
-            n_x = int(floor(vx_span / self.delta_mesh))
+            n_x = int(floor(vx_span / self.segment_size))
 
             vy_span = abs(orig_v_y[0] - orig_v_y[-1])
             vy_span = round(vy_span, 8)
-            n_y = int(floor(vy_span / self.delta_mesh))
+            n_y = int(floor(vy_span / self.segment_size))
 
             if n_x >= orig_shape_x / 10 or n_y >= orig_shape_x / 10:
                 logger.warning(f'Dotfit {self.guid}: Mesh resolution too low.')
