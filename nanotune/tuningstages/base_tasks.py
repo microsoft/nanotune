@@ -37,10 +37,9 @@ from nanotune.device_tuner.tuningresult import TuningResult
 logger = logging.getLogger(__name__)
 
 
-def save_classification_result(
+def save_machine_learning_result(
     run_id: int,
-    result_type: str,
-    result: Union[bool, int],
+    ml_result: Dict[str, Any],
     meta_tag: str = nt.meta_tag,
 ) -> None:
     """Saves a classification result such as quality or regime to metadata.
@@ -61,9 +60,10 @@ def save_classification_result(
     except (RuntimeError, TypeError, OperationalError) as r:
         nt_meta = {}
 
-    if not result_type.startswith("predicted"):
-        result_type = "predicted_" + result_type
-    nt_meta[result_type] = result
+    for result_type, result_value in ml_result.items():
+        if not result_type.startswith("predicted"):
+            result_type = "predicted_" + result_type
+        nt_meta[result_type] = result_value
     ds.add_metadata(meta_tag, json.dumps(nt_meta))
 
 
