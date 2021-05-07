@@ -113,11 +113,14 @@ def new_database(
     """
     if db_folder is None:
         db_folder = nt.config["db_folder"]
+    else:
+        nt.config["db_folder"] = db_folder
 
     if db_name[-2:] != "db":
         db_name += ".db"
     path = os.path.join(db_folder, db_name)
     qc.initialise_or_create_database_at(path)
+    nt.config["db_name"] = db_name
 
     # add label columns
     db_conn = connect(path)
@@ -136,9 +139,12 @@ def set_database(
     """"""
     if db_folder is None:
         db_folder = nt.config["db_folder"]
+    else:
+        nt.config["db_folder"] = db_folder
 
     if db_name[-2:] != "db":
         db_name += ".db"
+    nt.config["db_name"] = db_name
     db_path = os.path.join(db_folder, db_name)
     qc.config["core"]["db_location"] = db_path
 
