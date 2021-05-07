@@ -34,8 +34,7 @@
         "dot_mapping": {
             "singledot": [0, 1],
             "doubledot": [2, 3],
-            "dotregime": [1, 3],
-            "bothpoor": [4]
+            "dotregime": [1, 3]
         },
         "labels": {
             "pinchoff": "Pinch-off",
