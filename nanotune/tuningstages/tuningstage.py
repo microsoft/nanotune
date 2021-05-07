@@ -19,14 +19,13 @@ from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from .take_data import take_data, ramp_to_setpoint
 from .base_tasks import (  # please update docstrings if import path changes
-    save_classification_result,
+    save_machine_learning_result,
     save_extracted_features,
     set_up_gates_for_measurement,
     prepare_metadata,
     save_metadata,
     compute_linear_setpoints,
     swap_range_limits_if_needed,
-    get_elapsed_time,
     plot_fit,
     get_measurement_features,
     take_data_add_metadata,
@@ -38,12 +37,26 @@ from .base_tasks import (  # please update docstrings if import path changes
 )
 logger = logging.getLogger(__name__)
 SetpointSettingsDict = TypedDict(
-    'Setpoint_setting_type', {
+    'SetpointSettingsDict', {
         'parameters_to_sweep': List[qc.Parameter],
         'current_valid_ranges': List[Tuple[float, float]],
         'safety_ranges': List[Tuple[float, float]],
         'voltage_precision': float,
         },
+    )
+DataSettingsDict = TypedDict(
+    'DataSettingsDict', {
+        'db_name': str,
+        'db_folder': str,
+        'normalization_constants': Dict[str, Tuple[float, float]],
+        },
+    )
+ReadoutMethodsDict = TypedDict(
+    'ReadoutMethodsDict', {
+        'dc_current': qc.Parameter,
+        'dc_sensor': qc.Parameter,
+        'rf': qc.Parameter,
+        }, total=False,
     )
 
 
@@ -51,15 +64,15 @@ class TuningStage(metaclass=ABCMeta):
     """Base class implementing the common sequence of a tuning stage.
 
     Attributes:
-        stage: String identifier indicating which stage it implements, e.g.
+        stage: String indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it
             should be saved and how it should be normalized.
             Required fields are 'db_name', 'db_folder' and
             'normalization_constants'.
-        setpoint_settings: Dictionary with information about how to compute
-            setpoints. Required keys are 'parameters_to_sweep',
-            'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
+        setpoint_settings: Dictionary with information required to compute
+            setpoints. Necessary keys are 'current_valid_ranges',
+            'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
@@ -73,9 +86,9 @@ class TuningStage(metaclass=ABCMeta):
     def __init__(
         self,
         stage: str,
-        data_settings: Dict[str, Any],
+        data_settings: DataSettingsDict,
         setpoint_settings: SetpointSettingsDict,
-        readout_methods: Dict[str, qc.Parameter],
+        readout_methods: ReadoutMethodsDict,
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
         safety voltages are determined from the list of parameters in
@@ -88,9 +101,9 @@ class TuningStage(metaclass=ABCMeta):
                 should be saved and how it should be normalized.
                 Required fields are 'db_name', 'db_folder' and
                 'normalization_constants'.
-            setpoint_settings: Dictionary with information about how to compute
-                setpoints. Required keys are 'current_valid_ranges',
-                'safety_ranges', 'parameters_to_sweep'.
+            setpoint_settings: Dictionary with information required to compute
+                setpoints. Necessary keys are 'current_valid_ranges',
+                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -144,13 +157,13 @@ class TuningStage(metaclass=ABCMeta):
             bool: Whether this is the last iteration and the stage is done/to
                 be stopped.
             list: New voltage ranges to sweep if the stage is not done.
-            list: List of strings indicating any possible failure modes.
+            list: List of strings indicating failure modes.
         """
 
         pass
 
     @abstractmethod
-    def verify_classification_result(
+    def verify_machine_learning_result(
         self,
         ml_result: Dict[str, int],
     ) -> bool:
@@ -180,7 +193,7 @@ class TuningStage(metaclass=ABCMeta):
 
         pass
 
-    def save_machine_learning_result(
+    def save_ml_result(
         self,
         run_id: int,
         ml_result: Dict[str, int],
@@ -199,12 +212,8 @@ class TuningStage(metaclass=ABCMeta):
             self.data_settings['db_name'],
             db_folder=self.data_settings['db_folder'],
         )
-        for result_type, result_value in ml_result.items():
-            save_classification_result(
-                run_id,
-                result_type,
-                result_value,
-            )
+        save_machine_learning_result(run_id, ml_result)
+
 
     def finish_early(
         self,
@@ -356,8 +365,8 @@ class TuningStage(metaclass=ABCMeta):
             self.compute_setpoints,
             self.measure,
             self.machine_learning_task,
-            self.save_machine_learning_result,
-            self.verify_classification_result,
+            self.save_ml_result,
+            self.verify_machine_learning_result,
         ]
         if not iterate:
             max_iterations = 1
