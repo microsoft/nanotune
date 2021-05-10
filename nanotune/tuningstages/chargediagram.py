@@ -31,8 +31,12 @@ from .chargediagram_tasks import(
     classify_dot_segments,
     get_new_chargediagram_ranges,
     verify_dot_classification,
-    translate_regime,
+    determine_dot_regime,
     conclude_dot_classification,
+    get_dot_segment_regimes,
+    determine_dot_regime,
+    verify_dot_classification,
+    translate_dot_regime,
 )
 RangeChangeSettingsDict = TypedDict(
     'RangeChangeSettingsDict', {
@@ -249,12 +253,17 @@ class ChargeDiagram(TuningStage):
             self.data_settings['segment_size'],
         )
 
-        segment_regimes = classify_dot_segments(
+        classification_outcome = classify_dot_segments(
             self.classifiers,
             [run_id for run_id in dot_segments.keys()],
             self.data_settings['segment_db_name'],
             self.data_settings['segment_db_folder'],
         )
+        segment_regimes = get_dot_segment_regimes(
+            classification_outcome,
+            determine_dot_regime,
+        )
+
         for r_id in dot_segments.keys():
             dot_segments[r_id]['predicted_regime'] = segment_regimes[r_id]
 
@@ -264,6 +273,8 @@ class ChargeDiagram(TuningStage):
         ml_result['regime'], ml_result['quality'] = conclude_dot_classification(
             self.target_regime,
             dot_segments,
+            verify_dot_classification,
+            translate_dot_regime,
         )
 
         return ml_result
