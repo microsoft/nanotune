@@ -19,18 +19,18 @@ def get_new_gatecharacterization_range(
     range_update_directives: List[str],
 ) -> List[Tuple[float, float]]:
     """Determines new voltage range for a subsequent tuning stage
-    iteration. It extends the currnet range to the relevant safety range, i.e.
+    iteration. It extends the current range to the relevant safety range, i.e.
     if the directive required a voltage to be swept more negative, then the
     lower bound is set to the lower safety value.
     No intermediate tries, just being efficient.
 
     Args:
-        current_range: Current voltage range.
-        safety_range: List of safety ranges.
+        current_valid_ranges: Current voltage ranges.
+        safety_voltage_ranges: List of safety ranges.
         range_update_directives: List of range update directives.
 
     Returns:
-        Tuple: New voltage range.
+        list: List with a tuple with the new voltage range.
     """
 
     assert len(current_valid_ranges) == 1
@@ -64,8 +64,8 @@ def get_range_directives_gatecharacterization(
     Args:
         fit_range_update_directives: Directives determined previously, such as
             during fitting.
-        gate_current_range: Voltage range swept at previous iteration.
-        gate_safety_range: Safety range of gate/voltage parameter swept.
+        current_valid_ranges: Voltage range swept at previous iteration.
+        safety_voltage_ranges: Safety range of gate/voltage parameter swept.
 
     Returns:
         list: Range update directives, e.g. 'x more negative'.
