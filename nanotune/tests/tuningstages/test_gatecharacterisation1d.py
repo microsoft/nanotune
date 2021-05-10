@@ -10,11 +10,10 @@ def test_gatecharacterizaton1D_run(gatecharacterization1D_settings, experiment):
     pinchoff = GateCharacterization1D(
         classifier=MockClassifer('pinchoff'),
         **gatecharacterization1D_settings,  # readout_s., setpoint_s., data_s.
-        update_settings=False,
     )
 
     tuning_result = pinchoff.run_stage(plot_result=False)
     assert tuning_result.success
     assert not tuning_result.termination_reasons
-    ml_result = tuning_result.ml_result
+    assert tuning_result.ml_result
 

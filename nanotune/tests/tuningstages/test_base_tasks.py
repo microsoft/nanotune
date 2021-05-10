@@ -13,13 +13,12 @@ from nanotune.tuningstages.base_tasks import *
 from nanotune.fit.pinchofffit import PinchoffFit
 
 
-def test_save_classification_result(qc_dataset_doubledot):
+def test_save_machine_learning_result(qc_dataset_doubledot):
     run_id = 1
 
-    save_classification_result(
+    save_machine_learning_result(
         run_id,
-        'quality',
-        True,
+        {'quality': True},
     )
     ds = load_by_id(run_id)
     nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
@@ -27,10 +26,9 @@ def test_save_classification_result(qc_dataset_doubledot):
     assert bool(nt_meta['predicted_quality'])
 
     assert 'predicted_regime' not in nt_meta.keys()
-    save_classification_result(
+    save_machine_learning_result(
         run_id,
-        'predicted_regime',
-        'doubledot',
+        {'predicted_regime': 'doubledot'},
     )
     ds = load_by_id(run_id)
     nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
@@ -76,7 +74,9 @@ def test_set_up_gates_for_measurement(gate_1, gate_2):
     gate_1.dc_voltage(0)
     gate_2.dc_voltage(0)
 
-    with set_up_gates_for_measurement([gate_1, gate_2], setpoints) as setup:
+    with set_up_gates_for_measurement(
+        [gate_1.dc_voltage, gate_2.dc_voltage], setpoints,
+    ) as setup:
         assert not gate_1.use_ramp()
         assert not gate_2.use_ramp()
 
@@ -87,25 +87,24 @@ def test_set_up_gates_for_measurement(gate_1, gate_2):
     assert gate_2.use_ramp()
 
 
-def test_set_gate_post_delay(gate_1, gate_2):
-    gate_1.post_delay(0)
-    gate_2.post_delay(0)
+def test_set_post_delay(gate_1, gate_2):
+    gate_1.dc_voltage.post_delay = 0
+    gate_2.dc_voltage.post_delay = 0
 
-    set_gate_post_delay([gate_1, gate_2], 0.2)
-    assert gate_1.post_delay() == 0.2
-    assert gate_2.post_delay() == 0.2
+    set_post_delay([gate_1.dc_voltage, gate_2.dc_voltage], 0.2)
+    assert gate_1.dc_voltage.post_delay == 0.2
+    assert gate_2.dc_voltage.post_delay == 0.2
 
-    set_gate_post_delay([gate_1, gate_2], [0.1, 0.3])
-    assert gate_1.post_delay() == 0.1
-    assert gate_2.post_delay() == 0.3
+    set_post_delay([gate_1.dc_voltage, gate_2.dc_voltage], [0.1, 0.3])
+    assert gate_1.dc_voltage.post_delay == 0.1
+    assert gate_2.dc_voltage.post_delay == 0.3
 
 
-def test_swap_range_limits_if_needed(gate_1, gate_2):
-    gate_1.dc_voltage(-0.12)
-    gate_2.dc_voltage(-0.18)
+def test_swap_range_limits_if_needed():
+    current_voltages = [-0.12, -0.18]
 
     new_ranges = swap_range_limits_if_needed(
-        [gate_1, gate_2],
+        current_voltages,
         [(-0.3, -0.1), (-0.2, -0.1)]
     )
     assert new_ranges[0] == (-0.1, -0.3)
