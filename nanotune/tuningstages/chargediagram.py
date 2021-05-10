@@ -23,6 +23,7 @@ from nanotune.classification.classifier import Classifier
 from .base_tasks import ( # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
+    get_extracted_features,
 )
 
 from .chargediagram_tasks import(
@@ -70,7 +71,7 @@ class ChargeDiagram(TuningStage):
         data_settings: Dictionary with information about data, e.g. where it
             should be saved and how it should be normalized.
             Required fields are 'db_name', 'db_folder' and
-            'normalization_constants'.
+            'normalization_constants', 'segment_size'.
         setpoint_settings: Dictionary with information about how to compute
             setpoints. Required keys are 'parameters_to_sweep',
             'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
@@ -110,7 +111,7 @@ class ChargeDiagram(TuningStage):
             data_settings: Dictionary with information about data, e.g. where it
                 should be saved and how it should be normalized.
                 Required fields are 'db_name', 'db_folder' and
-                'normalization_constants'.
+                'normalization_constants', 'segment_size'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
@@ -136,6 +137,9 @@ class ChargeDiagram(TuningStage):
             data_settings['segment_db_name'] = seg_db_name
         if 'normalization_constants' not in data_settings.keys():
             logger.warning('No normalisation constants specified.')
+        if 'segment_size' not in data_settings.keys():
+            data_settings['segment_size'] = 0.02
+            logger.warning('Setting default segment size of 0.2V.')
 
         TuningStage.__init__(
             self,
@@ -275,6 +279,12 @@ class ChargeDiagram(TuningStage):
             dot_segments,
             verify_dot_classification,
             translate_dot_regime,
+        )
+        ml_result['features'] = get_extracted_features(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
         )
 
         return ml_result
