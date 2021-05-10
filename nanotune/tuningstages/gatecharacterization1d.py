@@ -17,6 +17,7 @@ from .base_tasks import ( # please update docstrings if import path changes
     check_measurement_quality,
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
+    get_extracted_features,
 )
 from .gatecharacterization_tasks import (
     get_new_gatecharacterization_range,
@@ -135,6 +136,12 @@ class GateCharacterization1D(TuningStage):
         """
 
         ml_result: Dict[str, Any] = {}
+        ml_result['features'] = get_extracted_features(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
         ml_result['quality'] = check_measurement_quality(
             self.classifier,
             run_id,
