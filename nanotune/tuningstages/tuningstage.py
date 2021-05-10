@@ -40,7 +40,7 @@ SetpointSettingsDict = TypedDict(
     'SetpointSettingsDict', {
         'parameters_to_sweep': List[qc.Parameter],
         'current_valid_ranges': List[Tuple[float, float]],
-        'safety_ranges': List[Tuple[float, float]],
+        'safety_voltage_ranges': List[Tuple[float, float]],
         'voltage_precision': float,
         },
     )
@@ -72,12 +72,12 @@ class TuningStage(metaclass=ABCMeta):
             'normalization_constants'.
         setpoint_settings: Dictionary with information required to compute
             setpoints. Necessary keys are 'current_valid_ranges',
-            'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
-        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
             which gates don't blow up.
         fit_class: Abstract property, to be specified in child classes. It is
             the class that should perform the data fitting, e.g. PinchoffFit.
@@ -103,7 +103,7 @@ class TuningStage(metaclass=ABCMeta):
                 'normalization_constants'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
-                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -116,7 +116,7 @@ class TuningStage(metaclass=ABCMeta):
 
         ranges = self.setpoint_settings['current_valid_ranges']
         self.current_valid_ranges = ranges
-        self.safety_ranges = self.setpoint_settings['safety_ranges']
+        self.safety_voltage_ranges = self.setpoint_settings['safety_voltage_ranges']
 
     @property
     @abstractmethod
@@ -374,7 +374,7 @@ class TuningStage(metaclass=ABCMeta):
         tuning_result = iterate_stage(
             self.stage,
             self.current_valid_ranges,
-            self.safety_ranges,
+            self.safety_voltage_ranges,
             run_stage,
             run_stage_tasks,  # type: ignore
             self.conclude_iteration,
