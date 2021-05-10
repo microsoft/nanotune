@@ -1,0 +1,2 @@
+# Allow qcodes databases, which will be stored in git lfs
+!data/**/*.db
