@@ -118,6 +118,33 @@ def save_extracted_features(
     fit.save_features()
 
 
+def get_extracted_features(
+    fit_class: Type[DataFit],
+    run_id: int,
+    db_name: str,
+    db_folder: Optional[str],
+) -> Dict[str, Any]:
+    """Performs a data fit and returns the extracted features.
+
+    Args:
+        fit_class:
+        run_id: QCoDeS data run ID.
+        db_name: Database name where the dataset in question is located.
+        db_folder: Path to folder containing database db_name.
+
+    Returns:
+        dict: Extracted features.
+    """
+
+    fit = fit_class(
+        run_id,
+        db_name,
+        db_folder=db_folder,
+    )
+    fit.find_fit()
+    return fit.features
+
+
 def get_measurement_features(
     run_id: int,
     db_name: str,
@@ -195,7 +222,7 @@ def set_post_delay(
         assert len(post_delay) == len(parameters)
 
     for ig, param in enumerate(parameters):
-        param.post_delay(post_delay[ig])
+        param.post_delay = post_delay[ig]
 
 
 def swap_range_limits_if_needed(
