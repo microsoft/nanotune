@@ -1,343 +1,374 @@
 import logging
 import json
 import time
-import datetime
 import copy
 import numpy as np
-from math import floor
+from functools import partial
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Tuple, List, Dict, Any, Sequence, Union, Generator
+from typing import (
+    Optional, Tuple, List, Dict, Any, Sequence, Union, Generator, Callable,
+)
 from contextlib import contextmanager
 
-import matplotlib.pyplot as plt
 import qcodes as qc
 from qcodes.dataset.measurements import Measurement as QC_Measurement
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.instrument.visa import VisaInstrument
 from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
-from nanotune.device.gate import Gate
-from .take_data import take_data, ramp_to_setpoint, compute_linear_setpoints
+from .take_data import take_data, ramp_to_setpoint
+from .base_tasks import (  # please update docstrings if import path changes
+    save_machine_learning_result,
+    save_extracted_features,
+    set_up_gates_for_measurement,
+    prepare_metadata,
+    save_metadata,
+    compute_linear_setpoints,
+    swap_range_limits_if_needed,
+    plot_fit,
+    get_measurement_features,
+    take_data_add_metadata,
+    print_tuningstage_status,
+    run_stage,
+    iterate_stage,
+    get_current_voltages,
+    set_voltages,
+    DataSettingsDict,
+    SetpointSettingsDict,
+    ReadoutMethodsDict,
+    ReadoutMethodsLiteral,
+)
 logger = logging.getLogger(__name__)
-SETPOINT_METHODS = nt.config["core"]["setpoint_methods"]
-data_dimensions = {
-    'gatecharacterization1d': 1,
-    'chargediagram': 2,
-    'coulomboscillations': 1,
-}
-
-# readout_methods = {'dc_current': qc.Parameter,
-#                     'dc_sensor': qc.Parameter}
-# }
-# setpoint_settings = {
-#     'voltage_precision':
-#     'gates_to_sweep':
-# }
-# measurement_options = {
-#       'dc_current': {'delay': 0.1,
-#                       'inter_delay': 0.1,
-#   }
-# }
-# data_settings = {
-#     'db_name': '',
-#     'normalization_constants': {},
-#     'db_folder': '',
-# }
-# fit_options = {},
 
 
 class TuningStage(metaclass=ABCMeta):
+    """Base class implementing the common sequence of a tuning stage.
+
+    Attributes:
+        stage: String indicating which stage it implements, e.g.
+            gatecharacterization.
+        data_settings: Dictionary with information about data, e.g. where it
+            should be saved and how it should be normalized.
+            Required fields are 'db_name', 'db_folder' and
+            'normalization_constants'.
+        setpoint_settings: Dictionary with information required to compute
+            setpoints. Necessary keys are 'current_valid_ranges',
+            'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+        readout_methods: Dictionary mapping string identifiers such as
+            'dc_current' to QCoDeS parameters measuring/returning the desired
+            quantity (e.g. current throught the device).
+        current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
+            which gates don't blow up.
+        fit_class: Abstract property, to be specified in child classes. It is
+            the class that should perform the data fitting, e.g. PinchoffFit.
+    """
+
     def __init__(
         self,
         stage: str,
-        data_settings: Dict[str, Any],
-        setpoint_settings: Dict[str, Any],
-        readout_methods: Dict[str, qc.Parameter],
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        update_settings: bool = True,
-        fit_options: Optional[Dict[str, Any]] = None,
+        data_settings: DataSettingsDict,
+        setpoint_settings: SetpointSettingsDict,
+        readout_methods: ReadoutMethodsDict,
     ) -> None:
-        self._D = data_dimensions[stage]
+        """Initializes the base class of a tuning stage. Voltages to sweep and
+        safety voltages are determined from the list of parameters in
+        setpoint_settings.
+
+        Args:
+            stage: String identifier indicating which stage it implements, e.g.
+                gatecharacterization.
+            data_settings: Dictionary with information about data, e.g. where it
+                should be saved and how it should be normalized.
+                Required fields are 'db_name', 'db_folder' and
+                'normalization_constants'.
+            setpoint_settings: Dictionary with information required to compute
+                setpoints. Necessary keys are 'current_valid_ranges',
+                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            readout_methods: Dictionary mapping string identifiers such as
+                'dc_current' to QCoDeS parameters measuring/returning the
+                desired quantity (e.g. current throught the device).
+        """
+
+        self.stage = stage
         self.data_settings = data_settings
         self.setpoint_settings = setpoint_settings
         self.readout_methods = readout_methods
-        self.measurement_options = measurement_options
-        if fit_options is None:
-            fit_options = {}
-        self.fit_options = fit_options
 
-        self.stage = stage
-
-        self.update_settings = update_settings
-
-        self.current_ranges: List[Tuple[float, float]] = []
-        self.current_setpoints: List[List[float]] = []
-        self.result_ids: List[int] = []
-        self.current_id: int = -1
-        self.max_count = 10
-
-        for gate in self.setpoint_settings['gates_to_sweep']:
-            if not gate.current_valid_range():
-                logger.warning(
-                    "No current valid ranges for "
-                    + gate.name
-                    + " given. Taking entire range."
-                )
-                curr_rng = gate.safety_range()
-
-            else:
-                # sweep to max ranges if current valid range is close to save
-                # us a potential second 2D sweep
-                curr_rng = np.array(gate.current_valid_range())
-                sfty_rng = np.array(gate.safety_range())
-
-                close = np.isclose(curr_rng, sfty_rng, 0.05)
-                for idx, isclose in enumerate(close):
-                    if isclose:
-                        curr_rng[idx] = sfty_rng[idx]
-                if isinstance(curr_rng, np.ndarray):
-                    curr_rng = curr_rng.tolist()
-
-            gate.current_valid_range(curr_rng)
-            self.current_ranges.append(curr_rng)
+        ranges = self.setpoint_settings['current_valid_ranges']
+        self.current_valid_ranges = ranges
+        self.safety_voltage_ranges = self.setpoint_settings['safety_voltage_ranges']
 
     @property
     @abstractmethod
     def fit_class(self):
-        """"""
-        pass
-
-    @abstractmethod
-    def get_next_actions(self) -> Tuple[List[str], List[str]]:
-        """
-        The fit is telling us what we need to to
-        Return "false" as second argument if we should abandon the case
+        """To be specified in child classes. It is the data fitting
+        class should be used to perform a fit.
         """
         pass
 
     @abstractmethod
-    def update_current_ranges(
+    def conclude_iteration(
         self,
-        actions: List[str],
-    ) -> None:
-        """"""
+        tuning_result: TuningResult,
+        current_valid_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+        current_iteration: int,
+        max_n_iterations: int,
+    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+        """Method checking if one iteration of a run_stage measurement cycle has
+        been successful. An iteration of such a measurement cycle takes data,
+        performs a machine learning task, verifies and saves the machine
+        learning result. If a repetition of this cycle is supported, then
+        ``conclude_iteration`` determines whether another iteration should take
+        place and which voltage ranges need to be measured.
+        Each child class needs to implement the body of this method, tailoring
+        it to the respective tuning stage.
 
-    def extract_features(self):
-        """"""
-        self.current_fit = self.fit_class(
-            self.current_id, self.data_settings['db_name'],
-            **self.fit_options,
+        Args:
+            tuning_result: Result of the last run_stage measurement cycle.
+            current_valid_ranges: Voltage ranges last swept.
+            safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
+                range that could be swept.
+            current_iteration: Number of current iteration.
+            max_n_iterations: Maximum number of iterations to perform before
+                abandoning.
+
+        Returns:
+            bool: Whether this is the last iteration and the stage is done/to
+                be stopped.
+            list: New voltage ranges to sweep if the stage is not done.
+            list: List of strings indicating failure modes.
+        """
+
+        pass
+
+    @abstractmethod
+    def verify_machine_learning_result(
+        self,
+        ml_result: Dict[str, int],
+    ) -> bool:
+        """Verifies if the desired measurement quality or regime has been found.
+        Needs to be implemented by child classed to account for the different
+        regimes or measurements they are dealing with.
+
+        Args:
+            ml_result: Result returned by ``machine_learning_task``.
+
+        Returns:
+            bool: Whether the desired outcome has been found.
+        """
+
+        pass
+
+    @abstractmethod
+    def machine_learning_task(
+        self,
+        run_id: int,
+    ) -> Dict[str, Any]:
+        """The machine learning task to perform after a measurement.
+
+        Args:
+            run_id: QCoDeS data run ID.
+        """
+
+        pass
+
+    def save_ml_result(
+        self,
+        run_id: int,
+        ml_result: Dict[str, int],
+    ) -> None:
+        """Saves the result returned by ```machine_learning_task```: the
+        extracted features are stored into metadata of the respective dataset.
+
+        Args:
+            run_id: QCoDeS data run ID.
+            ml_result: Result returned by ``machine_learning_task``.
+        """
+
+        save_extracted_features(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
             db_folder=self.data_settings['db_folder'],
         )
-        self.current_fit.find_fit()
-        self.current_fit.save_features()
+        save_machine_learning_result(run_id, ml_result)
 
-    @abstractmethod
-    def check_quality(self) -> bool:
-        """"""
-
-    def save_predicted_category(self):
-        """"""
-        ds = load_by_id(self.current_id)
-        nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-
-        nt_meta["predicted_category"] = int(self.current_quality)
-        ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
-
-    def clean_up(self) -> None:
-        """"""
-        pass
-
-    def additional_post_measurement_actions(self) -> None:
-        """"""
-        pass
 
     def finish_early(
         self,
         current_output_dict: Dict[str, float],
     ) -> bool:
-        """"""
+        """Checks if the current data taking can be stopped. E.g. if the device
+        is pinched off entirely.
+
+        Args:
+            current_output_dict: Dictionary mapping a string indicating the
+                readout method to the respective value last measured.
+
+        Returns:
+            bool: Whether the current data taking procedure can be stopped.
+        """
+
         return False
 
-    def compute_setpoints(self) -> List[List[float]]:
-        """
-        """
-        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        for gg, c_range in enumerate(self.current_ranges):
-            diff1 = abs(c_range[1] - gates_to_sweep[gg].dc_voltage())
-            diff2 = abs(c_range[0] - gates_to_sweep[gg].dc_voltage())
+    def compute_setpoints(
+        self,
+        current_valid_ranges: List[Tuple[float, float]],
+    ) -> List[List[float]]:
+        """Computes setpoints for the next measurement. Unless this method is
+        overwritten in a child class, linearly spaced setpoints are computed.
 
-            if diff1 < diff2:
-                self.current_ranges[gg] = (c_range[1], c_range[0])
+        Args:
+            current_valid_ranges: Voltages ranges to sweep.
+
+        Returns:
+            list: List of lists with setpoints.
+        """
 
         setpoints = compute_linear_setpoints(
-            self.current_ranges,
+            current_valid_ranges,
             self.setpoint_settings['voltage_precision'],
-            max_jumps=[gate.max_jump() for gate in gates_to_sweep],
         )
         return setpoints
 
-    @contextmanager
-    def set_up_gates_for_measurement(self) -> Generator[None, None, None]:
-        """ Ramp gates to start values before turning off ramping
-        deactivate ramp - setpoints are calculated such that
-        voltage differences do not exceed max_jump
+    def show_result(
+        self,
+        plot_result: bool,
+        current_id: int,
+        tuning_result: TuningResult,
+    ) -> None:
+        """Displays tuning result and optionally plots the fitting result.
+
+        Args:
+            plot_result: Bool indicating whether the data fit should be plotted.
+            current_id: QCoDeS data run ID.
+            tuning_result: Result of a tuning stage run.
         """
-        for gg, gate in enumerate(self.setpoint_settings['gates_to_sweep']):
-            gate.dc_voltage(self.current_setpoints[gg][0])
-            gate.use_ramp(False)
-            d = 0.01
-            if self.measurement_options is not None:
-                for read_method in self.readout_methods.keys():
-                    options = self.measurement_options[read_method]
-                    try:
-                        d = max(d, float(options["delay"]))
-                    except KeyError:
-                        pass
-            gate.post_delay(d)
-        try:
-            yield
-        finally:
-            for gate in self.setpoint_settings['gates_to_sweep']:
-                gate.use_ramp(True)
-                gate.post_delay(0)
 
-    def _prepare_nt_metadata(self) -> Dict[str, Any]:
-        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
+        if plot_result:
+            plot_fit(
+                self.fit_class,
+                current_id,
+                self.data_settings['db_name'],
+                db_folder=self.data_settings['db_folder'],
+            )
+        print_tuningstage_status(tuning_result)
 
-        norm = self.data_settings['normalization_constants']
-        nt_meta["normalization_constants"] = norm
-        nt_meta["git_hash"] = nt.git_hash
-        nt_meta["device_name"] = gates_to_sweep[0].parent.name
-        m_jumps = [g.max_jump() for g in gates_to_sweep]
-        nt_meta["max_jumps"] = m_jumps
-        ramp_rates = [g.ramp_rate() for g in gates_to_sweep]
-        nt_meta["ramp_rate"] = ramp_rates
-        r_meth = self.readout_methods
-        read_dict = {k:param.full_name for (k, param) in r_meth.items()}
-        nt_meta["readout_methods"] = read_dict
-        nt_meta["features"] = {}
+    def prepare_nt_metadata(self) -> Dict[str, Any]:
+        """Sets up a metadata dictionary with fields known prior to a
+        measurement set. Wraps ```prepare_metadata``` in .base_tasks.py.
+
+        Returns:
+            dict: Metadata dict with fields known prior to a measurement filled
+                in.
+        """
+        example_param = self.setpoint_settings['parameters_to_sweep'][0]
+        device_name = example_param.name_parts[0]
+        nt_meta = prepare_metadata(
+            device_name,
+            self.data_settings['normalization_constants'],
+            self.readout_methods
+        )
         return nt_meta
 
-    def measure(self) -> int:
+    def measure(
+        self,
+        setpoints: List[List[float]],
+    ) -> int:
+        """Takes 1D or 2D data and saves relevant metadata into the dataset.
+        Wraps ```take_data_add_metadata``` in .base_tasks.py.
+
+        Args:
+            setpoints: Setpoints to measure.
+
+        Returns:
+            int: QCoDeS data run ID.
         """
-        """
-        if not self.current_setpoints:
-            self.current_setpoints = self.compute_setpoints()
 
-        nt.set_database(self.data_settings['db_name'],
-                        db_folder=self.data_settings['db_folder'])
-
-        qc_measurement_parameters = list(self.readout_methods.values())
-
-        parameters_to_sweep = []
-        for gate in self.setpoint_settings['gates_to_sweep']:
-            parameters_to_sweep.append(gate.dc_voltage)
-
-        with self.set_up_gates_for_measurement():
-            start_time = time.time()
-            run_id, n_measured = take_data(
-                parameters_to_sweep,
-                qc_measurement_parameters,
-                self.current_setpoints,
-                finish_early_check=self.finish_early,
-                do_at_inner_setpoint=ramp_to_setpoint,
-                metadata_addon=(nt.meta_tag, self._prepare_nt_metadata())
-            )
-
-            ds = load_by_id(run_id)
-            nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-            elapsed_time = time.time() - start_time
-            minutes, seconds = divmod(elapsed_time, 60)
-            msg = "Elapsed time to take data: {:.0f} min, {:.2f} sec."
-            logger.info(msg.format(minutes, seconds))
-
-            # Add last bits of info to metadata
-            nt_meta["n_points"] = n_measured
-            nt_meta["elapsed_time"] = round(float(elapsed_time), 2)
-
-            ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
+        run_id = take_data_add_metadata(
+            self.setpoint_settings['parameters_to_sweep'],
+            list(self.readout_methods.values()),  # type: ignore
+            setpoints,
+            finish_early_check=self.finish_early,
+            do_at_inner_setpoint=ramp_to_setpoint,
+            pre_measurement_metadata=self.prepare_nt_metadata()
+        )
 
         return run_id
 
-    def _run_stage(
-        self,
-        plot_measurements: bool = True,
-    ) -> Tuple[bool, List[str]]:
-        """"""
-        done = False
-        count = 0
-        termination_reasons: List[str] = []
-
-        while not done:
-            count += 1
-            logger.info("Iteration no " + str(count))
-
-            self.current_setpoints = self.compute_setpoints()
-            self.current_id = self.measure()
-
-            self.result_ids.append(self.current_id)
-            self.extract_features()
-            self.additional_post_measurement_actions()
-
-            self.current_quality = self.check_quality()
-            self.save_predicted_category()
-
-            if self.current_quality:
-                logger.info("Good result found.")
-            else:
-                logger.info("Poor quality.")
-
-            if plot_measurements:
-                self.current_fit.plot_fit()
-                plt.pause(0.05)
-
-            success = bool(self.current_quality)
-            if success:
-                done = True
-                termination_reasons = []
-            elif self.update_settings:
-                actions, termination_reasons = self.get_next_actions()
-                logger.info(
-                    self.stage + 'next actions: ' + ', '.join(actions)
-                )
-                if not actions:
-                    done = True
-                    success = False
-                else:
-                    self.update_current_ranges(actions)
-                    done = False
-                    success = False
-
-            if count >= self.max_count:
-                logger.info(f"{self.stage}: max count reached.")
-                done = True
-                success = False
-                termination_reasons.append("max count reached")
-
-        self.clean_up()
-        return success, termination_reasons
-
     def run_stage(
         self,
-        plot_measurements: bool = True,
+        iterate: bool = True,
+        max_iterations: int = 10,
+        plot_result: bool = True,
     ) -> TuningResult:
+        """Performs iterations of a basic measurement cycle of a tuning stage.
+        It wraps ```iterate_stage``` in .base_tasks.py. One measurement cycle
+        does the following subtasks:
+        - computes setpoints
+        - perform the actual measurement, i.e. take data
+        - perform a machine learning task, e.g. classification
+        - validate the machine learning result, e.g. check if a good regime was
+            found
+        - collect all information in a TuningResult instance.
+
+        At each iteration, ```conclude_iteration``` check whether another
+        measurement cycle will be performed.
+        At the very end, ```clean_up``` does the desired post-measurement task.
+
+        Args:
+            iterate:
+            max_iterations:
+            plot_result:
+
+        Returns:
+            TuningResult: Tuning results of the last iteration, with the dataids
+            field containing QCoDeS run IDs of all datasets measured.
         """
-        """
-        success, termination_reasons = self._run_stage(
-            plot_measurements=plot_measurements
+
+        nt.set_database(
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder']
         )
 
-        tuning_result = TuningResult(
-            self.stage,
-            success,
-            termination_reasons=termination_reasons,
-            data_ids=self.result_ids,
-            db_name=self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
-            features=self.current_fit.features,
-            timestamp=datetime.datetime.now().isoformat(),
+        initial_voltages = get_current_voltages(
+            self.setpoint_settings['parameters_to_sweep']
         )
+
+        self.current_valid_ranges = swap_range_limits_if_needed(
+            initial_voltages,
+            self.current_valid_ranges,
+        )
+
+        run_stage_tasks = [
+            self.compute_setpoints,
+            self.measure,
+            self.machine_learning_task,
+            self.save_ml_result,
+            self.verify_machine_learning_result,
+        ]
+        if not iterate:
+            max_iterations = 1
+
+        tuning_result = iterate_stage(
+            self.stage,
+            self.current_valid_ranges,
+            self.safety_voltage_ranges,
+            run_stage,
+            run_stage_tasks,  # type: ignore
+            self.conclude_iteration,
+            partial(self.show_result, plot_result),
+            max_iterations,
+        )
+        set_voltages(
+            self.setpoint_settings['parameters_to_sweep'],
+            initial_voltages,
+        )
+
+        tuning_result.db_name = self.data_settings['db_name']
+        tuning_result.db_folder = self.data_settings['db_folder']
 
         return tuning_result
+

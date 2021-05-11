@@ -1,4 +1,5 @@
 import json
+import copy
 import numpy as np
 from typing import Optional, Tuple, List, Dict, Any, Callable
 import logging
@@ -8,8 +9,6 @@ from qcodes.dataset.measurements import Measurement
 import nanotune as nt
 logger = logging.getLogger(__name__)
 
-        # current_output_dict: Dict[str, float],
-        # readout_methods_to_use: str = 'dc_current',
 
 def take_data(
     parameters_to_sweep: List[qc.Parameter],
@@ -20,14 +19,21 @@ def take_data(
     metadata_addon: Optional[Tuple[str, Dict[str, Any]]] = None,
 ) -> Tuple[int, List[int]]:
     """
-    Take data for 1 or 2D data
+    Take 1D or 2D measurements with QCoDeS.
+
     Args:
-        parameters_to_sweep (list):
-        parameters_to_measure (list):
+        parameters_to_sweep:
+        parameters_to_measure:
         setpoints:
-        finish_early_check (callable):
-        metadata_addon (tuple): string with tag under which it will be added
+        finish_early_check:
+        metadata_addon: string with tag under which it will be added
             and metadata iself. To save some important metadata before measuring
+
+    Returns:
+        int:
+        list: List of the number of points measured in each dimension. If the
+            measurement has been stopped early, these will differ from the
+            number of setpoints.
     """
     if do_at_inner_setpoint is None:
         do_at_inner_setpoint = do_nothing
@@ -100,14 +106,25 @@ def take_data(
 
     return datasaver.run_id, n_measured
 
+
 def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+    """Default function used at inner setpoints in ```take_data```, not doing
+    anything.
+    """
+
     pass
 
-def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+
+def ramp_to_setpoint(
+    param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+    """Ramps nanotune gates (or other instrument parameter with 'use_ramp'
+    attribute)to a new setpoint. Sets `use_ramp` back to false after ramping.
+
+    Args:
+        param_setpoint_input: Tuple of the QCoDeS parameter and its new
+        setpoint.
     """
-    Ramp nanotune gate (or other instrument parameter with 'use_ramp' attribute)
-    to new setpoint. Set `use_ramp` back to false
-    """
+
     qcodes_parameter = param_setpoint_input[0]
     voltage = param_setpoint_input[1]
     try:
@@ -117,25 +134,7 @@ def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     except AttributeError as a:
         logger.warning('Unable to ramp to new voltage. It will be set.')
 
-def compute_linear_setpoints(
-    ranges: List[Tuple[float, float]],
-    voltage_precision: float,
-    max_jumps: Optional[List[float]] = None
-) -> List[List[float]]:
-    """
-    # Calculate the number of points we need to cover the entire
-        # range without exceeding max_jump if specified
-    """
-    if max_jumps is None:
-        max_jumps = [voltage_precision] * len(ranges)
 
-    setpoints_all = []
-    for gg, c_range in enumerate(ranges):
-        delta = abs(c_range[1] - c_range[0])
-        n_safe = int(floor(delta / max_jumps[gg]))
-        n_precise = int(floor(delta / voltage_precision))
 
-        n = np.max([n_safe, n_precise])
-        setpoints = np.linspace(c_range[0], c_range[1], n)
-        setpoints_all.append(setpoints)
-    return setpoints_all
+
+

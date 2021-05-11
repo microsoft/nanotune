@@ -1,6 +1,6 @@
 {
     "username": "nt_user",
-    "main_db": "experiments.db",
+    "db_name": "experiments.db",
     "db_folder": ".",
     "device": {
         "doubledot_2D": ["top_barrier", "left_barrier", "left_plunger",
@@ -9,7 +9,8 @@
         },
     "core":{
         "meta_add_on": "nanotune_metadata",
-        "meta_fields": ["n_points", "elapsed_time", "max_jumps", "ramp_rate",
+        "meta_fields": ["n_points", "elapsed_time", "max_voltage_jumps",
+                        "ramp_rate",
                         "write_period", "normalization_constants",
                         "device_name", "features", "predicted_category",
                         "signal_types", "git_hash"],
@@ -33,8 +34,7 @@
         "dot_mapping": {
             "singledot": [0, 1],
             "doubledot": [2, 3],
-            "dotregime": [1, 3],
-            "bothpoor": [4]
+            "dotregime": [1, 3]
         },
         "labels": {
             "pinchoff": "Pinch-off",

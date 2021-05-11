@@ -13,7 +13,7 @@ def test_dotfit_init(nt_dataset_doubledot, tmp_path):
 
     attributes = [
         "signal_thresholds",
-        "delta_mesh",
+        "segment_size",
         "triple_points",
         "fit_parameters",
         "segmented_data",
@@ -26,11 +26,14 @@ def test_dotfit_init(nt_dataset_doubledot, tmp_path):
         getattr(df, attr)
 
 
-def test_dotfit_next_actions(nt_dataset_doubledot, tmp_path):
-    df = DotFit(1, "temp.db", db_folder=str(tmp_path), signal_thresholds=[0.03, 0.4])
-    print(df.next_actions)
-    assert not df.next_actions["dc_current"]
-    assert not df.next_actions["dc_sensor"]
+def test_dotfit_range_update_directives(nt_dataset_doubledot, tmp_path):
+    df = DotFit(
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
+        signal_thresholds=[0.03, 0.4],
+    )
+    assert not df.range_update_directives
 
     edge = df.get_edge("left vertical", use_raw_data=False)
     assert np.max(edge) > 0.24
@@ -49,14 +52,14 @@ def test_dotfit_next_actions(nt_dataset_doubledot, tmp_path):
     assert np.min(edge) < 0.03
 
     df.signal_thresholds = [0.1, 0.2]
-    df._next_actions = {}
-    expected_actions = ["x more negative", "y more negative"]
-    assert sorted(df.next_actions["dc_current"]) == ["x more negative", "y more negative"]
+    df._range_update_directives = []
+    assert "x more negative" in df.range_update_directives
+    assert "y more negative" in df.range_update_directives
 
     df.signal_thresholds = [0.5, 0.7]
-    df._next_actions = {}
-    expected_actions = ["x more positive", "y more positive"]
-    assert sorted(df.next_actions["dc_current"]) == expected_actions
+    df._range_update_directives = []
+    assert "x more positive" in df.range_update_directives
+    assert "y more positive" in df.range_update_directives
 
 
 def test_dotfit_fit(nt_dataset_doubledot, tmp_path):
@@ -66,8 +69,13 @@ def test_dotfit_fit(nt_dataset_doubledot, tmp_path):
 
 
 def test_dotfit_segment_data(nt_dataset_doubledot, tmp_path):
-    delta_mesh = 0.05
-    df = DotFit(1, "temp.db", db_folder=str(tmp_path), delta_mesh=delta_mesh)
+    segment_size = 0.05
+    df = DotFit(
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
+        segment_size=segment_size,
+    )
 
     df.prepare_segmented_data(use_raw_data=True)
 
@@ -82,11 +90,11 @@ def test_dotfit_segment_data(nt_dataset_doubledot, tmp_path):
 
     vx_span = abs(voltage_x[0] - voltage_x[-1])
     vx_span = round(vx_span, 8)
-    n_x = int(math.floor(vx_span / delta_mesh))
+    n_x = int(math.floor(vx_span / segment_size))
 
     vy_span = abs(voltage_y[0] - voltage_y[-1])
     vy_span = round(vy_span, 8)
-    n_y = int(math.floor(vy_span / delta_mesh))
+    n_y = int(math.floor(vy_span / segment_size))
 
     d_inx = int(dot_shape_x / n_x)
     d_iny = int(dot_shape_y / n_y)
@@ -107,8 +115,8 @@ def test_dotfit_segment_data(nt_dataset_doubledot, tmp_path):
 def test_dotfit_save_segmented_data(
     nt_dataset_doubledot, tmp_path, experiment_different_db_folder
 ):
-    delta_mesh = 0.05
-    df = DotFit(1, "temp.db", db_folder=str(tmp_path), delta_mesh=delta_mesh)
+    segment_size = 0.05
+    df = DotFit(1, "temp.db", db_folder=str(tmp_path), segment_size=segment_size)
 
     db_folder2 = os.path.join(str(tmp_path), "test")
     seg_info = df.save_segmented_data_return_info(
@@ -121,17 +129,13 @@ def test_dotfit_save_segmented_data(
 
     assert sorted(seg_info.keys()) == [1, 2, 3, 4]
 
-    assert seg_info[1]['current']["range_x"] == (-0.2, -0.15125)
-    assert seg_info[1]['current']["range_y"] == (-0.3, -0.252)
+    assert seg_info[1]['voltage_ranges'] == [(-0.2, -0.15125), (-0.3, -0.252)]
 
-    assert seg_info[2]['current']["range_x"] == (-0.2, -0.15125)
-    assert seg_info[2]['current']["range_y"] == (-0.25, -0.2)
+    assert seg_info[2]['voltage_ranges'] == [(-0.2, -0.15125), (-0.25, -0.2)]
 
-    assert seg_info[3]['current']["range_x"] == (-0.15, -0.1)
-    assert seg_info[3]['current']["range_y"] == (-0.3, -0.252)
+    assert seg_info[3]['voltage_ranges'] == [(-0.15, -0.1), (-0.3, -0.252)]
 
-    assert seg_info[4]['current']["range_x"] == (-0.15, -0.1)
-    assert seg_info[4]['current']["range_y"] == (-0.25, -0.2)
+    assert seg_info[4]['voltage_ranges'] == [(-0.15, -0.1), (-0.25, -0.2)]
 
     seg_df = nt.Dataset(1, "temp2.db", db_folder2)
     raw_current_new_df = seg_df.raw_data['current'].values

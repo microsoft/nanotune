@@ -151,6 +151,17 @@ def _make_dummy_device(experiment, tmp_path):
 
 
 @pytest.fixture(scope="function", params=["numeric"])
+def qc_dataset_pinchoff(experiment, request):
+    """"""
+    datasaver = save_1Ddata_with_qcodes(generate_pinchoff_data, None)
+
+    try:
+        yield datasaver.dataset
+    finally:
+        datasaver.dataset.conn.close()
+
+
+@pytest.fixture(scope="function", params=["numeric"])
 def nt_dataset_pinchoff(experiment, request):
     """"""
     datasaver = save_1Ddata_with_qcodes(
@@ -326,14 +337,11 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
 
     readout_methods = {'dc_current': pinchoff_dmm.po_current,
                        'dc_sensor': pinchoff_dmm.po_sensor}
-    measurement_options = {'dc_current': {'delay': 0,
-                                          'inter_delay': 0},
-                           'dc_sensor': {'delay': 0,
-                                         'inter_delay': 0},
-                           }
     setpoint_settings = {
         'voltage_precision': 0.001,
-        'gates_to_sweep': [gate_1],
+        'parameters_to_sweep': [gate_1.dc_voltage],
+        'current_valid_ranges': [gate_1.current_valid_range()],
+        'safety_voltage_ranges': [(-3, 0)],
     }
     data_settings = {
         'db_name': 'temp.db',
@@ -343,10 +351,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
             "rf": [0, 1],
         },
         'db_folder': tmp_path,
-        'fit_options': {},
     }
     tuningstage_settings = {
-        'measurement_options': measurement_options,
         'readout_methods': readout_methods,
         'setpoint_settings': setpoint_settings,
         'data_settings': data_settings,
@@ -367,14 +373,13 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
 
     readout_methods = {'dc_current': dot_dmm.dot_current,
                        'dc_sensor': dot_dmm.dot_sensor}
-    measurement_options = {'dc_current': {'delay': 0,
-                                          'inter_delay': 0},
-                           'dc_sensor': {'delay': 0,
-                                         'inter_delay': 0},
-                           }
     setpoint_settings = {
         'voltage_precision': 0.001,
-        'gates_to_sweep': [gate_1, gate_2],
+        'parameters_to_sweep': [gate_1.dc_voltage, gate_2.dc_voltage],
+        'current_valid_ranges': [
+            gate_1.current_valid_range(), gate_2.current_valid_range(),
+        ],
+        'safety_voltage_ranges': [(-3, 0), (-3, 0)],
     }
     data_settings = {
         'db_name': 'temp.db',
@@ -386,11 +391,10 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
             "rf": [0, 1],
         },
         'db_folder': tmp_path,
-        'fit_options': {},
+        'segment_size': 0.05,
     }
 
     tuningstage_settings = {
-        'measurement_options': measurement_options,
         'readout_methods': readout_methods,
         'setpoint_settings': setpoint_settings,
         'data_settings': data_settings,

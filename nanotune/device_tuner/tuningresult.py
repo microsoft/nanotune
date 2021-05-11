@@ -43,7 +43,7 @@ class TuningResult:
     stage: str
     success: bool
     guids: List[str] = field(default_factory=list)
-    features: Dict[str, Any] = field(default_factory=dict)
+    ml_result: Dict[str, Any] = field(default_factory=dict)
     data_ids: List[str] = field(default_factory=list)
     db_name: str = ''
     db_folder: str = ''

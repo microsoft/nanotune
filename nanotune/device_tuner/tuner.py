@@ -216,15 +216,13 @@ class Tuner(qc.Instrument):
             with self.device_specific_settings(device):  # type: ignore
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
-                    setpoint_settings['gates_to_sweep'] = [gate]
+                    setpoint_settings['parameters_to_sweep'] = [gate.dc_voltage]
 
                     stage = GateCharacterization1D(
                         data_settings=self.data_settings(),
                         setpoint_settings=setpoint_settings,
                         readout_methods=device.readout_methods(),
                         classifier=self.classifiers['pinchoff'],
-                        fit_options=self.fit_options()['pinchofffit'],
-                        measurement_options=device.measurement_options(),
                     )
                     tuningresult = stage.run_stage()
                     tuningresult.status = device.get_gate_status()
@@ -275,15 +273,12 @@ class Tuner(qc.Instrument):
                 for gate in gates_to_sweep:
                     if not skip_gates[gate.layout_id()]:
                         setpoint_sets = copy.deepcopy(self.setpoint_settings())
-                        setpoint_sets['gates_to_sweep'] = [gate]
+                        setpoint_sets['parameters_to_sweep'] = [gate.dc_voltage]
                         stage = GateCharacterization1D(
                             data_settings=self.data_settings(),
                             setpoint_settings=setpoint_sets,
                             readout_methods=device.readout_methods(),
-                            update_settings=False,
                             classifier=self.classifiers['pinchoff'],
-                            fit_options=self.fit_options()['pinchofffit'],
-                            measurement_options=device.measurement_options(),
                         )
                         tuningresult = stage.run_stage()
                         tuningresult.status = device.get_gate_status()
@@ -306,7 +301,7 @@ class Tuner(qc.Instrument):
         v_range = device.gates[last_gate].safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings['gates_to_sweep'] = [gate_to_set]
+        setpoint_settings['parameters_to_sweep'] = [gate_to_set.dc_voltage]
         with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
@@ -316,10 +311,7 @@ class Tuner(qc.Instrument):
                     data_settings=self.data_settings(),
                     setpoint_settings=setpoint_settings,
                     readout_methods=device.readout_methods(),
-                    update_settings=False,
                     classifier=self.classifiers['pinchoff'],
-                    fit_options=self.fit_options()['pinchofffit'],
-                    measurement_options=device.measurement_options(),
                 )
 
                 tuningresult = stage.run_stage()

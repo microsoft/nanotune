@@ -24,7 +24,7 @@ def test_pinchofffit_init(nt_dataset_pinchoff, tmp_path):
         "_high_signal_index",
         "_transition_signal_index",
         "_normalized_voltage",
-        "_next_actions",
+        "_range_update_directives",
     ]
 
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
@@ -34,20 +34,19 @@ def test_pinchofffit_init(nt_dataset_pinchoff, tmp_path):
         getattr(pf, attr)
 
 
-def test_pinchofffit_next_actions(nt_dataset_pinchoff, tmp_path):
+def test_pinchofffit_range_update_directives(nt_dataset_pinchoff, tmp_path):
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
 
-    assert not pf.next_actions["dc_current"]
-    assert not pf.next_actions["dc_sensor"]
+    assert not pf.range_update_directives
 
     _, current, sensor = generate_bad_pinchoff_data()
     pf.data['dc_current'].values = pf._normalize_data(current, "dc_current")
     pf.data['dc_sensor'].values = pf._normalize_data(sensor, "dc_sensor")
     pf.prepare_filtered_data()
     pf.find_fit()
-    expected_actions = ["x more negative", "x more positive"]
-    assert sorted(pf.next_actions["dc_current"]) == expected_actions
-    assert sorted(pf.next_actions["dc_sensor"]) == expected_actions
+
+    assert "x more negative" in pf.range_update_directives
+    assert "x more positive" in pf.range_update_directives
 
 
 def test_pinchofffit_features_property(nt_dataset_pinchoff, tmp_path):

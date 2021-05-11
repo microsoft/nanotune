@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, List, Tuple, Sequence, Any
 import numpy as np
 import xarray as xr
+from sqlite3 import OperationalError
 
 from qcodes.dataset.experiment_container import load_by_id
 
@@ -33,7 +34,7 @@ class DataFit(ABC, Dataset):
             db_folder=db_folder,
         )
         self._features: Dict[str, Any] = {}
-        self._next_actions: Dict[str, List[str]] = {}
+        self._range_update_directives: List[str] = []
 
     @property
     def features(self) -> Dict[str, Any]:
@@ -48,9 +49,9 @@ class DataFit(ABC, Dataset):
         pass
 
     @property
-    def next_actions(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """"""
-        return self._next_actions
+        return self._range_update_directives
 
     def save_features(self) -> None:
         """"""
@@ -58,7 +59,7 @@ class DataFit(ABC, Dataset):
         ds = load_by_id(self.qc_run_id)
         try:
             nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-        except (RuntimeError, TypeError) as r:
+        except (RuntimeError, TypeError, OperationalError) as r:
             nt_meta = {}
         nt_meta["features"] = self.features
         ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))

@@ -41,7 +41,7 @@ from nanotune.data.export_data import prep_data
 
 logger = logging.getLogger(__name__)
 ALLOWED_CATEGORIES = list(dict(nt.config["core"]["features"]).keys())
-DOT_LABLE_MAPPING = dict(nt.config["core"]["dot_mapping"])
+DOT_LABEL_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
 RELEVANT_FEATURE_INDEXES: Dict[str, List[int]] = {
     "pinchoff": [1, 2, 3, 4],
@@ -86,7 +86,7 @@ class Classifier():
     """
     We assume that if no relevant_labels are supplied, single and double dot
     data have been extracted into the same file and labelled with labels
-    specified in DOT_LABLE_MAPPING.
+    specified in DOT_LABEL_MAPPING.
     """
 
     def __init__(
@@ -122,11 +122,11 @@ class Classifier():
                 self.feature_indexes = feature_indexes
 
         if relevant_labels is None:
-            if category in DOT_LABLE_MAPPING.keys():
+            if category in DOT_LABEL_MAPPING.keys():
                 # logger.warning('Classifier: Assuming both data of dot' +
                 #                 ' regimes are saved in ' +
                 #                 '{}'.format(data_filenames))
-                relevant_labels = DOT_LABLE_MAPPING[category]
+                relevant_labels = DOT_LABEL_MAPPING[category]
             else:
                 relevant_labels = [0, 1]
         self.relevant_labels = sorted(relevant_labels)

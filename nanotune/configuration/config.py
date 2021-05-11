@@ -115,7 +115,7 @@ class Config:
             jsonschema.validate(json_config, schema)
 
     def __getitem__(self, name):
-        val = copy.deepcopy(self.current_config)
+        val = self.current_config
         for key in name.split("."):
             if not isinstance(key, str):
                 key = str(key)
@@ -124,3 +124,6 @@ class Config:
 
     def __getattr__(self, name):
         return getattr(self.current_config, name)
+
+    def __setitem__(self, name, value):
+        self.current_config[name] = value

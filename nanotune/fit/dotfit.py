@@ -59,7 +59,7 @@ class DotFit(DataFit):
         db_name: str,
         save_figures: bool = True,
         db_folder: Optional[str] = None,
-        delta_mesh: float = 0.05,
+        segment_size: float = 0.05,
         signal_thresholds: List[float] = [0.004, 0.1],
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
     ) -> None:
@@ -77,44 +77,43 @@ class DotFit(DataFit):
         )
 
         self.signal_thresholds = signal_thresholds
-        self.delta_mesh = delta_mesh
+        self.segment_size = segment_size
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
 
         self.triple_points: Optional[Dict[str, np.ndarray]] = None
 
     @property
-    def next_actions(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """
         signal_type: If more than one signal type (i.e dc, dc_sensor or rf)
         have been measured, select which one to use to perform the edge
         analysis on. Use indexing and the order in which these signals have been
         measured.
         If the data has been segmented, the entire measurement is used to
-        determine next actions.
+        determine next voltage range updates.
         """
-        if not self._next_actions:
+        if not self._range_update_directives:
 
             for read_meth in self.readout_methods:
-                self._next_actions[read_meth] = []
                 left_vertical = self.get_edge("left vertical", read_meth)
                 bottom_horizontal = self.get_edge("bottom horizontal", read_meth)
                 right_vertical = self.get_edge("right vertical", read_meth)
                 top_horizontal = self.get_edge("top horizontal", read_meth)
 
                 if np.max(left_vertical) > self.signal_thresholds[1]:
-                    self._next_actions[read_meth].append("x more negative")
+                    self._range_update_directives.append("x more negative")
 
                 if np.max(bottom_horizontal) > self.signal_thresholds[1]:
-                    self._next_actions[read_meth].append("y more negative")
+                    self._range_update_directives.append("y more negative")
 
                 if np.max(right_vertical) < self.signal_thresholds[0]:
-                    self._next_actions[read_meth].append("x more positive")
+                    self._range_update_directives.append("x more positive")
 
                 if np.max(top_horizontal) < self.signal_thresholds[0]:
-                    self._next_actions[read_meth].append("y more positive")
+                    self._range_update_directives.append("y more positive")
 
-        return self._next_actions
+        return self._range_update_directives
 
     def find_fit(self) -> None:
         """
@@ -154,11 +153,11 @@ class DotFit(DataFit):
             # round to 8 digits to avoid e.g 0.0999999999/0.05
             # to be floored to 1
             vx_span = round(vx_span, 8)
-            n_x = int(floor(vx_span / self.delta_mesh))
+            n_x = int(floor(vx_span / self.segment_size))
 
             vy_span = abs(orig_v_y[0] - orig_v_y[-1])
             vy_span = round(vy_span, 8)
-            n_y = int(floor(vy_span / self.delta_mesh))
+            n_y = int(floor(vy_span / self.segment_size))
 
             if n_x >= orig_shape_x / 10 or n_y >= orig_shape_x / 10:
                 logger.warning(f'Dotfit {self.guid}: Mesh resolution too low.')
@@ -200,7 +199,7 @@ class DotFit(DataFit):
         self,
         segment_db_name: str,
         segment_db_folder: Optional[str] = None,
-    ) -> Dict[int, Dict[str, Dict[str, Tuple[float, float]]]]:
+    ) -> Dict[int, Dict[str, Any]]:
         """
         Save each mesh in a new dataset in given databases
 
@@ -226,7 +225,7 @@ class DotFit(DataFit):
 
 
         original_params = self.qc_parameters
-        segment_info: Dict[int, Dict[str, Dict[str, Tuple[float, float]]]] = {}
+        segment_info: Dict[int, Dict[str, Any]] = {}
 
         with nt.switch_database(segment_db_name, segment_db_folder):
             for segment in self.segmented_data:
@@ -245,7 +244,7 @@ class DotFit(DataFit):
                     paramtype="array",
                 )
                 result: List[List[Tuple[str, np.ndarray]]] = []
-                ranges: Dict[str, Dict[str, Tuple[float, float]]] = {}
+                ranges: List[Tuple[float, float]] = []
                 m_params = [str(it) for it in list(segment.data_vars)]
                 for ip, param_name in enumerate(m_params):
                     coord_names = list(segment.coords)
@@ -258,9 +257,7 @@ class DotFit(DataFit):
 
                     range_x = (np.min(voltage_x), np.max(voltage_x))
                     range_y = (np.min(voltage_y), np.max(voltage_y))
-                    ranges[param_name] = {}
-                    ranges[param_name]["range_x"] = range_x
-                    ranges[param_name]["range_y"] = range_y
+                    ranges = [range_x, range_y]
 
                     setpoints = self.raw_data[param_name].depends_on
                     meas.register_custom_parameter(
@@ -296,7 +293,8 @@ class DotFit(DataFit):
                         + "ID: "
                         + str(datasaver.run_id)
                     )
-                    segment_info[datasaver.run_id] = ranges
+                    segment_info[datasaver.run_id] = {}
+                    segment_info[datasaver.run_id]['voltage_ranges'] = ranges
 
         return segment_info
 

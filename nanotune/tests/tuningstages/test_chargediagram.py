@@ -8,17 +8,17 @@ atol = 1e-03
 
 
 def test_chargediagram_run_stage(chargediagram_settings, experiment):
+
     chdiag = ChargeDiagram(
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.
         classifiers={'singledot': MockClassifer('singledot'),
                      'doubledot': MockClassifer('doubledot'),
                      'dotregime': MockClassifer('dotregime')},
-        update_settings=False,
     )
-    tuning_result = chdiag.run_stage(plot_measurements=True)
+    tuning_result = chdiag.run_stage(plot_result=False)
     assert tuning_result.success
     assert not tuning_result.termination_reasons
-    features = tuning_result.features
+    features = tuning_result.ml_result['features']
     print(features)
 
     dc_current_features = features['dc_current']['triple_points']

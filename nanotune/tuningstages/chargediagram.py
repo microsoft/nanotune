@@ -1,43 +1,138 @@
 import logging
-import json
-from typing import Optional, Tuple, List, Union, Dict, Callable, Any
-
-import numpy as np
+from typing import (
+    Optional,
+    Tuple,
+    List,
+    Dict,
+    Any,
+)
+from typing_extensions import TypedDict
+from functools import partial
 import qcodes as qc
-from qcodes.dataset.experiment_container import load_by_id
 
 import nanotune as nt
 from nanotune.tuningstages.tuningstage import TuningStage
-from nanotune.device.gate import Gate
+from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.fit.dotfit import DotFit
 from nanotune.classification.classifier import Classifier
+from .base_tasks import ( # please update docstrings if import path changes
+    conclude_iteration_with_range_update,
+    get_fit_range_update_directives,
+    get_extracted_features,
+    ReadoutMethodsDict,
+    SetpointSettingsDict,
+    DataSettingsDict,
+    ReadoutMethodsLiteral
+)
+
+from .chargediagram_tasks import(
+    get_range_directives_chargediagram,
+    segment_dot_data,
+    classify_dot_segments,
+    get_new_chargediagram_ranges,
+    verify_dot_classification,
+    determine_dot_regime,
+    conclude_dot_classification,
+    get_dot_segment_regimes,
+    determine_dot_regime,
+    verify_dot_classification,
+    translate_dot_regime,
+    DotClassifierDict,
+)
+RangeChangeSettingsDict = TypedDict(
+    'RangeChangeSettingsDict', {
+        'relative_range_change': float,
+        'min_change': float,
+        'max_change': float,
+        },
+    )
+default_range_change_settings: RangeChangeSettingsDict = {
+    'relative_range_change': 0.3,
+    'min_change': 0.05,
+    'max_change': 0.5,
+}
 
 logger = logging.getLogger(__name__)
-DOT_LABLE_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
 
 class ChargeDiagram(TuningStage):
-    """has a do_at_each for custom actions between setpoints"""
+    """Tuning stage measuring charge stability diagrams.
+
+    Attributes:
+        stage: String identifier indicating which stage it implements, e.g.
+            gatecharacterization.
+        data_settings: Dictionary with information about data, e.g. where it
+            should be saved and how it should be normalized.
+            Required fields are 'db_name', 'db_folder' and
+            'normalization_constants', 'segment_size'.
+        setpoint_settings: Dictionary with information about how to compute
+            setpoints. Required keys are 'parameters_to_sweep',
+            'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
+        readout_methods: Dictionary mapping string identifiers such as
+            'dc_current' to QCoDeS parameters measuring/returning the desired
+            quantity (e.g. current throught the device).
+        current_valid_ranges: List of voltages ranges (tuples of floats) to
+            measure.
+        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+            the device stays alive.
+        target_regime: String indicating the desired final charge state/dot
+            regime.
+        range_change_settings: Dictionary with keys 'relative_range_change',
+            'min_change', 'max_change'. Used to determine new voltage ranges to
+            sweep.
+        classifiers: Pre-trained nt.Classifiers predicting charge states and
+            their quality.
+        fit_class: Returns the class used to perform data fitting, i.e.
+            nanotune.fit.dotfit.Dotfit.
+
+    """
 
     def __init__(
         self,
-        data_settings: Dict[str, Any],
-        setpoint_settings: Dict[str, Any],
-        readout_methods: Dict[str, qc.Parameter],
-        classifiers: Dict[str, Classifier],
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        fit_options: Optional[Dict[str, Any]] = None,
-        update_settings: bool = True,
-        range_change: float = 30,  # in percent
+        data_settings: DataSettingsDict,
+        setpoint_settings: SetpointSettingsDict,
+        readout_methods: ReadoutMethodsDict,
+        classifiers: DotClassifierDict,
+        target_regime: str = 'doubledot',
+        range_change_settings: Optional[RangeChangeSettingsDict] = None,
     ) -> None:
-        """"""
+        """Initializes the base class of a tuning stage. Voltages to sweep and
+        safety voltages are determined from the list of parameters in
+        setpoint_settings.
+
+        Args:
+            data_settings: Dictionary with information about data, e.g. where it
+                should be saved and how it should be normalized.
+                Required fields are 'db_name', 'db_folder' and
+                'normalization_constants', 'segment_size'.
+            setpoint_settings: Dictionary with information required to compute
+                setpoints. Necessary keys are 'current_valid_ranges',
+                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            readout_methods: Dictionary mapping string identifiers such as
+                'dc_current' to QCoDeS parameters measuring/returning the
+                desired quantity (e.g. current throught the device).
+            classifiers: Pre-trained classifiers predicting single and dot
+                quality, and the dotregime. String keys indicating the type of
+                classifier map onto the classifiers itself. Required keys are
+                'singledot', 'doubledot', 'dotregime'.
+            target_regime: String indicating the desired final charge state/dot
+            regime.
+        range_change_settings: Dictionary with keys 'relative_range_change',
+            'min_change', 'max_change'. Used to determine new voltage ranges to
+            sweep.
+
+        """
+
         if 'segment_db_folder' not in data_settings.keys():
             data_settings['segment_db_folder'] = nt.config["db_folder"]
         if 'segment_db_name' not in data_settings.keys():
-            seg_db_name = f'segmented_{nt.config["main_db"]}'
+            seg_db_name = f'segmented_{nt.config["db_name"]}'
             data_settings['segment_db_name'] = seg_db_name
         if 'normalization_constants' not in data_settings.keys():
             logger.warning('No normalisation constants specified.')
+        if 'segment_size' not in data_settings.keys():
+            data_settings['segment_size'] = 0.02
+            logger.warning('Setting default segment size of 0.2V.')
 
         TuningStage.__init__(
             self,
@@ -45,248 +140,186 @@ class ChargeDiagram(TuningStage):
             data_settings,
             setpoint_settings,
             readout_methods,
-            measurement_options=measurement_options,
-            update_settings=update_settings,
-            fit_options=fit_options,
         )
+        if range_change_settings is None:
+            range_change_settings = {}  # type: ignore
+        default_range_change_settings.update(range_change_settings) # type: ignore
 
-        self.segmented_ids: List[int] = []
-
-        self.init_gate_values = []
-        for gate in self.setpoint_settings['gates_to_sweep']:
-            self.init_gate_values.append(gate.dc_voltage())
-
-        self.range_change = range_change
-        self.max_change = 0.5  # in volt
-        self.min_change = 0.1  # in volt
+        self.range_change_settings = default_range_change_settings
+        self.target_regime = target_regime
         self.classifiers = classifiers
-
-    def clean_up(self) -> None:
-        """"""
-        for ig, gate in enumerate(self.setpoint_settings['gates_to_sweep']):
-            gate.dc_voltage(self.init_gate_values[ig])
-
-    def check_quality(self) -> bool:
-        """
-        Checks quality of segments of a dataset. Returns true if any segment
-        is classified as a good single or good double dot. The predicted
-        category is saved in self.segment_ids:
-        self.segment_ids =[(data_id, category), (..), .. ]
-
-        Up to user to filter good dot regimes and check if it is the desired
-        one.
-
-        good single is category = 1
-        good double is category = 3
-        """
-        assert self.segment_regimes is not None
-
-        # Return true of there is some good regime among the segments
-        found_categories = list(self.segment_regimes.values())
-        if 1 in found_categories or 3 in found_categories:
-            return True
-        else:
-            return False
-
-    def determine_regime(
-        self,
-        segment_ids: List[int],
-    ) -> Dict[int, int]:
-        """"""
-        seg_db_name = self.data_settings['segment_db_name']
-        seg_db_folder = self.data_settings['segment_db_folder']
-
-        with nt.switch_database(seg_db_name, seg_db_folder):
-            segment_regimes = {}
-            for data_id in segment_ids:
-                goodsingle = self.classifiers['singledot'].predict(
-                    data_id, seg_db_name, db_folder=seg_db_folder
-                )
-                gooddouble = self.classifiers['doubledot'].predict(
-                    data_id, seg_db_name, db_folder=seg_db_folder
-                )
-                dotregime = self.classifiers['dotregime'].predict(
-                    data_id, seg_db_name, db_folder=seg_db_folder
-                )
-                if any(goodsingle) and any(gooddouble):
-                    # both good single and doubledot
-                    # category = DOT_LABLE_MAPPING['doubledot'][1]
-                    category = DOT_LABLE_MAPPING["singledot"][1]
-                else:
-                    # check if one is good and whether they contradict the
-                    # dot regime prediction
-                    if any(goodsingle) and not any(gooddouble):
-                        # check if regime clf suggests a single dot as well
-                        # dotregime = 0 => good single
-                        if not any(dotregime):
-                            category = DOT_LABLE_MAPPING["singledot"][1]
-                        else:
-                            category = DOT_LABLE_MAPPING["bothpoor"][0]
-
-                    elif not any(goodsingle) and any(gooddouble):
-                        if dotregime:
-                            category = DOT_LABLE_MAPPING["doubledot"][1]
-                        else:
-                            category = DOT_LABLE_MAPPING["bothpoor"][0]
-
-                    elif not any(goodsingle) and not any(gooddouble):
-                        category = DOT_LABLE_MAPPING["bothpoor"][0]
-                    else:
-                        logger.error(
-                            "ChargeDiagram.check_quality: Unable to "
-                            + "assign dot quality. Unknown combination "
-                            + "of single and doubledot predictions."
-                        )
-
-                segment_regimes[data_id] = category
-
-                # save predicted category to metadata
-                ds = load_by_id(data_id)
-                nt_metadata = json.loads(ds.get_metadata(nt.meta_tag))
-                nt_metadata["predicted_category"] = category
-                ds.add_metadata(nt.meta_tag, json.dumps(nt_metadata))
-        print(nt.get_database())
-        return segment_regimes
-
-    def additional_post_measurement_actions(self) -> None:
-        """"""
-        db = self.data_settings['segment_db_name']
-        db_loc = self.data_settings['segment_db_folder']
-        segment_info = self.current_fit.save_segmented_data_return_info(db,
-                                                                        db_loc)
-        segment_info_new = []
-        # convert to list of tuples which will hold their predicted label
-        self.segmented_ids = [s_id for s_id in segment_info.keys()]
-        logger.info("Derived run_ids: {}".format(self.segmented_ids))
-
-        self.segment_regimes = self.determine_regime(self.segmented_ids)
-        for seg_id, v_ranges in segment_info.items():
-            segment_info_new.append((
-                    seg_id,
-                    v_ranges,
-                    self.segment_regimes[seg_id],
-            ))
-
-        self.segment_info = segment_info_new
 
     @property
     def fit_class(self):
-        """
-        Use the appropriate fitting class
-        """
+        """Returns nanotune's Dotfit"""
         return DotFit
 
-    def get_next_actions(self,
-                         readout_method_to_use: Optional[str] = 'dc_current',
-                         ) -> Tuple[List[str], List[str]]:
-        """
-        data fit returns next actions
-
-        check if we reached safety limits and remove corresponding action
-        if it is the case
-        """
-        fit_actions = self.current_fit.next_actions[readout_method_to_use]
-
-        issues = []
-        actions = []
-        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        if "x more negative" in fit_actions:
-            gate = gates_to_sweep[0]
-            d_n = abs(self.current_ranges[0][0] - gate.safety_range()[0])
-            if d_n > 0.015:
-                actions.append("x more negative")
-            else:
-                issues.append("x reached negative voltage limit")
-
-        if "x more positive" in fit_actions:
-            gate = gates_to_sweep[0]
-            d_p = abs(self.current_ranges[0][1] - gate.safety_range()[1])
-            if d_p > 0.015:
-                actions.append("x more positive")
-            else:
-                issues.append("x reached positive voltage limit")
-
-        if "y more negative" in fit_actions:
-            gate = gates_to_sweep[1]
-            d_n = abs(self.current_ranges[1][0] - gate.safety_range()[0])
-            if d_n > 0.015:
-                actions.append("y more negative")
-            else:
-                issues.append("y reached negative voltage limit")
-
-        if "y more positive" in fit_actions:
-            gate = gates_to_sweep[1]
-            d_p = abs(self.current_ranges[1][1] - gate.safety_range()[1])
-            if d_p > 0.015:
-                actions.append("y more positive")
-            else:
-                issues.append("y reached positive voltage limit")
-
-        return actions, issues
-
-    def update_current_ranges(
+    def conclude_iteration(
         self,
-        actions: List[str],
-    ) -> None:
+        tuning_result: TuningResult,
+        current_valid_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+        current_iteration: int,
+        max_n_iterations: int,
+    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+        """Method checking if one iteration of a run_stage measurement cycle has
+        been successful. An iteration of such a measurement cycle takes data,
+        performs a machine learning task, verifies and saves the machine
+        learning result. If a repetition of this cycle is supported, then
+        ``conclude_iteration`` determines whether another iteration should take
+        place and which voltage ranges need to be measured.
+        Each child class needs to implement the body of this method, tailoring
+        it to the respective tuning stage.
+
+        Args:
+            tuning_result: Result of the last run_stage measurement cycle.
+            current_valid_ranges: Voltage ranges last swept.
+            safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
+                range that could be swept.
+            current_iteration: Number of current iteration.
+            max_n_iterations: Maximum number of iterations to perform before
+                abandoning.
+
+        Returns:
+            bool: Whether this is the last iteration and the stage is done/to
+                be stopped.
+            list: New voltage ranges to sweep if the stage is not done.
+            list: List of strings indicating failure modes.
         """
-        Currently either shifting the window or making it larger.
+
+        (done,
+        new_voltage_ranges,
+        termination_reasons) = conclude_iteration_with_range_update(
+            tuning_result,
+            current_valid_ranges,
+            safety_voltage_ranges,
+            self.get_range_update_directives,
+            partial(
+                get_new_chargediagram_ranges,
+                range_change_settings=self.range_change_settings,
+            ),
+            current_iteration,
+            max_n_iterations,
+        )
+
+        return done, new_voltage_ranges, termination_reasons
+
+    def verify_machine_learning_result(
+        self,
+        ml_result: Dict[str, Any],
+    ) -> bool:
+        """Verifies if the desired regime and quality have been found.
+
+        Args:
+            ml_result: Dictionary returned by ``self.machine_learning_task``.
+
+        Returns:
+            bool: Whether the desired outcome has been found.
         """
-        all_actions = ["x more negative", "x more positive",
-                       "y more negative", "y more positive"]
-        for action in actions:
-            if action not in all_actions:
-                logger.error(
-                    (f'{self.stage}: Unknown action.'
-                     'Cannot update measurement setting')
-                )
 
-        if "x more negative" in actions:
-            self._update_range(0, "negative")
+        good_found = False
+        if ml_result['regime'] == self.target_regime and ml_result['quality']:
+            good_found = True
 
-        if "x more positive" in actions:
-            self._update_range(0, "positive")
+        return good_found
 
-        if "y more negative" in actions:
-            self._update_range(1, "negative")
+    def machine_learning_task(
+        self,
+        run_id: int,
+    ) -> Dict[str, Any]:
+        """Divides original measurement into segments, which are classified
+        seperately. The overall outcome, i.e. regime and quality, are
+        determined using ``conclude_dot_classification`` defined in
+        .chargediagram_tasks. If the desired regime is not found, the overall
+        regime is the most frequent one in the dot segments.
 
-        if "y more positive" in actions:
-            self._update_range(1, "positive")
-        else:
-            logger.error(
-                (f'{self.stage}: Unknown action.'
-                 'Cannot update measurement setting')
-            )
+        Args:
+            run_id: QCoDeS data run ID.
 
-    def _update_range(self, gate_id: int, direction: str) -> None:
-        curr_rng = self.current_ranges[gate_id]
-        new_rng = list(curr_rng)
-        gates_to_sweep = self.setpoint_settings['gates_to_sweep']
-        max_rng = gates_to_sweep[gate_id].safety_range()
+        Returns:
+            dict: The classification outcome, both segment wise under the key
+                'dot_segments' as well as the overall outcome under 'regime' and
+                'quality'.
+        """
 
-        if direction == "negative":
-            if abs(curr_rng[0] - max_rng[0]) <= 2 * self.min_change:
-                diff = abs(curr_rng[0] - max_rng[0])
-            else:
-                diff = self.range_change / 100 * abs(curr_rng[0] - max_rng[0])
-                diff = min(diff, self.max_change)
-                diff = max(diff, self.min_change)
-            new_rng[0] = new_rng[0] - diff
+        dot_segments = segment_dot_data(
+            run_id,
+            self.data_settings['db_name'],
+            self.data_settings['db_folder'],
+            self.data_settings['segment_db_name'],
+            self.data_settings['segment_db_folder'],
+            self.data_settings['segment_size'],
+        )
 
-        elif direction == "positive":
-            if abs(curr_rng[1] - max_rng[1]) <= 2 * self.min_change:
-                diff = abs(curr_rng[1] - max_rng[1])
-            else:
-                diff = self.range_change / 100 * abs(curr_rng[1] - max_rng[1])
-                diff = min(diff, self.max_change)
-                diff = max(diff, self.min_change)
-            new_rng[1] = curr_rng[1] + diff
-        else:
-            raise NotImplementedError
+        classification_outcome = classify_dot_segments(
+            self.classifiers,
+            [run_id for run_id in dot_segments.keys()],
+            self.data_settings['segment_db_name'],
+            self.data_settings['segment_db_folder'],
+        )
+        segment_regimes = get_dot_segment_regimes(
+            classification_outcome,
+            determine_dot_regime,
+        )
 
-        gates_to_sweep[gate_id].current_valid_range(new_rng)
-        accepted_range = gates_to_sweep[gate_id].current_valid_range()
-        self.current_ranges[gate_id] = accepted_range
+        for r_id in dot_segments.keys():
+            dot_segments[r_id]['predicted_regime'] = segment_regimes[r_id]
 
-        logger.info(f'Updating ranges of gate {gate_id} to {new_rng}')
+        ml_result: Dict[str, Any] = {}
+        ml_result['dot_segments'] = dot_segments
 
+        ml_result['regime'], ml_result['quality'] = conclude_dot_classification(
+            self.target_regime,
+            dot_segments,
+            verify_dot_classification,
+            translate_dot_regime,
+        )
+        ml_result['features'] = get_extracted_features(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
+
+        return ml_result
+
+    def get_range_update_directives(
+        self,
+        run_id: int,
+        current_valid_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+    ) -> Tuple[List[str], List[str]]:
+        """Determines directives indicating if the current voltage ranges need
+        to be extended or shifted. It first gets these directives from the data
+        fit using ``get_fit_range_update_directives`` defined in .base_tasks.py
+        and then checks if they can be put into action using
+        ``get_range_directives_chargediagram`` defined in
+        chargediagram_tasks.py. The check looks at whether safety ranges
+        have been reached already, or whether a voltage range extension is
+        possible.
+
+        Args:
+            run_id: QCoDeS data run ID.
+            current_valid_ranges: Last voltage range swept.
+            safety_ranges: Safety range of gate swept.
+
+        Returns:
+            list: List with range update directives.
+            list: List with issues encountered.
+        """
+
+        fit_range_update_directives = get_fit_range_update_directives(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
+        (range_update_directives,
+         issues) = get_range_directives_chargediagram(
+            fit_range_update_directives,
+            current_valid_ranges,
+            safety_voltage_ranges,
+        )
+
+        return range_update_directives, issues
 

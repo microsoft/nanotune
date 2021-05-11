@@ -44,7 +44,7 @@ class PinchoffFit(DataFit):
 
     Attributes:
         features (dict):
-        next_actions (list):
+        range_update_directives (list):
 
         gradient_percentile
         get_transition_from_fit
@@ -86,20 +86,18 @@ class PinchoffFit(DataFit):
         self._normalized_voltage = np.linspace(0, 1, n_points)
 
     @property
-    def next_actions(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """"""
         if not self._low_signal:
             self.compute_transition_interval()
-        self._next_actions = {}
+        self._range_update_directives = []
         for read_meth in self.readout_methods:
-            self._next_actions[read_meth] = []
-
             if self._high_signal[read_meth] < 0.8:
-                self._next_actions[read_meth].append("x more negative")
+                self._range_update_directives.append("x more negative")
             if self._low_signal[read_meth] > 0.2:
-                self._next_actions[read_meth].append("x more positive")
+                self._range_update_directives.append("x more positive")
 
-        return self._next_actions
+        return self._range_update_directives
 
     def find_fit(self) -> None:
         """"""
@@ -363,13 +361,13 @@ class PinchoffFit(DataFit):
 
                 ax[r_i, 0].plot(voltage, gradient, label="gradient", zorder=0)
 
-            fit_feat = [
-                self.features[read_meth]["amplitude"],
-                self.features[read_meth]["slope"],
-                self.features[read_meth]["offset"],
-            ]
-            fit = self.fit_fct(self._normalized_voltage, fit_feat)
-            ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
+            # fit_feat = [
+            #     self.features[read_meth]["amplitude"],
+            #     self.features[read_meth]["slope"],
+            #     self.features[read_meth]["offset"],
+            # ]
+            # fit = self.fit_fct(self._normalized_voltage, fit_feat)
+            # ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
             ax[r_i, 0].legend(loc="lower right", bbox_to_anchor=(1, 0.1))
 
             divider = make_axes_locatable(ax[r_i, 0])

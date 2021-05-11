@@ -1,156 +1,305 @@
-from typing import Optional, Tuple, List, Union, Dict, Callable, Any, Sequence
+from typing import (
+    Optional,
+    Tuple,
+    List,
+    Union,
+    Dict,
+    Callable,
+    Any,
+    Sequence,
+)
+from typing_extensions import Literal
 import logging
 import copy
 import qcodes as qc
 
 import nanotune as nt
-from nanotune.device.gate import Gate
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
+from .base_tasks import ( # please update docstrings if import path changes
+    check_measurement_quality,
+    conclude_iteration_with_range_update,
+    get_fit_range_update_directives,
+    get_extracted_features,
+    ReadoutMethodsDict,
+    SetpointSettingsDict,
+    DataSettingsDict,
+    ReadoutMethodsLiteral,
+)
+from .gatecharacterization_tasks import (
+    get_new_gatecharacterization_range,
+    get_range_directives_gatecharacterization,
+    finish_early_pinched_off,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class GateCharacterization1D(TuningStage):
-    """has a do_at_each for custom actions between setpoints
-    will change voltage of current gate until either pinchoff is found or
-    safety ranges are reached
+    """Tuning stage performing individual gate characterizations.
+
+    Attributes:
+        stage: String indicating which stage it implements, e.g.
+            gatecharacterization.
+        data_settings: Dictionary with information about data, e.g. where it
+            should be saved and how it should be normalized.
+            Required fields are 'db_name', 'db_folder' and
+            'normalization_constants'.
+        setpoint_settings: Dictionary with information required to compute
+            setpoints. Necessary keys are 'current_valid_ranges',
+            'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+        readout_methods: Dictionary mapping string identifiers such as
+            'dc_current' to QCoDeS parameters measuring/returning the desired
+            quantity (e.g. current throught the device).
+        current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
+        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+            which gates don't blow up.
+        classifier: Pre-trained nt.Classifier predicting the quality of a
+            pinchoff curve.
+        noise_level: Relative level above which a measured output is considered
+            being above the noise floor. Is compared to a normalized signal.
+        main_readout_method: Readout method to use for early finish check.
+        voltage_interval_to_track: Voltage interval over which the measured
+            output is checked
+        fit_class: Returns the class used to perform data fitting, i.e.
+            PinchoffFit.
     """
 
     def __init__(
         self,
-        data_settings: Dict[str, Any],
-        setpoint_settings: Dict[str, Any],
-        readout_methods: Dict[str, qc.Parameter],
+        data_settings: DataSettingsDict,
+        setpoint_settings: SetpointSettingsDict,
+        readout_methods: ReadoutMethodsDict,
         classifier: Classifier,
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        fit_options: Optional[Dict[str, Any]] = None,
-        update_settings: bool = True,
         noise_level: float = 0.001,  # compares to normalised signal
+        main_readout_method: ReadoutMethodsLiteral = 'dc_current',
+        voltage_interval_to_track = 0.3,
     ) -> None:
+        """Initializes a gate characterization tuning stage.
+
+        Args:
+            data_settings: Dictionary with information about data, e.g. where it
+                should be saved and how it should be normalized.
+                Required fields are 'db_name', 'db_folder' and
+                'normalization_constants'.
+            setpoint_settings: Dictionary with information required to compute
+                setpoints. Necessary keys are 'current_valid_ranges',
+                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            readout_methods: Dictionary mapping string identifiers such as
+                'dc_current' to QCoDeS parameters measuring/returning the
+                desired quantity (e.g. current throught the device).
+            classifier: Pre-trained nt.Classifier predicting the quality of a
+            pinchoff curve.
+            noise_level: Relative level above which a measured output is considered
+                being above the noise floor. Is compared to a normalized signal.
+            main_readout_method: Readout method to use for early finish check.
+            voltage_interval_to_track: Voltage interval over which the measured
+                output is checked
         """
-        """
+
         TuningStage.__init__(
             self,
             "gatecharacterization1d",
             data_settings,
             setpoint_settings,
             readout_methods,
-            measurement_options=measurement_options,
-            update_settings=update_settings,
-            fit_options=fit_options,
         )
 
-        self.clf = classifier
+        self.classifier = classifier
         self.noise_level = noise_level
-        self._recent_signals: List[float] = []
-        if isinstance(self.setpoint_settings['gates_to_sweep'], Gate):
-            gate_list = [self.setpoint_settings['gates_to_sweep']]
-            self.setpoint_settings['gates_to_sweep'] = gate_list
-        else:
-            assert len(self.setpoint_settings['gates_to_sweep']) == 1
-        self.gate = self.setpoint_settings['gates_to_sweep'][0]
+        self.main_readout_method = main_readout_method
+        self.voltage_interval_to_track = voltage_interval_to_track
+
+        self._recent_readout_output: List[float] = []
+        params = self.setpoint_settings['parameters_to_sweep']
+        if isinstance(params, qc.Parameter):
+            self.setpoint_settings['parameters_to_sweep'] = [params]
+
+        assert len(self.setpoint_settings['parameters_to_sweep']) == 1
 
     @property
     def fit_class(self):
         """
-        Use the appropriate fitting class
+        Data fitting class to extract pinchoff features.
         """
         return PinchoffFit
 
-    def check_quality(self) -> bool:
-        """"""
-        found_dots = self.clf.predict(
-            self.current_id,
-            self.data_settings['db_name'],
-            self.data_settings['db_folder'],
-            )
-        return any(found_dots)
-
-    def update_current_ranges(
+    def machine_learning_task(
         self,
-        actions: List[str],
-    ) -> None:
-        """"""
-        for action in actions:
-            if action not in ["x more negative", "x more positive"]:
-                logger.error((f'{self.stage}: Unknown action.'
-                    'Cannot update measurement setting'))
+        run_id: int,
+    ) -> Dict[str, Any]:
+        """Executes the post-measurement machine learning task, a binary
+        classification predicting the quality of the measurement. The
+        result is saved in a dictionary with 'quality' and 'regime' keys, the
+        latter for completeness and compatibility with general tuning stage
+        methods.
 
-        if "x more negative" in actions:
-            self._update_range(0, 0)
-        if "x more positive" in actions:
-            self._update_range(0, 1)
+        Args:
+            run_id: QCoDeS data run ID.
 
+        Returns:
+            dict: The classification outcome, saved under the 'quality' key. For
+                completeness, the 'regime' key maps onto 'pinchoff'.
+        """
 
-    def _update_range(self, gate_id, range_id):
-        v_change = abs(
-            self.current_ranges[gate_id][range_id]
-            - self.gate.safety_range()[range_id]
+        ml_result: Dict[str, Any] = {}
+        ml_result['features'] = get_extracted_features(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
         )
-        sign = (-1) ** (range_id + 1)
-        self.current_ranges[gate_id][range_id] += sign * v_change
+        ml_result['quality'] = check_measurement_quality(
+            self.classifier,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
+        ml_result['regime'] = 'pinchoff'
+        return ml_result
 
-    def get_next_actions(self) -> Tuple[List[str], List[str]]:
+    def verify_machine_learning_result(
+        self,
+        ml_result: Dict[str, int],
+    ) -> bool:
+        """Verifies whether a good pinchoff curve has been predicted.
+
+        Args:
+            ml_result: Result returned by ``machine_learning_task``, a
+                dictionary with 'quality' and 'regime' keys.
+
+        Returns:
+            bool: Whether the desired outcome has been found.
         """
-        Define next actions if quality of current fit is sub-optimal.
-        First: try to sweep the current gate more negative.
-        If we are speeing to its min_v, we set the auxiliary_gate to min_v
-        No intermediate tries, just being efficient.
+
+        return bool(ml_result['quality'])
+
+    def conclude_iteration(
+        self,
+        tuning_result: TuningResult,
+        current_valid_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
+        current_iteration: int,
+        max_n_iterations: int,
+    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+        """Method checking if one iteration of a run_stage measurement cycle has
+        been successful. An iteration of such a measurement cycle takes data,
+        performs a machine learning task, verifies and saves the machine
+        learning result. If a repetition of this cycle is supported, then
+        ``conclude_iteration`` determines whether another iteration should take
+        place and which voltage ranges need to be measured.
+        It wraps conclude_iteration_with_range_update in .base_tasks.py and
+        resets self._recent_readout_output. ``self._recent_readout_output`` is
+        used in ``self.finish_early`` to detect a pinched-off regime.
+
+        Args:
+            tuning_result: Result of the last run_stage measurement cycle.
+            current_valid_ranges: Voltage ranges last swept.
+            safety_voltage_ranges: Safety voltage ranges, i.e. largest possible
+                range that could be swept.
+            current_iteration: Number of current iteration.
+            max_n_iterations: Maximum number of iterations to perform before
+                abandoning.
+
+        Returns:
+            bool: Whether this is the last iteration and the stage is done/to
+                be stopped.
+            list: New voltage ranges to sweep if the stage is not done.
+            list: List of strings indicating failure modes.
         """
-        fit_actions = self.current_fit.next_actions
-        safety_range = self.gate.safety_range()
 
-        neg_range_avail = abs(self.current_ranges[0][0] - safety_range[0])
-        pos_range_avail = abs(self.current_ranges[0][1] - safety_range[1])
+        (done,
+        new_voltage_ranges,
+        termination_reasons) = conclude_iteration_with_range_update(
+            tuning_result,
+            current_valid_ranges,
+            safety_voltage_ranges,
+            self.get_range_update_directives,
+            get_new_gatecharacterization_range,
+            current_iteration,
+            max_n_iterations,
+        )
+        self._recent_readout_output = []
+        return done, new_voltage_ranges, termination_reasons
 
-        actions = []
-        issues = []
+    def get_range_update_directives(
+        self,
+        run_id: int,
+        current_valid_ranges: List[Tuple[float, float]],
+        safety_ranges: List[Tuple[float, float]],
+    ) -> Tuple[List[str], List[str]]:
+        """Determines directives indicating if the current voltage ranges need
+        to be extended or shifted. It first gets these directives from the data
+        fit using ``get_fit_range_update_directives`` defined in .base_tasks.py
+        and then checks if they can be put into action using
+        ``get_range_directives_gatecharacterization`` defined in
+        gatecharacterization_tasks.py. The check looks at whether safety ranges
+        have been reached already, or whether a voltage range extension is
+        possible.
 
-        if "x more negative" in fit_actions:
-            if neg_range_avail >= 0.1:
-                actions.append("x more negative")
-            else:
-                issues.append("negative safety voltage reached")
+        Args:
+            run_id: QCoDeS data run ID.
+            current_valid_ranges: Last voltage range swept.
+            safety_ranges: Safety range of gate swept.
 
-        if "x more positive" in fit_actions:
-            if pos_range_avail >= 0.1:
-                actions.append("x more positive")
-            else:
-                issues.append("positive safety voltage reached")
-
-        return actions, issues
-
-    def clean_up(self) -> None:
-        """"""
-        self.gate.dc_voltage(self.gate.safety_range()[1])
-
-    def finish_early(self,
-                     current_output_dict: Dict[str, float],
-                     ) -> bool:
-        """Check strength of measured signal over the last 30mv and
-        see if current is constantly low/high. Measurement will be stopped
-        of this is the case
+        Returns:
+            list: List with range update directives.
+            list: List with issues encountered.
         """
-        readout_method_to_use = 'dc_current'
-        param = self.readout_methods[readout_method_to_use]
-        current_signal = current_output_dict[param.full_name]
-        finish = False
-        voltage_precision = self.setpoint_settings['voltage_precision']
 
-        self._recent_signals.append(current_signal)
-        if len(self._recent_signals) > int(0.3 / (voltage_precision)):
-            self._recent_signals = self._recent_signals[1:].copy()
+        if isinstance(current_valid_ranges, tuple):
+            current_valid_ranges = [current_valid_ranges]
+        if isinstance(safety_ranges, tuple):
+            safety_ranges = [safety_ranges]
 
-            norm_consts = self.data_settings['normalization_constants']
-            n_cts = norm_consts[readout_method_to_use]
-            norm_signal = (current_signal - n_cts[0]) / (n_cts[1] - n_cts[0])
-            if norm_signal < self.noise_level:
-                finish = True
+        fit_range_update_directives = get_fit_range_update_directives(
+            self.fit_class,
+            run_id,
+            self.data_settings['db_name'],
+            db_folder=self.data_settings['db_folder'],
+        )
+        (range_update_directives,
+         issues) = get_range_directives_gatecharacterization(
+            fit_range_update_directives,
+            current_valid_ranges,
+            safety_ranges,
+        )
+
+        return range_update_directives, issues
+
+    def finish_early(
+        self,
+        current_output_dict: Dict[str, float],
+    ) -> bool:
+        """Checks the average strength of measured signal over a given voltage
+        interval is below the noise floor. If this is the case, the boolean
+        returned indicates that the measurement can be stopped. It wraps
+        ``finish_early_pinched_off`` defined in .gatecharacterization_tasks.py.
+
+        Args:
+            current_output_dict: Dictionary mapping strings indicating the
+                readout method to QCoDeS parameters.
+
+        Returns:
+            bool: Whether the measurement can be stopped early.
+        """
+
+        param = self.readout_methods[self.main_readout_method]
+        last_measurement_strength = current_output_dict[param.full_name]
+
+        norm_consts = self.data_settings['normalization_constants']
+        normalization_constant = norm_consts[self.main_readout_method]
+
+        finish, self._recent_readout_output = finish_early_pinched_off(
+            last_measurement_strength,
+            normalization_constant,
+            self._recent_readout_output,
+            self.setpoint_settings['voltage_precision'],
+            self.noise_level,
+            self.voltage_interval_to_track,
+        )
 
         return finish
 
-    def additional_post_measurement_actions(self) -> None:
-        """"""
-        self._recent_signals = []

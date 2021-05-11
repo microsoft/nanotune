@@ -49,7 +49,7 @@ class CoulombOscillationFit(DataFit):
         self.peak_distances: Dict[str, List[float]] = {}
 
     @property
-    def next_actions(self) -> Dict[str, List[str]]:
+    def range_update_directives(self) -> List[str]:
         """"""
         raise NotImplementedError
 
