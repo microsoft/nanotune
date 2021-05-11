@@ -13,6 +13,40 @@ from scipy import interpolate
 from sim.qcodes_utils import QcodesDbConfig
 
 
+class Pin:
+    def __init__(
+        self,
+        name: str,
+    ) -> None:
+        self._name = name
+        self._value: float = 0.0
+
+    def __repr__(self) -> str:
+        return self._name
+
+    def __str__(self) -> str:
+        return self._name
+
+    @property
+    def name(self) -> str:
+        """Name of the pin"""
+
+        return self._name
+
+    @property
+    def value(self) -> float:
+        """Gets the current value of the pin"""
+
+        return self._value
+
+    def get_value(self) -> float:
+        """Gets the current value on the input pin.  Compatible with qcodes
+        Parameter get_cmd argument.
+        """
+
+        return self._value
+
+
 class StaticDataProvider:
     """Data provider that returns a constant value for all inputs."""
 

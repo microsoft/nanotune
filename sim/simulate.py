@@ -1,9 +1,9 @@
 #pylint: too-many-arguments, too-many-locals
-from typing import Union
+from typing import Union, List
 from sim.data_providers import StaticDataProvider, QcodesDataProvider, Pin
 
 
-class InputPin:
+class InputPin(Pin):
     """Represents an input pin on a device.  Can be bound to a data provider as
     an input source.
     """
@@ -13,33 +13,9 @@ class InputPin:
         name: str,
         default_value: float = 0.0,
     ) -> None:
-        self._name = name
+
+        super().__init__(name)
         self._value = default_value
-
-    def __repr__(self) -> str:
-        return self._name
-
-    def __str__(self) -> str:
-        return self._name
-
-    @property
-    def name(self) -> str:
-        """Name of the input pin"""
-
-        return self._name
-
-    @property
-    def value(self) -> float:
-        """Gets the current value of the pin"""
-
-        return self._value
-
-    def get_value(self) -> float:
-        """Gets the current value on the input pin.  Compatible with qcodes
-        Parameter get_cmd argument.
-        """
-
-        return self._value
 
     def set_value(self, value: float) -> None:
         """Sets the current value on the input pin.  Compatible with qcodes
@@ -49,8 +25,7 @@ class InputPin:
         self._value = value
 
 
-
-class OutputPin:
+class OutputPin(Pin):
     """Represents an output pin on a device.  Can be associated with a data
     provider to generate ouput data given bound inputs.
     """
@@ -62,14 +37,9 @@ class OutputPin:
     ) -> None:
         """Initializes an OutputPin."""
 
-        self._name = name
+        super().__init__(name)
         self._data_provider = default_data_provider
-
-    def __repr__(self) -> str:
-        return self._name
-
-    def __str__(self) -> str:
-        return self._name
+        self._value = self._data_provider.value
 
     def set_data_provider(
         self,
@@ -80,25 +50,19 @@ class OutputPin:
         self._data_provider = data_provider
 
     @property
-    def name(self) -> str:
-        """Name of this output pin"""
-
-        return self._name
-
-    @property
-    def value(self) -> float:
+    def value(self):
         """Returns the current value of this output pin, as determined by the
         current data provider.
         """
 
         return self._data_provider.value
 
-    def get_value(self) -> float:
-        """Returns the current value of this output pin. Compatible with
-        qcodes Parmeter get_cmd argument.
+    def get_value(self):
+        """Returns the current value of this output pin.  Compatible with qcodes
+        Parmeter get_cmd argument.
         """
 
-        return self._data_provider.value
+        return self.value
 
 
 #pylint: disable=too-few-public-methods
