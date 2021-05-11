@@ -3,6 +3,7 @@ from functools import partial
 from typing import Optional, Dict
 
 import PyQt5.QtWidgets as qtw
+from PyQt5.QtCore import Qt
 
 import nanotune as nt
 
@@ -13,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 class Window(qtw.QMainWindow):
     def __init__(
-        self, title: str = "Labelling Tool", labels: Optional[Dict[str, str]] = None
+        self,
+        title: str = "Labelling Tool",
+        labels: Optional[Dict[str, str]] = None,
     ):
         if labels is None:
             labels = dict(nt.config["core"]["labels"])
@@ -53,7 +56,10 @@ class Window(qtw.QMainWindow):
 
 
 class Widgets(qtw.QWidget):
-    def __init__(self, window: Window) -> None:
+    def __init__(
+        self,
+        window: Window,
+    ) -> None:
         super(Widgets, self).__init__(window)
         layout = qtw.QVBoxLayout(self)
 
@@ -63,7 +69,7 @@ class Widgets(qtw.QWidget):
 
         l1 = qtw.QLabel()
         l1.setText("Plot ID: {}".format(window.labels["plot_id"][0]))
-        l1.setAlignment(qtw.AlignCenter)
+        l1.setAlignment(Qt.AlignCenter)  # type: ignore
         figure_row.addWidget(l1)
         # display plot
 
@@ -74,9 +80,9 @@ class Widgets(qtw.QWidget):
         goodness_column = qtw.QVBoxLayout()
         goodness_group = qtw.QButtonGroup(self)
 
-        btn_good = qtw.QPushButton("Good")
+        btn_good = qtw.QPushButton("Good", self)
         btn_good.setCheckable(True)
-        btn_good.clicked.connect(partial(self.retain_label, "good"))
+        btn_good.clicked.connect(partial(self.retain_label, "good"))  # type: ignore
         goodness_group.addButton(btn_good)
 
         btn_bad = qtw.QPushButton("Bad")
@@ -87,7 +93,7 @@ class Widgets(qtw.QWidget):
 
         btn_goodish = qtw.QPushButton("Good-ish")
         btn_goodish.setCheckable(True)
-        btn_goodish.clicked.connect(partial(self.retain_label, "good-ish"))
+        btn_goodish.clicked.connect(partial(self.retain_label, "good-ish"))  # type: ignore
         goodness_group.addButton(btn_goodish)
 
         goodness_column.addWidget(btn_good)

@@ -179,7 +179,7 @@ class LabellingTool(qtw.QMainWindow):
         # self.progressbar.setGeometry(30, 40, 200, 25)
 
         pp = len(self.labelled_ids) / self.n_total * 100
-        self.progressbar.setValue(pp)
+        self.progressbar.setValue(pp)  # type: ignore
 
         self.statusBar().showMessage("Are we there yet?")
 
@@ -203,7 +203,7 @@ class LabellingTool(qtw.QMainWindow):
 
         self.l1 = qtw.QLabel()
         self.l1.setText("Plot ID: {}".format(self.current_id))
-        self.l1.setAlignment(qtc.Qt.AlignCenter)
+        self.l1.setAlignment(qtc.Qt.AlignCenter)  # type: ignore
         figure_row.addWidget(self.l1)
 
         rcParams.update({"figure.autolayout": True})
@@ -300,18 +300,18 @@ class LabellingTool(qtw.QMainWindow):
 
         clear_btn = qtw.QPushButton("Clear")
         finalize_row.addWidget(clear_btn)
-        clear_btn.clicked.connect(self.clear)
+        clear_btn.clicked.connect(self.clear)  # type: ignore
 
         save_btn = qtw.QPushButton("Save")
         finalize_row.addWidget(save_btn)
-        save_btn.clicked.connect(self.save_labels)
+        save_btn.clicked.connect(self.save_labels)  # type: ignore
 
         # -----------   Exit row   ----------- #
         exit_row = qtw.QHBoxLayout()
 
         exit_btn = qtw.QPushButton("Exit")
         exit_row.addWidget(exit_btn)
-        exit_btn.clicked.connect(self.exit)
+        exit_btn.clicked.connect(self.exit)  # type: ignore
 
         empty_space = qtw.QHBoxLayout()
         empty_space.addStretch(1)
@@ -348,7 +348,7 @@ class LabellingTool(qtw.QMainWindow):
                 # Update GUI
                 self.l1.setText("Plot ID: {}".format(self.current_id))
                 pp = len(self.labelled_ids) / self.n_total * 100
-                self.progressbar.setValue(pp)
+                self.progressbar.setValue(pp)  # type: ignore
                 # _, self._cb = plot_by_id(self.current_id, axes=self._axes,
                 #                              colorbars=self._cb[0])
                 # # if self._cb[0] is not None:
