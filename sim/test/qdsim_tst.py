@@ -27,13 +27,43 @@ qdp = QcodesDataProvider( input_providers = [qdsim.lp, qdsim.rp], db_path=tune_d
 
 
 
-pinchoff_lb = DataProvider_Qcodes1D([qdsim.lb], char_db_path, "GB_Newtown_Dev_3_2", 1203)
-pinchoff_lp = DataProvider_Qcodes1D([qdsim.lp], char_db_path, "GB_Newtown_Dev_3_2", 1204)
-pinchoff_cb = DataProvider_Qcodes1D([qdsim.cb], char_db_path, "GB_Newtown_Dev_3_2", 1205)
-pinchoff_rp = DataProvider_Qcodes1D([qdsim.rp], char_db_path, "GB_Newtown_Dev_3_2", 1206)
-pinchoff_rb = DataProvider_Qcodes1D([qdsim.rb], char_db_path, "GB_Newtown_Dev_3_2", 1207)
+pinchoff_lb = QcodesDataProvider(
+    [qdsim.lb],
+    char_db_path,
+    "GB_Newtown_Dev_3_2",
+    1203,
+)
+pinchoff_lp = QcodesDataProvider(
+    [qdsim.lp],
+    char_db_path,
+    "GB_Newtown_Dev_3_2",
+    1204,
+)
+pinchoff_cb = QcodesDataProvider(
+    [qdsim.cb],
+    char_db_path,
+    "GB_Newtown_Dev_3_2",
+    1205,
+)
+pinchoff_rp = QcodesDataProvider(
+    [qdsim.rp],
+    char_db_path,
+    "GB_Newtown_Dev_3_2",
+    1206,
+)
+pinchoff_rb = QcodesDataProvider(
+    [qdsim.rb],
+    char_db_path,
+    "GB_Newtown_Dev_3_2",
+    1207,
+)
 
-charge_state_diagram = DataProvider_Qcodes2D(inputs = [qdsim.lp, qdsim.rp], db_path=tune_db_path, exp_name="GB_Newtown_Dev_1_1", run_id = 19)
+charge_state_diagram = QcodesDataProvider(
+    inputs=[qdsim.lp, qdsim.rp],
+    db_path=tune_db_path,
+    exp_name="GB_Newtown_Dev_1_1",
+    run_id=19,
+)
 
 
 # Set the data provider for the left barrier pinchoff sweep

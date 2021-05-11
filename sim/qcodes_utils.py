@@ -1,31 +1,37 @@
 #pylint: disable=line-too-long, too-many-arguments, too-many-locals
 
-""" Contains utility classes related to QCoDeS """
-
 import logging
 import qcodes as qc
 
+
 class QcodesDbConfig:
+    """Context Manager for temporarily switching the qcodes database to another
+    """
 
-    """ Context Manager for temporarily switching the qcodes database to another """
+    def __init__(self, qcodes_db_path: str) -> None:
+        """Initializes a QCoDeS database configurator.
 
-    def __init__(self, qcodes_db_path):
+        Args:
+            qcodes_db_path: Path to database.
+        """
+
         self._db_path = qcodes_db_path
         self._orig_db_path = qc.config["core"]["db_location"]
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         self._orig_db_path = qc.config["core"]["db_location"]
         qc.config["core"]["db_location"] = self._db_path
         logging.info("Changed qcodes db to %s", self._db_path)
 
-    def __exit__(self, exc_type, exc_value, exc_tb):
+    def __exit__(self, type, value, traceback) -> None:
         qc.config["core"]["db_location"] = self._orig_db_path
         logging.info("Restoring qcodes db to %s", self._orig_db_path)
 
 
-def dump_db(db_path):
-
-    """ Utility method to dump the experiments, datasets, and parameters from a qcodes database """
+def dump_db(db_path: str) -> None:
+    """ Utility method to dump the experiments, datasets, and parameters from a
+    qcodes database
+    """
 
     # Some test code to get started
     with QcodesDbConfig(db_path):
@@ -36,9 +42,11 @@ def dump_db(db_path):
             print("Experiment name : {0}".format(exp.name))
             print("dataset count   : {0}".format(len(exp.data_sets())))
             print("first dataset   : {0}".format(exp.data_sets()[0].run_id))
-            print("last dataset    : {0}".format(exp.last_data_data_set().run_id))
+            last_id = exp.last_data_set().run_id
+            print("last dataset    : {0}".format(last_id))
             print("")
 
             for dataset in exp.data_sets():
-                params = ", ".join([f"{p.label}({p.unit})" for p in dataset.get_parameters()])
-                print(f"{dataset.captured_run_id}  : {dataset.exp_name}     {params}")
+                msg = [f"{p.label}({p.unit})" for p in dataset.get_parameters()]
+                params = ", ".join(msg)
+                print(f"{dataset.captured_run_id}: {dataset.exp_name} {params}")
