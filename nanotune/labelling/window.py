@@ -69,7 +69,7 @@ class Widgets(qtw.QWidget):
 
         l1 = qtw.QLabel()
         l1.setText("Plot ID: {}".format(window.labels["plot_id"][0]))
-        l1.setAlignment(Qt.AlignCenter)  # type: ignore
+        l1.setAlignment(Qt.AlignCenter)
         figure_row.addWidget(l1)
         # display plot
 
@@ -82,7 +82,7 @@ class Widgets(qtw.QWidget):
 
         btn_good = qtw.QPushButton("Good", self)
         btn_good.setCheckable(True)
-        btn_good.clicked.connect(partial(self.retain_label, "good"))  # type: ignore
+        btn_good.clicked.connect(partial(self.retain_label, "good"))
         goodness_group.addButton(btn_good)
 
         btn_bad = qtw.QPushButton("Bad")
@@ -93,7 +93,7 @@ class Widgets(qtw.QWidget):
 
         btn_goodish = qtw.QPushButton("Good-ish")
         btn_goodish.setCheckable(True)
-        btn_goodish.clicked.connect(partial(self.retain_label, "good-ish"))  # type: ignore
+        btn_goodish.clicked.connect(partial(self.retain_label, "good-ish"))
         goodness_group.addButton(btn_goodish)
 
         goodness_column.addWidget(btn_good)
