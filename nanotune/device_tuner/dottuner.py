@@ -48,10 +48,6 @@ class DotTuner(Tuner):
     setpoint_settings = {
         'voltage_precision': float,
     }
-    fit_options = {
-        'pinchofffit': Dict[str, Any],
-        'dotfit': Dict[str, Any],
-    }
     """
     def __init__(
         self,
@@ -59,14 +55,12 @@ class DotTuner(Tuner):
         data_settings: Dict[str, Any],
         classifiers: Dict[str, Classifier],
         setpoint_settings: Dict[str, Any],
-        fit_options: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> None:
         super().__init__(
             name,
             data_settings,
             classifiers,
             setpoint_settings,
-            fit_options=fit_options,
             )
         self._tuningresults_all: Dict[str, MeasurementHistory] = {}
 
@@ -206,7 +200,6 @@ class DotTuner(Tuner):
                     device,
                     plungers,
                     voltage_precision=0.0005,
-                    update_settings=False,
                 )
                 self._tuningresults_all[device.name].add_result(
                     tuningresult, f'chargediagram_highres_{n_iter}'
@@ -225,7 +218,6 @@ class DotTuner(Tuner):
                             device,
                             plungers,
                             voltage_precision=0.0001,
-                            update_settings=False,
                         )
                         self._tuningresults_all[device.name].add_result(
                             tuningresult,
@@ -558,7 +550,7 @@ class DotTuner(Tuner):
         gates_to_sweep: List[Gate],
         voltage_precision: Optional[float] = None,
         signal_thresholds: Optional[List[float]] = None,
-        update_settings: bool = True,
+        iterate: bool = False,
         comment: str = '',
     ) -> TuningResult:
         """
@@ -570,33 +562,19 @@ class DotTuner(Tuner):
                 raise KeyError(f'No {clf} classifier found.')
 
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings['gates_to_sweep'] = gates_to_sweep
+        setpoint_settings['parameters_to_sweep'] = gates_to_sweep
         setpoint_settings['voltage_precision'] = voltage_precision
 
-        # measurement_result = MeasurementHistory(device.name)
-
         with self.device_specific_settings(device):
-            self.fit_options(
-                {'dotfit': {'signal_thresholds': signal_thresholds}}
-            )
             stage = ChargeDiagram(
                 data_settings=self.data_settings,
                 setpoint_settings=setpoint_settings,
                 readout_methods=device.readout_methods(),
-                fit_options=self.fit_options()['dotfit'],
-                update_settings=update_settings,
                 classifiers=self.classifiers,
-                measurement_options=device.measurement_options(),
             )
 
-            tuningresult = stage.run_stage()
+            tuningresult = stage.run_stage(iterate=iterate)
             tuningresult.status = device.get_gate_status()
             tuningresult.comment = comment
-            tuningresult.features['segment_info'] = stage.segment_info
-            # names = [gate.name for gate in gates_to_sweep]
-            # measurement_result.add_result(
-            #             tuningresult,
-            #             'charge_diagram_' + '_'.join(names),
-            #         )
 
         return tuningresult

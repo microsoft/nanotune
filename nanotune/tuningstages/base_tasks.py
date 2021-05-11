@@ -21,6 +21,7 @@ from typing import (
     Callable,
     Type,
 )
+from typing_extensions import TypedDict, Literal
 from contextlib import contextmanager
 import matplotlib.pyplot as plt
 from sqlite3 import OperationalError
@@ -34,6 +35,33 @@ from nanotune.classification.classifier import Classifier
 from nanotune.fit.datafit import DataFit
 from .take_data import take_data, ramp_to_setpoint
 from nanotune.device_tuner.tuningresult import TuningResult
+
+SetpointSettingsDict = TypedDict(
+    'SetpointSettingsDict', {
+        'parameters_to_sweep': List[qc.Parameter],
+        'current_valid_ranges': List[Tuple[float, float]],
+        'safety_voltage_ranges': List[Tuple[float, float]],
+        'voltage_precision': float,
+        },
+    )
+DataSettingsDict = TypedDict(
+    'DataSettingsDict', {
+        'db_name': str,
+        'db_folder': str,
+        'normalization_constants': Dict[str, Tuple[float, float]],
+        'segment_size': float,
+        'segment_db_name': str,
+        'segment_db_folder': str,
+        }, total=False,
+    )
+ReadoutMethodsLiteral = Literal['dc_current', 'dc_sensor', 'rf']
+ReadoutMethodsDict = TypedDict(
+    'ReadoutMethodsDict', {
+        'dc_current': qc.Parameter,
+        'dc_sensor': qc.Parameter,
+        'rf': qc.Parameter,
+        }, total=False,
+    )
 logger = logging.getLogger(__name__)
 
 
@@ -189,7 +217,7 @@ def set_up_gates_for_measurement(
     for idx, param in enumerate(parameters_to_sweep):
         param(setpoints[idx][0])
         if hasattr(param.instrument, 'use_ramp'):
-            param.instrument.use_ramp(False)
+            param.instrument.use_ramp(False)  # type: ignore
         else:
             logger.info('Not turning off ramping when setting up gates.')
     try:
@@ -197,7 +225,7 @@ def set_up_gates_for_measurement(
     finally:
         for idx, param in enumerate(parameters_to_sweep):
             if hasattr(param.instrument, 'use_ramp'):
-                param.instrument.use_ramp(True)
+                param.instrument.use_ramp(True)  # type: ignore
 
 
 def set_post_delay(
@@ -282,7 +310,7 @@ def compute_linear_setpoints(
 def prepare_metadata(
     device_name: str,
     normalization_constants: Dict[str, Tuple[float, float]],
-    readout_methods: Dict[str, qc.Parameter],
+    readout_methods: ReadoutMethodsDict,
 ) -> Dict[str, Any]:
     """Sets up a metadata dictionary with fields known prior to a measurement
     set.
@@ -299,7 +327,7 @@ def prepare_metadata(
     nt_meta["normalization_constants"] = normalization_constants
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
-    readout_dict = {k:param.full_name for (k, param) in readout_methods.items()}
+    readout_dict = {k:param.full_name for (k, param) in readout_methods.items()}  # type: ignore
     nt_meta["readout_methods"] = readout_dict
     nt_meta["features"] = {}
 
@@ -688,7 +716,7 @@ def get_current_voltages(
         parameters in ``parameters``.
     """
 
-    return [param() for param in parameters]
+    return [param() for param in parameters]  # type: ignore
 
 
 def set_voltages(

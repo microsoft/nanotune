@@ -8,7 +8,6 @@ from abc import ABCMeta, abstractmethod
 from typing import (
     Optional, Tuple, List, Dict, Any, Sequence, Union, Generator, Callable,
 )
-from typing_extensions import TypedDict
 from contextlib import contextmanager
 
 import qcodes as qc
@@ -34,30 +33,12 @@ from .base_tasks import (  # please update docstrings if import path changes
     iterate_stage,
     get_current_voltages,
     set_voltages,
+    DataSettingsDict,
+    SetpointSettingsDict,
+    ReadoutMethodsDict,
+    ReadoutMethodsLiteral,
 )
 logger = logging.getLogger(__name__)
-SetpointSettingsDict = TypedDict(
-    'SetpointSettingsDict', {
-        'parameters_to_sweep': List[qc.Parameter],
-        'current_valid_ranges': List[Tuple[float, float]],
-        'safety_voltage_ranges': List[Tuple[float, float]],
-        'voltage_precision': float,
-        },
-    )
-DataSettingsDict = TypedDict(
-    'DataSettingsDict', {
-        'db_name': str,
-        'db_folder': str,
-        'normalization_constants': Dict[str, Tuple[float, float]],
-        },
-    )
-ReadoutMethodsDict = TypedDict(
-    'ReadoutMethodsDict', {
-        'dc_current': qc.Parameter,
-        'dc_sensor': qc.Parameter,
-        'rf': qc.Parameter,
-        }, total=False,
-    )
 
 
 class TuningStage(metaclass=ABCMeta):
@@ -308,7 +289,7 @@ class TuningStage(metaclass=ABCMeta):
 
         run_id = take_data_add_metadata(
             self.setpoint_settings['parameters_to_sweep'],
-            list(self.readout_methods.values()),
+            list(self.readout_methods.values()),  # type: ignore
             setpoints,
             finish_early_check=self.finish_early,
             do_at_inner_setpoint=ramp_to_setpoint,

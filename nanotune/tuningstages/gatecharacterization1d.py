@@ -1,16 +1,21 @@
-from typing import Optional, Tuple, List, Union, Dict, Callable, Any, Sequence
+from typing import (
+    Optional,
+    Tuple,
+    List,
+    Union,
+    Dict,
+    Callable,
+    Any,
+    Sequence,
+)
+from typing_extensions import Literal
 import logging
 import copy
 import qcodes as qc
 
 import nanotune as nt
 from nanotune.fit.pinchofffit import PinchoffFit
-from nanotune.tuningstages.tuningstage import (
-    TuningStage,
-    SetpointSettingsDict,
-    DataSettingsDict,
-    ReadoutMethodsDict,
-)
+from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
 from .base_tasks import ( # please update docstrings if import path changes
@@ -18,6 +23,10 @@ from .base_tasks import ( # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
     get_extracted_features,
+    ReadoutMethodsDict,
+    SetpointSettingsDict,
+    DataSettingsDict,
+    ReadoutMethodsLiteral,
 )
 from .gatecharacterization_tasks import (
     get_new_gatecharacterization_range,
@@ -62,10 +71,10 @@ class GateCharacterization1D(TuningStage):
         self,
         data_settings: DataSettingsDict,
         setpoint_settings: SetpointSettingsDict,
-        readout_methods: Dict[str, qc.Parameter],
+        readout_methods: ReadoutMethodsDict,
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
-        main_readout_method: str = 'dc_current',
+        main_readout_method: ReadoutMethodsLiteral = 'dc_current',
         voltage_interval_to_track = 0.3,
     ) -> None:
         """Initializes a gate characterization tuning stage.

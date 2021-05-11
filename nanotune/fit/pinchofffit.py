@@ -93,7 +93,7 @@ class PinchoffFit(DataFit):
         self._range_update_directives = []
         for read_meth in self.readout_methods:
             if self._high_signal[read_meth] < 0.8:
-                self._range_update_directives.clearappend("x more negative")
+                self._range_update_directives.append("x more negative")
             if self._low_signal[read_meth] > 0.2:
                 self._range_update_directives.append("x more positive")
 
@@ -361,13 +361,13 @@ class PinchoffFit(DataFit):
 
                 ax[r_i, 0].plot(voltage, gradient, label="gradient", zorder=0)
 
-            fit_feat = [
-                self.features[read_meth]["amplitude"],
-                self.features[read_meth]["slope"],
-                self.features[read_meth]["offset"],
-            ]
-            fit = self.fit_fct(self._normalized_voltage, fit_feat)
-            ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
+            # fit_feat = [
+            #     self.features[read_meth]["amplitude"],
+            #     self.features[read_meth]["slope"],
+            #     self.features[read_meth]["offset"],
+            # ]
+            # fit = self.fit_fct(self._normalized_voltage, fit_feat)
+            # ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
             ax[r_i, 0].legend(loc="lower right", bbox_to_anchor=(1, 0.1))
 
             divider = make_axes_locatable(ax[r_i, 0])

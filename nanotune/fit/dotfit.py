@@ -244,7 +244,7 @@ class DotFit(DataFit):
                     paramtype="array",
                 )
                 result: List[List[Tuple[str, np.ndarray]]] = []
-                ranges: List[Tuple[float, float()]] = []
+                ranges: List[Tuple[float, float]] = []
                 m_params = [str(it) for it in list(segment.data_vars)]
                 for ip, param_name in enumerate(m_params):
                     coord_names = list(segment.coords)

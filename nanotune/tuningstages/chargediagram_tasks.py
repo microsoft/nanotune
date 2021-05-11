@@ -2,6 +2,8 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
+import logging
+import copy
 from typing import (
     Optional,
     Tuple,
@@ -23,6 +25,14 @@ DotClassifierOutcome = TypedDict(
         'dotregime': int,
         },
     )
+DotClassifierDict = TypedDict(
+    'DotClassifierDict', {
+        'singledot': Classifier,
+        'doubledot': Classifier,
+        'dotregime': Classifier,
+        },
+    )
+logger = logging.getLogger(__name__)
 DOT_LABEL_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
 
@@ -57,6 +67,9 @@ def segment_dot_data(
 
     """
 
+    if segment_db_name is None:
+        segment_db_name = 'segmented_' + db_name
+
     fit = DotFit(
         run_id,
         db_name,
@@ -72,9 +85,9 @@ def segment_dot_data(
 
 
 def classify_dot_segments(
-    classifiers: Dict[str, Classifier],
+    classifiers: DotClassifierDict,
     run_ids: List[int],
-    db_name: Optional[str] = None,
+    db_name: str,
     db_folder: Optional[str] = None,
 )-> Dict[int, Dict[str, Union[bool, int]]]:
     """Classifies several datasets holding charge diagrams, e.g. previously
@@ -99,12 +112,15 @@ def classify_dot_segments(
             }.
     """
 
+    if db_folder is None:
+        db_folder = nt.config['db_folder']
+
     with nt.switch_database(db_name, db_folder):
-        clf_result = {}
+        clf_result: Dict[int, Dict[str, Union[bool, int]]] = {}
         for data_id in run_ids:
             clf_result[data_id] = {}
             for clf_type, classifier in classifiers.items():
-                clf_result[data_id][clf_type] = any(classifier.predict(
+                clf_result[data_id][clf_type] = any(classifier.predict(  # type: ignore
                     data_id,
                     db_name,
                     db_folder=db_folder,
@@ -198,7 +214,7 @@ def determine_dot_regime(
 
 def translate_dot_regime(
     regime: int,
-) -> Tuple[str, Union[bool, int]]:
+) -> Tuple[str, bool]:
     """Takes an integer regime indicator and returns the corresponding charge
     state and quality as a string and boolean respectively. Uses the dot
     regime mapping defined in nt.config["core"]["dot_mapping"].
@@ -245,7 +261,7 @@ def verify_dot_classification(
 def conclude_dot_classification(
     target_charge_state: str,
     dot_segments: Dict[int, Any],
-    verify_classification_outcome: Callable[[str, List[int]], bool],
+    verify_classification_outcome: Callable[[str, Sequence[int]], bool],
     interpret_single_outcome: Callable[[int], Tuple[str, bool]],
 ) -> Tuple[str, bool]:
     """Determines the charge state and quality of a charge diagram based on
@@ -449,14 +465,14 @@ def get_new_range(
     new_min, new_max = current_valid_range
     if direction == "negative":
         diff = abs(current_valid_range[0] - safety_voltage_ranges[0])
-        diff *= range_change
+        diff *= relative_range_change
         diff = min(diff, max_change)
         diff = max(diff, min_change)
         new_min, new_max = new_min - diff, new_max - diff
 
     elif direction == "positive":
         diff = abs(current_valid_range[1] - safety_voltage_ranges[1])
-        diff *= range_change
+        diff *= relative_range_change
         diff = min(diff, max_change)
         diff = max(diff, min_change)
         new_min, new_max = new_min + diff, new_max + diff

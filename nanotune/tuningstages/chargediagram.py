@@ -11,12 +11,7 @@ from functools import partial
 import qcodes as qc
 
 import nanotune as nt
-from nanotune.tuningstages.tuningstage import (
-    TuningStage,
-    SetpointSettingsDict,
-    DataSettingsDict,
-    ReadoutMethodsDict,
-)
+from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.fit.dotfit import DotFit
 from nanotune.classification.classifier import Classifier
@@ -24,6 +19,10 @@ from .base_tasks import ( # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
     get_extracted_features,
+    ReadoutMethodsDict,
+    SetpointSettingsDict,
+    DataSettingsDict,
+    ReadoutMethodsLiteral
 )
 
 from .chargediagram_tasks import(
@@ -38,6 +37,7 @@ from .chargediagram_tasks import(
     determine_dot_regime,
     verify_dot_classification,
     translate_dot_regime,
+    DotClassifierDict,
 )
 RangeChangeSettingsDict = TypedDict(
     'RangeChangeSettingsDict', {
@@ -46,14 +46,7 @@ RangeChangeSettingsDict = TypedDict(
         'max_change': float,
         },
     )
-DotClassifierDict = TypedDict(
-    'DotClassifierDict', {
-        'singledot': Classifier,
-        'doubledot': Classifier,
-        'dotregime': Classifier,
-        },
-    )
-default_range_change_settings = {
+default_range_change_settings: RangeChangeSettingsDict = {
     'relative_range_change': 0.3,
     'min_change': 0.05,
     'max_change': 0.5,
@@ -148,8 +141,9 @@ class ChargeDiagram(TuningStage):
             setpoint_settings,
             readout_methods,
         )
-        if range_change_settings is None: range_change_settings = {}
-        default_range_change_settings.update(range_change_settings)
+        if range_change_settings is None:
+            range_change_settings = {}  # type: ignore
+        default_range_change_settings.update(range_change_settings) # type: ignore
 
         self.range_change_settings = default_range_change_settings
         self.target_regime = target_regime
