@@ -37,17 +37,16 @@ def test_pinchofffit_init(nt_dataset_pinchoff, tmp_path):
 def test_pinchofffit_range_update_directives(nt_dataset_pinchoff, tmp_path):
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
 
-    assert not pf.range_update_directives["dc_current"]
-    assert not pf.range_update_directives["dc_sensor"]
+    assert not pf.range_update_directives
 
     _, current, sensor = generate_bad_pinchoff_data()
     pf.data['dc_current'].values = pf._normalize_data(current, "dc_current")
     pf.data['dc_sensor'].values = pf._normalize_data(sensor, "dc_sensor")
     pf.prepare_filtered_data()
     pf.find_fit()
-    expected_range_update_directives = ["x more negative", "x more positive"]
-    assert sorted(pf.range_update_directives["dc_current"]) == expected_range_update_directives
-    assert sorted(pf.range_update_directives["dc_sensor"]) == expected_range_update_directives
+
+    assert "x more negative" in pf.range_update_directives
+    assert "x more positive" in pf.range_update_directives
 
 
 def test_pinchofffit_features_property(nt_dataset_pinchoff, tmp_path):

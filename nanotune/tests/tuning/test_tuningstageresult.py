@@ -14,7 +14,7 @@ def test_tuningresult():
     assert ts.guids == ['aaaaaaaa-0000-0000-0000-000000000000']
     assert ts.data_ids == [1]
     assert ts.timestamp == ''
-    assert ts.features == {}
+    assert ts.ml_result == {}
 
     ts_dict = ts.to_dict()
     assert isinstance(ts.to_dict(), dict)

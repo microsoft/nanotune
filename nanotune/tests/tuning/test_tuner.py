@@ -60,15 +60,7 @@ def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
     data_settings.update(new_data_settings)
     assert tuner.data_settings() == data_settings
 
-    assert tuner.setpoint_settings() == {'voltage_precision': 0.001}
-    fit_options = {
-        key: {} for key in nt.config['core']['implemented_fits']
-    }
-    assert tuner.fit_options() == fit_options
-    new_fit_options = {'pinchoff': {'gradient_percentile': 10}}
-    tuner.fit_options(new_fit_options)
-    fit_options.update(new_fit_options)
-    assert tuner.fit_options() == fit_options
+    assert tuner.setpoint_settings()['voltage_precision'] == 0.001
 
     tuner.close()
 
