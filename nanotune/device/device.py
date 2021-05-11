@@ -68,6 +68,7 @@ class Device(qc.Instrument):
         }
     }
     """
+
     def __init__(
         self,
         name: str,
@@ -94,7 +95,7 @@ class Device(qc.Instrument):
             vals=vals.Strings(),
         )
 
-        all_meths = nt.config['core']['readout_methods']
+        all_meths = nt.config["core"]["readout_methods"]
         if readout_methods is not None:
             assert list(set(all_meths).intersection(readout_methods.keys()))
         else:
@@ -135,14 +136,14 @@ class Device(qc.Instrument):
         self.gates: List[Gate] = []
         self.sensor_gates: List[Gate] = []
         self.ohmics: List[Ohmic] = []
-        required_parameter_fields = ['channel_id', 'dac_instrument']
+        required_parameter_fields = ["channel_id", "dac_instrument"]
         if gate_parameters is not None:
             for layout_id, gate_param in gate_parameters.items():
                 for required_param in required_parameter_fields:
                     assert gate_param.get(required_param) is not None
                 alias = self.layout[layout_id]
-                gate_param['layout_id'] = layout_id
-                gate_param['use_ramp'] = True
+                gate_param["layout_id"] = layout_id
+                gate_param["use_ramp"] = True
                 gate = Gate(
                     parent=self,
                     name=alias,
@@ -160,8 +161,8 @@ class Device(qc.Instrument):
                 for required_param in required_parameter_fields:
                     assert sens_param.get(required_param) is not None
                 alias = self.layout[layout_id]
-                sens_param['layout_id'] = layout_id
-                sens_param['use_ramp'] = True
+                sens_param["layout_id"] = layout_id
+                sens_param["use_ramp"] = True
                 gate = Gate(
                     parent=self,
                     name=alias,
@@ -175,7 +176,7 @@ class Device(qc.Instrument):
                 for required_param in required_parameter_fields:
                     assert ohm_param.get(required_param) is not None
                 alias = f"ohmic_{ohmic_id}"
-                ohm_param['ohmic_id'] = ohmic_id
+                ohm_param["ohmic_id"] = ohmic_id
                 ohmic = Ohmic(
                     parent=self,
                     name=alias,
@@ -248,19 +249,19 @@ class Device(qc.Instrument):
         return snap
 
     def get_normalization_constants(self) -> Dict[str, Tuple[float, float]]:
-        """
-        """
+        """"""
         return self._normalization_constants
 
     def set_normalization_constants(
         self,
         new_normalization_constant: Dict[str, Tuple[float, float]],
-        ) -> None:
+    ) -> None:
         """"""
         assert isinstance(new_normalization_constant, dict)
         for key in new_normalization_constant.keys():
-            assert (isinstance(new_normalization_constant[key], tuple) or
-                    isinstance(new_normalization_constant[key], list))
+            assert isinstance(new_normalization_constant[key], tuple) or isinstance(
+                new_normalization_constant[key], list
+            )
         self._normalization_constants.update(new_normalization_constant)
 
     def get_readout_methods(self) -> Dict[str, qc.Parameter]:
@@ -313,15 +314,17 @@ class Device(qc.Instrument):
             logger.info("Ohmic {} floating.".format(ohmic.name))
 
     def get_gate_status(
-            self) -> Dict[str, Dict[str, Union[Tuple[float, float], float]]]:
+        self,
+    ) -> Dict[str, Dict[str, Union[Tuple[float, float], float]]]:
         """"""
-        current_gate_status: Dict[str,
-            Dict[str, Union[Tuple[float, float], float]]] = {}
+        current_gate_status: Dict[
+            str, Dict[str, Union[Tuple[float, float], float]]
+        ] = {}
         for gate in self.gates:
             current_gate_status[gate.name] = {}
             rng = gate.current_valid_range()
-            current_gate_status[gate.name]['current_valid_range'] = rng
-            current_gate_status[gate.name]['dc_voltage'] = gate.dc_voltage()
+            current_gate_status[gate.name]["current_valid_range"] = rng
+            current_gate_status[gate.name]["dc_voltage"] = gate.dc_voltage()
 
         return current_gate_status
 

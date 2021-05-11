@@ -12,6 +12,7 @@ from dataclasses import dataclass, asdict, field
 import qcodes as qc
 from qcodes import validators as vals
 import nanotune as nt
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,16 +41,17 @@ class TuningResult:
         to_dict: Export tuning results to dictionary
         to_json: Export tuning results to JSON
     """
+
     stage: str
     success: bool
     guids: List[str] = field(default_factory=list)
     ml_result: Dict[str, Any] = field(default_factory=dict)
     data_ids: List[str] = field(default_factory=list)
-    db_name: str = ''
-    db_folder: str = ''
+    db_name: str = ""
+    db_folder: str = ""
     termination_reasons: List[str] = field(default_factory=list)
-    comment: str = ''
-    timestamp: str = ''
+    comment: str = ""
+    timestamp: str = ""
     status: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -124,14 +126,14 @@ class MeasurementHistory:
 
         common_keys = list(
             set(new_tuningresult.keys()) & set(self._tuningresults.keys())
-            )
+        )
         for key in common_keys:
             if new_tuningresult[key] != self._tuningresults[key]:
                 try:
                     append_idx = new_tuningresult[key].guids[-1]
                 except IndexError:
                     append_idx = new_tuningresult[key].data_ids[-1]
-                new_key = key + f'_{append_idx}'
+                new_key = key + f"_{append_idx}"
                 new_tuningresult[new_key] = new_tuningresult[key]
                 del new_tuningresult[key]
 
@@ -145,7 +147,7 @@ class MeasurementHistory:
         """
 
         self_dict = {k: v.to_dict() for (k, v) in self.tuningresults.items()}
-        self_dict['device_name'] = self.device_name
+        self_dict["device_name"] = self.device_name
         return self_dict
 
     def to_json(self) -> str:

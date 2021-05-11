@@ -1,13 +1,13 @@
 #pylint: disable=line-too-long, too-many-arguments, too-many-locals
 
-''' Contains qcodes mock instruments that wrap related simulators '''
+""" Contains qcodes mock instruments that wrap related simulators """
 
 from qcodes import Instrument
 from sim.simulate import QuantumDotSim
 
 class QuantumDotMockInstrument(Instrument):
 
-    ''' QCoDeS Mock Instrument that wraps a QuantumDotSim device '''
+    """ QCoDeS Mock Instrument that wraps a QuantumDotSim device """
 
     def __init__(self, name : str = "QuantumDotMockInstrument"):
 
@@ -26,5 +26,5 @@ class QuantumDotMockInstrument(Instrument):
 
     @property
     def simulator(self):
-        ''' Returns the simulator instance to which this mock device is attached '''
+        """ Returns the simulator instance to which this mock device is attached """
         return self._simulator

@@ -25,8 +25,7 @@ from scipy.stats import norm
 import nanotune as nt
 from nanotune.fit.datafit import DataFit
 from nanotune.utils import format_axes
-from nanotune.data.plotting import (default_plot_params,
-                                    colors_dict, plot_params_type)
+from nanotune.data.plotting import default_plot_params, colors_dict, plot_params_type
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
@@ -82,7 +81,7 @@ class PinchoffFit(DataFit):
         self._high_signal_index: Dict[str, float] = {}
         self._transition_signal_index: Dict[str, float] = {}
 
-        n_points = self.data['dc_current']['voltage_x'].shape[0]
+        n_points = self.data["dc_current"]["voltage_x"].shape[0]
         self._normalized_voltage = np.linspace(0, 1, n_points)
 
     @property
@@ -102,8 +101,7 @@ class PinchoffFit(DataFit):
     def find_fit(self) -> None:
         """"""
         for r_meth in self.readout_methods:
-            (bounds,
-             initial_guess) = self.compute_initial_guess(readout_method=r_meth)
+            (bounds, initial_guess) = self.compute_initial_guess(readout_method=r_meth)
             smooth_signal = self.filtered_data[r_meth].values
 
             def err_func(p: List[float]) -> np.ndarray:
@@ -139,7 +137,7 @@ class PinchoffFit(DataFit):
         for read_meth in self.readout_methods:
             if not self.get_transition_from_fit:
                 temp_sig = self.filtered_data[read_meth].values
-                temp_v = self.filtered_data[read_meth]['voltage_x'].values
+                temp_v = self.filtered_data[read_meth]["voltage_x"].values
             else:
                 fit_feat = [
                     self.features[read_meth]["amplitude"],
@@ -176,7 +174,7 @@ class PinchoffFit(DataFit):
         for read_meth in self.readout_methods:
             if not self.get_transition_from_fit:
                 temp_sig = self.filtered_data[read_meth].values
-                temp_v = self.filtered_data[read_meth]['voltage_x'].values
+                temp_v = self.filtered_data[read_meth]["voltage_x"].values
             else:
                 fit_feat = [
                     self.features[read_meth]["amplitude"],
@@ -195,7 +193,7 @@ class PinchoffFit(DataFit):
 
     def compute_initial_guess(
         self,
-        readout_method: str = 'dc_current',
+        readout_method: str = "dc_current",
     ) -> Tuple[Tuple[List[float], List[float]], List[float]]:
         """"""
         signal = self.data[readout_method].values
@@ -203,7 +201,7 @@ class PinchoffFit(DataFit):
         amplitude_min = 0
         amplitude_max = amplitude_init
 
-        slope_init = 1/amplitude_init
+        slope_init = 1 / amplitude_init
         slope_min = 0
         slope_max = np.inf
 
@@ -246,7 +244,7 @@ class PinchoffFit(DataFit):
 
     def _retain_transition_features(self) -> None:
         for read_meth in self.readout_methods:
-            v_x = self.data[read_meth]['voltage_x'].values
+            v_x = self.data[read_meth]["voltage_x"].values
             low_idx = self._low_signal_index[read_meth]
             high_idx = self._high_signal_index[read_meth]
             trans_v = self._transition_voltage[read_meth]
@@ -281,30 +279,35 @@ class PinchoffFit(DataFit):
         matplotlib.rcParams.update(plot_params)
         fig_title = f"Pinchoff fit {self.guid}"
 
-        arrowprops = dict([
-                    ('arrowstyle', "->"),
-                    ('color', plot_params["axes.edgecolor"]),
-                    ('shrinkA', 5),
-                    ('shrinkB', 5),
-                    ('patchA', None),
-                    ('patchB', None),
-                    ('connectionstyle', "arc3,rad=0"),
-        ])
-        bbox = dict([
-                    ('boxstyle', "round,pad=0.4"),
-                    ('fc', "white"),
-                    ('ec', plot_params["axes.edgecolor"]),
-                    ('lw', plot_params["axes.linewidth"]),
-        ])
+        arrowprops = dict(
+            [
+                ("arrowstyle", "->"),
+                ("color", plot_params["axes.edgecolor"]),
+                ("shrinkA", 5),
+                ("shrinkB", 5),
+                ("patchA", None),
+                ("patchB", None),
+                ("connectionstyle", "arc3,rad=0"),
+            ]
+        )
+        bbox = dict(
+            [
+                ("boxstyle", "round,pad=0.4"),
+                ("fc", "white"),
+                ("ec", plot_params["axes.edgecolor"]),
+                ("lw", plot_params["axes.linewidth"]),
+            ]
+        )
 
         if ax is None:
             fig_size = copy.deepcopy(plot_params["figure.figsize"])
             fig_size[1] *= len(self.readout_methods) * 0.8  # type: ignore
-            fig, ax = plt.subplots(len(self.readout_methods),
-                                   1, squeeze=False, figsize=fig_size)
+            fig, ax = plt.subplots(
+                len(self.readout_methods), 1, squeeze=False, figsize=fig_size
+            )
 
         for r_i, read_meth in enumerate(self.readout_methods):
-            voltage = self.data[read_meth]['voltage_x'].values
+            voltage = self.data[read_meth]["voltage_x"].values
             signal = self.data[read_meth].values
 
             ax[r_i, 0].plot(voltage, signal, label="signal", zorder=6)
@@ -351,9 +354,7 @@ class PinchoffFit(DataFit):
 
             if plot_smooth:
                 smooth = self.filtered_data[read_meth].values
-                ax[r_i, 0].plot(
-                    voltage, smooth, label="smooth", zorder=2
-                )
+                ax[r_i, 0].plot(voltage, smooth, label="smooth", zorder=2)
 
             if plot_gradient:
                 gradient = np.gradient(signal, voltage)
@@ -422,18 +423,18 @@ class PinchoffFit(DataFit):
         if ax is None:
             fig_size = copy.deepcopy(plot_params["figure.figsize"])
             fig_size[1] *= len(self.readout_methods) * 0.8  # type: ignore
-            fig, ax = plt.subplots(len(self.readout_methods), 1,
-                                   squeeze=False, figsize=fig_size)
+            fig, ax = plt.subplots(
+                len(self.readout_methods), 1, squeeze=False, figsize=fig_size
+            )
 
         color = highlight_color
         pad = 0.02
 
         for r_i, read_meth in enumerate(self.readout_methods.keys()):
-            voltage = self.data[read_meth]['voltage_x'].values
+            voltage = self.data[read_meth]["voltage_x"].values
             signal = self.data[read_meth].values
 
-            ax[r_i, 0].plot(voltage, signal, linestyle="-",
-                            label="signal", zorder=10)
+            ax[r_i, 0].plot(voltage, signal, linestyle="-", label="signal", zorder=10)
             ax[r_i, 0].set_xlabel(self.get_plot_label(read_meth, 0))
             ax[r_i, 0].set_ylabel(self.get_plot_label(read_meth, 1))
             ax[r_i, 0].set_title(fig_title)

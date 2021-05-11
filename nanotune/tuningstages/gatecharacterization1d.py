@@ -18,7 +18,7 @@ from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.classification.classifier import Classifier
-from .base_tasks import ( # please update docstrings if import path changes
+from .base_tasks import (  # please update docstrings if import path changes
     check_measurement_quality,
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
@@ -74,8 +74,8 @@ class GateCharacterization1D(TuningStage):
         readout_methods: ReadoutMethodsDict,
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
-        main_readout_method: ReadoutMethodsLiteral = 'dc_current',
-        voltage_interval_to_track = 0.3,
+        main_readout_method: ReadoutMethodsLiteral = "dc_current",
+        voltage_interval_to_track=0.3,
     ) -> None:
         """Initializes a gate characterization tuning stage.
 
@@ -113,11 +113,11 @@ class GateCharacterization1D(TuningStage):
         self.voltage_interval_to_track = voltage_interval_to_track
 
         self._recent_readout_output: List[float] = []
-        params = self.setpoint_settings['parameters_to_sweep']
+        params = self.setpoint_settings["parameters_to_sweep"]
         if isinstance(params, qc.Parameter):
-            self.setpoint_settings['parameters_to_sweep'] = [params]
+            self.setpoint_settings["parameters_to_sweep"] = [params]
 
-        assert len(self.setpoint_settings['parameters_to_sweep']) == 1
+        assert len(self.setpoint_settings["parameters_to_sweep"]) == 1
 
     @property
     def fit_class(self):
@@ -145,19 +145,19 @@ class GateCharacterization1D(TuningStage):
         """
 
         ml_result: Dict[str, Any] = {}
-        ml_result['features'] = get_extracted_features(
+        ml_result["features"] = get_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
-        ml_result['quality'] = check_measurement_quality(
+        ml_result["quality"] = check_measurement_quality(
             self.classifier,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
-        ml_result['regime'] = 'pinchoff'
+        ml_result["regime"] = "pinchoff"
         return ml_result
 
     def verify_machine_learning_result(
@@ -174,7 +174,7 @@ class GateCharacterization1D(TuningStage):
             bool: Whether the desired outcome has been found.
         """
 
-        return bool(ml_result['quality'])
+        return bool(ml_result["quality"])
 
     def conclude_iteration(
         self,
@@ -210,9 +210,11 @@ class GateCharacterization1D(TuningStage):
             list: List of strings indicating failure modes.
         """
 
-        (done,
-        new_voltage_ranges,
-        termination_reasons) = conclude_iteration_with_range_update(
+        (
+            done,
+            new_voltage_ranges,
+            termination_reasons,
+        ) = conclude_iteration_with_range_update(
             tuning_result,
             current_valid_ranges,
             safety_voltage_ranges,
@@ -257,11 +259,10 @@ class GateCharacterization1D(TuningStage):
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
-        (range_update_directives,
-         issues) = get_range_directives_gatecharacterization(
+        (range_update_directives, issues) = get_range_directives_gatecharacterization(
             fit_range_update_directives,
             current_valid_ranges,
             safety_ranges,
@@ -289,17 +290,16 @@ class GateCharacterization1D(TuningStage):
         param = self.readout_methods[self.main_readout_method]
         last_measurement_strength = current_output_dict[param.full_name]
 
-        norm_consts = self.data_settings['normalization_constants']
+        norm_consts = self.data_settings["normalization_constants"]
         normalization_constant = norm_consts[self.main_readout_method]
 
         finish, self._recent_readout_output = finish_early_pinched_off(
             last_measurement_strength,
             normalization_constant,
             self._recent_readout_output,
-            self.setpoint_settings['voltage_precision'],
+            self.setpoint_settings["voltage_precision"],
             self.noise_level,
             self.voltage_interval_to_track,
         )
 
         return finish
-

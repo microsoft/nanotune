@@ -308,7 +308,3 @@ def generate_random_blobs(
         np.save(path, condensed_data_all)
 
     return condensed_data_all
-
-
-
-

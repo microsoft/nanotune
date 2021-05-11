@@ -6,7 +6,15 @@ import numpy as np
 from functools import partial
 from abc import ABCMeta, abstractmethod
 from typing import (
-    Optional, Tuple, List, Dict, Any, Sequence, Union, Generator, Callable,
+    Optional,
+    Tuple,
+    List,
+    Dict,
+    Any,
+    Sequence,
+    Union,
+    Generator,
+    Callable,
 )
 from contextlib import contextmanager
 
@@ -38,6 +46,7 @@ from .base_tasks import (  # please update docstrings if import path changes
     ReadoutMethodsDict,
     ReadoutMethodsLiteral,
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -95,9 +104,9 @@ class TuningStage(metaclass=ABCMeta):
         self.setpoint_settings = setpoint_settings
         self.readout_methods = readout_methods
 
-        ranges = self.setpoint_settings['current_valid_ranges']
+        ranges = self.setpoint_settings["current_valid_ranges"]
         self.current_valid_ranges = ranges
-        self.safety_voltage_ranges = self.setpoint_settings['safety_voltage_ranges']
+        self.safety_voltage_ranges = self.setpoint_settings["safety_voltage_ranges"]
 
     @property
     @abstractmethod
@@ -190,11 +199,10 @@ class TuningStage(metaclass=ABCMeta):
         save_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
         save_machine_learning_result(run_id, ml_result)
-
 
     def finish_early(
         self,
@@ -229,7 +237,7 @@ class TuningStage(metaclass=ABCMeta):
 
         setpoints = compute_linear_setpoints(
             current_valid_ranges,
-            self.setpoint_settings['voltage_precision'],
+            self.setpoint_settings["voltage_precision"],
         )
         return setpoints
 
@@ -251,8 +259,8 @@ class TuningStage(metaclass=ABCMeta):
             plot_fit(
                 self.fit_class,
                 current_id,
-                self.data_settings['db_name'],
-                db_folder=self.data_settings['db_folder'],
+                self.data_settings["db_name"],
+                db_folder=self.data_settings["db_folder"],
             )
         print_tuningstage_status(tuning_result)
 
@@ -264,12 +272,12 @@ class TuningStage(metaclass=ABCMeta):
             dict: Metadata dict with fields known prior to a measurement filled
                 in.
         """
-        example_param = self.setpoint_settings['parameters_to_sweep'][0]
+        example_param = self.setpoint_settings["parameters_to_sweep"][0]
         device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
             device_name,
-            self.data_settings['normalization_constants'],
-            self.readout_methods
+            self.data_settings["normalization_constants"],
+            self.readout_methods,
         )
         return nt_meta
 
@@ -288,12 +296,12 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         run_id = take_data_add_metadata(
-            self.setpoint_settings['parameters_to_sweep'],
+            self.setpoint_settings["parameters_to_sweep"],
             list(self.readout_methods.values()),  # type: ignore
             setpoints,
             finish_early_check=self.finish_early,
             do_at_inner_setpoint=ramp_to_setpoint,
-            pre_measurement_metadata=self.prepare_nt_metadata()
+            pre_measurement_metadata=self.prepare_nt_metadata(),
         )
 
         return run_id
@@ -329,12 +337,11 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         nt.set_database(
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder']
+            self.data_settings["db_name"], db_folder=self.data_settings["db_folder"]
         )
 
         initial_voltages = get_current_voltages(
-            self.setpoint_settings['parameters_to_sweep']
+            self.setpoint_settings["parameters_to_sweep"]
         )
 
         self.current_valid_ranges = swap_range_limits_if_needed(
@@ -363,12 +370,11 @@ class TuningStage(metaclass=ABCMeta):
             max_iterations,
         )
         set_voltages(
-            self.setpoint_settings['parameters_to_sweep'],
+            self.setpoint_settings["parameters_to_sweep"],
             initial_voltages,
         )
 
-        tuning_result.db_name = self.data_settings['db_name']
-        tuning_result.db_folder = self.data_settings['db_folder']
+        tuning_result.db_name = self.data_settings["db_name"]
+        tuning_result.db_folder = self.data_settings["db_folder"]
 
         return tuning_result
-

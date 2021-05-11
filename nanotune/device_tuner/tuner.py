@@ -3,17 +3,28 @@ import copy
 import logging
 import time
 import datetime
-from typing import (List, Optional, Dict, Tuple, Sequence, Callable, Any,
-                    Union, Generator)
+from typing import (
+    List,
+    Optional,
+    Dict,
+    Tuple,
+    Sequence,
+    Callable,
+    Any,
+    Union,
+    Generator,
+)
 from functools import partial
 from contextlib import contextmanager
 import numpy as np
 
 import qcodes as qc
 from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (load_last_experiment,
-                                                 load_experiment,
-                                                 new_experiment)
+from qcodes.dataset.experiment_container import (
+    load_last_experiment,
+    load_experiment,
+    new_experiment,
+)
 
 import nanotune as nt
 from nanotune.device.device import Device as Nt_Device
@@ -22,11 +33,12 @@ from nanotune.classification.classifier import Classifier
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.device.gate import Gate
 from nanotune.utils import flatten_list
+
 logger = logging.getLogger(__name__)
 DATA_DIMS = {
-    'gatecharacterization1d': 1,
-    'chargediagram': 2,
-    'coulomboscillations': 1,
+    "gatecharacterization1d": 1,
+    "chargediagram": 2,
+    "coulomboscillations": 1,
 }
 
 
@@ -86,6 +98,7 @@ class Tuner(qc.Instrument):
     }
 
     """
+
     def __init__(
         self,
         name: str,
@@ -98,27 +111,27 @@ class Tuner(qc.Instrument):
 
         self.classifiers = classifiers
 
-        assert 'db_name' in data_settings.keys()
-        if 'db_folder' in data_settings.keys():
+        assert "db_name" in data_settings.keys()
+        if "db_folder" in data_settings.keys():
             nt.set_database(
-                data_settings['db_name'],
-                db_folder=data_settings['db_folder'])
+                data_settings["db_name"], db_folder=data_settings["db_folder"]
+            )
         else:
-            nt.set_database(data_settings['db_name'])
+            nt.set_database(data_settings["db_name"])
 
-        if data_settings.get('qc_experiment_id') is None:
+        if data_settings.get("qc_experiment_id") is None:
             try:
                 self.qcodes_experiment = load_last_experiment()
             except ValueError:
                 logger.warning(
-                    'No qcodes experiment found. Starting a new '
+                    "No qcodes experiment found. Starting a new "
                     'one called "automated_tuning", with an unknown sample.'
                 )
                 self.qcodes_experiment = new_experiment(
-                        "automated_tuning",
-                        sample_name="unknown")
+                    "automated_tuning", sample_name="unknown"
+                )
             exp_id = self.qcodes_experiment.exp_id
-            data_settings['qc_experiment_id'] = exp_id
+            data_settings["qc_experiment_id"] = exp_id
 
         self._data_settings = data_settings
         super().add_parameter(
@@ -131,9 +144,7 @@ class Tuner(qc.Instrument):
             vals=vals.Dict(),
         )
         if fit_options is None or not fit_options:
-            fit_options = {
-                key: {} for key in nt.config['core']['implemented_fits']
-            }
+            fit_options = {key: {} for key in nt.config["core"]["implemented_fits"]}
 
         self._fit_options = fit_options
         super().add_parameter(
@@ -167,10 +178,10 @@ class Tuner(qc.Instrument):
         order as they are set in device.gates.
         """
         available_readout_methods = {
-            r_type: qc_param for (r_type, qc_param)
-            in device.readout_methods().items()
+            r_type: qc_param
+            for (r_type, qc_param) in device.readout_methods().items()
             if qc_param is not None
-            }
+        }
 
         normalization_constants = {
             key: [0.0, 1.0] for key in available_readout_methods.keys()
@@ -203,9 +214,9 @@ class Tuner(qc.Instrument):
         device = gates[0].parent
 
         if comment is None:
-            comment = f'Characterizing {gates}.'
-        if 'pinchoff' not in self.classifiers.keys():
-            raise KeyError('No pinchoff classifier found.')
+            comment = f"Characterizing {gates}."
+        if "pinchoff" not in self.classifiers.keys():
+            raise KeyError("No pinchoff classifier found.")
 
         with set_back_valid_ranges(gates):
             if use_safety_ranges:
@@ -216,20 +227,20 @@ class Tuner(qc.Instrument):
             with self.device_specific_settings(device):  # type: ignore
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
-                    setpoint_settings['parameters_to_sweep'] = [gate.dc_voltage]
+                    setpoint_settings["parameters_to_sweep"] = [gate.dc_voltage]
 
                     stage = GateCharacterization1D(
                         data_settings=self.data_settings(),
                         setpoint_settings=setpoint_settings,
                         readout_methods=device.readout_methods(),
-                        classifier=self.classifiers['pinchoff'],
+                        classifier=self.classifiers["pinchoff"],
                     )
                     tuningresult = stage.run_stage()
                     tuningresult.status = device.get_gate_status()
                     tuningresult.comment = comment
                     measurement_result.add_result(
                         tuningresult,
-                        'characterization_' + gate.name,
+                        "characterization_" + gate.name,
                     )
 
         return measurement_result
@@ -251,8 +262,8 @@ class Tuner(qc.Instrument):
             tuple(float, float):
             MeasurementHistory:
         """
-        if 'pinchoff' not in self.classifiers.keys():
-            raise KeyError('No pinchoff classifier found.')
+        if "pinchoff" not in self.classifiers.keys():
+            raise KeyError("No pinchoff classifier found.")
 
         device = gates_to_sweep[0].parent
 
@@ -273,18 +284,18 @@ class Tuner(qc.Instrument):
                 for gate in gates_to_sweep:
                     if not skip_gates[gate.layout_id()]:
                         setpoint_sets = copy.deepcopy(self.setpoint_settings())
-                        setpoint_sets['parameters_to_sweep'] = [gate.dc_voltage]
+                        setpoint_sets["parameters_to_sweep"] = [gate.dc_voltage]
                         stage = GateCharacterization1D(
                             data_settings=self.data_settings(),
                             setpoint_settings=setpoint_sets,
                             readout_methods=device.readout_methods(),
-                            classifier=self.classifiers['pinchoff'],
+                            classifier=self.classifiers["pinchoff"],
                         )
                         tuningresult = stage.run_stage()
                         tuningresult.status = device.get_gate_status()
                         measurement_result.add_result(
                             tuningresult,
-                            f'characterization_{gate.name}',
+                            f"characterization_{gate.name}",
                         )
                         if tuningresult.success:
                             skip_gates[gate.layout_id()] = True
@@ -301,7 +312,7 @@ class Tuner(qc.Instrument):
         v_range = device.gates[last_gate].safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings['parameters_to_sweep'] = [gate_to_set.dc_voltage]
+        setpoint_settings["parameters_to_sweep"] = [gate_to_set.dc_voltage]
         with self.device_specific_settings(device):  # type: ignore
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
@@ -311,18 +322,18 @@ class Tuner(qc.Instrument):
                     data_settings=self.data_settings(),
                     setpoint_settings=setpoint_settings,
                     readout_methods=device.readout_methods(),
-                    classifier=self.classifiers['pinchoff'],
+                    classifier=self.classifiers["pinchoff"],
                 )
 
                 tuningresult = stage.run_stage()
                 tuningresult.status = device.get_gate_status()
                 measurement_result.add_result(
                     tuningresult,
-                    f'characterization_{gate.name}',
+                    f"characterization_{gate.name}",
                 )
                 if tuningresult.success:
-                    L = tuningresult.features['low_voltage']
-                    L = round(L - 0.1*abs(L), 2)
+                    L = tuningresult.features["low_voltage"]
+                    L = round(L - 0.1 * abs(L), 2)
                     min_rng = self.top_barrier.safety_range()[0]
                     max_voltage = np.max([min_rng, L])
                     break
@@ -336,7 +347,7 @@ class Tuner(qc.Instrument):
         self,
         device: Nt_Device,
     ) -> Generator[None, None, None]:
-        """ Add device relevant readout settings
+        """Add device relevant readout settings
 
         Returns:
             Generator yielding nothing.
@@ -344,12 +355,12 @@ class Tuner(qc.Instrument):
 
         original_data_settings = copy.deepcopy(self.data_settings())
         self.data_settings(
-            {'normalization_constants': device.normalization_constants()},
-            )
+            {"normalization_constants": device.normalization_constants()},
+        )
         try:
             yield
         finally:
-            del self._data_settings['normalization_constants']
+            del self._data_settings["normalization_constants"]
 
     def set_fit_options(self, new_fit_options: Dict[str, Any]) -> None:
         """ """

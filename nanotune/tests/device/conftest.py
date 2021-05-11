@@ -1,7 +1,6 @@
 import pytest
 
 
-
 @pytest.fixture(name="moc_dac_server")
 def _make_mock_dac_server():
     class DACClient:

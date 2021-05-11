@@ -7,15 +7,23 @@ from nanotune.data.plotting import plot_dataset
 
 def test_2d_dataset_plotting(nt_dataset_doubledot, tmp_path):
     _, colorbars = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
-        save_figures=False, file_location=os.path.join(str(tmp_path), "figs")
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
+        save_figures=False,
+        file_location=os.path.join(str(tmp_path), "figs"),
     )
     _, colorbars = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
-        save_figures=True, file_location=str(tmp_path),
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
+        save_figures=True,
+        file_location=str(tmp_path),
     )
     _, colorbars = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
         save_figures=True,
         file_location=os.path.join(str(tmp_path), "figs"),
         filename="testfig",
@@ -27,7 +35,9 @@ def test_2d_dataset_plotting(nt_dataset_doubledot, tmp_path):
 
 def test_1d_dataset_plotting(nt_dataset_pinchoff, tmp_path):
     ax, _ = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
         save_figures=False,
         file_location=os.path.join(str(tmp_path), "figs"),
         filename="testfig",
@@ -40,17 +50,20 @@ def test_1d_dataset_plotting(nt_dataset_pinchoff, tmp_path):
 def test_dataset_plot_saving(nt_dataset_doubledot, tmp_path):
     ds = nt.Dataset(1, "temp.db", db_folder=str(tmp_path))
     _ = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
-        save_figures=True, file_location=os.path.join(str(tmp_path), "figs")
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
+        save_figures=True,
+        file_location=os.path.join(str(tmp_path), "figs"),
     )
-    os.path.exists(
-        os.path.join(str(tmp_path), "dataset_" + str(ds.guid) + ".png")
-    )
+    os.path.exists(os.path.join(str(tmp_path), "dataset_" + str(ds.guid) + ".png"))
     os.path.exists(
         os.path.join(str(tmp_path), "dataset_" + str(ds.guid) + ".eps"),
     )
     _ = plot_dataset(
-        1, "temp.db", db_folder=str(tmp_path),
+        1,
+        "temp.db",
+        db_folder=str(tmp_path),
         save_figures=True,
         file_location=os.path.join(str(tmp_path), "figs"),
         filename="testfig",

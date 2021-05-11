@@ -6,10 +6,15 @@ import logging
 import copy
 import numpy as np
 from typing import (
-    Optional, Tuple, List, Dict, Any,
+    Optional,
+    Tuple,
+    List,
+    Dict,
+    Any,
 )
 from .base_tasks import get_fit_range_update_directives
 from nanotune.device.gate import Gate
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +46,7 @@ def get_new_gatecharacterization_range(
 
     for directive in range_update_directives:
         if directive not in ["x more negative", "x more positive"]:
-            logger.error('Unknown voltage range update directive.')
+            logger.error("Unknown voltage range update directive.")
 
     if "x more negative" in range_update_directives:
         new_min = safety_range[0]

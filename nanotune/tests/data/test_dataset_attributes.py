@@ -6,7 +6,6 @@ import nanotune as nt
 from nanotune.data.dataset import Dataset
 
 
-
 def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
     """
     Ensure that all attributes are populated after initialisation.
@@ -40,8 +39,7 @@ def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
     assert ds._normalization_constants["dc_current"] == [0, 2]
     assert ds._normalization_constants["rf"] == [0, 1]
     assert ds._normalization_constants["dc_sensor"] == [-0.32, 3]
-    assert ds.readout_methods == {"dc_current": "current",
-                                  "dc_sensor": "sensor"}
+    assert ds.readout_methods == {"dc_current": "current", "dc_sensor": "sensor"}
     assert ds.qc_run_id == 1
     assert ds.db_name == "temp.db"
     assert ds.quality == 1
@@ -60,8 +58,7 @@ def test_dataset_defaults_for_missing_metadata(
     assert ds.normalization_constants["dc_current"] == [0, 1.4]
     assert ds.normalization_constants["rf"] == [0, 1]
     assert ds.normalization_constants["dc_sensor"] == [0, 1]
-    assert ds.readout_methods == {"dc_current": "current",
-                                  "dc_sensor": "sensor"}
+    assert ds.readout_methods == {"dc_current": "current", "dc_sensor": "sensor"}
     assert ds.device_name == "noname_device"
     assert ds.quality is None
     assert ds.label == ["doubledot"]
@@ -95,7 +92,7 @@ def test_dataset_property_getters(nt_dataset_pinchoff, tmp_path):
             "low_voltage": -0.06,
             "high_voltage": -0.03,
             "transition_voltage": -0.05,
-        }
+        },
     }
     assert ds._snapshot == ds.snapshot
     qc_ds = load_by_id(1)

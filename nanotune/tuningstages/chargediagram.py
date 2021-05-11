@@ -15,17 +15,17 @@ from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.fit.dotfit import DotFit
 from nanotune.classification.classifier import Classifier
-from .base_tasks import ( # please update docstrings if import path changes
+from .base_tasks import (  # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
     get_extracted_features,
     ReadoutMethodsDict,
     SetpointSettingsDict,
     DataSettingsDict,
-    ReadoutMethodsLiteral
+    ReadoutMethodsLiteral,
 )
 
-from .chargediagram_tasks import(
+from .chargediagram_tasks import (
     get_range_directives_chargediagram,
     segment_dot_data,
     classify_dot_segments,
@@ -39,17 +39,19 @@ from .chargediagram_tasks import(
     translate_dot_regime,
     DotClassifierDict,
 )
+
 RangeChangeSettingsDict = TypedDict(
-    'RangeChangeSettingsDict', {
-        'relative_range_change': float,
-        'min_change': float,
-        'max_change': float,
-        },
-    )
+    "RangeChangeSettingsDict",
+    {
+        "relative_range_change": float,
+        "min_change": float,
+        "max_change": float,
+    },
+)
 default_range_change_settings: RangeChangeSettingsDict = {
-    'relative_range_change': 0.3,
-    'min_change': 0.05,
-    'max_change': 0.5,
+    "relative_range_change": 0.3,
+    "min_change": 0.05,
+    "max_change": 0.5,
 }
 
 logger = logging.getLogger(__name__)
@@ -93,7 +95,7 @@ class ChargeDiagram(TuningStage):
         setpoint_settings: SetpointSettingsDict,
         readout_methods: ReadoutMethodsDict,
         classifiers: DotClassifierDict,
-        target_regime: str = 'doubledot',
+        target_regime: str = "doubledot",
         range_change_settings: Optional[RangeChangeSettingsDict] = None,
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
@@ -123,16 +125,16 @@ class ChargeDiagram(TuningStage):
 
         """
 
-        if 'segment_db_folder' not in data_settings.keys():
-            data_settings['segment_db_folder'] = nt.config["db_folder"]
-        if 'segment_db_name' not in data_settings.keys():
+        if "segment_db_folder" not in data_settings.keys():
+            data_settings["segment_db_folder"] = nt.config["db_folder"]
+        if "segment_db_name" not in data_settings.keys():
             seg_db_name = f'segmented_{nt.config["db_name"]}'
-            data_settings['segment_db_name'] = seg_db_name
-        if 'normalization_constants' not in data_settings.keys():
-            logger.warning('No normalisation constants specified.')
-        if 'segment_size' not in data_settings.keys():
-            data_settings['segment_size'] = 0.02
-            logger.warning('Setting default segment size of 0.2V.')
+            data_settings["segment_db_name"] = seg_db_name
+        if "normalization_constants" not in data_settings.keys():
+            logger.warning("No normalisation constants specified.")
+        if "segment_size" not in data_settings.keys():
+            data_settings["segment_size"] = 0.02
+            logger.warning("Setting default segment size of 0.2V.")
 
         TuningStage.__init__(
             self,
@@ -143,7 +145,7 @@ class ChargeDiagram(TuningStage):
         )
         if range_change_settings is None:
             range_change_settings = {}  # type: ignore
-        default_range_change_settings.update(range_change_settings) # type: ignore
+        default_range_change_settings.update(range_change_settings)  # type: ignore
 
         self.range_change_settings = default_range_change_settings
         self.target_regime = target_regime
@@ -187,9 +189,11 @@ class ChargeDiagram(TuningStage):
             list: List of strings indicating failure modes.
         """
 
-        (done,
-        new_voltage_ranges,
-        termination_reasons) = conclude_iteration_with_range_update(
+        (
+            done,
+            new_voltage_ranges,
+            termination_reasons,
+        ) = conclude_iteration_with_range_update(
             tuning_result,
             current_valid_ranges,
             safety_voltage_ranges,
@@ -218,7 +222,7 @@ class ChargeDiagram(TuningStage):
         """
 
         good_found = False
-        if ml_result['regime'] == self.target_regime and ml_result['quality']:
+        if ml_result["regime"] == self.target_regime and ml_result["quality"]:
             good_found = True
 
         return good_found
@@ -244,18 +248,18 @@ class ChargeDiagram(TuningStage):
 
         dot_segments = segment_dot_data(
             run_id,
-            self.data_settings['db_name'],
-            self.data_settings['db_folder'],
-            self.data_settings['segment_db_name'],
-            self.data_settings['segment_db_folder'],
-            self.data_settings['segment_size'],
+            self.data_settings["db_name"],
+            self.data_settings["db_folder"],
+            self.data_settings["segment_db_name"],
+            self.data_settings["segment_db_folder"],
+            self.data_settings["segment_size"],
         )
 
         classification_outcome = classify_dot_segments(
             self.classifiers,
             [run_id for run_id in dot_segments.keys()],
-            self.data_settings['segment_db_name'],
-            self.data_settings['segment_db_folder'],
+            self.data_settings["segment_db_name"],
+            self.data_settings["segment_db_folder"],
         )
         segment_regimes = get_dot_segment_regimes(
             classification_outcome,
@@ -263,22 +267,22 @@ class ChargeDiagram(TuningStage):
         )
 
         for r_id in dot_segments.keys():
-            dot_segments[r_id]['predicted_regime'] = segment_regimes[r_id]
+            dot_segments[r_id]["predicted_regime"] = segment_regimes[r_id]
 
         ml_result: Dict[str, Any] = {}
-        ml_result['dot_segments'] = dot_segments
+        ml_result["dot_segments"] = dot_segments
 
-        ml_result['regime'], ml_result['quality'] = conclude_dot_classification(
+        ml_result["regime"], ml_result["quality"] = conclude_dot_classification(
             self.target_regime,
             dot_segments,
             verify_dot_classification,
             translate_dot_regime,
         )
-        ml_result['features'] = get_extracted_features(
+        ml_result["features"] = get_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
 
         return ml_result
@@ -311,15 +315,13 @@ class ChargeDiagram(TuningStage):
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
             run_id,
-            self.data_settings['db_name'],
-            db_folder=self.data_settings['db_folder'],
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"],
         )
-        (range_update_directives,
-         issues) = get_range_directives_chargediagram(
+        (range_update_directives, issues) = get_range_directives_chargediagram(
             fit_range_update_directives,
             current_valid_ranges,
             safety_voltage_ranges,
         )
 
         return range_update_directives, issues
-

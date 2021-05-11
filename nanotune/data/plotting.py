@@ -131,7 +131,7 @@ def plot_dataset(
         _, db_folder = nt.get_database()
 
     dataset = Dataset(qc_run_id, db_name, db_folder=db_folder)
-    
+
     if plot_filtered_data:
         data = dataset.filtered_data
     else:
@@ -141,16 +141,18 @@ def plot_dataset(
         fig_size = copy.deepcopy(plot_params["figure.figsize"])
         fig_size[1] *= len(dataset.data) * 0.8  # type: ignore
         fig, ax = plt.subplots(
-            len(dataset.data), 1, squeeze=False, figsize=fig_size,
-            )
+            len(dataset.data),
+            1,
+            squeeze=False,
+            figsize=fig_size,
+        )
 
         colorbars: List[matplotlib.colorbar.Colorbar] = []
-
 
     fig_title = dataset.guid
 
     for r_i, read_meth in enumerate(dataset.readout_methods):
-        c_name = default_coord_names['voltage'][0]
+        c_name = default_coord_names["voltage"][0]
         voltage_x = data[read_meth][c_name].values
         signal = data[read_meth].values.T
 
@@ -177,7 +179,7 @@ def plot_dataset(
             ax[r_i, 0].figure.tight_layout()
 
         elif dataset.dimensions[read_meth] == 2:
-            c_name = default_coord_names['voltage'][1]
+            c_name = default_coord_names["voltage"][1]
             voltage_y = data[read_meth][c_name].values
             colormesh = ax[r_i, 0].pcolormesh(
                 voltage_x,
@@ -204,8 +206,9 @@ def plot_dataset(
                     )
                 )
             colorbars[-1].set_label(
-                dataset.get_plot_label(read_meth, 2), rotation=-270,
-                )
+                dataset.get_plot_label(read_meth, 2),
+                rotation=-270,
+            )
 
             ax[r_i, 0].set_xlabel(dataset.get_plot_label(read_meth, 0))
             ax[r_i, 0].set_ylabel(dataset.get_plot_label(read_meth, 1))

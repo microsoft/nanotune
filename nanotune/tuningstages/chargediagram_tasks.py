@@ -18,20 +18,23 @@ from typing_extensions import TypedDict
 import nanotune as nt
 from nanotune.fit.dotfit import DotFit
 from nanotune.classification.classifier import Classifier
+
 DotClassifierOutcome = TypedDict(
-    'DotClassifierOutcome', {
-        'singledot': int,
-        'doubledot': int,
-        'dotregime': int,
-        },
-    )
+    "DotClassifierOutcome",
+    {
+        "singledot": int,
+        "doubledot": int,
+        "dotregime": int,
+    },
+)
 DotClassifierDict = TypedDict(
-    'DotClassifierDict', {
-        'singledot': Classifier,
-        'doubledot': Classifier,
-        'dotregime': Classifier,
-        },
-    )
+    "DotClassifierDict",
+    {
+        "singledot": Classifier,
+        "doubledot": Classifier,
+        "dotregime": Classifier,
+    },
+)
 logger = logging.getLogger(__name__)
 DOT_LABEL_MAPPING = dict(nt.config["core"]["dot_mapping"])
 
@@ -68,7 +71,7 @@ def segment_dot_data(
     """
 
     if segment_db_name is None:
-        segment_db_name = 'segmented_' + db_name
+        segment_db_name = "segmented_" + db_name
 
     fit = DotFit(
         run_id,
@@ -89,7 +92,7 @@ def classify_dot_segments(
     run_ids: List[int],
     db_name: str,
     db_folder: Optional[str] = None,
-)-> Dict[int, Dict[str, Union[bool, int]]]:
+) -> Dict[int, Dict[str, Union[bool, int]]]:
     """Classifies several datasets holding charge diagrams, e.g. previously
     segmented dot data.
 
@@ -113,18 +116,20 @@ def classify_dot_segments(
     """
 
     if db_folder is None:
-        db_folder = nt.config['db_folder']
+        db_folder = nt.config["db_folder"]
 
     with nt.switch_database(db_name, db_folder):
         clf_result: Dict[int, Dict[str, Union[bool, int]]] = {}
         for data_id in run_ids:
             clf_result[data_id] = {}
             for clf_type, classifier in classifiers.items():
-                clf_result[data_id][clf_type] = any(classifier.predict(  # type: ignore
-                    data_id,
-                    db_name,
-                    db_folder=db_folder,
-                ))
+                clf_result[data_id][clf_type] = any(
+                    classifier.predict(  # type: ignore
+                        data_id,
+                        db_name,
+                        db_folder=db_folder,
+                    )
+                )
 
     return clf_result
 
@@ -181,15 +186,13 @@ def determine_dot_regime(
             nt.config["core"]["dot_mapping"].
     """
 
-    clfs = ['singledot', 'doubledot', 'dotregime']
+    clfs = ["singledot", "doubledot", "dotregime"]
     if not all(clf in classification_result.keys() for clf in clfs):
-        raise KeyError(
-            'Classification outcome missing, unable to determine dot regime'
-        )
+        raise KeyError("Classification outcome missing, unable to determine dot regime")
 
-    good_single = bool(classification_result['singledot'])
-    good_double = bool(classification_result['doubledot'])
-    dotregime = bool(classification_result['dotregime'])
+    good_single = bool(classification_result["singledot"])
+    good_double = bool(classification_result["doubledot"])
+    dotregime = bool(classification_result["dotregime"])
 
     if good_single and good_double:
         # good single and good double dot
@@ -207,7 +210,7 @@ def determine_dot_regime(
     elif not good_single and good_double:
         regime = DOT_LABEL_MAPPING["doubledot"][1]
     else:
-        raise ValueError('Unable to resolve dot regime.')
+        raise ValueError("Unable to resolve dot regime.")
 
     return regime
 
@@ -229,7 +232,7 @@ def translate_dot_regime(
     """
 
     rev_mapping = {}
-    for str_regime in ['singledot', 'doubledot']:
+    for str_regime in ["singledot", "doubledot"]:
         idx = DOT_LABEL_MAPPING[str_regime]
         rev_mapping[idx[0]] = (str_regime, False)
         rev_mapping[idx[1]] = (str_regime, True)
@@ -287,7 +290,7 @@ def conclude_dot_classification(
     """
 
     dot_segment_vals = dot_segments.values()
-    regimes = [seg['predicted_regime'] for seg in dot_segment_vals]
+    regimes = [seg["predicted_regime"] for seg in dot_segment_vals]
     good_found = verify_classification_outcome(target_charge_state, regimes)
 
     if good_found:
@@ -351,7 +354,6 @@ def get_range_directives_chargediagram(
         else:
             issues.append("y reached positive voltage limit")
 
-
     return range_update_directives, issues
 
 
@@ -376,9 +378,9 @@ def get_new_chargediagram_ranges(
 
     if range_change_settings is None:
         range_change_settings = {
-            'relative_range_change': 0.3,
-            'min_change': 0.05,
-            'max_change': 0.5,
+            "relative_range_change": 0.3,
+            "min_change": 0.05,
+            "max_change": 0.5,
         }
 
     all_range_update_directives = [
@@ -392,8 +394,7 @@ def get_new_chargediagram_ranges(
     for directive in range_update_directives:
         if directive not in all_range_update_directives:
             logger.error(
-                ('ChargeDiagram: Unknown action.' \
-                 'Cannot update measurement setting')
+                ("ChargeDiagram: Unknown action." "Cannot update measurement setting")
             )
 
     if "x more negative" in range_update_directives:
@@ -429,11 +430,14 @@ def get_new_chargediagram_ranges(
         )
     else:
         logger.error(
-            ('ChargeDiagram: Unknown range update directive.' \
-             'Cannot update measurement setting')
+            (
+                "ChargeDiagram: Unknown range update directive."
+                "Cannot update measurement setting"
+            )
         )
 
     return new_ranges
+
 
 def get_new_range(
     current_valid_range: Tuple[float, float],

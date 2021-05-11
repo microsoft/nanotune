@@ -25,7 +25,9 @@ def test_coulomboscillationfit_init(nt_dataset_coulomboscillation, tmp_path):
         getattr(co, attr)
 
 
-def test_coulomboscillationfit_range_update_directives(nt_dataset_coulomboscillation, tmp_path):
+def test_coulomboscillationfit_range_update_directives(
+    nt_dataset_coulomboscillation, tmp_path
+):
     co = CoulombOscillationFit(1, "temp.db", db_folder=str(tmp_path))
     with pytest.raises(NotImplementedError):
         co.range_update_directives
@@ -47,18 +49,23 @@ def test_coulomboscillationfit_fit_result(nt_dataset_coulomboscillation, tmp_pat
     fit_result = co.features
 
     target_peak_loc_dc_current = [
-        -0.899159663865546, -0.798319327731092, -0.600840336134454,
-        ]
+        -0.899159663865546,
+        -0.798319327731092,
+        -0.600840336134454,
+    ]
     target_peak_loc_dc_sensor = [
-        -0.949579831932773, -0.848739495798319, -0.651260504201681,
-        ]
+        -0.949579831932773,
+        -0.848739495798319,
+        -0.651260504201681,
+    ]
 
     assert [24, 48, 95] == sorted(fit_result["dc_current"]["peak_indx"])
     assert [12, 36, 83] == sorted(fit_result["dc_sensor"]["peak_indx"])
     for ii in range(3):
         assert math.isclose(
             fit_result["dc_current"]["peak_locations"][ii],
-            target_peak_loc_dc_current[ii], rel_tol=rtol,
+            target_peak_loc_dc_current[ii],
+            rel_tol=rtol,
         )
         assert math.isclose(
             fit_result["dc_sensor"]["peak_locations"][ii],

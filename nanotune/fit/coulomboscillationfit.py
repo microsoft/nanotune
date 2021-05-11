@@ -158,16 +158,18 @@ class CoulombOscillationFit(DataFit):
         if ax is None:
             fig_size = copy.deepcopy(plot_params["figure.figsize"])
             fig_size[1] *= len(self.data) * 0.8  # type: ignore
-            fig, ax = plt.subplots(
-                len(self.data), 1, squeeze=False, figsize=fig_size)
+            fig, ax = plt.subplots(len(self.data), 1, squeeze=False, figsize=fig_size)
 
         for r_i, read_meth in enumerate(self.readout_methods.keys()):
-            voltage = self.data[read_meth]['voltage_x'].values
+            voltage = self.data[read_meth]["voltage_x"].values
             signal = self.data[read_meth].values
             smooth_sig = self.filtered_data[read_meth].values
 
             ax[r_i, 0].plot(
-                voltage, signal, color=colors_dict["blue"], label="signal",
+                voltage,
+                signal,
+                color=colors_dict["blue"],
+                label="signal",
                 zorder=6,
             )
             ax[r_i, 0].set_xlabel(self.get_plot_label(read_meth, 0))
@@ -206,8 +208,10 @@ class CoulombOscillationFit(DataFit):
             )
 
             ax[r_i, 0].legend(
-                loc="upper right", bbox_to_anchor=(1, 1), frameon=False,
-                )
+                loc="upper right",
+                bbox_to_anchor=(1, 1),
+                frameon=False,
+            )
             ax[r_i, 0].set_ylabel("normalized signal")
 
             ax[r_i, 0].set_aspect("auto")

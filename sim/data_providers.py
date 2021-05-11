@@ -1,6 +1,6 @@
 #pylint: disable=line-too-long, too-many-arguments, too-many-locals
 
-''' Contains classes that can be used to simulate physical devices using a variety of data providers as a basis for a simulation model '''
+""" Contains classes that can be used to simulate physical devices using a variety of data providers as a basis for a simulation model """
 
 import os
 import qcodes as qc
@@ -11,7 +11,7 @@ from sim.qcodes_utils import QcodesDbConfig
 
 class StaticDataProvider:
 
-    ''' Data provider that returns a constant value for all inputs.'''
+    """ Data provider that returns a constant value for all inputs."""
 
     def __init__(self, value):
         self._value = value
@@ -25,16 +25,16 @@ class StaticDataProvider:
         return self._value
 
     def raw_data(self):
-        ''' Returns the raw data backing this provider as an xarray.DataArray '''
+        """ Returns the raw data backing this provider as an xarray.DataArray """
         return self._xarray
 
 
 class QcodesDataProvider:
 
-    ''' Data provider that sources it's data from a 1D or 2D QCoDeS dataset.'''
+    """ Data provider that sources it's data from a 1D or 2D QCoDeS dataset."""
 
     def __init__(self, input_providers : list, db_path : str, exp_name : str, run_id : int, model_param_name : str = None):
-        ''' Parameters:
+        """ Parameters:
               input_providers   List of INPUT dependencies used to compute the output data.
                                 All objects in the list must support a .value property
 
@@ -44,7 +44,7 @@ class QcodesDataProvider:
 
               model_param_name  Name of the qcodes dataset parameter that represents the output results.
                                 The input parameters will be based on the dependent parameters.
-        '''
+        """
 
         self._inputs = input_providers
         dataset_id = f"{db_path}.{exp_name}.{run_id}"
@@ -93,12 +93,12 @@ class QcodesDataProvider:
 
     @property
     def value(self):
-        ''' Looks up and returns the measurement result given the bound inputs, using interpolation '''
+        """ Looks up and returns the measurement result given the bound inputs, using interpolation """
         inputs = [input.value for input in self._inputs]
         result = self._interpolate(*inputs).item()
         return result
 
     @property
     def raw_data(self):
-        ''' Returns the full data model as an xarray.DataSet '''
+        """ Returns the full data model as an xarray.DataSet """
         return self._xarray_dataset

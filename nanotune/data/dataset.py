@@ -27,9 +27,11 @@ from qcodes.dataset.data_export import get_shaped_data_by_runid
 import nanotune as nt
 
 LABELS = list(nt.config["core"]["labels"].keys())
-default_coord_names = {'voltage': ['voltage_x', 'voltage_y'],
-                        'frequency': ['frequency_x', 'frequency_y']}
-default_readout_methods = nt.config['core']['readout_methods']
+default_coord_names = {
+    "voltage": ["voltage_x", "voltage_y"],
+    "frequency": ["frequency_x", "frequency_y"],
+}
+default_readout_methods = nt.config["core"]["readout_methods"]
 logger = logging.getLogger(__name__)
 
 
@@ -102,10 +104,9 @@ class Dataset:
         """"""
         return self._nt_metadata["features"]
 
-    def get_plot_label(self,
-                       readout_method: str,
-                       axis: int,
-                       power_spect: bool = False) -> str:
+    def get_plot_label(
+        self, readout_method: str, axis: int, power_spect: bool = False
+    ) -> str:
         """ """
         curr_dim = self.dimensions[readout_method]
         assert curr_dim >= axis
@@ -113,15 +114,15 @@ class Dataset:
 
         if axis == 0 or (axis == 1 and curr_dim > 1):
             if power_spect:
-                lbl = default_coord_names['frequency'][axis].replace('_', ' ')
+                lbl = default_coord_names["frequency"][axis].replace("_", " ")
             else:
-                lbl = data[default_coord_names['voltage'][axis]].attrs['label']
+                lbl = data[default_coord_names["voltage"][axis]].attrs["label"]
         else:
             if power_spect:
-                lbl = f'power spectrum {data.name}'.replace('_', ' ')
+                lbl = f"power spectrum {data.name}".replace("_", " ")
             else:
                 ut = data.unit
-                lbl = f'{data.name} [{ut}]'.replace('_', ' ')
+                lbl = f"{data.name} [{ut}]".replace("_", " ")
 
         return lbl
 
@@ -140,8 +141,8 @@ class Dataset:
 
     def _load_metadata_from_qcodes(self, qc_dataset: DataSet):
         self._normalization_constants = {
-                key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
-            }
+            key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
+        }
         self._snapshot = {}
         self._nt_metadata = {}
 
@@ -171,8 +172,7 @@ class Dataset:
         except KeyError:
             logger.warning("No readout method specified.")
             self.readout_methods = {}
-        if (not isinstance(self.readout_methods, dict) or
-            not self.readout_methods):
+        if not isinstance(self.readout_methods, dict) or not self.readout_methods:
             if isinstance(self.readout_methods, str):
                 methods = [self.readout_methods]
             elif isinstance(self.readout_methods, list):
@@ -180,7 +180,7 @@ class Dataset:
             else:
                 # we assume the default order of readout methods if nothing
                 # else is specified
-                methods = default_readout_methods[:len(self.raw_data)]
+                methods = default_readout_methods[: len(self.raw_data)]
             read_params = [str(it) for it in list(self.raw_data.data_vars)]
             self.readout_methods = dict(zip(methods, read_params))
 
@@ -211,21 +211,21 @@ class Dataset:
             self.data[r_meth].values = nrm_dt
 
             for vi, vr in enumerate(self.raw_data[r_param].depends_on):
-                coord_name = default_coord_names['voltage'][vi]
+                coord_name = default_coord_names["voltage"][vi]
                 lbl = self._nt_label(r_param, vr)
-                self.data[r_meth][coord_name].attrs['label'] = lbl
+                self.data[r_meth][coord_name].attrs["label"] = lbl
 
     def _nt_label(self, readout_paramter, var) -> str:
-        lbl = self.raw_data[readout_paramter][var].attrs['label']
-        unit = self.raw_data[readout_paramter][var].attrs['unit']
-        return f'{lbl} [{unit}]'
+        lbl = self.raw_data[readout_paramter][var].attrs["label"]
+        unit = self.raw_data[readout_paramter][var].attrs["unit"]
+        return f"{lbl} [{unit}]"
 
     def _rename_xarray_variables(self):
         new_names = {old: new for new, old in self.readout_methods.items()}
         new_names_all = copy.deepcopy(new_names)
         for old_n in new_names.keys():
             for c_i, old_crd in enumerate(self.raw_data[old_n].depends_on):
-                new_names_all[old_crd] = default_coord_names['voltage'][c_i]
+                new_names_all[old_crd] = default_coord_names["voltage"][c_i]
 
         self.data = self.data.rename(new_names_all)
 
@@ -247,16 +247,15 @@ class Dataset:
         """"""
         self.filtered_data = self.data.copy(deep=True)
         for read_meth in self.readout_methods:
-            smooth = gaussian_filter(self.filtered_data[read_meth].values,
-                                     sigma=2)
+            smooth = gaussian_filter(self.filtered_data[read_meth].values, sigma=2)
             self.filtered_data[read_meth].values = smooth
 
-
     def compute_1D_power_spectrum(
-        self, readout_method: str,
+        self,
+        readout_method: str,
     ) -> xr.DataArray:
         """"""
-        c_name = default_coord_names['voltage'][0]
+        c_name = default_coord_names["voltage"][0]
         voltage_x = self.data[readout_method][c_name].values
 
         xv = np.unique(voltage_x)
@@ -264,14 +263,14 @@ class Dataset:
         signal = sg.detrend(signal, axis=0)
 
         frequencies_res = fp.fft(signal)
-        frequencies_res = np.abs(fp.fftshift(frequencies_res))**2
+        frequencies_res = np.abs(fp.fftshift(frequencies_res)) ** 2
 
         fx = fp.fftshift(fp.fftfreq(frequencies_res.shape[0], d=xv[1] - xv[0]))
 
         freq_xar = xr.DataArray(
-                    frequencies_res,
-                    coords=[(default_coord_names['frequency'][0], fx)],
-                )
+            frequencies_res,
+            coords=[(default_coord_names["frequency"][0], fx)],
+        )
         return freq_xar
 
     def compute_2D_power_spectrum(
@@ -279,8 +278,8 @@ class Dataset:
         readout_method: str,
     ) -> xr.DataArray:
         """"""
-        c_name_x = default_coord_names['voltage'][0]
-        c_name_y = default_coord_names['voltage'][1]
+        c_name_x = default_coord_names["voltage"][0]
+        c_name_y = default_coord_names["voltage"][1]
         voltage_x = self.data[readout_method][c_name_x].values
         voltage_y = self.data[readout_method][c_name_y].values
         signal = self.data[readout_method].values.copy()
@@ -293,18 +292,18 @@ class Dataset:
         signal = sg.detrend(signal, axis=1)
 
         frequencies_res = fp.fft2(signal)
-        frequencies_res = np.abs(fp.fftshift(frequencies_res))**2
+        frequencies_res = np.abs(fp.fftshift(frequencies_res)) ** 2
 
-        fx_1d = fp.fftshift(fp.fftfreq(frequencies_res.shape[0],
-                                       d=xv[1] - xv[0]))
-        fy_1d = fp.fftshift(fp.fftfreq(frequencies_res.shape[1],
-                                       d=yv[1] - yv[0]))
+        fx_1d = fp.fftshift(fp.fftfreq(frequencies_res.shape[0], d=xv[1] - xv[0]))
+        fy_1d = fp.fftshift(fp.fftfreq(frequencies_res.shape[1], d=yv[1] - yv[0]))
 
         freq_xar = xr.DataArray(
-                frequencies_res,
-                coords=[(default_coord_names['frequency'][0], fx_1d),
-                        (default_coord_names['frequency'][1], fy_1d)],
-            )
+            frequencies_res,
+            coords=[
+                (default_coord_names["frequency"][0], fx_1d),
+                (default_coord_names["frequency"][1], fy_1d),
+            ],
+        )
 
         return freq_xar
 
@@ -327,5 +326,3 @@ class Dataset:
                 raise NotImplementedError
 
             self.power_spectrum[readout_method] = freq_xar
-
-

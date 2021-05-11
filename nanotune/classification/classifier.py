@@ -82,7 +82,7 @@ DEFAULT_N_ITER = {
 }
 
 
-class Classifier():
+class Classifier:
     """
     We assume that if no relevant_labels are supplied, single and double dot
     data have been extracted into the same file and labelled with labels
@@ -430,7 +430,6 @@ class Classifier():
         """"""
         self.clf_score = self.clf.score(test_data, test_labels)
         return self.clf_score
-
 
     def predict(
         self,

@@ -7,6 +7,7 @@ from math import floor
 import qcodes as qc
 from qcodes.dataset.measurements import Measurement
 import nanotune as nt
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,7 +85,7 @@ def take_data(
                     datasaver.add_result(
                         (paramx, set_point0),
                         (paramy, set_point1),
-                        *output, # type: ignore
+                        *output,  # type: ignore
                     )
                     done = finish_early_check(output_dict)
                     if done:
@@ -97,9 +98,7 @@ def take_data(
                     output_dict[parameter.full_name] = value
 
                 paramx = parameters_to_sweep[0].full_name
-                datasaver.add_result(
-                    (paramx, set_point0), *output # type: ignore
-                )
+                datasaver.add_result((paramx, set_point0), *output)  # type: ignore
                 done = finish_early_check(output_dict)
             if done:
                 break
@@ -115,8 +114,7 @@ def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     pass
 
 
-def ramp_to_setpoint(
-    param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
+def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     """Ramps nanotune gates (or other instrument parameter with 'use_ramp'
     attribute)to a new setpoint. Sets `use_ramp` back to false after ramping.
 
@@ -132,9 +130,4 @@ def ramp_to_setpoint(
         qcodes_parameter(voltage)
         qcodes_parameter.instrument.use_ramp(False)  # type: ignore
     except AttributeError as a:
-        logger.warning('Unable to ramp to new voltage. It will be set.')
-
-
-
-
-
+        logger.warning("Unable to ramp to new voltage. It will be set.")

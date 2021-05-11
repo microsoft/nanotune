@@ -160,15 +160,15 @@ def test_prep_data_return_shape(nt_dataset_pinchoff, tmp_path):
 def test_prep_data_normalization(nt_dataset_pinchoff, tmp_path):
     ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
 
-    ds.data['dc_current'].values *= 1.4
-    ds.data['dc_current'].values += 0.5
-    assert np.max(ds.data['dc_current'].values) > 1
-    assert np.min(ds.data['dc_current'].values) >= 0.5
+    ds.data["dc_current"].values *= 1.4
+    ds.data["dc_current"].values += 0.5
+    assert np.max(ds.data["dc_current"].values) > 1
+    assert np.min(ds.data["dc_current"].values) >= 0.5
 
     _ = prep_data(ds, "pinchoff")[0]
 
-    assert np.max(ds.data['dc_current'].values) <= 1
-    assert np.min(ds.data['dc_current'].values) <= 0.5
+    assert np.max(ds.data["dc_current"].values) <= 1
+    assert np.min(ds.data["dc_current"].values) <= 0.5
 
 
 def test_prep_data_return_data(nt_dataset_pinchoff, tmp_path):
@@ -177,15 +177,11 @@ def test_prep_data_return_data(nt_dataset_pinchoff, tmp_path):
 
     shape = tuple(nt.config["core"]["standard_shapes"]["1"])
 
-    ds_curr = ds.data['dc_current'].values
-    ds_freq = ds.power_spectrum['dc_current'].values
+    ds_curr = ds.data["dc_current"].values
+    ds_freq = ds.power_spectrum["dc_current"].values
 
-    data_resized = resize(
-        ds_curr, shape, anti_aliasing=True, mode="constant"
-    ).flatten()
-    frq = resize(
-        ds_freq, shape, anti_aliasing=True, mode="constant"
-    ).flatten()
+    data_resized = resize(ds_curr, shape, anti_aliasing=True, mode="constant").flatten()
+    frq = resize(ds_freq, shape, anti_aliasing=True, mode="constant").flatten()
 
     grad = generic_gradient_magnitude(ds_curr, sobel)
     gradient_resized = resize(
@@ -195,7 +191,7 @@ def test_prep_data_return_data(nt_dataset_pinchoff, tmp_path):
     relevant_features = nt.config["core"]["features"]["pinchoff"]
     features = []
     for feat in relevant_features:
-        features.append(ds.features['dc_current'][feat])
+        features.append(ds.features["dc_current"][feat])
 
     pad_width = len(data_resized.flatten()) - len(features)
     features = np.pad(

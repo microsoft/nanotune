@@ -53,7 +53,7 @@ h_padding = 40
 v_padding = 40
 
 
-class TuningReport():
+class TuningReport:
     """"""
 
     def __init__(

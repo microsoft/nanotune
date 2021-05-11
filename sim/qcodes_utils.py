@@ -1,13 +1,13 @@
 #pylint: disable=line-too-long, too-many-arguments, too-many-locals
 
-''' Contains utility classes related to QCoDeS '''
+""" Contains utility classes related to QCoDeS """
 
 import logging
 import qcodes as qc
 
 class QcodesDbConfig:
 
-    ''' Context Manager for temporarily switching the qcodes database to another '''
+    """ Context Manager for temporarily switching the qcodes database to another """
 
     def __init__(self, qcodes_db_path):
         self._db_path = qcodes_db_path
@@ -25,7 +25,7 @@ class QcodesDbConfig:
 
 def dump_db(db_path):
 
-    ''' Utility method to dump the experiments, datasets, and parameters from a qcodes database '''
+    """ Utility method to dump the experiments, datasets, and parameters from a qcodes database """
 
     # Some test code to get started
     with QcodesDbConfig(db_path):
