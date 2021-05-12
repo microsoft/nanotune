@@ -218,11 +218,11 @@ class Gate(InstrumentChannel):
 
     def ground(self) -> None:
         """ """
-        self.relay_state('ground')
+        self.relay_state("ground")
 
     def float_relay(self) -> None:
         """ """
-        self.relay_state('float')
+        self.relay_state("float")
 
     def snapshot_base(
         self,
@@ -246,8 +246,10 @@ class Gate(InstrumentChannel):
         safe_range = self.safety_range()
         if new_value < safe_range[0] - 1e-5 or new_value > safe_range[1] + 1e-5:
             logger.error(
-                ("Setting voltage out of permitted range: "
-                f"{self.name} to {new_value}")
+                (
+                    "Setting voltage out of permitted range: "
+                    f"{self.name} to {new_value}"
+                )
             )
             raise ValueError
 
@@ -363,7 +365,7 @@ class Gate(InstrumentChannel):
             self._transition_voltage = new_T
         else:
             logger.error(
-                'Gate ' + self.label() + ': '
-                'Invalid transition voltage. Keeping old one.'
+                "Gate " + self.label() + ": "
+                "Invalid transition voltage. Keeping old one."
             )
             raise ValueError

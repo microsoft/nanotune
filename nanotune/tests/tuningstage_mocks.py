@@ -1,8 +1,6 @@
-
 from abc import ABCMeta
 import nanotune as nt
 from nanotune.tuningstages.tuningstage import TuningStage
-
 
 
 # class DummyTuningStage(TuningStage, metaclass=ABCMeta):
@@ -54,4 +52,3 @@ from nanotune.tuningstages.tuningstage import TuningStage
 #         # nt.set_database(self.db_name)
 
 #         return run_ids[rand_idx]
-

@@ -40,8 +40,8 @@ def test_pinchofffit_range_update_directives(nt_dataset_pinchoff, tmp_path):
     assert not pf.range_update_directives
 
     _, current, sensor = generate_bad_pinchoff_data()
-    pf.data['dc_current'].values = pf._normalize_data(current, "dc_current")
-    pf.data['dc_sensor'].values = pf._normalize_data(sensor, "dc_sensor")
+    pf.data["dc_current"].values = pf._normalize_data(current, "dc_current")
+    pf.data["dc_sensor"].values = pf._normalize_data(sensor, "dc_sensor")
     pf.prepare_filtered_data()
     pf.find_fit()
 
@@ -64,16 +64,26 @@ def test_pinchofffit_fit_result(nt_dataset_pinchoff, tmp_path):
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
     fit_result = pf.features
 
-    assert math.isclose(fit_result["dc_current"]["amplitude"], 0.5002276487208445, rel_tol=rtol)
-    assert math.isclose(fit_result["dc_current"]["offset"], -22.323634339589656, rel_tol=rtol)
-    assert math.isclose(fit_result["dc_current"]["slope"], 44.645897814266306, rel_tol=rtol)
+    assert math.isclose(
+        fit_result["dc_current"]["amplitude"], 0.5002276487208445, rel_tol=rtol
+    )
+    assert math.isclose(
+        fit_result["dc_current"]["offset"], -22.323634339589656, rel_tol=rtol
+    )
+    assert math.isclose(
+        fit_result["dc_current"]["slope"], 44.645897814266306, rel_tol=rtol
+    )
     assert math.isclose(
         fit_result["dc_current"]["residuals"], 0.00325722543290063756, rel_tol=rtol
     )
     val = -0.0504201680672269
-    assert math.isclose(fit_result["dc_current"]["transition_voltage"], val, rel_tol=rtol)
+    assert math.isclose(
+        fit_result["dc_current"]["transition_voltage"], val, rel_tol=rtol
+    )
     val = 0.4123686284590007
-    assert math.isclose(fit_result["dc_current"]["transition_signal"], val, rel_tol=rtol)
+    assert math.isclose(
+        fit_result["dc_current"]["transition_signal"], val, rel_tol=rtol
+    )
     assert math.isclose(
         fit_result["dc_current"]["high_signal"], 0.9385653092441386, rel_tol=rtol
     )
@@ -119,7 +129,9 @@ def test_pinchofffit_transition_interval_fitting(nt_dataset_pinchoff, tmp_path):
     assert math.isclose(pf._high_signal["dc_current"], 0.9385653092441386, rel_tol=rtol)
     assert math.isclose(pf._high_signal["dc_sensor"], 0.8400070918869458, rel_tol=rtol)
 
-    assert math.isclose(pf._low_signal["dc_current"], 0.061434690755860326, rel_tol=rtol)
+    assert math.isclose(
+        pf._low_signal["dc_current"], 0.061434690755860326, rel_tol=rtol
+    )
     assert math.isclose(pf._low_signal["dc_sensor"], 0.15260464585587372, rel_tol=rtol)
 
 
@@ -131,7 +143,9 @@ def test_pinchofffit_transition_voltage_fitting(nt_dataset_pinchoff, tmp_path):
     pf.get_transition_from_fit = True
     pf.compute_transition_voltage()
 
-    assert math.isclose(pf._transition_signal["dc_current"], 0.5926477267201613, rel_tol=rtol)
+    assert math.isclose(
+        pf._transition_signal["dc_current"], 0.5926477267201613, rel_tol=rtol
+    )
     assert math.isclose(
         pf._transition_signal["dc_sensor"], 0.45264142712057776, rel_tol=rtol
     )
@@ -142,7 +156,9 @@ def test_pinchofffit_transition_voltage_fitting(nt_dataset_pinchoff, tmp_path):
     pf.get_transition_from_fit = False
     pf.compute_transition_voltage()
 
-    assert math.isclose(pf._transition_signal["dc_current"], 0.4123686284590007, rel_tol=rtol)
+    assert math.isclose(
+        pf._transition_signal["dc_current"], 0.4123686284590007, rel_tol=rtol
+    )
     assert math.isclose(
         pf._transition_signal["dc_sensor"], 0.5620627106146739, rel_tol=rtol
     )
@@ -154,7 +170,7 @@ def test_pinchofffit_transition_voltage_fitting(nt_dataset_pinchoff, tmp_path):
 def test_pinchofffit_initial_guess(nt_dataset_pinchoff, tmp_path):
     pf = PinchoffFit(1, "temp.db", db_folder=str(tmp_path))
 
-    bounds, initial_guess = pf.compute_initial_guess(readout_method='dc_current')
+    bounds, initial_guess = pf.compute_initial_guess(readout_method="dc_current")
     assert math.isclose(bounds[0][0], 0, rel_tol=rtol)
     assert math.isclose(bounds[0][1], 0, rel_tol=rtol)
     assert math.isclose(bounds[0][2], -np.inf, rel_tol=rtol)
@@ -167,7 +183,7 @@ def test_pinchofffit_initial_guess(nt_dataset_pinchoff, tmp_path):
     assert math.isclose(initial_guess[1], 1.0, rel_tol=rtol)
     assert math.isclose(initial_guess[2], 0.5, rel_tol=rtol)
 
-    bounds, initial_guess = pf.compute_initial_guess(readout_method='dc_sensor')
+    bounds, initial_guess = pf.compute_initial_guess(readout_method="dc_sensor")
 
     assert math.isclose(bounds[0][0], 0, rel_tol=rtol)
     assert math.isclose(bounds[0][1], 0, rel_tol=rtol)

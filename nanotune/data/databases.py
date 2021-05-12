@@ -152,7 +152,7 @@ def set_database(
     db_conn = connect(db_path)
     with atomic(db_conn) as conn:
         try:
-            get_metadata(db_conn, '0', nt.config["core"]["labels"][0])
+            get_metadata(db_conn, "0", nt.config["core"]["labels"][0])
         except (RuntimeError, KeyError):
             for label in nt.config["core"]["labels"]:
                 add_meta_data(conn, 0, {label: 0})
@@ -197,7 +197,6 @@ def switch_database(temp_db_name: str, temp_db_folder: str):
         yield
     finally:
         nt.set_database(original_db, db_folder=original_db_folder)
-
 
 
 # def rename_labels(db_name: str,

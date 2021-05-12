@@ -14,8 +14,8 @@ from nanotune.tests.data_generator_methods import (
     generate_doubledot_data,
     generate_default_metadata,
 )
-from nanotune.tests.data_savers import (save_1Ddata_with_qcodes,
-                                        save_2Ddata_with_qcodes)
+from nanotune.tests.data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
+
 NT_LABELS = list(dict(nt.config["core"]["labels"]).keys())
 META_FIELDS = nt.config["core"]["meta_fields"]
 test_data_labels = {
@@ -38,7 +38,6 @@ test_data_labels2 = {
     4: "pinchoff",
     5: "singledot",
 }
-
 
 
 @pytest.fixture(scope="function")
@@ -127,5 +126,3 @@ def second_third_experiment_labelled_data(second_empty_temp_db, tmp_path):
     finally:
         e1.conn.close()
         e2.conn.close()
-
-

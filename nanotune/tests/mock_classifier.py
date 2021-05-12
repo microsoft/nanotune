@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Union, Tuple, Any
 import nanotune as nt
+
 ALLOWED_CATEGORIES = list(dict(nt.config["core"]["features"]).keys())
 
 
@@ -8,7 +9,8 @@ class MockClassifer:
         assert category in ALLOWED_CATEGORIES
         self.category = category
 
-    def predict(self,
+    def predict(
+        self,
         dataid: int,
         db_name: str,
         db_folder: Optional[str] = None,

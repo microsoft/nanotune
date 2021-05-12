@@ -9,8 +9,7 @@ import numpy as np
 
 import qcodes as qc
 from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (load_last_experiment,
-                                                 load_experiment)
+from qcodes.dataset.experiment_container import load_last_experiment, load_experiment
 
 import nanotune as nt
 from nanotune.device.device import Device as Nt_Device
@@ -48,6 +47,7 @@ class Characterizer(Tuner):
         'setpoint_method': str,
     }
     """
+
     def __init__(
         self,
         name: str,
@@ -76,8 +76,10 @@ class Characterizer(Tuner):
         """
         if self.qcodes_experiment.sample_name != Nt_Device.name:
             logger.warning(
-                ("The device's name does match the"
-                 " the sample name in qcodes experiment.")
+                (
+                    "The device's name does match the"
+                    " the sample name in qcodes experiment."
+                )
             )
         if gate_configurations is None:
             gate_configurations = {}
@@ -93,22 +95,10 @@ class Characterizer(Tuner):
                         device.gates[other_id].dc_voltage(dc_voltage)
 
                 sub_result = self.characterize_gates(
-                    device, gates=device.gates,
+                    device,
+                    gates=device.gates,
                     use_safety_ranges=True,
-                    )
+                )
                 measurement_result.update(sub_result)
 
         return measurement_result
-
-
-
-
-
-
-
-
-
-
-
-
-

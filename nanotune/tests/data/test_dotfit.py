@@ -99,16 +99,16 @@ def test_dotfit_segment_data(nt_dataset_doubledot, tmp_path):
     d_inx = int(dot_shape_x / n_x)
     d_iny = int(dot_shape_y / n_y)
 
-    dot_segment = df.segmented_data[0]['current'].values
+    dot_segment = df.segmented_data[0]["current"].values
     assert np.allclose(dot_segment.T, ddot[:d_iny, :d_inx], rtol=atol)
 
-    sensor_segment = df.segmented_data[0]['sensor'].values
+    sensor_segment = df.segmented_data[0]["sensor"].values
     assert np.allclose(sensor_segment.T, sensor[:d_iny, :d_inx], rtol=atol)
 
-    v_x_segment = df.segmented_data[0]['current']['v_x'].values
+    v_x_segment = df.segmented_data[0]["current"]["v_x"].values
     assert np.allclose(v_x_segment, voltage_x[:d_inx], rtol=atol)
 
-    v_y_segment = df.segmented_data[0]['current']['v_y'].values
+    v_y_segment = df.segmented_data[0]["current"]["v_y"].values
     assert np.allclose(v_y_segment, voltage_y[:d_iny], rtol=atol)
 
 
@@ -129,18 +129,18 @@ def test_dotfit_save_segmented_data(
 
     assert sorted(seg_info.keys()) == [1, 2, 3, 4]
 
-    assert seg_info[1]['voltage_ranges'] == [(-0.2, -0.15125), (-0.3, -0.252)]
+    assert seg_info[1]["voltage_ranges"] == [(-0.2, -0.15125), (-0.3, -0.252)]
 
-    assert seg_info[2]['voltage_ranges'] == [(-0.2, -0.15125), (-0.25, -0.2)]
+    assert seg_info[2]["voltage_ranges"] == [(-0.2, -0.15125), (-0.25, -0.2)]
 
-    assert seg_info[3]['voltage_ranges'] == [(-0.15, -0.1), (-0.3, -0.252)]
+    assert seg_info[3]["voltage_ranges"] == [(-0.15, -0.1), (-0.3, -0.252)]
 
-    assert seg_info[4]['voltage_ranges'] == [(-0.15, -0.1), (-0.25, -0.2)]
+    assert seg_info[4]["voltage_ranges"] == [(-0.15, -0.1), (-0.25, -0.2)]
 
     seg_df = nt.Dataset(1, "temp2.db", db_folder2)
-    raw_current_new_df = seg_df.raw_data['current'].values
+    raw_current_new_df = seg_df.raw_data["current"].values
 
-    raw_current_original = df.segmented_data[0]['current'].values
+    raw_current_original = df.segmented_data[0]["current"].values
 
     assert np.allclose(raw_current_new_df, raw_current_original, rtol=atol)
 
@@ -149,24 +149,23 @@ def test_get_triple_point_distances(nt_dataset_doubledot, tmp_path):
     df = DotFit(1, "temp.db", db_folder=str(tmp_path))
 
     df.fit_parameters = {
-            "dc_current": {
-                "noise_level": 0.02,
-                "binary_neighborhood": 1,
-                "distance_threshold": 0.05,
-            },
-            "dc_sensor": {
-                "noise_level": 0.3,
-                "binary_neighborhood": 2,
-                "distance_threshold": 0.05,
-            }
+        "dc_current": {
+            "noise_level": 0.02,
+            "binary_neighborhood": 1,
+            "distance_threshold": 0.05,
+        },
+        "dc_sensor": {
+            "noise_level": 0.3,
+            "binary_neighborhood": 2,
+            "distance_threshold": 0.05,
+        },
     }
 
     relevant_distances = df.get_triple_point_distances()
-    print(relevant_distances['dc_sensor'])
+    print(relevant_distances["dc_sensor"])
 
-
-    assert len(relevant_distances['dc_current']) == 2
-    dc_current_distance = np.asarray(relevant_distances['dc_current'])
+    assert len(relevant_distances["dc_current"]) == 2
+    dc_current_distance = np.asarray(relevant_distances["dc_current"])
     found = False
     for dist in dc_current_distance[:, 0, 0]:
         if math.isclose(0.036055512754639925, dist, rel_tol=atol):
@@ -176,7 +175,7 @@ def test_get_triple_point_distances(nt_dataset_doubledot, tmp_path):
     assert [-0.14, -0.28] in dc_current_distance[:, 2]
     assert [-0.17, -0.22] in dc_current_distance[:, 3]
     # fit results of sensor
-    dc_sensor_distance = np.asarray(relevant_distances['dc_sensor'])
+    dc_sensor_distance = np.asarray(relevant_distances["dc_sensor"])
     assert len(dc_sensor_distance) == 2
     found = False
     for dist in dc_sensor_distance[:, 0, 0]:
@@ -192,17 +191,17 @@ def test_dotfit_plot(nt_dataset_doubledot, tmp_path):
     df = DotFit(1, "temp.db", db_folder=str(tmp_path))
 
     df.fit_parameters = {
-            "dc_current": {
-                "noise_level": 0.02,
-                "binary_neighborhood": 1,
-                "distance_threshold": 0.05,
-            },
-            "dc_sensor": {
-                "noise_level": 0.3,
-                "binary_neighborhood": 2,
-                "distance_threshold": 0.05,
-            }
-        }
+        "dc_current": {
+            "noise_level": 0.02,
+            "binary_neighborhood": 1,
+            "distance_threshold": 0.05,
+        },
+        "dc_sensor": {
+            "noise_level": 0.3,
+            "binary_neighborhood": 2,
+            "distance_threshold": 0.05,
+        },
+    }
     df.triple_points = df.get_triple_point_distances()
     _, colorbars = df.plot_fit(
         save_figure=True, file_location=str(tmp_path), filename="test"
@@ -210,4 +209,3 @@ def test_dotfit_plot(nt_dataset_doubledot, tmp_path):
 
     assert os.path.exists(os.path.join(str(tmp_path), "test.png"))
     assert len(colorbars) == len(df.data)
-

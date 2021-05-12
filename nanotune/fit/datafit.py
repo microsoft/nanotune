@@ -10,8 +10,8 @@ from sqlite3 import OperationalError
 from qcodes.dataset.experiment_container import load_by_id
 
 import nanotune as nt
-from nanotune.data.dataset import (Dataset, default_readout_methods,
-                                   default_coord_names)
+from nanotune.data.dataset import Dataset, default_readout_methods, default_coord_names
+
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 
@@ -67,7 +67,7 @@ class DataFit(ABC, Dataset):
     def get_edge(
         self,
         which_one: str,
-        readout_method: str = 'dc_current',
+        readout_method: str = "dc_current",
         delta_v: float = 0.05,
         use_raw_data: bool = False,
     ) -> np.array:
@@ -80,7 +80,7 @@ class DataFit(ABC, Dataset):
             coord_names = [str(it) for it in list(self.raw_data.coords)]
         else:
             data = self.data[readout_method]
-            coord_names = default_coord_names['voltage']
+            coord_names = default_coord_names["voltage"]
 
         signal = data.values
         voltage_x = data[coord_names[0]].values
@@ -146,4 +146,3 @@ class DataFit(ABC, Dataset):
     @abstractmethod
     def plot_fit(self) -> AxesTuple:
         pass
-

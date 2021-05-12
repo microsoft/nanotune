@@ -37,31 +37,36 @@ from .take_data import take_data, ramp_to_setpoint
 from nanotune.device_tuner.tuningresult import TuningResult
 
 SetpointSettingsDict = TypedDict(
-    'SetpointSettingsDict', {
-        'parameters_to_sweep': List[qc.Parameter],
-        'current_valid_ranges': List[Tuple[float, float]],
-        'safety_voltage_ranges': List[Tuple[float, float]],
-        'voltage_precision': float,
-        },
-    )
+    "SetpointSettingsDict",
+    {
+        "parameters_to_sweep": List[qc.Parameter],
+        "current_valid_ranges": List[Tuple[float, float]],
+        "safety_voltage_ranges": List[Tuple[float, float]],
+        "voltage_precision": float,
+    },
+)
 DataSettingsDict = TypedDict(
-    'DataSettingsDict', {
-        'db_name': str,
-        'db_folder': str,
-        'normalization_constants': Dict[str, Tuple[float, float]],
-        'segment_size': float,
-        'segment_db_name': str,
-        'segment_db_folder': str,
-        }, total=False,
-    )
-ReadoutMethodsLiteral = Literal['dc_current', 'dc_sensor', 'rf']
+    "DataSettingsDict",
+    {
+        "db_name": str,
+        "db_folder": str,
+        "normalization_constants": Dict[str, Tuple[float, float]],
+        "segment_size": float,
+        "segment_db_name": str,
+        "segment_db_folder": str,
+    },
+    total=False,
+)
+ReadoutMethodsLiteral = Literal["dc_current", "dc_sensor", "rf"]
 ReadoutMethodsDict = TypedDict(
-    'ReadoutMethodsDict', {
-        'dc_current': qc.Parameter,
-        'dc_sensor': qc.Parameter,
-        'rf': qc.Parameter,
-        }, total=False,
-    )
+    "ReadoutMethodsDict",
+    {
+        "dc_current": qc.Parameter,
+        "dc_sensor": qc.Parameter,
+        "rf": qc.Parameter,
+    },
+    total=False,
+)
 logger = logging.getLogger(__name__)
 
 
@@ -216,15 +221,15 @@ def set_up_gates_for_measurement(
 
     for idx, param in enumerate(parameters_to_sweep):
         param(setpoints[idx][0])
-        if hasattr(param.instrument, 'use_ramp'):
+        if hasattr(param.instrument, "use_ramp"):
             param.instrument.use_ramp(False)  # type: ignore
         else:
-            logger.info('Not turning off ramping when setting up gates.')
+            logger.info("Not turning off ramping when setting up gates.")
     try:
         yield
     finally:
         for idx, param in enumerate(parameters_to_sweep):
-            if hasattr(param.instrument, 'use_ramp'):
+            if hasattr(param.instrument, "use_ramp"):
                 param.instrument.use_ramp(True)  # type: ignore
 
 
@@ -327,7 +332,7 @@ def prepare_metadata(
     nt_meta["normalization_constants"] = normalization_constants
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
-    readout_dict = {k:param.full_name for (k, param) in readout_methods.items()}  # type: ignore
+    readout_dict = {k: param.full_name for (k, param) in readout_methods.items()}  # type: ignore
     nt_meta["readout_methods"] = readout_dict
     nt_meta["features"] = {}
 
@@ -355,9 +360,7 @@ def add_metadata_to_dict(
         try:
             dump = json.dumps(value, cls=NumpyJSONEncoder)
         except (TypeError, OverflowError) as e:
-            raise TypeError(
-                f'Adding non-serializable value to meta dict: {value}.'
-            )
+            raise TypeError(f"Adding non-serializable value to meta dict: {value}.")
         new_meta_dict[key] = value
 
     return new_meta_dict
@@ -385,7 +388,7 @@ def save_metadata(
 def get_elapsed_time(
     start_time: float,
     end_time: float,
-    format_template: Template = Template('$hours h $minutes min $seconds s'),
+    format_template: Template = Template("$hours h $minutes min $seconds s"),
 ) -> Tuple[float, str]:
     """Returns the elapsed time in seconds and as a formatted string ready to be
     logged/printed.
@@ -407,9 +410,8 @@ def get_elapsed_time(
     minutes, seconds = divmod(minutes, 60)
 
     formatted_time = format_template.substitute(
-        hours=str(hours),
-        minutes=str(minutes),
-        seconds=str(seconds))
+        hours=str(hours), minutes=str(minutes), seconds=str(seconds)
+    )
 
     return elapsed_time, formatted_time
 
@@ -442,15 +444,15 @@ def print_tuningstage_status(
     Args:
         tuning_result: TuningResult instance.
     """
-    quality = 'Good' if tuning_result.success else 'Poor'
+    quality = "Good" if tuning_result.success else "Poor"
     if not tuning_result.termination_reasons:
         t_reasons = "None"
     else:
         t_reasons = ", ".join(tuning_result.termination_reasons)
 
     msg = (
-        f"{tuning_result.stage}: {quality} result measured. " \
-        f"Regime: {tuning_result.ml_result['regime']}. " \
+        f"{tuning_result.stage}: {quality} result measured. "
+        f"Regime: {tuning_result.ml_result['regime']}. "
         "Termination reasons: " + t_reasons + ". "
     )
     logger.info(msg)
@@ -494,14 +496,14 @@ def take_data_add_metadata(
             setpoints,
             finish_early_check=finish_early_check,
             do_at_inner_setpoint=do_at_inner_setpoint,
-            metadata_addon=(meta_tag, pre_measurement_metadata)
+            metadata_addon=(meta_tag, pre_measurement_metadata),
         )
     seconds, formatted_str = get_elapsed_time(start_time, time.time())
-    logger.info('Elapsed time to take data: ' + formatted_str)
+    logger.info("Elapsed time to take data: " + formatted_str)
 
     additional_metadata = {
-        'n_points': n_measured,
-        'elapsed_time': seconds,
+        "n_points": n_measured,
+        "elapsed_time": seconds,
     }
     save_metadata(
         run_id,
@@ -572,26 +574,35 @@ def iterate_stage(
     stage: str,
     current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
-    run_stage: Callable[[str,
-                         List[Tuple[float, float]],
-                         Callable[[List[Tuple[float, float]]],
-                                   Sequence[Sequence[float]]],
-                         Callable[[Sequence[Sequence[float]]], int],
-                         Callable[[int], Any], Callable[[int, Any], None],
-                         Callable[[Any], bool]],
-                        TuningResult],
-    run_stage_tasks: Tuple[Callable[[List[Tuple[float, float]]],
-                                   Sequence[Sequence[float]]],
-                         Callable[[Sequence[Sequence[float]]], int],
-                         Callable[[int], Any], Callable[[int, Any], None],
-                         Callable[[Any], bool]],
-    conclude_iteration: Callable[[TuningResult,
-                                 List[Tuple[float, float]],
-                                 List[Tuple[float, float]], int, int,
-                                 ],
-                                 Tuple[bool, List[Tuple[float, float]],
-                                    List[str]],
-                                 ],
+    run_stage: Callable[
+        [
+            str,
+            List[Tuple[float, float]],
+            Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
+            Callable[[Sequence[Sequence[float]]], int],
+            Callable[[int], Any],
+            Callable[[int, Any], None],
+            Callable[[Any], bool],
+        ],
+        TuningResult,
+    ],
+    run_stage_tasks: Tuple[
+        Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
+        Callable[[Sequence[Sequence[float]]], int],
+        Callable[[int], Any],
+        Callable[[int, Any], None],
+        Callable[[Any], bool],
+    ],
+    conclude_iteration: Callable[
+        [
+            TuningResult,
+            List[Tuple[float, float]],
+            List[Tuple[float, float]],
+            int,
+            int,
+        ],
+        Tuple[bool, List[Tuple[float, float]], List[str]],
+    ],
     display_result: Callable[[int, TuningResult], None],
     max_n_iterations: int,
 ) -> TuningResult:
@@ -646,13 +657,14 @@ def conclude_iteration_with_range_update(
     tuning_result: TuningResult,
     current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
-    get_range_update_directives: Callable[[int,
-                                           List[Tuple[float, float]],
-                                           List[Tuple[float, float]]],
-                                          Tuple[List[str], List[str]]],
-    get_new_current_ranges: Callable[[List[Tuple[float, float]],
-                                      List[Tuple[float, float]], List[str]],
-                                     List[Tuple[float, float]]],
+    get_range_update_directives: Callable[
+        [int, List[Tuple[float, float]], List[Tuple[float, float]]],
+        Tuple[List[str], List[str]],
+    ],
+    get_new_current_ranges: Callable[
+        [List[Tuple[float, float]], List[Tuple[float, float]], List[str]],
+        List[Tuple[float, float]],
+    ],
     current_iteration: int,
     max_n_iterations: int,
 ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
@@ -679,8 +691,7 @@ def conclude_iteration_with_range_update(
         done = True
         termination_reasons: List[str] = []
     else:
-        (range_update_directives,
-         termination_reasons) = get_range_update_directives(
+        (range_update_directives, termination_reasons) = get_range_update_directives(
             tuning_result.data_ids[-1],
             current_valid_ranges,
             safety_voltage_ranges,
@@ -690,9 +701,7 @@ def conclude_iteration_with_range_update(
             done = True
         else:
             new_voltage_ranges = get_new_current_ranges(
-                current_valid_ranges,
-                safety_voltage_ranges,
-                range_update_directives
+                current_valid_ranges, safety_voltage_ranges, range_update_directives
             )
             done = False
 
@@ -760,8 +769,3 @@ def get_fit_range_update_directives(
         db_folder=db_folder,
     )
     return fit.range_update_directives
-
-
-
-
-

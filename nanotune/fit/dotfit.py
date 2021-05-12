@@ -48,7 +48,7 @@ default_dot_fit_parameters: Dict[str, Dict[str, Union[int, float]]] = {
         "noise_level": 0.3,
         "binary_neighborhood": 2,
         "distance_threshold": 0.05,
-    }
+    },
 }
 
 
@@ -124,8 +124,7 @@ class DotFit(DataFit):
         for read_meth in self.readout_methods:
             self._features[read_meth] = {}
             tps = self.triple_points[read_meth]
-            self._features[read_meth]['triple_points'] = list(tps)
-
+            self._features[read_meth]["triple_points"] = list(tps)
 
     def prepare_segmented_data(
         self,
@@ -138,7 +137,7 @@ class DotFit(DataFit):
             readout_params = list(self.readout_methods.values())
         else:
             data = self.data
-            coord_names = default_coord_names['voltage']
+            coord_names = default_coord_names["voltage"]
             readout_params = list(self.readout_methods.keys())
 
         self.segmented_data = []
@@ -160,7 +159,7 @@ class DotFit(DataFit):
             n_y = int(floor(vy_span / self.segment_size))
 
             if n_x >= orig_shape_x / 10 or n_y >= orig_shape_x / 10:
-                logger.warning(f'Dotfit {self.guid}: Mesh resolution too low.')
+                logger.warning(f"Dotfit {self.guid}: Mesh resolution too low.")
 
             n_mesh = [n_x, n_y]
             if not self.segmented_data:
@@ -187,13 +186,15 @@ class DotFit(DataFit):
                     signal_sgmt = signal[i1_start:i1_stop, i2_start:i2_stop]
 
                     seg_xar = xr.DataArray(
-                            signal_sgmt,
-                            coords=[(coord_names[0], segment_x),
-                                    (coord_names[1], segment_y)],
-                        )
+                        signal_sgmt,
+                        coords=[
+                            (coord_names[0], segment_x),
+                            (coord_names[1], segment_y),
+                        ],
+                    )
                     seg_xrset = xr.Dataset({read_meth: seg_xar})
 
-                    self.segmented_data[n_total-1].update(seg_xrset)
+                    self.segmented_data[n_total - 1].update(seg_xrset)
 
     def save_segmented_data_return_info(
         self,
@@ -220,9 +221,7 @@ class DotFit(DataFit):
         if not os.path.isfile(os.path.join(segment_db_folder, segment_db_name)):
             ds = load_by_id(self.qc_run_id)
             nt.new_database(segment_db_name, db_folder=segment_db_folder)
-            qc.new_experiment(f'segmented_{ds.exp_name}',
-                              sample_name=ds.sample_name)
-
+            qc.new_experiment(f"segmented_{ds.exp_name}", sample_name=ds.sample_name)
 
         original_params = self.qc_parameters
         segment_info: Dict[int, Dict[str, Any]] = {}
@@ -261,17 +260,21 @@ class DotFit(DataFit):
 
                     setpoints = self.raw_data[param_name].depends_on
                     meas.register_custom_parameter(
-                        original_params[ip+2].name,
-                        label=original_params[ip+2].label,
+                        original_params[ip + 2].name,
+                        label=original_params[ip + 2].label,
                         unit=original_params[1].unit,
                         paramtype="array",
                         setpoints=setpoints,
                     )
                     v_x_grid, v_y_grid = np.meshgrid(voltage_x, voltage_y)
 
-                    result.append([(setpoints[0], v_x_grid),
-                                    (setpoints[1], v_y_grid),
-                                    (param_name, signal.T)])
+                    result.append(
+                        [
+                            (setpoints[0], v_x_grid),
+                            (setpoints[1], v_y_grid),
+                            (param_name, signal.T),
+                        ]
+                    )
 
                 with meas.run() as datasaver:
                     for r_i in range(len(self.readout_methods)):
@@ -279,13 +282,13 @@ class DotFit(DataFit):
 
                     datasaver.dataset.add_metadata(
                         "snapshot", json.dumps(self.snapshot)
-                        )
+                    )
                     datasaver.dataset.add_metadata(
                         nt.meta_tag, json.dumps(self.nt_metadata)
                     )
                     datasaver.dataset.add_metadata(
                         "original_guid", json.dumps(self.guid)
-                        )
+                    )
                     logger.debug(
                         "New dataset created and populated.\n"
                         + "database: "
@@ -294,7 +297,7 @@ class DotFit(DataFit):
                         + str(datasaver.run_id)
                     )
                     segment_info[datasaver.run_id] = {}
-                    segment_info[datasaver.run_id]['voltage_ranges'] = ranges
+                    segment_info[datasaver.run_id]["voltage_ranges"] = ranges
 
         return segment_info
 
@@ -315,8 +318,8 @@ class DotFit(DataFit):
 
             data = self.filtered_data[read_meth]
             signal = data.values.T
-            v_x = data[default_coord_names['voltage'][0]].values
-            v_y = data[default_coord_names['voltage'][1]].values
+            v_x = data[default_coord_names["voltage"][0]].values
+            v_y = data[default_coord_names["voltage"][1]].values
 
             neighborhood = generate_binary_structure(2, binary_neighborhood)
             m_filter = maximum_filter(signal, footprint=neighborhood)
@@ -355,7 +358,9 @@ class DotFit(DataFit):
                 all_combos = combinations(coordinates, 2)
                 distances = [get_point_distances(*combo) for combo in all_combos]
                 distances_arr = np.asarray(distances)
-                relevant_indx = np.where(distances_arr[:, 0, 0] <= distance_threshold)[0]
+                relevant_indx = np.where(distances_arr[:, 0, 0] <= distance_threshold)[
+                    0
+                ]
 
                 dist_list = [distances[indx] for indx in relevant_indx]
                 relevant_distances[read_meth] = dist_list
@@ -385,13 +390,14 @@ class DotFit(DataFit):
         if ax is None:
             fig_size = copy.deepcopy(plot_params["figure.figsize"])
             fig_size[1] *= len(self.readout_methods) * 0.8  # type: ignore
-            fig, ax = plt.subplots(len(self.readout_methods), 1,
-                                   squeeze=False, figsize=fig_size)
+            fig, ax = plt.subplots(
+                len(self.readout_methods), 1, squeeze=False, figsize=fig_size
+            )
 
         colorbars: List[matplotlib.colorbar.Colorbar] = []
         for r_i, read_meth in enumerate(self.readout_methods.keys()):
-            voltage_x = self.data[read_meth]['voltage_x'].values
-            voltage_y = self.data[read_meth]['voltage_y'].values
+            voltage_x = self.data[read_meth]["voltage_x"].values
+            voltage_y = self.data[read_meth]["voltage_y"].values
             signal = self.data[read_meth].values
 
             colormesh = ax[r_i, 0].pcolormesh(
@@ -409,11 +415,9 @@ class DotFit(DataFit):
             else:
                 divider = make_axes_locatable(ax[r_i, 0])
                 cbar_ax = divider.append_axes("right", size="5%", pad=0.06)
-                colorbars.append(fig.colorbar(colormesh, ax=ax[r_i, 0],
-                                              cax=cbar_ax))
+                colorbars.append(fig.colorbar(colormesh, ax=ax[r_i, 0], cax=cbar_ax))
 
-            colorbars[-1].set_label(self.get_plot_label(read_meth, 2),
-                                    rotation=-270)
+            colorbars[-1].set_label(self.get_plot_label(read_meth, 2), rotation=-270)
 
             ax[r_i, 0].set_xlabel(self.get_plot_label(read_meth, 0))
             ax[r_i, 0].set_ylabel(self.get_plot_label(read_meth, 1))
@@ -456,6 +460,7 @@ class DotFit(DataFit):
             plt.savefig(path, format="png", dpi=600, bbox_inches="tight")
 
         return ax, colorbars
+
 
 def get_point_distances(p1, p2):
     """return distance and points"""

@@ -70,11 +70,11 @@ class Ohmic(InstrumentChannel):
 
     def ground(self) -> None:
         """ """
-        self.relay_state('ground')
+        self.relay_state("ground")
 
     def float_relay(self) -> None:
         """ """
-        self.relay_state('float')
+        self.relay_state("float")
 
     def snapshot_base(
         self,
