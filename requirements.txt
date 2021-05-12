@@ -139,7 +139,7 @@ urllib3==1.26.4
 wcwidth==0.2.5
 webencodings==0.5.1
 websockets==9.0.1
-Werkzeug==1.0.1
+Werkzeug==2.0.0
 widgetsnbextension==3.5.1
 wrapt==1.12.1
 xarray==0.18.0
