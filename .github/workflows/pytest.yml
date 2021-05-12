@@ -23,6 +23,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+        lfs: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -37,4 +38,4 @@ jobs:
       run: mypy nanotune
     - name: Run tests
       run: |
-        pytest --cov=nanotune --cov=sim --cov-report xml --cov-config=setup.cfg
+        pytest --cov=nanotune --cov=sim --cov=sim --cov-report xml --cov-config=setup.cfg
