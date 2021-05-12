@@ -38,4 +38,4 @@ jobs:
       run: mypy nanotune
     - name: Run tests
       run: |
-        pytest --cov=nanotune --cov=sim --cov-report xml --cov-config=setup.cfg
+        pytest --cov=nanotune --cov=sim --cov=sim --cov-report xml --cov-config=setup.cfg
