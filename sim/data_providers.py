@@ -125,7 +125,7 @@ class QcodesDataProvider:
             if not model_param_name:
                 output_paramspec = dataset_params[-1]
             else:
-                dataset.paramspecs[model_param_name]
+                output_paramspec = dataset.paramspecs[model_param_name]
             param_names = output_paramspec.depends_on.split(", ")
             param_names.append(output_paramspec.name)
 
