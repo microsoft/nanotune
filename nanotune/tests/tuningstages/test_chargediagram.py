@@ -8,7 +8,7 @@ from nanotune.tests.mock_classifier import MockClassifer
 atol = 1e-03
 
 
-def test_chargediagram_run_stage(chargediagram_settings, experiment):
+def test_chargediagram_run_stage(chargediagram_settings):
 
     chdiag = ChargeDiagram(
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.

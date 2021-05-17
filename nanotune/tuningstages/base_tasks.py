@@ -33,7 +33,7 @@ from qcodes.utils.helpers import NumpyJSONEncoder
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.fit.datafit import DataFit
-from .take_data import take_data, ramp_to_setpoint
+from .take_data import take_data
 from nanotune.device_tuner.tuningresult import TuningResult
 
 SetpointSettingsDict = TypedDict(
@@ -304,7 +304,7 @@ def compute_linear_setpoints(
     """
 
     setpoints_all = []
-    for gg, c_range in enumerate(ranges):
+    for c_range in ranges:
         delta = abs(c_range[1] - c_range[0])
         n_points = int(round(delta / voltage_precision))
         setpoints = np.linspace(c_range[0], c_range[1], n_points)
@@ -499,7 +499,7 @@ def take_data_add_metadata(
             metadata_addon=(meta_tag, pre_measurement_metadata),
         )
     seconds, formatted_str = get_elapsed_time(start_time, time.time())
-    logger.info("Elapsed time to take data: " + formatted_str)
+    logger.info("Elapsed time to take data: %s", formatted_str)
 
     additional_metadata = {
         "n_points": n_measured,
@@ -550,7 +550,6 @@ def run_stage(
         TuningResult: Currently without db_name and db_folder set.
     """
 
-    termination_reasons: List[str] = []
     current_setpoints = compute_setpoint_task(voltage_ranges)
     current_id = measure_task(current_setpoints)
 
@@ -691,7 +690,8 @@ def conclude_iteration_with_range_update(
         done = True
         termination_reasons: List[str] = []
     else:
-        (range_update_directives, termination_reasons) = get_range_update_directives(
+        (range_update_directives,
+         termination_reasons) = get_range_update_directives(
             tuning_result.data_ids[-1],
             current_valid_ranges,
             safety_voltage_ranges,
@@ -718,7 +718,8 @@ def get_current_voltages(
     """Returns the values set to parameters in ``parameters``.
 
     Args:
-        parameters: List of QCoDeS parameters, i.e. voltage parameters of gates.
+        parameters: List of QCoDeS parameters, i.e. voltage parameters of
+            gates.
 
     Returns:
         list: Values set the input parameters are at, in the same order as

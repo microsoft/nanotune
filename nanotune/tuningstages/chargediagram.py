@@ -8,13 +8,11 @@ from typing import (
 )
 from typing_extensions import TypedDict
 from functools import partial
-import qcodes as qc
 
 import nanotune as nt
 from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.fit.dotfit import DotFit
-from nanotune.classification.classifier import Classifier
 from .base_tasks import (  # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_fit_range_update_directives,
@@ -22,7 +20,6 @@ from .base_tasks import (  # please update docstrings if import path changes
     ReadoutMethodsDict,
     SetpointSettingsDict,
     DataSettingsDict,
-    ReadoutMethodsLiteral,
 )
 
 from .chargediagram_tasks import (
@@ -30,8 +27,6 @@ from .chargediagram_tasks import (
     segment_dot_data,
     classify_dot_segments,
     get_new_chargediagram_ranges,
-    verify_dot_classification,
-    determine_dot_regime,
     conclude_dot_classification,
     get_dot_segment_regimes,
     determine_dot_regime,
@@ -242,8 +237,8 @@ class ChargeDiagram(TuningStage):
 
         Returns:
             dict: The classification outcome, both segment wise under the key
-                'dot_segments' as well as the overall outcome under 'regime' and
-                'quality'.
+                'dot_segments' as well as the overall outcome under 'regime'
+                and 'quality'.
         """
 
         dot_segments = segment_dot_data(

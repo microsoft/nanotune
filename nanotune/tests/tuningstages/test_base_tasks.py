@@ -3,7 +3,6 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 import pytest
-import datetime
 import time
 import matplotlib.pyplot as plt
 
@@ -13,7 +12,7 @@ from nanotune.tuningstages.base_tasks import *
 from nanotune.fit.pinchofffit import PinchoffFit
 
 
-def test_save_machine_learning_result(qc_dataset_doubledot):
+def test_save_machine_learning_result():
     run_id = 1
 
     save_machine_learning_result(
@@ -126,7 +125,8 @@ def test_prepare_metadata(dummy_dmm):
 
     assert metadata["normalization_constants"] == {"dc_current": (0, 1.2)}
     assert metadata["device_name"] == "test_device"
-    assert metadata["readout_methods"] == {"dc_current": dummy_dmm.dac1.full_name}
+    assert metadata["readout_methods"] == {
+        "dc_current": dummy_dmm.dac1.full_name}
     assert "git_hash" in metadata.keys()
     assert "features" in metadata.keys()
 
@@ -144,7 +144,7 @@ def test_add_metadata_to_dict(dummy_dmm):
     assert new_dict["readout_methods"]["dc_current"] == dummy_dmm.dac1
 
 
-def test_save_metadata(qc_dataset_pinchoff, tmp_path):
+def test_save_metadata():
     run_id = 1
 
     ds = load_by_id(run_id)
@@ -173,6 +173,6 @@ def test_get_elapsed_time():
     assert isinstance(formatted_time, str)
 
 
-def test_plot_fit(nt_dataset_pinchoff, tmp_path):
+def test_plot_fit(tmp_path):
     plot_fit(PinchoffFit, 1, "temp.db", db_folder=tmp_path)
     plt.close()

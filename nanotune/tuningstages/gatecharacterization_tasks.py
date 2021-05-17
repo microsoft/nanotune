@@ -6,14 +6,9 @@ import logging
 import copy
 import numpy as np
 from typing import (
-    Optional,
     Tuple,
     List,
-    Dict,
-    Any,
 )
-from .base_tasks import get_fit_range_update_directives
-from nanotune.device.gate import Gate
 
 logger = logging.getLogger(__name__)
 
