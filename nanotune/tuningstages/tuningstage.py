@@ -3,6 +3,7 @@ from functools import partial
 from abc import ABCMeta, abstractmethod
 from typing import Tuple, List, Dict, Any
 
+import qcodes as qc
 from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
 from .take_data import ramp_to_setpoint
@@ -221,7 +222,8 @@ class TuningStage(metaclass=ABCMeta):
         """Displays tuning result and optionally plots the fitting result.
 
         Args:
-            plot_result: Bool indicating whether the data fit should be plotted.
+            plot_result: Bool indicating whether the data fit should be
+                plotted.
             current_id: QCoDeS data run ID.
             tuning_result: Result of a tuning stage run.
         """
@@ -254,6 +256,8 @@ class TuningStage(metaclass=ABCMeta):
 
     def measure(
         self,
+        parameters_to_sweep: List[qc.Parameter],
+        parameters_to_measure: List[qc.Parameter],
         setpoints: List[List[float]],
     ) -> int:
         """Takes 1D or 2D data and saves relevant metadata into the dataset.
@@ -267,8 +271,8 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         run_id = take_data_add_metadata(
-            self.setpoint_settings["parameters_to_sweep"],
-            list(self.readout_methods.values()),  # type: ignore
+            parameters_to_sweep,
+            parameters_to_measure,  # type: ignore
             setpoints,
             finish_early_check=self.finish_early,
             do_at_inner_setpoint=ramp_to_setpoint,
@@ -334,6 +338,8 @@ class TuningStage(metaclass=ABCMeta):
 
         tuning_result = iterate_stage(
             self.stage,
+            self.setpoint_settings["parameters_to_sweep"],
+            list(self.readout_methods.values()),
             self.current_valid_ranges,
             self.safety_voltage_ranges,
             run_stage,
