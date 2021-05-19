@@ -1,22 +1,18 @@
 import logging
 from functools import partial
-from typing import List, Optional, Union, Dict, Tuple, Sequence, Any, Sequence
+from typing import List, Optional, Union, Dict, Tuple, Sequence, Any
 import numpy as np
 import scipy as sc
 import itertools
 import json
 
-import matplotlib.pyplot as plt
 
 from numpy.linalg import inv
 from numpy.linalg import multi_dot
-from operator import itemgetter
-from tabulate import tabulate
 
 from skimage.transform import resize
 from scipy.ndimage import gaussian_filter
 
-import qcodes as qc
 from qcodes import Instrument, ChannelList, Parameter
 from qcodes.dataset.measurements import Measurement
 from qcodes.tests.instrument_mocks import DummyInstrument
@@ -29,9 +25,8 @@ logger = logging.getLogger(__name__)
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
-elem_charge = 1.60217662 * 10e-19
-# elem_charge = 1.60217662
-# elem_charge = 1
+# elem_charge = 1.60217662 * 10e-19
+elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
 # TODO: make variable names consistent. E.g: N/c_config/charge_configuration
 
@@ -625,10 +620,9 @@ class CapacitanceModel(Instrument):
         broaden: bool = True,
         add_noise: bool = True,
         kernel_widths: Tuple[float, float] = (1.0, 1.0),
-        target_snr_db: float = 10,
-        e_temp: float = 1e-20,
-        normalize: bool = True,
+        target_snr_db: float = 100,
         single_dot: bool = False,
+        normalize: bool = True,
         known_quality: Optional[int] = None,
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
@@ -644,9 +638,7 @@ class CapacitanceModel(Instrument):
             add_noise
             kernel_widths
             target_snr_db
-            e_temp
             normalize
-            single_dot
             known_quality
             add_charge_jumps
             jump_freq
@@ -654,7 +646,6 @@ class CapacitanceModel(Instrument):
         """
         self.set_voltage(voltage_node_idx[0], np.min(voltage_ranges[0]))
         self.set_voltage(voltage_node_idx[1], np.min(voltage_ranges[1]))
-        N_old = self.determine_N()
 
         voltage_x = np.linspace(
             np.min(voltage_ranges[0]), np.max(voltage_ranges[0]), n_steps[0]
@@ -668,7 +659,6 @@ class CapacitanceModel(Instrument):
         if add_charge_jumps:
             x = np.ones(n_steps)
             s = 1
-            trnsp = np.random.randint(2, size=1)
 
             poisson = np.random.poisson(lam=jump_freq, size=n_steps)
             poisson[poisson > 1] = 1
@@ -684,7 +674,7 @@ class CapacitanceModel(Instrument):
 
         for ivx, x_val in enumerate(voltage_x):
             self.set_voltage(voltage_node_idx[1], voltage_y[0])
-            # N_old = self.determine_N()
+
             self.set_voltage(voltage_node_idx[0], x_val)
             for ivy, y_val in enumerate(voltage_y):
                 self.set_voltage(voltage_node_idx[1], y_val)
@@ -694,16 +684,15 @@ class CapacitanceModel(Instrument):
                 N_curr[n_idx] += x[ivx, ivy]
                 self.N(N_curr)
 
-                n_degen = self.get_number_of_degeneracies(
+                dU = self.get_energy_differences_to_adjacent_charge_states(
                     N_current=N_curr,
-                    e_temp=e_temp,
                 )
-                if single_dot:
-                    n_degen = np.min([1, n_degen])
 
-                signal[ivx, ivy] = n_degen * line_intensity
+                signal[ivx, ivy] = np.prod(np.reciprocal(dU)) * line_intensity
+                # sorted_index_array = np.argsort(dU)
+                # sorted_dU = dU[sorted_index_array]
+                # signal[ivx, ivy] = (1/np.min(sorted_dU[-2:])) * line_intensity
 
-        xm, ym = np.meshgrid(voltage_x, voltage_y)
         if broaden:
             signal = self._make_it_real(signal, kernel_widths=kernel_widths)
         if add_noise:
@@ -741,9 +730,8 @@ class CapacitanceModel(Instrument):
         v_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
-        e_temp: float = 1e-20,
         kernel_width: Sequence[float] = [1.0],
-        target_snr_db: float = 10.0,
+        target_snr_db: float = 100.0,
         normalize: bool = True,
     ) -> Optional[int]:
         """
@@ -758,12 +746,12 @@ class CapacitanceModel(Instrument):
             N_current = self.determine_N()
             self.N(N_current)
 
-            n_degen = self.get_number_of_degeneracies(
+            dU = self.get_energy_differences_to_adjacent_charge_states(
                 N_current=N_current,
-                e_temp=e_temp,
             )
 
-            signal[iv] = n_degen * line_intensity
+            # signal[iv] = np.prod(np.reciprocal(dU)) * line_intensity
+            signal[iv] = (1/np.min(dU)) * line_intensity
 
         signal = self._make_it_real(signal, kernel_widths=kernel_width)
         signal = self._add_noise(signal, target_snr_db=target_snr_db)
@@ -778,14 +766,12 @@ class CapacitanceModel(Instrument):
 
         return dataid
 
-    def get_number_of_degeneracies(
+    def get_energy_differences_to_adjacent_charge_states(
         self,
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
-        e_temp: float = 1e-21,
     ) -> int:
         """
-        Excludes chareg states with negative number of charges
         """
         n_dots = len(self.charge_nodes)
 
@@ -819,11 +805,7 @@ class CapacitanceModel(Instrument):
         current_energy = np.array([current_energy] * len(energies))
         dU = abs(np.array(energies) - current_energy)
 
-        n_degen = np.sum(
-            np.isclose(dU, np.zeros(len(dU)), atol=e_temp).astype(int)
-        )
-
-        return n_degen
+        return dU
 
     def _make_it_real(
         self,
@@ -882,7 +864,6 @@ class CapacitanceModel(Instrument):
         data: np.ndarray,
         nt_label: Sequence[str],
         quality: int = 1,
-        write_period: int = 10,
     ) -> Union[None, int]:
         """ Save data to database. Returns run id. """
 
@@ -963,7 +944,7 @@ class CapacitanceModel(Instrument):
         if V_v is None:
             V_v = self.V_v()
         if N_limits is None:
-            N_limits = [(0, 1)] * len(self.N())  # [(0, 1), (0, 1)]
+            N_limits = [(0, 1)] * len(self.N())
 
         N_init = []
         for did in range(len(N_limits)):
@@ -982,8 +963,6 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -1000,19 +979,12 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
         V_stop_config = res.x
 
-        V_limits = [
-            [V_init_config[0], V_stop_config[0]],
-            [V_init_config[1], V_stop_config[1]],
-        ]
-
-        return V_limits
+        return list(zip(V_init_config, V_stop_config))
 
     def _get_charge_node_mapping(self) -> Dict[int, str]:
         return self._charge_node_mapping
@@ -1122,7 +1094,3 @@ class CapacitanceModel(Instrument):
             pass
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> Add more docstrings
