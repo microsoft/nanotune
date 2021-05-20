@@ -2,7 +2,6 @@ import logging
 from functools import partial
 from typing import List, Optional, Union, Dict, Tuple, Sequence, Any
 import numpy as np
-from numpy.lib.function_base import select
 import scipy as sc
 import itertools
 import json
@@ -32,18 +31,17 @@ N_1D = nt.config["core"]["standard_shapes"]["1"]
 # elem_charge = 1.60217662 * 10e-19
 elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
-# TODO: make variable names consistent. E.g: N/c_config/charge_configuration
 
 
 class CapacitanceModel(Instrument):
     """
     Implementation of a general capacitance model an arbitrary number of dots
     and gates. Simulating weakly coupled quantum dots with well localised
-    charges, it is a classical description based on two assumptions: (1) Coulomb
-    interactions between electrons on dots and in reservoirs are parametrised
-    by constant capacitances. (2) The single-particle energy-level spectrum
-    is considered independent of electron interactions and the number of
-    electrons, meaning that quantum mechanical energy spacings are not taken
+    charges, it is a classical description based on two assumptions: (1)
+    Coulomb interactions between electrons on dots and in reservoirs are
+    parametrised by constant capacitances. (2) The single-particle energy-level
+    spectrum is considered independent of electron interactions and the number
+    of electrons, meaning that quantum mechanical energy spacings are not taken
     into account.
     The system of electrostatic gates, dots and reservoirs is represented by a
     system of conductors connected via resistors and capacitors
@@ -111,8 +109,8 @@ class CapacitanceModel(Instrument):
 
         self.db_name = db_name
         self.db_folder = db_folder
-        self._C_l = 0.0
-        self._C_r = 0.0
+        self._c_l = 0.0
+        self._c_r = 0.0
         self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)])
 
         if charge_nodes is None:
@@ -211,20 +209,20 @@ class CapacitanceModel(Instrument):
         )
 
         self.add_parameter(
-            "C_R",
+            "c_r",
             label="capacitance to right lead",
             unit="F",
-            get_cmd=self._get_C_R,
-            set_cmd=self._set_C_R,
+            get_cmd=self._get_c_r,
+            set_cmd=self._set_c_r,
             initial_value=0,
         )
 
         self.add_parameter(
-            "C_L",
+            "c_l",
             label="capacitance to left lead",
             unit="F",
-            get_cmd=self._get_C_L,
-            set_cmd=self._set_C_L,
+            get_cmd=self._get_c_l,
+            set_cmd=self._set_c_l,
             initial_value=0,
         )
 
@@ -773,6 +771,7 @@ class CapacitanceModel(Instrument):
     ) -> int:
         """
         """
+
         n_dots = len(self.charge_nodes)
 
         if N_current is None:
@@ -1056,14 +1055,14 @@ class CapacitanceModel(Instrument):
         coupling to the last. In the same manner, all dots are coupled to the
         leads. Change if necessary.
         """
-        C_cc = self._C_cc
+
         C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
         # from other dots:
         off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
         off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
 
         diag = C_cv_sums + off_diag_sums
-        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
+        diag += np.absolute(self._c_r) + np.absolute(self._c_r)
 
         return np.diag(diag)
 
@@ -1075,29 +1074,29 @@ class CapacitanceModel(Instrument):
         # update values in C_cc:
         _ = self._get_C_cc()
 
-    def _get_C_R(self) -> float:
-        return self._C_r
+    def _get_c_r(self) -> float:
+        return self._c_r
 
-    def _set_C_R(self, value: float):
-        self._C_r = value
+    def _set_c_r(self, value: float):
+        self._c_r = value
         try:
             _ = self._get_C_cc()
         except Exception:
             logger.warning(
-                "Setting CapacitanceModel.C_R: Unable to update C_cc"
+                "Setting CapacitanceModel.c_r: Unable to update C_cc"
             )
             pass
 
-    def _get_C_L(self) -> float:
-        return self._C_l
+    def _get_c_l(self) -> float:
+        return self._c_l
 
-    def _set_C_L(self, value: float):
-        self._C_l = value
+    def _set_c_l(self, value: float):
+        self._c_l = value
         try:
             _ = self._get_C_cc()
         except Exception:
             logger.warning(
-                "Setting CapacitanceModel.C_L: Unable to update C_cc"
+                "Setting CapacitanceModel.c_l: Unable to update C_cc"
             )
             pass
 
