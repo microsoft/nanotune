@@ -622,8 +622,8 @@ class CapacitanceModel(Instrument):
         add_noise: bool = True,
         kernel_widths: Tuple[float, float] = (1.0, 1.0),
         target_snr_db: float = 100,
-        single_dot: bool = False,
         normalize: bool = True,
+        known_regime: str = 'doubledot',
         known_quality: Optional[int] = None,
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
@@ -717,7 +717,7 @@ class CapacitanceModel(Instrument):
              self.voltage_nodes[voltage_node_idx[1]].v],
             [voltage_x, voltage_y],
             signal,
-            nt_label=[regime],
+            nt_label=[known_regime],
             quality=quality,
         )
 
@@ -726,7 +726,7 @@ class CapacitanceModel(Instrument):
     def sweep_voltage(
         self,
         voltage_node_idx: int,  # the one we want to sweep
-        v_range: Sequence[float],
+        voltage_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
         kernel_width: Sequence[float] = [1.0],
@@ -1075,9 +1075,13 @@ class CapacitanceModel(Instrument):
         _ = self._get_C_cc()
 
     def _get_c_r(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance R(right). """
         return self._c_r
 
     def _set_c_r(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance R(right). Updates dot
+        capacitance matrix C_cc as its diagonals depend on c_r
+        """
         self._c_r = value
         try:
             _ = self._get_C_cc()
@@ -1088,9 +1092,13 @@ class CapacitanceModel(Instrument):
             pass
 
     def _get_c_l(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance L(eft). """
         return self._c_l
 
     def _set_c_l(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance L(eft). Updates dot
+        capacitance matrix C_cc as its diagonals depend on c_l
+        """
         self._c_l = value
         try:
             _ = self._get_C_cc()
