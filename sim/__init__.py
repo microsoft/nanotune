@@ -12,6 +12,6 @@ qcodes_utils: Contains utility classes related to QCoDeS.
 simulate: Contains classes related to device simulation .
 """
 
-from sim import simulate, data_providers, qcodes_mocks, qcodes_utils
+# import simulate, data_providers, qcodes_mocks, qcodes_utils
 
 

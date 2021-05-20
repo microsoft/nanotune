@@ -23,7 +23,7 @@ class QcodesDbConfig:
         qc.config["core"]["db_location"] = self._db_path
         logging.info("Changed qcodes db to %s", self._db_path)
 
-    def __exit__(self, type, value, traceback) -> None:
+    def __exit__(self, *exc) -> None:
         qc.config["core"]["db_location"] = self._orig_db_path
         logging.info("Restoring qcodes db to %s", self._orig_db_path)
 

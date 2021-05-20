@@ -20,7 +20,7 @@ class TestQcodesDataProvider:
         different input values yields different outputs.
         """
 
-        in1 = simulate.InputPin("in1")
+        in1 = simulate.Pin("in1")
         data_1d = data_providers.QcodesDataProvider(
             [in1], valid_db_path, "GB_Newtown_Dev_3_2", 986
         )
@@ -38,8 +38,8 @@ class TestQcodesDataProvider:
         different input values yields different outputs.
         """
 
-        in1 = simulate.InputPin("in1")
-        in2 = simulate.InputPin("in2")
+        in1 = simulate.Pin("in1")
+        in2 = simulate.Pin("in2")
         data_2d = data_providers.QcodesDataProvider(
             [in1, in2], valid_db_path, "GB_Newtown_Dev_3_2", 991
         )
@@ -69,7 +69,7 @@ class TestQcodesDataProvider:
         """
         with pytest.raises(NameError):
             data_1d = data_providers.QcodesDataProvider(
-                [simulate.InputPin("in1")],
+                [simulate.Pin("in1")],
                 valid_db_path,
                 "Bad_Experiment_Name",
                 986,
@@ -77,7 +77,7 @@ class TestQcodesDataProvider:
 
         with pytest.raises(NameError):
             data_1d = data_providers.QcodesDataProvider(
-                [simulate.InputPin("in1")],
+                [simulate.Pin("in1")],
                 valid_db_path,
                 "GB_Newtown_Dev_3_2",
                 987654321,
@@ -89,7 +89,7 @@ class TestQcodesDataProvider:
         """
 
         data_1d = data_providers.QcodesDataProvider(
-            [simulate.InputPin("in1")],
+            [simulate.Pin("in1")],
             valid_db_path,
             "GB_Newtown_Dev_3_2",
             986,
@@ -105,7 +105,7 @@ class TestQcodesDataProvider:
 
         with pytest.raises(KeyError):
             data_1d = data_providers.QcodesDataProvider(
-                [simulate.InputPin("in1")],
+                [simulate.Pin("in1")],
                 valid_db_path,
                 "GB_Newtown_Dev_3_2",
                 986,
@@ -117,7 +117,7 @@ class TestQcodesDataProvider:
         specified for indexing into the specified dataset.
         """
 
-        in1 = simulate.InputPin("in1")
+        in1 = simulate.Pin("in1")
 
         with pytest.raises(ValueError):
             # This is a 2D data set, but only 1 input binding is specified
@@ -136,9 +136,9 @@ class TestQcodesDataProvider:
         are specified for indexing into the specified dataset.
         """
 
-        in1 = simulate.InputPin("in1")
-        in2 = simulate.InputPin("in2")
-        in3 = simulate.InputPin("in3")
+        in1 = simulate.Pin("in1")
+        in2 = simulate.Pin("in2")
+        in3 = simulate.Pin("in3")
 
         with pytest.raises(ValueError):
             # This is a 2D data set, but only 1 input binding is specified
