@@ -2,6 +2,7 @@ import logging
 from functools import partial
 from typing import List, Optional, Union, Dict, Tuple, Sequence, Any
 import numpy as np
+from numpy.lib.function_base import select
 import scipy as sc
 import itertools
 import json
@@ -389,9 +390,8 @@ class CapacitanceModel(Instrument):
         current_energy = self.compute_energy(N=c_config, V_v=V_v)
 
         def append_energy(charge_stage: Sequence[int]) -> None:
-            if not np.any(np.array(charge_stage) < 0):
-                energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
-                c_configs.append(charge_stage)
+            energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
+            c_configs.append(charge_stage)
 
         I_mat = np.eye(n_dots)
         # Check if neighbouring ones have lower energy:
@@ -617,6 +617,7 @@ class CapacitanceModel(Instrument):
         voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
+        e_temp: float = 1e-3,
         broaden: bool = True,
         add_noise: bool = True,
         kernel_widths: Tuple[float, float] = (1.0, 1.0),
@@ -680,18 +681,16 @@ class CapacitanceModel(Instrument):
                 self.set_voltage(voltage_node_idx[1], y_val)
                 N_curr = self.determine_N()
                 n_idx = int(np.random.randint(len(N_curr), size=1))
-                # add charge jumps if desired:
+                # add charge jumps:
                 N_curr[n_idx] += x[ivx, ivy]
                 self.N(N_curr)
 
                 dU = self.get_energy_differences_to_adjacent_charge_states(
                     N_current=N_curr,
                 )
+                signal[ivx, ivy] = np.sum(np.reciprocal(dU)) * line_intensity
 
-                signal[ivx, ivy] = np.prod(np.reciprocal(dU)) * line_intensity
-                # sorted_index_array = np.argsort(dU)
-                # sorted_dU = dU[sorted_index_array]
-                # signal[ivx, ivy] = (1/np.min(sorted_dU[-2:])) * line_intensity
+        signal = (signal - np.mean(signal))
 
         if broaden:
             signal = self._make_it_real(signal, kernel_widths=kernel_widths)
@@ -749,10 +748,9 @@ class CapacitanceModel(Instrument):
             dU = self.get_energy_differences_to_adjacent_charge_states(
                 N_current=N_current,
             )
+            signal[iv] = np.sum(np.reciprocal(dU)) * line_intensity
 
-            # signal[iv] = np.prod(np.reciprocal(dU)) * line_intensity
-            signal[iv] = (1/np.min(dU)) * line_intensity
-
+        signal = (signal - np.mean(signal))
         signal = self._make_it_real(signal, kernel_widths=kernel_width)
         signal = self._add_noise(signal, target_snr_db=target_snr_db)
 
@@ -777,32 +775,33 @@ class CapacitanceModel(Instrument):
 
         if N_current is None:
             N_current = self.N()
+        else:
+            self.N(N_current)
 
         if V_v is None:
             V_v = self.V_v()
+        else:
+            self.V_v(V_v)
 
-        current_energy = self.compute_energy(N=N_current, V_v=V_v)
         I_mat = np.eye(n_dots)
         energies = []
-        c_configs = []
-
-        def append_energy(charge_stage):
-            if not np.any(np.array(charge_stage) < 0):
-                energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
-                c_configs.append(charge_stage)
 
         for dot_id in range(n_dots):
             e_hat = I_mat[dot_id]
 
-            append_energy(N_current + e_hat)
-            append_energy(N_current - e_hat)
+            energies.append(self.compute_energy(N=N_current + e_hat, V_v=V_v))
+            energies.append(self.compute_energy(N=N_current - e_hat, V_v=V_v))
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
                     e_hat_other = I_mat[other_dot]
-                    append_energy(N_current + e_hat - e_hat_other)
+                    energies.append(
+                        self.compute_energy(
+                            N=N_current + e_hat - e_hat_other, V_v=V_v,
+                        )
+                    )
 
-        current_energy = np.array([current_energy] * len(energies))
+        current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
         return dU
