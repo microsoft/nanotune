@@ -237,7 +237,6 @@ class CapacitanceModel(Instrument):
         """
 
         snap = super().snapshot_base(update, params_to_skip_update)
-
         return snap
 
     def set_voltage(
@@ -392,6 +391,7 @@ class CapacitanceModel(Instrument):
         current_energy = self.compute_energy(N=c_config, V_v=V_v)
 
         def append_energy(charge_stage: Sequence[int]) -> None:
+            charge_stage[charge_stage < 0] = 0
             energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
             c_configs.append(charge_stage)
 
@@ -414,6 +414,7 @@ class CapacitanceModel(Instrument):
             min_c_configs = np.array(c_configs)[indx.astype(int)]
             c_config = min_c_configs[min_indx]
 
+        c_config[c_config < 0] = 0
         return c_config.tolist()
 
     def get_triplepoints(
@@ -619,7 +620,6 @@ class CapacitanceModel(Instrument):
         voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
-        e_temp: float = 1e-3,
         broaden: bool = True,
         add_noise: bool = True,
         kernel_widths: Tuple[float, float] = (1.0, 1.0),
@@ -791,22 +791,29 @@ class CapacitanceModel(Instrument):
         for dot_id in range(n_dots):
             e_hat = I_mat[dot_id]
 
-            energies.append(self.compute_energy(N=N_current + e_hat, V_v=V_v))
-            energies.append(self.compute_energy(N=N_current - e_hat, V_v=V_v))
+            charge_state = N_current + e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            charge_state = N_current - e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
                     e_hat_other = I_mat[other_dot]
+                    charge_state = N_current + e_hat - e_hat_other
+                    charge_state[charge_state < 0] = 0
                     energies.append(
                         self.compute_energy(
-                            N=N_current + e_hat - e_hat_other, V_v=V_v,
+                            N=charge_state, V_v=V_v,
                         )
                     )
 
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
-        return dU
+        return dU[dU != 0]
 
     def _make_it_real(
         self,
