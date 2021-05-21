@@ -1,9 +1,9 @@
 #pylint: disable=too-many-arguments, too-many-locals
 
 from qcodes import Instrument, Parameter
-from sim.pin import IPin
+from sim.mock_pin import IMockPin
 from sim.data_provider import IDataProvider
-from sim.simulate import QuantumDotSim
+from sim.mock_devices import MockQuantumDot
 
 class SimulationParameter(Parameter):
     """ Qcodes Parameter that wraps a Simulation Pin, which in turn
@@ -11,7 +11,7 @@ class SimulationParameter(Parameter):
     """
     def __init__(
             self,
-            sim_pin : IPin,
+            sim_pin : IMockPin,
             **kwargs
          ):
         super().__init__(**kwargs)
@@ -29,7 +29,7 @@ class SimulationParameter(Parameter):
                 f"which is using a non-settable data provider")
 
     @property
-    def pin(self) -> IPin:
+    def pin(self) -> IMockPin:
         """ Retrieve the simulation pin that this QCoDeS parameter is wrapping """
 
         return self._pin
@@ -47,7 +47,7 @@ class QuantumDotMockInstrument(Instrument):
 
         super().__init__(name)
 
-        sim = QuantumDotSim(name)
+        sim = MockQuantumDot(name)
         self._simulator = sim
 
         self.add_parameter(
@@ -94,8 +94,8 @@ class QuantumDotMockInstrument(Instrument):
         )
 
     @property
-    def simulator(self) -> QuantumDotSim:
-        """Returns the simulator instance to which this mock device is attached
+    def mock_device(self) -> MockQuantumDot:
+        """Returns the IMockDevice instance to which this mock instrument is attached
         """
 
         return self._simulator

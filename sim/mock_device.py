@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod, abstractproperty
-from sim.pin import IPin
+from sim.mock_pin import IMockPin
 
-class ISimulator(ABC):
+class IMockDevice(ABC):
 
-    """ Base interface for all simulators """
+    """ Base interface for all mock devices """
 
     @abstractproperty
     def name(self):
-        """ Simulator Name """
+        """ Mock device name """
         raise NotImplementedError
 
     @abstractmethod
-    def get_pin(self, pin_name: str) -> IPin:
+    def get_pin(self, pin_name: str) -> IMockPin:
         """ Get pin by name """
         raise NotImplementedError

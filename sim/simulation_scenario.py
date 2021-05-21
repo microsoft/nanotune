@@ -9,9 +9,9 @@ import importlib
 import logging
 import ruamel.yaml
 
-from sim.pin import IPin
+from sim.mock_pin import IMockPin
 from sim.data_provider import IDataProvider
-from sim.simulator_registry import SimulatorRegistry
+from sim.mock_device_registry import MockDeviceRegistry
 
 
 class SimulationAction(ABC):
@@ -24,14 +24,14 @@ class SimulationAction(ABC):
     @abstractmethod
     def run(self) -> None:
         """Performs the action"""
-        pass
+        raise NotImplementedError
 
 
 class SetDataProviderAction(SimulationAction):
 
-    """A simulation action that changes the data_provider on the specified container (such as an Pin)"""
+    """A simulation action that changes the data_provider an Mock Device Pin"""
 
-    def __init__(self, name: str, pin: IPin, data_provider: IDataProvider):
+    def __init__(self, name: str, pin: IMockPin, data_provider: IDataProvider):
         super().__init__(name)
 
         if not data_provider:
@@ -128,7 +128,7 @@ class SimulationScenario(SimpleQueue[SimulationAction]):
             for actions in data[scenario_name]:
                 for name in actions:
                     action = actions[name]
-                    sim_pin = SimulatorRegistry.resolve_pin(action["sim_pin"])
+                    sim_pin = MockDeviceRegistry.resolve_pin(action["sim_pin"])
                     provider = create_instance(
                         action["type"], **action["init"]
                     )

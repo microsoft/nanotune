@@ -1,12 +1,12 @@
 # pylint: disable=too-many-arguments, too-many-locals
 from typing import List
 from sim.data_providers import IDataProvider, StaticDataProvider
-from sim.simulator import ISimulator
-from sim.simulator_registry import SimulatorRegistry
-from sim.pin import IPin
+from sim.mock_device import IMockDevice
+from sim.mock_device_registry import MockDeviceRegistry
+from sim.mock_pin import IMockPin
 
 
-class Pin(IPin):
+class Pin(IMockPin):
     """Default Pin Device.  Uses an IDataProvider to represent the
     value on the pin device
     """
@@ -57,15 +57,15 @@ class Pin(IPin):
 
 
 # pylint: disable=too-few-public-methods
-class SimulatedDevice(ISimulator):
-    """Base class for simulated devices"""
+class MockDevice(IMockDevice):
+    """Base class for mock devices"""
 
-    def __init__(self, name: str, pins: List[IPin], register: bool = True):
+    def __init__(self, name: str, pins: List[IMockPin], register: bool = True):
         self._name = name
         self._pins = {pin.name: pin for pin in pins}
 
         if register:
-            SimulatorRegistry.register(self)
+            MockDeviceRegistry.register(self)
 
     def __repr__(self) -> str:
         return str(self)
@@ -75,10 +75,10 @@ class SimulatedDevice(ISimulator):
             ", ".join([str(pin) for pin in self._pins.values()])
         )
 
-    def __getitem__(self, pin_name: str) -> IPin:
+    def __getitem__(self, pin_name: str) -> IMockPin:
         return self._pins[pin_name]
 
-    def get_pin(self, pin_name: str) -> IPin:
+    def get_pin(self, pin_name: str) -> IMockPin:
         return self._pins[pin_name]
 
     @property
@@ -89,8 +89,8 @@ class SimulatedDevice(ISimulator):
 # pylint: enable=too-few-public-methods
 
 
-class QuantumDotSim(SimulatedDevice):
-    """Represents all gates on a quantum dot."""
+class MockQuantumDot(MockDevice):
+    """Represents a mock quantum dot device"""
 
     def __init__(self, name: str):
         super().__init__(
@@ -107,43 +107,43 @@ class QuantumDotSim(SimulatedDevice):
         )
 
     @property
-    def src(self) -> IPin:
+    def src(self) -> IMockPin:
         """Source Pin"""
 
         return self["src"]
 
     @property
-    def l_barrier(self) -> IPin:
+    def l_barrier(self) -> IMockPin:
         """Left Barrier Pin"""
 
         return self["l_barrier"]
 
     @property
-    def l_plunger(self) -> IPin:
+    def l_plunger(self) -> IMockPin:
         """Left Plunger Pin"""
 
         return self["l_plunger"]
 
     @property
-    def c_barrier(self) -> IPin:
+    def c_barrier(self) -> IMockPin:
         """Central Barrier Pin"""
 
         return self["c_barrier"]
 
     @property
-    def r_plunger(self) -> IPin:
+    def r_plunger(self) -> IMockPin:
         """Right Plunger Pin"""
 
         return self["r_plunger"]
 
     @property
-    def r_barrier(self) -> IPin:
+    def r_barrier(self) -> IMockPin:
         """Right Barrier Pin"""
 
         return self["r_barrier"]
 
     @property
-    def drain(self) -> IPin:
+    def drain(self) -> IMockPin:
         """Drain pin. This is the output device of the quantum dot."""
 
         return self["drain"]

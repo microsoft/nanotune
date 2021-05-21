@@ -11,9 +11,9 @@ import qcodes as qc
 import xarray as xr
 from scipy import interpolate
 from sim.qcodes_utils import QcodesDbConfig
-from sim.pin import IPin
+from sim.mock_pin import IMockPin
 from sim.data_provider import IDataProvider
-from sim.simulator_registry import SimulatorRegistry
+from sim.mock_device_registry import MockDeviceRegistry
 
 
 class DataProvider(IDataProvider):
@@ -64,7 +64,7 @@ class QcodesDataProvider(DataProvider):
 
     def __init__(
         self,
-        input_providers: List[Union[str, IPin]],
+        input_providers: List[Union[str, IMockPin]],
         db_path: str,
         exp_name: str,
         run_id: int,
@@ -87,7 +87,7 @@ class QcodesDataProvider(DataProvider):
         super().__init__(settable=False)
 
         self._inputs = [
-            x if isinstance(x, IPin) else SimulatorRegistry.resolve_pin(x)
+            x if isinstance(x, IMockPin) else MockDeviceRegistry.resolve_pin(x)
             for x in input_providers
         ]
         db_norm_path = os.path.normpath(os.path.expandvars(db_path))

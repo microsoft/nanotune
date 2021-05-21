@@ -1,26 +1,25 @@
-import logging
+import os
 from queue import Empty
 import sim
-from sim.simulate import Pin
+from sim.mock_devices import Pin
 from sim.data_providers import StaticDataProvider
 from sim.simulation_scenario import (
     SimulationScenario,
     ActionGroup,
     SetDataProviderAction,
 )
-from sim.simulate import QuantumDotSim
-import os
+from sim.mock_devices import MockQuantumDot
 
 
 def test_load_from_yaml():
 
-    """Tests initializing a SimulationScenario from yaml, and using it to drive a simulator"""
+    """Tests initializing a SimulationScenario from yaml, and using it to drive a mock device"""
 
     simroot = os.path.dirname(os.path.abspath(sim.__file__))
-    yamlfile = os.path.join(simroot, "test", "sim_scenario.yaml")
+    yamlfile = os.path.join(simroot, "test", "test_simulation_scenario.yaml")
     os.environ["sim_db_path"] = os.path.join(simroot, "data")
 
-    qdsim = QuantumDotSim("qdsim")
+    qdsim = MockQuantumDot("qdsim")
     scenario = SimulationScenario.load_from_yaml(yamlfile)
 
     # tie drain to 10.0

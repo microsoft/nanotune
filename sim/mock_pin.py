@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod, abstractproperty
 from sim.data_provider import IDataProvider
 
 
-class IPin(ABC):
-    """Interface for all simulation pins"""
+class IMockPin(ABC):
+    """Interface for mock device pins"""
 
     @abstractproperty
     def name(self):
