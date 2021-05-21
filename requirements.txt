@@ -12,7 +12,7 @@ cached-property==1.5.2
 cachetools==4.2.2
 certifi==2020.12.5
 cffi==1.14.5
-cftime==1.4.1
+cftime==1.5.0
 chardet==4.0.0
 contextlib2==0.6.0.post1
 coverage==5.5
@@ -25,7 +25,7 @@ execnet==1.8.0
 flatbuffers==1.12
 gast==0.3.3
 gitdb==4.0.7
-GitPython==3.1.15
+GitPython==3.1.17
 google-api-core==1.26.3
 google-auth==1.30.0
 google-auth-oauthlib==0.4.4
