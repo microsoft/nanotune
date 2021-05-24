@@ -5,8 +5,8 @@ from sim.mock_pin import IMockPin
 
 class MockDeviceRegistry:
 
-    """Acts as a singelton registry for mock device instances
-       so they can be easily accessed by name from other modules
+    """Acts as a global registry for all mock device instances
+       so they can be easily accessed by name from any module
     """
 
     _mock_devices: Dict[str, IMockDevice] = {}
