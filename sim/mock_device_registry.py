@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import MutableMapping, Optional
 from sim.mock_device import IMockDevice
 from sim.mock_pin import IMockPin
 
@@ -9,7 +9,7 @@ class MockDeviceRegistry:
        so they can be easily accessed by name from any module
     """
 
-    _mock_devices: Dict[str, IMockDevice] = {}
+    _mock_devices: MutableMapping[str, IMockDevice] = {}
 
     @classmethod
     def register(
@@ -18,7 +18,7 @@ class MockDeviceRegistry:
 
         """Register an IMockDevice using the mock device's name, or an optionally provided name"""
 
-        mock_name = mock_device.name if name is None else name
+        mock_name = str(mock_device.name if name is None else name)
         cls._mock_devices[mock_name] = mock_device
 
     @classmethod

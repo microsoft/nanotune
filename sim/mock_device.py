@@ -1,12 +1,13 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from sim.mock_pin import IMockPin
 
 class IMockDevice(ABC):
 
     """ Base interface for all mock devices """
 
-    @abstractproperty
-    def name(self):
+    @property
+    @abstractmethod
+    def name(self) -> str:
         """ Mock device name """
         raise NotImplementedError
 

@@ -2,7 +2,7 @@
 
 import os
 from typing import (
-    List,
+    Sequence,
     Optional,
     Any,
     Union,
@@ -40,15 +40,14 @@ class StaticDataProvider(DataProvider):
     def __call__(self, *args) -> float:
         return self._value
 
-    def set_value(self, value: Any) -> None:
-        """Set the static value of this data provider"""
-        self._value = value
-
-    @property
-    def value(self) -> float:
+    def get_value(self) -> float:
         """The current value of this data provider"""
 
         return self._value
+
+    def set_value(self, value: float) -> None:
+        """Set the static value of this data provider"""
+        self._value = value
 
     @property
     def raw_data(self) -> xr.DataArray:
@@ -64,7 +63,7 @@ class QcodesDataProvider(DataProvider):
 
     def __init__(
         self,
-        input_providers: List[Union[str, IMockPin]],
+        input_providers: Sequence[Union[str, IMockPin]],
         db_path: str,
         exp_name: str,
         run_id: int,
@@ -106,10 +105,7 @@ class QcodesDataProvider(DataProvider):
 
             # if a model name was specified, make sure it is actually in the
             # qcodes dataset
-            if (
-                model_param_name
-                and model_param_name not in dataset.paramspecs
-            ):
+            if model_param_name and model_param_name not in dataset.paramspecs:
                 raise KeyError(
                     f"model_param_name '{model_param_name}' not found in "
                     f"dataset {dataset_id}"
@@ -179,12 +175,7 @@ class QcodesDataProvider(DataProvider):
                     bounds_error=False,
                 )
 
-    def set_value(self, value: float) -> None:
-        """Raises NotImplementedError.  This data provider type is read only"""
-        raise NotImplementedError
-
-    @property
-    def value(self) -> float:
+    def get_value(self) -> float:
         """Looks up and returns the measurement result given the bound inputs,
         using interpolation
         """
@@ -192,6 +183,10 @@ class QcodesDataProvider(DataProvider):
         inputs = [inpt.get_value() for inpt in self._inputs]
         result = self._interpolate(*inputs).item()
         return result
+
+    def set_value(self, value: float) -> None:
+        """Raises NotImplementedError.  This data provider type is read only"""
+        raise NotImplementedError
 
     @property
     def raw_data(self) -> Union[xr.DataArray, xr.Dataset]:

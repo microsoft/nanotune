@@ -1,5 +1,5 @@
 # pylint: disable=too-many-arguments, too-many-locals
-from typing import List
+from typing import List, Mapping
 from sim.data_providers import IDataProvider, StaticDataProvider
 from sim.mock_device import IMockDevice
 from sim.mock_device_registry import MockDeviceRegistry
@@ -31,7 +31,7 @@ class Pin(IMockPin):
         """Gets the current value on the input pin.  Compatible with qcodes
         Parameter get_cmd argument.
         """
-        return self._data_provider.value
+        return self._data_provider.get_value()
 
     def set_value(
         self,
@@ -62,7 +62,7 @@ class MockDevice(IMockDevice):
 
     def __init__(self, name: str, pins: List[IMockPin], register: bool = True):
         self._name = name
-        self._pins = {pin.name: pin for pin in pins}
+        self._pins : Mapping[str, IMockPin] = {pin.name: pin for pin in pins}
 
         if register:
             MockDeviceRegistry.register(self)

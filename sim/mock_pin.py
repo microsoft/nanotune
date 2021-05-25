@@ -1,12 +1,13 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from sim.data_provider import IDataProvider
 
 
 class IMockPin(ABC):
     """Interface for mock device pins"""
 
-    @abstractproperty
-    def name(self):
+    @property
+    @abstractmethod
+    def name(self) -> str:
         """Name of the pin"""
         raise NotImplementedError
 
@@ -33,7 +34,8 @@ class IMockPin(ABC):
         """change the data provider backing this pin"""
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def settable(self) -> bool:
         """Indictates whether the value of this pin in settable or not"""
         raise NotImplementedError

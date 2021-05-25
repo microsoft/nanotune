@@ -26,10 +26,10 @@ class TestQcodesDataProvier:
         )
 
         in1.set_value(0.0)
-        out0 = data_1d.value
+        out0 = data_1d.get_value()
 
         in1.set_value(-0.5)
-        out1 = data_1d.value
+        out1 = data_1d.get_value()
 
         assert out0 != out1
 
@@ -46,11 +46,11 @@ class TestQcodesDataProvier:
 
         in1.set_value(0.0)
         in2.set_value(0.0)
-        out0 = data_2d.value
+        out0 = data_2d.get_value()
 
         in1.set_value(-0.5)
         in2.set_value(-0.5)
-        out1 = data_2d.value
+        out1 = data_2d.get_value()
         assert out0 != out1
 
     def test_bad_db_filename(self):
@@ -96,7 +96,7 @@ class TestQcodesDataProvier:
             model_param_name="sr860_2_R_current",
         )
 
-        assert data_1d.value != 0.0
+        assert data_1d.get_value() != 0.0
 
     def test_bad_dataset_parameter(self):
         """Validates that the correct error is raised if the specified parameter
