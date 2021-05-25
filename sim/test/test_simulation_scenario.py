@@ -82,7 +82,7 @@ def test_typical_simulation_scenario():
 
     try:
         i_expected = iter(expected_outputs)
-        n_actions = scenario.qsize()
+        n_actions = scenario.action_count
         n_actions_performed = 0
 
         while True:
@@ -132,7 +132,7 @@ def test_dynamic_simulation_scenario():
     o1 = Pin("o1")
 
     # Test dynamically adding and running a single action
-    scenario.put(
+    scenario.append(
         SetDataProviderAction(
             "Set o1 to 1.0", o1, StaticDataProvider(1.0)
         )
@@ -140,12 +140,12 @@ def test_dynamic_simulation_scenario():
     test_next_step(scenario, o1, 0.0, 1.0)
 
     # Test dynamically adding multiple actions
-    scenario.put(
+    scenario.append(
         SetDataProviderAction(
             "Set o1 to 2.0", o1, StaticDataProvider(2.0)
         )
     )
-    scenario.put(
+    scenario.append(
         SetDataProviderAction(
             "Set o1 to 3.0", o1, StaticDataProvider(3.0)
         )
@@ -163,7 +163,7 @@ def test_dynamic_simulation_scenario():
         pass
 
     # Re-validate dynamically adding a scenario after trying to run it while it was empty
-    scenario.put(
+    scenario.append(
         SetDataProviderAction(
             "Set o1 to 4.0", o1, StaticDataProvider(4.0)
         )

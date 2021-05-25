@@ -75,24 +75,39 @@ class ActionGroup(SimulationAction):
             action.run()
 
 
-class SimulationScenario(SimpleQueue[SimulationAction]):
+class SimulationScenario():
 
     """Defines a simulation scenario, which is a sequence of actions to take when triggered to do so"""
 
     def __init__(self, name, actions=None):
         self._name = name
+        self._actions : "SimpleQueue[SimulationAction]" = SimpleQueue()
         if actions:
             for action in actions:
-                self.put(action)
+                self._actions.put(action)
 
     @property
     def name(self):
         """ Name of the scenario"""
         return self._name
 
+    @property
+    def action_count(self) -> int:
+        """ The number of actions remaining in the scenario """
+        return self._actions.qsize()
+
+    @property
+    def empty(self) -> bool:
+        """ True if the scenario has no remaining actions """
+        return bool(self._actions.empty)
+
+    def append(self, action :SimulationAction) -> None:
+        """Enqueues an action to the scenario"""
+        self._actions.put(action)
+
     def run_next_step(self) -> None:
         """Executes the next action.  If no actions remain, raises queue.Empty"""
-        self.get_nowait().run()
+        self._actions.get_nowait().run()
 
     @classmethod
     def load_from_yaml(cls, yamlfile: str):
@@ -134,6 +149,6 @@ class SimulationScenario(SimpleQueue[SimulationAction]):
                     )
 
                     action = SetDataProviderAction(name, sim_pin, provider)
-                    scenario.put(action)
+                    scenario.append(action)
 
         return scenario

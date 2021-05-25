@@ -1,5 +1,5 @@
 # pylint: disable=too-many-arguments, too-many-locals
-from typing import List, Mapping
+from typing import Sequence, Mapping
 from sim.data_providers import IDataProvider, StaticDataProvider
 from sim.mock_device import IMockDevice
 from sim.mock_device_registry import MockDeviceRegistry
@@ -60,7 +60,7 @@ class Pin(IMockPin):
 class MockDevice(IMockDevice):
     """Base class for mock devices"""
 
-    def __init__(self, name: str, pins: List[IMockPin], register: bool = True):
+    def __init__(self, name: str, pins: Sequence[IMockPin], register: bool = True):
         self._name = name
         self._pins : Mapping[str, IMockPin] = {pin.name: pin for pin in pins}
 
