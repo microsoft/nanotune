@@ -84,7 +84,7 @@ ply==3.11
 prettytable==2.1.0
 prometheus-client==0.10.1
 prompt-toolkit==3.0.18
-protobuf==3.16.0
+protobuf==3.17.1
 psutil==5.8.0
 ptyprocess==0.7.0
 py==1.10.0
@@ -126,7 +126,7 @@ tensorflow==2.5.0
 tensorflow-estimator==2.5.0
 termcolor==1.1.0
 terminado==0.9.4
-testpath==0.4.4
+testpath==0.5.0
 threadpoolctl==2.1.0
 tifffile==2021.4.8
 toml==0.10.2
