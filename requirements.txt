@@ -27,7 +27,7 @@ gast==0.4.0
 gitdb==4.0.7
 GitPython==3.1.17
 google-api-core==1.26.3
-google-auth==1.30.0
+google-auth==1.30.1
 google-auth-oauthlib==0.4.4
 google-pasta==0.2.0
 googleapis-common-protos==1.53.0
@@ -126,7 +126,7 @@ tensorflow==2.5.0
 tensorflow-estimator==2.5.0
 termcolor==1.1.0
 terminado==0.9.4
-testpath==0.4.4
+testpath==0.5.0
 threadpoolctl==2.1.0
 tifffile==2021.4.8
 toml==0.10.2
