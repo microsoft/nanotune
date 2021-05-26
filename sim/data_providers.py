@@ -1,84 +1,69 @@
-#pylint: too-many-arguments, too-many-locals
+# pylint: disable=too-many-arguments, too-many-locals
 
 import os
 from typing import (
-    List,
-    Dict,
+    Sequence,
     Optional,
     Any,
+    Union,
 )
 import qcodes as qc
 import xarray as xr
 from scipy import interpolate
 from sim.qcodes_utils import QcodesDbConfig
+from sim.mock_pin import IMockPin
+from sim.data_provider import IDataProvider
+from sim.mock_device_registry import MockDeviceRegistry
 
 
-class Pin:
-    def __init__(
-        self,
-        name: str,
-    ) -> None:
-        self._name = name
-        self._value: float = 0.0
+class DataProvider(IDataProvider):
+    """Base class for data providers"""
 
-    def __repr__(self) -> str:
-        return self._name
-
-    def __str__(self) -> str:
-        return self._name
+    def __init__(self, settable: bool):
+        self._settable = settable
 
     @property
-    def name(self) -> str:
-        """Name of the pin"""
-
-        return self._name
-
-    @property
-    def value(self) -> float:
-        """Gets the current value of the pin"""
-
-        return self._value
-
-    def get_value(self) -> float:
-        """Gets the current value on the input pin.  Compatible with qcodes
-        Parameter get_cmd argument.
+    def settable(self) -> bool:
+        """Indicates whether this data provider allows its value to
+        be set by calling set_value
         """
+        return self._settable
 
-        return self._value
 
-
-class StaticDataProvider:
+class StaticDataProvider(DataProvider):
     """Data provider that returns a constant value for all inputs."""
 
     def __init__(self, value: float) -> None:
-        """Initializes a static data provider."""
-
+        super().__init__(settable=True)
         self._value = value
-        self._xarray = xr.DataArray("0", dims="x", coords={"x":[1]})
 
     def __call__(self, *args) -> float:
         return self._value
 
-    @property
-    def value(self) -> float:
-        """ """
+    def get_value(self) -> float:
+        """The current value of this data provider"""
 
         return self._value
 
+    def set_value(self, value: float) -> None:
+        """Set the static value of this data provider"""
+        self._value = value
+
+    @property
     def raw_data(self) -> xr.DataArray:
         """Returns the raw data backing this provider as an
         xarray.DataArray
         """
 
-        return self._xarray
+        return xr.DataArray("0", dims="x", coords={"x": [1]})
 
 
-class QcodesDataProvider:
+class QcodesDataProvider(DataProvider):
     """Data provider that sources it's data from a 1D or 2D QCoDeS dataset."""
 
     def __init__(
         self,
-        input_providers: List[Pin],
+        input_providers: Sequence[Union[str, IMockPin]],
         db_path: str,
         exp_name: str,
         run_id: int,
@@ -98,13 +83,19 @@ class QcodesDataProvider:
                 based on the dependent parameters.
         """
 
-        self._inputs = input_providers
-        dataset_id = f"{db_path}.{exp_name}.{run_id}"
+        super().__init__(settable=False)
 
-        if not os.path.isfile(db_path):
-            raise FileNotFoundError(db_path)
+        self._inputs = [
+            x if isinstance(x, IMockPin) else MockDeviceRegistry.resolve_pin(x)
+            for x in input_providers
+        ]
+        db_norm_path = os.path.normpath(os.path.expandvars(db_path))
+        dataset_id = f"{db_norm_path}.{exp_name}.{run_id}"
 
-        with QcodesDbConfig(db_path):
+        if not os.path.isfile(db_norm_path):
+            raise FileNotFoundError(db_norm_path)
+
+        with QcodesDbConfig(db_norm_path):
 
             dataset = qc.load_by_run_spec(
                 experiment_name=exp_name,
@@ -116,9 +107,9 @@ class QcodesDataProvider:
             # qcodes dataset
             if model_param_name and model_param_name not in dataset.paramspecs:
                 raise KeyError(
-                    f"model_param_name '{model_param_name}' not found in " \
-                        f"dataset {dataset_id}"
-                    )
+                    f"model_param_name '{model_param_name}' not found in "
+                    f"dataset {dataset_id}"
+                )
 
             # collect a list of all of the parameters using the dependencies
             # specified on the model param
@@ -163,8 +154,10 @@ class QcodesDataProvider:
             # (should be) a more friendly name
             # e.g.  Will rename 'mdac1_chan11_voltage' to 'LeftP'
             param_labels = [
-                dataset.paramspecs[name].label if dataset.paramspecs[name].label
-                else name for name in param_names
+                dataset.paramspecs[name].label
+                if dataset.paramspecs[name].label
+                else name
+                for name in param_names
             ]
             rename_dict = dict(zip(param_names, param_labels))
             renamed_dataset = dataset.to_xarray_dataset().rename(rename_dict)  # type: ignore
@@ -174,26 +167,28 @@ class QcodesDataProvider:
             inputs = [self._xarray_dataset[param] for param in param_labels]
             if input_dimensions == 1:
                 self._interpolate = interpolate.interp1d(
-                    *inputs,
-                    bounds_error = False,
-                    fill_value="extrapolate")
+                    *inputs, bounds_error=False, fill_value="extrapolate"
+                )
             else:
                 self._interpolate = interpolate.interp2d(
                     *inputs,
-                    bounds_error = False,
+                    bounds_error=False,
                 )
 
-    @property
-    def value(self) -> float:
+    def get_value(self) -> float:
         """Looks up and returns the measurement result given the bound inputs,
         using interpolation
         """
 
-        inputs = [inpt.value for inpt in self._inputs]
+        inputs = [inpt.get_value() for inpt in self._inputs]
         result = self._interpolate(*inputs).item()
         return result
 
+    def set_value(self, value: float) -> None:
+        """Raises NotImplementedError.  This data provider type is read only"""
+        raise NotImplementedError
+
     @property
-    def raw_data(self) -> xr.Dataset:
-        """ Returns the full data model as an xarray.DataSet """
+    def raw_data(self) -> Union[xr.DataArray, xr.Dataset]:
+        """Returns the full data model as an xarray.DataSet"""
         return self._xarray_dataset

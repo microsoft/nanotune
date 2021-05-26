@@ -1,0 +1,17 @@
+"end to end scenario" :
+  - "tie drain to 10.0" :
+      sim_pin: "qdsim.drain"
+      type: "sim.data_providers.StaticDataProvider"
+      init:
+        value: 10.0
+
+  - "Left Barrier Pinchoff" :
+      sim_pin: "qdsim.drain"
+      type: "sim.data_providers.QcodesDataProvider"
+      init:
+        input_providers: ["qdsim.l_barrier"]
+        db_path : "${sim_db_path}/QuantumDots/device_characterization.db"
+        exp_name : "GB_Newtown_Dev_3_2"
+        run_id : 1206
+
+
