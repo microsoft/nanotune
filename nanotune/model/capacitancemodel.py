@@ -5,6 +5,7 @@ import numpy as np
 import scipy as sc
 import itertools
 import json
+import copy
 
 
 from numpy.linalg import inv
@@ -785,6 +786,89 @@ class CapacitanceModel(Instrument):
 
         return dataid
 
+    def sweep_bias_and_voltage(
+        self,
+        voltage_node_idx: int,  # the one we want to sweep
+        voltage_range: Sequence[float],
+        bias_range: Tuple[float, float],
+        n_steps: Sequence[int] = N_2D,
+        line_intensity: float = 1.0,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """ """
+
+        self.set_voltage(voltage_node_idx, np.min(voltage_range))
+
+        voltage_x = np.linspace(
+            np.min(voltage_range), np.max(voltage_range), n_steps[0]
+        )
+
+        bias_steps = np.linspace(
+            np.min(bias_range), np.max(bias_range), n_steps[1]
+        )
+        signal = np.zeros(n_steps)
+        co_tunn = np.zeros(n_steps)
+
+        for iv, v_val in enumerate(voltage_x):
+            self.set_voltage(voltage_node_idx, v_val)
+            N_current = self.determine_N()
+            self.N(N_current)
+
+            dU = self.get_energy_differences_to_excited_charge_states(
+                N_current=N_current,
+                how_many=1,
+            )
+            dU = abs(dU)
+            for ib, b_val in enumerate(bias_steps):
+                if (dU <= abs(b_val)).any():
+                    signal[iv, ib] = line_intensity
+                    engs_in_bias = dU[dU <= abs(b_val)]
+        #             signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity
+                    signal[iv, ib] = len(engs_in_bias) * line_intensity
+                else:
+                    signal[iv, ib] = 0
+
+                    N_plus_one = copy.deepcopy(N_current)
+                    N_plus_one[0] += 1.
+                    add_rate = self.get_co_tunneling_rate(
+                        b_val,
+                        self.mu(0, N=N_current),
+                        self.mu(0, N=N_plus_one),
+                    )
+                    co_tunn[iv, ib] += add_rate
+
+        signal = (signal - np.mean(signal))/np.std(signal)
+        co_tunn = (co_tunn - np.mean(co_tunn))/np.std(co_tunn)
+
+        return signal, co_tunn
+
+    def get_co_tunneling_rate(
+        self,
+        bias: float,
+        mu_n: float,
+        mu_n_plus_one: float,
+        source_rate_N: float = 0.3,
+        source_rate_N_plus_one: float = 0.2,
+        drain_rate_N: float = 0.3,
+        drain_rate_N_plus_one: float = 0.2,
+        h_bar: float = 1,
+    ) -> float:
+
+        mu_source = bias
+        mu_drain = 0
+
+        first_term = (source_rate_N * drain_rate_N)
+        first_term /= ((mu_drain - mu_n)*(mu_source - mu_n))
+        second_term = (source_rate_N_plus_one * drain_rate_N_plus_one)
+        second_term /= ((mu_drain - mu_n_plus_one)*(mu_source - mu_n_plus_one))
+        third_term = np.log((mu_n_plus_one - mu_drain)/(mu_drain - mu_n))
+        third_term -= np.log((mu_n_plus_one - mu_source)/(mu_source - mu_n))
+        third_term /= ((mu_n_plus_one - mu_n) * (mu_source - mu_drain))
+
+        co_tunneling_rate = 2 * np.pi/h_bar * (first_term + second_term) * bias
+        co_tunneling_rate += third_term
+
+        return co_tunneling_rate
+
     def get_energy_differences_to_adjacent_charge_states(
         self,
         N_current: Optional[Sequence[int]] = None,
@@ -805,7 +889,6 @@ class CapacitanceModel(Instrument):
         else:
             self.V_v(V_v)
 
-        current_energy = self.compute_energy(N=N_current, V_v=V_v)
         I_mat = np.eye(n_dots)
         energies = []
 
@@ -830,6 +913,59 @@ class CapacitanceModel(Instrument):
                             N=charge_state, V_v=V_v,
                         )
                     )
+
+        current_energy = self.compute_energy(N=N_current, V_v=V_v)
+        dU = abs(np.array(energies) - current_energy)
+
+        return dU[dU != 0]
+
+    def get_energy_differences_to_excited_charge_states(
+        self,
+        N_current: Optional[Sequence[int]] = None,
+        V_v: Optional[Sequence[float]] = None,
+        how_many: int = 3,
+    ) -> int:
+        """
+        """
+
+        n_dots = len(self.charge_nodes)
+
+        if N_current is None:
+            N_current = self.N()
+        else:
+            self.N(N_current)
+
+        if V_v is None:
+            V_v = self.V_v()
+        else:
+            self.V_v(V_v)
+
+        I_mat = np.eye(n_dots)
+        energies = []
+
+        for dot_id in range(n_dots):
+            e_hat = I_mat[dot_id]
+
+            for add_e in range(how_many):
+                charge_state = N_current + (add_e+1)*e_hat
+                charge_state[charge_state < 0] = 0
+                energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            charge_state = N_current - e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            for other_dot in range(n_dots):
+                if other_dot != dot_id:
+                    e_hat_other = I_mat[other_dot]
+                    for add_e in range(how_many):
+                        charge_state = N_current + (add_e+1)*e_hat - e_hat_other
+                        charge_state[charge_state < 0] = 0
+                        energies.append(
+                            self.compute_energy(
+                                N=charge_state, V_v=V_v,
+                            )
+                        )
 
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
