@@ -7,6 +7,3 @@ PinchoffFit
 
 .. automodule:: nanotune.fit.pinchofffit
    :members:
-
-
-

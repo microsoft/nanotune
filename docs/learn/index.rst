@@ -7,4 +7,3 @@ Learn
 
 .. automodule:: nanotune.learn
    :members:
-
