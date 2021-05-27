@@ -94,6 +94,7 @@ class Classifier:
         data_filenames: List[str],
         category: str,
         data_types: Optional[List[str]] = None,
+        folder_path: Optional[str] = None,
         test_size: float = 0.2,
         classifier: Optional[str] = None,
         hyper_parameters: Dict[str, Union[str, float, int]] = {},
@@ -105,6 +106,10 @@ class Classifier:
         feature_indexes: Optional[List[int]] = None,
         relevant_labels: Optional[List[int]] = None,
     ) -> None:
+        """ """
+
+        if folder_path is None:
+            folder_path = nt.config["db_folder"]
 
         if category not in ALLOWED_CATEGORIES:
             logger.error(
@@ -143,6 +148,7 @@ class Classifier:
         default_params.update(hyper_parameters)
         self.clf_params = default_params
 
+        self.folder_path = folder_path
         self.file_paths, name_addon = self._list_paths(data_filenames)
         self.name = name_addon + category + "_"
 
@@ -977,8 +983,9 @@ class Classifier:
         """
         file_paths = []
         name = ""
+
         for filename in filenames:
-            p = os.path.join(nt.config["db_folder"], filename)
+            p = os.path.join(self.folder_path, filename)
             file_paths.append(p)
             name = name + os.path.splitext(filename)[0] + "_"
         return file_paths, name
