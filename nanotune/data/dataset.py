@@ -215,6 +215,8 @@ class Dataset:
                 lbl = self._nt_label(r_param, vr)
                 self.data[r_meth][coord_name].attrs["label"] = lbl
 
+        self.data = self.data.sortby(list(self.data.coords), ascending=True)
+
     def _nt_label(self, readout_paramter, var) -> str:
         lbl = self.raw_data[readout_paramter][var].attrs["label"]
         unit = self.raw_data[readout_paramter][var].attrs["unit"]
@@ -247,7 +249,9 @@ class Dataset:
         """"""
         self.filtered_data = self.data.copy(deep=True)
         for read_meth in self.readout_methods:
-            smooth = gaussian_filter(self.filtered_data[read_meth].values, sigma=2)
+            smooth = gaussian_filter(
+                self.filtered_data[read_meth].values, sigma=2
+            )
             self.filtered_data[read_meth].values = smooth
 
     def compute_1D_power_spectrum(
