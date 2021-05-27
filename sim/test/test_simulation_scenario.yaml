@@ -10,6 +10,6 @@
       type: "sim.data_providers.QcodesDataProvider"
       init:
         input_providers: ["qdsim.l_barrier"]
-        db_path : "${sim_db_path}/QuantumDots/device_characterization.db"
+        db_path : "${sim_db_path}/data/tuning/device_characterization.db"
         exp_name : "GB_Newtown_Dev_3_2"
         run_id : 1206
