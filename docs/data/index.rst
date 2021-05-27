@@ -7,4 +7,3 @@ Data
 
 .. automodule:: nanotune.data.dataset
    :members:
-
