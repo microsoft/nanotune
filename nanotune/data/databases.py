@@ -31,7 +31,7 @@ def get_dataIDs(
         db_folder = nt.config["db_folder"]
 
     db_path = os.path.join(db_folder, db_name)
-    conn = connect(db_path)
+    conn = connect(os.path.expanduser(db_path))
 
     if quality is None:
         sql = f"""
@@ -61,7 +61,7 @@ def get_unlabelled_ids(
 
     db_path = os.path.join(db_folder, db_name)
 
-    conn = connect(db_path)
+    conn = connect(os.path.expanduser(db_path))
     sql = f"""
         SELECT run_id FROM runs WHERE good IS NULL
         """
@@ -146,7 +146,7 @@ def set_database(
     qc.config["core"]["db_location"] = db_path
 
     # check if label columns exist, create if not
-    db_conn = connect(db_path)
+    db_conn = connect(os.path.expanduser(db_path))
     with atomic(db_conn) as conn:
         try:
             get_metadata(db_conn, "0", nt.config["core"]["labels"][0])
@@ -208,7 +208,7 @@ def switch_database(temp_db_name: str, temp_db_folder: str):
 
 # if sqlite3.sqlite_version is 3.25 and above, we can use ALTER TABLE to
 # rename columns:
-# conn = connect(db_path)
+# conn = connect(os.path.expanduser(db_path))
 # sql = f"""
 #     ALTER TABLE runs RENAME COLUMN wallwall TO leadscoupling;
 #     """
