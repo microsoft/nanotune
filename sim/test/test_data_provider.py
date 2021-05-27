@@ -10,7 +10,7 @@ simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
 valid_db_path = os.path.join(
     simroot,
     "data",
-    "tuning_results",
+    "tuning",
     "dot_tuning_sequences.db",
 )
 
