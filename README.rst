@@ -1,27 +1,27 @@
-Nanotune is a QCoDeS- and Python-based automated tuning software, which uses 
-supervised machine learning to enable autonomous bring-up of gate-defined 
+Nanotune is a QCoDeS- and Python-based automated tuning software, which uses
+supervised machine learning to enable autonomous bring-up of gate-defined
 quantum dots.
 
 What it does
 ============
 
-Defining quantum dots in semiconductor-based heterostructures is an essential 
-step in initializing solid-state qubits. With growing device complexity and 
-increasing number of functional devices required for measurements, a manual 
-approach to finding suitable gate voltages to confine electrons electrostatically 
-is impractical. 
+Defining quantum dots in semiconductor-based heterostructures is an essential
+step in initializing solid-state qubits. With growing device complexity and
+increasing number of functional devices required for measurements, a manual
+approach to finding suitable gate voltages to confine electrons electrostatically
+is impractical.
 
-Nanotune automates typical manual measurements and replaces 
+Nanotune automates typical manual measurements and replaces
 the exerimenter's decision about next tuning steps by supervised machine learning.
-It has enabled the implementation of a two-stage device characterization and 
-dot-tuning process, which first determines whether devices are functional and 
-then attempts to tune the functional devices to the single or double quantum-dot 
-regime. Measurement quality assessement and charge state detection on charge stability 
-diagrams is done using four binary classifiers trained with experimental data, reflecting 
+It has enabled the implementation of a two-stage device characterization and
+dot-tuning process, which first determines whether devices are functional and
+then attempts to tune the functional devices to the single or double quantum-dot
+regime. Measurement quality assessement and charge state detection on charge stability
+diagrams is done using four binary classifiers trained with experimental data, reflecting
 real device behavior.
 
 While autonomous tuning has been demonstrated on spin qubit devices in GaAs, published
-`here <https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.054005>`_, 
+`here <https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.054005>`_,
 nanotune can easly be used to implement tuning sequences for other devices structures and materials.
 
 Nanotune also provides a data processing pipeline starting from data aquisition to machine learning algorihtm application.
@@ -71,7 +71,7 @@ License
 Code of Conduct
 ---------------
 
-nanotune strictly adheres to the `Microsoft Open Source Code of Conduct <https://opensource.microsoft.com/codeofconduct/>`__. 
+nanotune strictly adheres to the `Microsoft Open Source Code of Conduct <https://opensource.microsoft.com/codeofconduct/>`__.
 
 Acknowledgments
 ---------------

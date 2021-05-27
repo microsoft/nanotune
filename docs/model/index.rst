@@ -7,4 +7,3 @@ Model
 
 .. automodule:: nanotune.model
    :members:
-

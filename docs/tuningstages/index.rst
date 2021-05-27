@@ -7,4 +7,3 @@ Tuningstages
 
 .. automodule:: nanotune.tuningstages.gatecharacterization1d
    :members:
-

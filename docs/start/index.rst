@@ -7,4 +7,3 @@ Start
 
 Getting started
 ---------------
-
