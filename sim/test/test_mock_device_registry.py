@@ -1,4 +1,3 @@
-import logging
 
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_devices import MockQuantumDot

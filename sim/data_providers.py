@@ -1,7 +1,7 @@
 # pylint: disable=too-many-arguments, too-many-locals
 
 import os
-from typing import Any, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import qcodes as qc
 import xarray as xr
