@@ -1,6 +1,8 @@
 import json
-import nanotune as nt
+
 from qcodes.dataset.measurements import Measurement
+
+import nanotune as nt
 
 
 def save_1Ddata_with_qcodes(data_generator_method, metadata_generator_method):

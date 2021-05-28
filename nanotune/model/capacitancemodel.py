@@ -1,33 +1,28 @@
-import logging
-from functools import partial
-from typing import List, Optional, Union, Dict, Tuple, Sequence, Any, Sequence
-import numpy as np
-import scipy as sc
 import itertools
 import json
+import logging
+from functools import partial
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import matplotlib.pyplot as plt
-
-from numpy.linalg import inv
-from numpy.linalg import multi_dot
-from operator import itemgetter
-from tabulate import tabulate
-
-from skimage.transform import resize
-from scipy.ndimage import gaussian_filter
-
+import numpy as np
 import qcodes as qc
-from qcodes import Instrument, ChannelList, Parameter
-
+import scipy as sc
+from numpy.linalg import inv, multi_dot
+from qcodes import ChannelList, Instrument, Parameter
+from qcodes.dataset.experiment_container import load_by_id
 from qcodes.dataset.measurements import Measurement
 from qcodes.tests.instrument_mocks import DummyInstrument
-from qcodes.dataset.experiment_container import load_by_id
+from scipy.ndimage import gaussian_filter
+from skimage.transform import resize
+from tabulate import tabulate
+
+import nanotune as nt
+from nanotune.model.node import Node
 
 # from qcodes.dataset.plotting import plot_by_id
 # from qcodes.dataset.data_export import reshape_2D_datas
 
-import nanotune as nt
-from nanotune.model.node import Node
 
 logger = logging.getLogger(__name__)
 
@@ -289,7 +284,7 @@ class CapacitanceModel(Instrument):
         coupling to the last. In the same manner, all dots are coupled to the
         leads. Change if necessary.
         """
-        C_cc = self._C_cc
+        self._C_cc
         C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
         # from other dots:
         off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
@@ -317,7 +312,6 @@ class CapacitanceModel(Instrument):
             _ = self._get_C_cc()
         except Exception:
             logger.warning("Setting CapacitanceModel.C_R: " + "Unable to update C_cc")
-            pass
 
     def _get_C_L(self) -> float:
         return self._C_l
@@ -328,7 +322,6 @@ class CapacitanceModel(Instrument):
             _ = self._get_C_cc()
         except Exception:
             logger.warning("Setting CapacitanceModel.C_L: " + "Unable to update C_cc")
-            pass
 
     def snapshot_base(
         self,
@@ -714,7 +707,7 @@ class CapacitanceModel(Instrument):
         """
         self.set_voltage(v_node_idx[0], np.min(v_ranges[0]))
         self.set_voltage(v_node_idx[1], np.min(v_ranges[1]))
-        N_old = self.determine_N()
+        self.determine_N()
 
         voltage_x = np.linspace(np.min(v_ranges[0]), np.max(v_ranges[0]), n_steps[0])
 
@@ -1108,7 +1101,7 @@ class CapacitanceModel(Instrument):
         qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A
                 [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B
         """
-        ds = nt.Dataset(ds_id, db_name)
+        nt.Dataset(ds_id, db_name)
 
         def err_func(p: Sequence[float]) -> np.ndarray:
             err = self.fit_fct(self.normalized_volt, p)

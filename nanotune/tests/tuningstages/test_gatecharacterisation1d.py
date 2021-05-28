@@ -1,7 +1,8 @@
 import numpy as np
+
 import nanotune as nt
-from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.tests.mock_classifier import MockClassifer
+from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 
 atol = 1e-05
 

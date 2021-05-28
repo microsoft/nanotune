@@ -1,44 +1,28 @@
 import logging
-from typing import (
-    Optional,
-    Tuple,
-    List,
-    Dict,
-    Any,
-)
-from typing_extensions import TypedDict
 from functools import partial
+from typing import Any, Dict, List, Optional, Tuple
+
 import qcodes as qc
+from typing_extensions import TypedDict
 
 import nanotune as nt
-from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.fit.dotfit import DotFit
-from nanotune.classification.classifier import Classifier
-from .base_tasks import (  # please update docstrings if import path changes
-    conclude_iteration_with_range_update,
-    get_fit_range_update_directives,
-    get_extracted_features,
-    ReadoutMethodsDict,
-    SetpointSettingsDict,
-    DataSettingsDict,
-    ReadoutMethodsLiteral,
-)
+from nanotune.tuningstages.tuningstage import TuningStage
 
-from .chargediagram_tasks import (
-    get_range_directives_chargediagram,
-    segment_dot_data,
-    classify_dot_segments,
-    get_new_chargediagram_ranges,
-    verify_dot_classification,
-    determine_dot_regime,
-    conclude_dot_classification,
-    get_dot_segment_regimes,
-    determine_dot_regime,
-    verify_dot_classification,
-    translate_dot_regime,
-    DotClassifierDict,
-)
+from .base_tasks import (  # please update docstrings if import path changes
+    DataSettingsDict, ReadoutMethodsDict, ReadoutMethodsLiteral,
+    SetpointSettingsDict, conclude_iteration_with_range_update,
+    get_extracted_features, get_fit_range_update_directives)
+from .chargediagram_tasks import (DotClassifierDict, classify_dot_segments,
+                                  conclude_dot_classification,
+                                  determine_dot_regime,
+                                  get_dot_segment_regimes,
+                                  get_new_chargediagram_ranges,
+                                  get_range_directives_chargediagram,
+                                  segment_dot_data, translate_dot_regime,
+                                  verify_dot_classification)
 
 RangeChangeSettingsDict = TypedDict(
     "RangeChangeSettingsDict",

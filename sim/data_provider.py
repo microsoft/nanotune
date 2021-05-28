@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Union
+
 import xarray as xr
 
 

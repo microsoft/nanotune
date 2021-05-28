@@ -1,24 +1,21 @@
-import smtplib
-import os
 import logging
+import os
+import smtplib
 import textwrap
 from datetime import datetime
-
-from typing import Optional, List, Dict, Union, Any
-
-from email.mime.multipart import MIMEMultipart
+from email import encoders
 from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
-from email import encoders
+from typing import Dict, List, Optional
 
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch  # , cm
 from reportlab.lib.utils import ImageReader
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, TableStyle
 
 import nanotune as nt
@@ -253,11 +250,10 @@ class TuningReport:
                 comment += self.comments["general"] + "<br/>"
 
                 comment += self.smalltalk + "<br/>"
-            except Exception as e:
+            except Exception:
                 logger.warning(
                     "Unable to summarize result of " + "dataset {}".format(qc_run_id)
                 )
-                pass
             comment_ts = comment + ts
             comment_ts = textwrap.fill(comment_ts, 70)
             comment_ts = comment_ts.replace("\n", "<br/>")
@@ -271,9 +267,9 @@ class TuningReport:
             line_widths = comments_p.getActualLineWidths0()
             number_of_lines = len(line_widths)
             if number_of_lines > 1:
-                actual_width = comm_height
+                pass
             if number_of_lines == 1:
-                actual_width = min(line_widths)
+                min(line_widths)
                 comm_width, comm_height = comments_p.wrap(im_width, avail_height)
 
             # Prepare features

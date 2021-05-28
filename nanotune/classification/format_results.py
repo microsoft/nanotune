@@ -1,12 +1,10 @@
-import os
 import glob
 import json
-import copy
-
+import os
 import pprint
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-from typing import Optional, List, Dict, Union, Tuple, Any
 
 pp = pprint.PrettyPrinter(indent=4)
 train_score = "training"

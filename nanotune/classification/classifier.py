@@ -1,39 +1,28 @@
-import os
-import logging
 import json
+import logging
+import os
 import time
-import numpy as np
-
-from typing import Optional, List, Dict, Union, Tuple, Any
-
-from scipy import interp
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
-from sklearn import svm
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-from sklearn.calibration import calibration_curve
-from sklearn.metrics import (
-    roc_curve,
-    brier_score_loss,
-    auc,
-    accuracy_score,
-    average_precision_score,
-    confusion_matrix,
-)
-from sklearn.model_selection import StratifiedKFold
-
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 from prettytable import PrettyTable
+from scipy import interp
+from sklearn import svm
+from sklearn.calibration import calibration_curve
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (accuracy_score, auc, average_precision_score,
+                             brier_score_loss, confusion_matrix, roc_curve)
+from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
 
 import nanotune as nt
 from nanotune.data.dataset import Dataset
@@ -218,7 +207,7 @@ class Classifier:
 
                 all_the_stuff = np.concatenate([all_the_stuff, sub_data], axis=1)
                 print("shape all_the_stuff: {}".format(all_the_stuff.shape))
-        except ValueError as v:
+        except ValueError:
             len_1d = np.prod(nt.config["core"]["standard_shapes"]["1"]) + 1
             all_the_stuff = np.empty([len(DATA_TYPE_MAPPING), 0, len_1d])
             for ip in range(len(file_paths)):
@@ -244,7 +233,7 @@ class Classifier:
 
                 try:
                     to_append = to_append[:, self.feature_indexes]
-                except IndexError as ie:
+                except IndexError:
                     logger.warning(
                         "Some data in {} ".format(file_paths)
                         + "does not have the"
@@ -466,7 +455,7 @@ class Classifier:
 
                     try:
                         to_append = to_append[:, self.feature_indexes]
-                    except IndexError as ie:
+                    except IndexError:
                         logger.warning(
                             "Some data in {} ".format(dataid)
                             + "does not have the "

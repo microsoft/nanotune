@@ -1,20 +1,18 @@
-import os
-import json
-import logging
 import copy
-
-import numpy as np
-import scipy as sc
-
-from typing import Optional, Dict, List, Tuple, Union, Any
+import logging
+import os
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy as sc
 
 import nanotune as nt
+from nanotune.data.plotting import (colors_dict, default_plot_params,
+                                    plot_params_type)
 from nanotune.fit.datafit import DataFit
 from nanotune.utils import format_axes
-from nanotune.data.plotting import default_plot_params, colors_dict, plot_params_type
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]

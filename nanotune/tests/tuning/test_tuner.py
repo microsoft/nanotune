@@ -1,9 +1,11 @@
 import copy
+
 import numpy as np
 import pytest
 
 import nanotune as nt
-from nanotune.device_tuner.tuner import Tuner, set_back_voltages, set_back_valid_ranges
+from nanotune.device_tuner.tuner import (Tuner, set_back_valid_ranges,
+                                         set_back_voltages)
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.tests.mock_classifier import MockClassifer
 

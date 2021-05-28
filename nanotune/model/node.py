@@ -1,11 +1,11 @@
 import logging
-from typing import List, Optional
+from typing import Optional
 
 import qcodes as qc
-from qcodes import validators as vals
-from qcodes.utils.validators import Validator
 from qcodes import Instrument, InstrumentChannel, Parameter
+from qcodes import validators as vals
 from qcodes.instrument.base import InstrumentBase
+from qcodes.utils.validators import Validator
 
 import nanotune as nt
 
@@ -23,7 +23,7 @@ class Node(InstrumentChannel):
         v_init: float = 0,
     ):
 
-        docstring = """ """
+        pass
 
         super().__init__(parent, name)
 

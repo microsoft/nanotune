@@ -1,7 +1,9 @@
-import os
-import pytest
-import numpy as np
 import math
+import os
+
+import numpy as np
+import pytest
+
 import nanotune as nt
 from nanotune.fit.dotfit import DotFit
 from nanotune.tests.data.conftest import generate_doubledot_data

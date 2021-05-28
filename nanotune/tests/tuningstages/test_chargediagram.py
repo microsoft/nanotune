@@ -1,9 +1,9 @@
+import numpy as np
 import pytest
 
-import numpy as np
 import nanotune as nt
-from nanotune.tuningstages.chargediagram import ChargeDiagram
 from nanotune.tests.mock_classifier import MockClassifer
+from nanotune.tuningstages.chargediagram import ChargeDiagram
 
 atol = 1e-03
 

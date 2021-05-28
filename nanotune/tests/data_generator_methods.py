@@ -1,9 +1,11 @@
 import numpy as np
 import qcodes as qc
+
 import nanotune as nt
-from nanotune.tests.data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
 from nanotune.math.gaussians import gaussian2D_fct
 from nanotune.math.lorentzians import lorentzian_1D
+from nanotune.tests.data_savers import (save_1Ddata_with_qcodes,
+                                        save_2Ddata_with_qcodes)
 
 META_FIELDS = nt.config["core"]["meta_fields"]
 NT_LABELS = list(dict(nt.config["core"]["labels"]).keys())

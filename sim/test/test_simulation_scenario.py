@@ -1,14 +1,11 @@
 import os
 from queue import Empty
+
 import sim
-from sim.mock_devices import Pin
 from sim.data_providers import StaticDataProvider
-from sim.simulation_scenario import (
-    SimulationScenario,
-    ActionGroup,
-    SetDataProviderAction,
-)
-from sim.mock_devices import MockQuantumDot
+from sim.mock_devices import MockQuantumDot, Pin
+from sim.simulation_scenario import (ActionGroup, SetDataProviderAction,
+                                     SimulationScenario)
 
 
 def test_load_from_yaml():

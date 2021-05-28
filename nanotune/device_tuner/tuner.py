@@ -1,37 +1,21 @@
-import os
 import copy
 import logging
-import time
-import datetime
-from typing import (
-    List,
-    Optional,
-    Dict,
-    Tuple,
-    Sequence,
-    Callable,
-    Any,
-    Union,
-    Generator,
-)
-from functools import partial
 from contextlib import contextmanager
-import numpy as np
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
+import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (
-    load_last_experiment,
-    load_experiment,
-    new_experiment,
-)
+from qcodes.dataset.experiment_container import (load_experiment,
+                                                 load_last_experiment,
+                                                 new_experiment)
 
 import nanotune as nt
-from nanotune.device.device import Device as Nt_Device
-from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.classification.classifier import Classifier
-from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
+from nanotune.device.device import Device as Nt_Device
 from nanotune.device.gate import Gate
+from nanotune.device_tuner.tuningresult import MeasurementHistory
+from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.utils import flatten_list
 
 logger = logging.getLogger(__name__)
@@ -353,7 +337,7 @@ class Tuner(qc.Instrument):
             Generator yielding nothing.
         """
 
-        original_data_settings = copy.deepcopy(self.data_settings())
+        copy.deepcopy(self.data_settings())
         self.data_settings(
             {"normalization_constants": device.normalization_constants()},
         )

@@ -1,7 +1,5 @@
-from abc import ABCMeta
 import nanotune as nt
 from nanotune.tuningstages.tuningstage import TuningStage
-
 
 # class DummyTuningStage(TuningStage, metaclass=ABCMeta):
 

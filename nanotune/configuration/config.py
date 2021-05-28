@@ -1,14 +1,12 @@
-import collections
 import copy
 import json
-import jsonschema
 import os
-from typing import Dict, Tuple, Optional, Any, Mapping, Union
-
-from pathlib import Path
-import pkg_resources as pkgr
-
 from os.path import expanduser
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
+
+import jsonschema
+import pkg_resources as pkgr
 
 
 class Config:

@@ -1,13 +1,11 @@
-import sys
+import logging
 from functools import partial
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import PyQt5.QtWidgets as qtw
 from PyQt5.QtCore import Qt
 
 import nanotune as nt
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ class Widgets(qtw.QWidget):
         super(Widgets, self).__init__(window)
         layout = qtw.QVBoxLayout(self)
 
-        n_labels = len(window.labels.items())
+        len(window.labels.items())
 
         figure_row = qtw.QVBoxLayout()
 

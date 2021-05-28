@@ -1,21 +1,16 @@
 import os
-import pytest
 import sqlite3
 
+import pytest
 from qcodes import new_data_set, new_experiment
-from qcodes.dataset.sqlite.database import connect
 from qcodes.dataset.sqlite.connection import atomic
+from qcodes.dataset.sqlite.database import connect
 
 import nanotune as nt
-from nanotune.data.databases import (
-    get_dataIDs,
-    get_unlabelled_ids,
-    list_experiments,
-    new_database,
-    set_database,
-    get_database,
-    get_last_dataid,
-)
+from nanotune.data.databases import (get_database, get_dataIDs,
+                                     get_last_dataid, get_unlabelled_ids,
+                                     list_experiments, new_database,
+                                     set_database)
 
 
 def test_database_creation_and_init(tmp_path):

@@ -1,10 +1,11 @@
-import os
 import json
-import copy
 import math
-import pytest
+import os
+
 import numpy as np
+import pytest
 from qcodes.dataset.experiment_container import load_by_id
+
 import nanotune as nt
 from nanotune.fit.coulomboscillationfit import CoulombOscillationFit
 

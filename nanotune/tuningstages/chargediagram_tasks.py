@@ -2,22 +2,15 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-import logging
 import copy
-from typing import (
-    Optional,
-    Tuple,
-    List,
-    Dict,
-    Any,
-    Sequence,
-    Union,
-    Callable,
-)
+import logging
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+
 from typing_extensions import TypedDict
+
 import nanotune as nt
-from nanotune.fit.dotfit import DotFit
 from nanotune.classification.classifier import Classifier
+from nanotune.fit.dotfit import DotFit
 
 DotClassifierOutcome = TypedDict(
     "DotClassifierOutcome",

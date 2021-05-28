@@ -1,6 +1,7 @@
-from scipy.stats import uniform
 from typing import List, Sequence
+
 import numpy as np
+from scipy.stats import uniform
 
 
 def uniform_ND(limits: Sequence[Sequence[int]], n_draw: int) -> List[List[int]]:

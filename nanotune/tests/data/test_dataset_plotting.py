@@ -1,6 +1,8 @@
 import os
-import pytest
+
 import matplotlib.pyplot as plt
+import pytest
+
 import nanotune as nt
 from nanotune.data.plotting import plot_dataset
 

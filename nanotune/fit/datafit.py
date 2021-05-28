@@ -1,16 +1,17 @@
 import json
 import logging
-import matplotlib
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, List, Tuple, Sequence, Any
+from sqlite3 import OperationalError
+from typing import Any, Dict, List, Optional, Tuple
+
+import matplotlib
 import numpy as np
 import xarray as xr
-from sqlite3 import OperationalError
-
 from qcodes.dataset.experiment_container import load_by_id
 
 import nanotune as nt
-from nanotune.data.dataset import Dataset, default_readout_methods, default_coord_names
+from nanotune.data.dataset import (Dataset, default_coord_names,
+                                   default_readout_methods)
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
@@ -46,7 +47,6 @@ class DataFit(ABC, Dataset):
     @abstractmethod
     def find_fit(self) -> None:
         """"""
-        pass
 
     @property
     def range_update_directives(self) -> List[str]:
@@ -59,7 +59,7 @@ class DataFit(ABC, Dataset):
         ds = load_by_id(self.qc_run_id)
         try:
             nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-        except (RuntimeError, TypeError, OperationalError) as r:
+        except (RuntimeError, TypeError, OperationalError):
             nt_meta = {}
         nt_meta["features"] = self.features
         ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))

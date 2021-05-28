@@ -1,19 +1,16 @@
 # pylint: disable=too-many-arguments, too-many-locals
 
 import os
-from typing import (
-    Sequence,
-    Optional,
-    Any,
-    Union,
-)
+from typing import Optional, Sequence, Union
+
 import qcodes as qc
 import xarray as xr
 from scipy import interpolate
-from sim.qcodes_utils import QcodesDbConfig
-from sim.mock_pin import IMockPin
+
 from sim.data_provider import IDataProvider
 from sim.mock_device_registry import MockDeviceRegistry
+from sim.mock_pin import IMockPin
+from sim.qcodes_utils import QcodesDbConfig
 
 
 class DataProvider(IDataProvider):

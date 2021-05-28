@@ -1,10 +1,11 @@
-import os
 import json
-import copy
 import math
-import pytest
+import os
+
 import numpy as np
+import pytest
 from qcodes.dataset.experiment_container import load_by_id
+
 import nanotune as nt
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tests.data_generator_methods import generate_bad_pinchoff_data

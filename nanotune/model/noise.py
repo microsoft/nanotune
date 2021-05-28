@@ -1,11 +1,9 @@
-import os
 import logging
+import os
+from typing import Dict, List, Optional, Tuple
 
-from typing import List, Optional, Dict, Tuple
-
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import scipy.fftpack as fp
 from skimage.transform import resize
 
@@ -52,7 +50,7 @@ def load_noise(
                 + " {}".format(", ".join(NOISE_TYPES))
             )
             raise ValueError
-        noise_idx = NOISE_TYPES.index(ntype)
+        NOISE_TYPES.index(ntype)
 
         raw_noise = np.load(os.path.join(folder, DEFAULT_FILES[ntype]))
         raw_noise = np.reshape(raw_noise[0, :, :], (raw_noise.shape[1], *N_2D))

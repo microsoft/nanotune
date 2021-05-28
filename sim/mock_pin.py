@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from sim.data_provider import IDataProvider
 
 

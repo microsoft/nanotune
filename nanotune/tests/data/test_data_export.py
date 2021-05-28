@@ -1,38 +1,23 @@
 import os
-import pytest
-
-import scipy.fft as fp
-
-from skimage.transform import resize
-from scipy.ndimage import sobel, generic_gradient_magnitude
 
 import numpy as np
+import pytest
 import qcodes as qc
-from qcodes.dataset.sqlite.queries import (
-    new_experiment as ne,
-    finish_experiment,
-    get_run_counter,
-    get_runs,
-    get_last_run,
-    get_last_experiment,
-    get_experiments,
-)
-from qcodes.dataset.sqlite.database import (
-    get_DB_location,
-    get_DB_debug,
-    connect,
-    conn_from_dbpath_or_conn,
-)
+import scipy.fft as fp
+from qcodes.dataset.experiment_container import (experiments,
+                                                 load_last_experiment)
+from qcodes.dataset.sqlite.database import (conn_from_dbpath_or_conn, connect,
+                                            get_DB_debug, get_DB_location)
+from qcodes.dataset.sqlite.queries import (finish_experiment, get_experiments,
+                                           get_last_experiment, get_last_run,
+                                           get_run_counter, get_runs)
+from qcodes.dataset.sqlite.queries import new_experiment as ne
+from scipy.ndimage import generic_gradient_magnitude, sobel
+from skimage.transform import resize
 
-from qcodes.dataset.experiment_container import load_last_experiment, experiments
 import nanotune as nt
-from nanotune.data.export_data import (
-    export_label,
-    export_data,
-    correct_normalizations,
-    prep_data,
-    # subsample_2Ddata,
-)
+from nanotune.data.export_data import (  # subsample_2Ddata,
+    correct_normalizations, export_data, export_label, prep_data)
 
 
 def test_export_label():

@@ -1,12 +1,10 @@
 import json
-import copy
-import numpy as np
-from typing import Optional, Tuple, List, Dict, Any, Callable
 import logging
-from math import floor
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+import numpy as np
 import qcodes as qc
 from qcodes.dataset.measurements import Measurement
-import nanotune as nt
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +109,6 @@ def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     anything.
     """
 
-    pass
 
 
 def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
@@ -129,5 +126,5 @@ def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
         qcodes_parameter.instrument.use_ramp(True)  # type: ignore
         qcodes_parameter(voltage)
         qcodes_parameter.instrument.use_ramp(False)  # type: ignore
-    except AttributeError as a:
+    except AttributeError:
         logger.warning("Unable to ramp to new voltage. It will be set.")

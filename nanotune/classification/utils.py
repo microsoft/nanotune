@@ -1,26 +1,20 @@
-import os
 import glob
-import logging
-import json
 import itertools
-import numpy as np
-import pandas as pd
+import json
+import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from operator import itemgetter
 import matplotlib
 import matplotlib.pyplot as plt
-
-from typing import Optional, List, Dict, Union, Tuple, Any
+import numpy as np
+import pandas as pd
+from tensorflow import keras
 
 import nanotune as nt
-from nanotune.classification.classifier import (
-    DEFAULT_CLF_PARAMETERS,
-    METRIC_NAMES,
-    DEFAULT_DATA_FILES,
-    Classifier,
-)
-
-from tensorflow import keras
+from nanotune.classification.classifier import (DEFAULT_CLF_PARAMETERS,
+                                                DEFAULT_DATA_FILES,
+                                                METRIC_NAMES, Classifier)
 
 logger = logging.getLogger(__name__)
 
@@ -835,7 +829,7 @@ def summarize_hyper_parameter_optimization(
         for category in hparams[clf].keys():
             try:
                 besties[category][clf] = {}
-            except Exception as e:
+            except Exception:
                 besties[category] = {}
                 besties[category][clf] = {}
             best_score = 0.0

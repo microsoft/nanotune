@@ -1,7 +1,9 @@
-import pytest
 import json
+
 import numpy as np
+import pytest
 from qcodes.dataset.experiment_container import load_by_id
+
 import nanotune as nt
 from nanotune.data.dataset import Dataset
 

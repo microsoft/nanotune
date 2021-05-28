@@ -2,15 +2,15 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-import pytest
-import datetime
 import time
+
 import matplotlib.pyplot as plt
+import pytest
 
 import nanotune as nt
+from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tests.mock_classifier import MockClassifer
 from nanotune.tuningstages.base_tasks import *
-from nanotune.fit.pinchofffit import PinchoffFit
 
 
 def test_save_machine_learning_result(qc_dataset_doubledot):

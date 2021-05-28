@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 from sim.mock_pin import IMockPin
+
 
 class IMockDevice(ABC):
 

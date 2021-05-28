@@ -1,20 +1,20 @@
 import gc
-import os
 import json
+import os
+
 import pytest
 import qcodes as qc
-from qcodes.dataset.sqlite.database import connect, initialise_database
 from qcodes import new_data_set, new_experiment
-from qcodes.dataset.experiment_container import experiments, load_by_id
 from qcodes.dataset.data_set import DataSet
+from qcodes.dataset.experiment_container import experiments, load_by_id
 from qcodes.dataset.measurements import Measurement
+from qcodes.dataset.sqlite.database import connect, initialise_database
 
 import nanotune as nt
-from nanotune.tests.data_generator_methods import (
-    generate_doubledot_data,
-    generate_default_metadata,
-)
-from nanotune.tests.data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
+from nanotune.tests.data_generator_methods import (generate_default_metadata,
+                                                   generate_doubledot_data)
+from nanotune.tests.data_savers import (save_1Ddata_with_qcodes,
+                                        save_2Ddata_with_qcodes)
 
 NT_LABELS = list(dict(nt.config["core"]["labels"]).keys())
 META_FIELDS = nt.config["core"]["meta_fields"]

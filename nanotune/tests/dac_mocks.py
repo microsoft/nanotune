@@ -1,25 +1,21 @@
-import os
 import gc
+from typing import Optional, Tuple
+
 import joblib
 import pytest
-from functools import partial
-from typing import Optional, List, Tuple, Union, Dict, Any, Sequence
-
-from qcodes.instrument.channel import InstrumentChannel, ChannelList
-from qcodes.instrument.base import Instrument
-from qcodes.tests.instrument_mocks import (
-    DummyInstrument,
-    DummyChannel,
-    DummyInstrumentWithMeasurement,
-    DummyChannelInstrument,
-)
-from qcodes.utils import validators as vals
 from qcodes import new_experiment
+from qcodes.instrument.base import Instrument
+from qcodes.instrument.channel import ChannelList, InstrumentChannel
+from qcodes.tests.instrument_mocks import (DummyChannel,
+                                           DummyChannelInstrument,
+                                           DummyInstrument,
+                                           DummyInstrumentWithMeasurement)
+from qcodes.utils import validators as vals
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device
-from nanotune.drivers.dac_interface import DACInterface, DACChannelInterface
+from nanotune.drivers.dac_interface import DACChannelInterface, DACInterface
 
 
 class DummyDACChannel(DACChannelInterface):

@@ -1,15 +1,15 @@
 """ Set up nanotune namespace """
-from .version import __version__
-
 import nanotune.configuration as ntconfig
 
+from .version import __version__
+
 config: ntconfig.Config = ntconfig.Config()
+
+import git
 
 from nanotune.data.databases import *
 from nanotune.data.dataset import Dataset
 from nanotune.device.device import Device
-
-import git
 
 repo = git.Repo(path=os.path.dirname(nt.__file__), search_parent_directories=True)
 sha = repo.head.object.hexsha

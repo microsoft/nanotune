@@ -2,18 +2,15 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-import logging
 import copy
+import logging
+from typing import List, Tuple
+
 import numpy as np
-from typing import (
-    Optional,
-    Tuple,
-    List,
-    Dict,
-    Any,
-)
-from .base_tasks import get_fit_range_update_directives
+
 from nanotune.device.gate import Gate
+
+from .base_tasks import get_fit_range_update_directives
 
 logger = logging.getLogger(__name__)
 

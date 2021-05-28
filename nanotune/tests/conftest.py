@@ -1,48 +1,36 @@
-import os
 import gc
+import os
+
 import joblib
-import pytest
-import json
-from functools import partial
 import numpy as np
+import pytest
+import qcodes as qc
+from qcodes import new_experiment
+from qcodes.dataset.data_set import DataSet
+from qcodes.dataset.experiment_container import experiments, load_by_id
+from qcodes.dataset.measurements import Measurement
+from qcodes.instrument.base import Instrument
+from qcodes.tests.instrument_mocks import (DummyChannel,
+                                           DummyChannelInstrument,
+                                           DummyInstrument,
+                                           DummyInstrumentWithMeasurement)
 from sklearn.dummy import DummyClassifier
 
-import qcodes as qc
-from qcodes.instrument.base import Instrument
-from qcodes.tests.instrument_mocks import (
-    DummyInstrument,
-    DummyChannel,
-    DummyInstrumentWithMeasurement,
-    DummyChannelInstrument,
-)
-from qcodes import new_experiment
-from qcodes.dataset.experiment_container import experiments, load_by_id
-from qcodes.dataset.data_set import DataSet
-from qcodes.dataset.measurements import Measurement
-
 import nanotune as nt
-from nanotune.classification.classifier import Classifier
-from nanotune.device.gate import Gate
-from nanotune.device.device import Device
 import nanotune.tests.data_generator_methods as gm
+from nanotune.classification.classifier import Classifier
+from nanotune.device.device import Device
+from nanotune.device.gate import Gate
 from nanotune.tests.data_generator_methods import (
-    generate_doubledot_data,
-    generate_pinchoff_data,
-    generate_pinchoff_metadata,
-    generate_doubledot_metadata,
-    generate_coulomboscillations,
-    generate_coloumboscillation_metadata,
-    generate_default_metadata,
-    populate_db_doubledots,
-    populate_db_pinchoffs,
-    populate_db_coulomboscillations,
-    PinchoffCurrent,
-    PinchoffSensor,
-    DotCurrent,
-    DotSensor,
-    doubledot_triple_points,
-)
-from .dac_mocks import DummyDACChannel, DummyDAC
+    DotCurrent, DotSensor, PinchoffCurrent, PinchoffSensor,
+    doubledot_triple_points, generate_coloumboscillation_metadata,
+    generate_coulomboscillations, generate_default_metadata,
+    generate_doubledot_data, generate_doubledot_metadata,
+    generate_pinchoff_data, generate_pinchoff_metadata,
+    populate_db_coulomboscillations, populate_db_doubledots,
+    populate_db_pinchoffs)
+
+from .dac_mocks import DummyDAC, DummyDACChannel
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
 from .mock_classifier import MockClassifer
 
