@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 
-from typing import List, Optional, Dict, Any, Union
+from typing import Any, Dict, Optional, Union
 from ruamel.yaml import YAML
 
 from qcodes.station import Station

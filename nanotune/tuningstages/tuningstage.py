@@ -97,7 +97,6 @@ class TuningStage(metaclass=ABCMeta):
         """To be specified in child classes. It is the data fitting
         class should be used to perform a fit.
         """
-        pass
 
     @abstractmethod
     def conclude_iteration(
@@ -133,7 +132,6 @@ class TuningStage(metaclass=ABCMeta):
             list: List of strings indicating failure modes.
         """
 
-        pass
 
     @abstractmethod
     def verify_machine_learning_result(
@@ -151,7 +149,6 @@ class TuningStage(metaclass=ABCMeta):
             bool: Whether the desired outcome has been found.
         """
 
-        pass
 
     @abstractmethod
     def machine_learning_task(
@@ -164,7 +161,6 @@ class TuningStage(metaclass=ABCMeta):
             run_id: QCoDeS data run ID.
         """
 
-        pass
 
     def save_ml_result(
         self,

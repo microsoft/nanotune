@@ -1,12 +1,11 @@
 import os
-import json
 import logging
 import copy
 
 import numpy as np
 import scipy as sc
 
-from typing import Optional, Dict, List, Tuple, Union, Any
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib
 import matplotlib.pyplot as plt

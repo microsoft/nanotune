@@ -1,10 +1,8 @@
-import os
 import logging
 import copy
 
 import numpy as np
 from typing import List, Optional, Dict, Tuple, Sequence, Any, Union
-from operator import itemgetter
 
 import qcodes as qc
 from qcodes import validators as vals

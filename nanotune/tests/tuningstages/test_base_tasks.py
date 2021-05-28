@@ -3,7 +3,6 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 import pytest
-import datetime
 import time
 import matplotlib.pyplot as plt
 

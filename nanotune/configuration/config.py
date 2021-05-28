@@ -1,9 +1,8 @@
-import collections
 import copy
 import json
 import jsonschema
 import os
-from typing import Dict, Tuple, Optional, Any, Mapping, Union
+from typing import Any, Dict, Optional, Tuple
 
 from pathlib import Path
 import pkg_resources as pkgr

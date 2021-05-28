@@ -1,20 +1,13 @@
-import os
 import copy
 import logging
-import time
-import datetime
 from typing import (
     List,
     Optional,
     Dict,
     Tuple,
-    Sequence,
-    Callable,
     Any,
-    Union,
     Generator,
 )
-from functools import partial
 from contextlib import contextmanager
 import numpy as np
 
@@ -353,7 +346,7 @@ class Tuner(qc.Instrument):
             Generator yielding nothing.
         """
 
-        original_data_settings = copy.deepcopy(self.data_settings())
+        copy.deepcopy(self.data_settings())
         self.data_settings(
             {"normalization_constants": device.normalization_constants()},
         )

@@ -1,4 +1,3 @@
-from abc import ABCMeta
 import nanotune as nt
 from nanotune.tuningstages.tuningstage import TuningStage
 

@@ -2,12 +2,11 @@ import os
 import logging
 import json
 import copy
-import traceback
 
 import numpy as np
 import xarray as xr
 from math import floor
-from typing import Optional, Dict, List, Tuple, Sequence, Union, Any
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import math
 from itertools import combinations
@@ -436,7 +435,7 @@ class DotFit(DataFit):
                     c="b",
                     label="hole triple point",
                 )
-            except IndexError as i:
+            except IndexError:
                 pass
 
         ax[-1, 0].legend(loc="lower left", bbox_to_anchor=(0, 0))

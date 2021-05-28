@@ -1,6 +1,5 @@
 import pytest
 import json
-from dataclasses import FrozenInstanceError
 from nanotune.device_tuner.tuningresult import TuningResult, MeasurementHistory
 
 

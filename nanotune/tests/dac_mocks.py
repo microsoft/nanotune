@@ -1,9 +1,7 @@
-import os
 import gc
 import joblib
 import pytest
-from functools import partial
-from typing import Optional, List, Tuple, Union, Dict, Any, Sequence
+from typing import Optional, Tuple
 
 from qcodes.instrument.channel import InstrumentChannel, ChannelList
 from qcodes.instrument.base import Instrument

@@ -1,6 +1,5 @@
-import os
-from abc import ABC, abstractmethod, ABCMeta
-from typing import Optional, Dict, List, Tuple, Any, Type
+from abc import ABC, abstractmethod
+from typing import Optional, Tuple, Type
 
 import qcodes as qc
 from qcodes.instrument.base import Instrument
@@ -96,7 +95,6 @@ class DACChannelInterface(InstrumentChannel, ABC):
     @abstractmethod
     def set_relay_state(self, value: str):
         """ Needs to accept 'ground' TODO: add it as type hint """
-        pass
 
     @abstractmethod
     def ramp_voltage(self, target_voltage: float, ramp_rate: Optional[float] = None):

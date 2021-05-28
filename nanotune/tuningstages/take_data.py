@@ -108,7 +108,6 @@ def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     anything.
     """
 
-    pass
 
 
 def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
@@ -126,5 +125,5 @@ def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
         qcodes_parameter.instrument.use_ramp(True)  # type: ignore
         qcodes_parameter(voltage)
         qcodes_parameter.instrument.use_ramp(False)  # type: ignore
-    except AttributeError as a:
+    except AttributeError:
         logger.warning("Unable to ramp to new voltage. It will be set.")

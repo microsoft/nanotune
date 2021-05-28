@@ -218,7 +218,7 @@ class Classifier:
 
                 all_the_stuff = np.concatenate([all_the_stuff, sub_data], axis=1)
                 print("shape all_the_stuff: {}".format(all_the_stuff.shape))
-        except ValueError as v:
+        except ValueError:
             len_1d = np.prod(nt.config["core"]["standard_shapes"]["1"]) + 1
             all_the_stuff = np.empty([len(DATA_TYPE_MAPPING), 0, len_1d])
             for ip in range(len(file_paths)):
@@ -244,7 +244,7 @@ class Classifier:
 
                 try:
                     to_append = to_append[:, self.feature_indexes]
-                except IndexError as ie:
+                except IndexError:
                     logger.warning(
                         "Some data in {} ".format(file_paths)
                         + "does not have the"
@@ -466,7 +466,7 @@ class Classifier:
 
                     try:
                         to_append = to_append[:, self.feature_indexes]
-                    except IndexError as ie:
+                    except IndexError:
                         logger.warning(
                             "Some data in {} ".format(dataid)
                             + "does not have the "

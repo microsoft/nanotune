@@ -1,7 +1,6 @@
 import os
-import json
 import logging
-from typing import Optional, List
+from typing import Optional
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.dataset.plotting import plot_by_id

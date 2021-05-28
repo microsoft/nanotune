@@ -1,5 +1,4 @@
 import os
-import json
 import copy
 import logging
 
@@ -7,7 +6,7 @@ import numpy as np
 import scipy as sc
 from scipy.signal import argrelextrema
 
-from typing import Optional, Dict, List, Tuple, Any
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib
 import matplotlib.pyplot as plt

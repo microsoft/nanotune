@@ -6,7 +6,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from cycler import cycler
 
-from typing import Optional, Dict, List, Tuple, Union, Mapping, Any
+from typing import Dict, List, Optional, Tuple, Union
 import nanotune as nt
 from nanotune.data.dataset import Dataset, default_coord_names
 

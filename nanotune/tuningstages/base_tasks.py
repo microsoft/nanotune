@@ -90,7 +90,7 @@ def save_machine_learning_result(
     ds = load_by_id(run_id)
     try:
         nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
-    except (RuntimeError, TypeError, OperationalError) as r:
+    except (RuntimeError, TypeError, OperationalError):
         nt_meta = {}
 
     for result_type, result_value in ml_result.items():
@@ -359,7 +359,7 @@ def add_metadata_to_dict(
     for key, value in additional_metadata.items():
         try:
             dump = json.dumps(value, cls=NumpyJSONEncoder)
-        except (TypeError, OverflowError) as e:
+        except (TypeError, OverflowError):
             raise TypeError(f"Adding non-serializable value to meta dict: {value}.")
         new_meta_dict[key] = value
 

@@ -1,6 +1,5 @@
 import os
 import json
-import copy
 import math
 import pytest
 import numpy as np

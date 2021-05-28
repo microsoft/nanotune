@@ -1,16 +1,11 @@
 from typing import (
-    Optional,
     Tuple,
     List,
-    Union,
     Dict,
-    Callable,
     Any,
-    Sequence,
 )
 from typing_extensions import Literal
 import logging
-import copy
 import qcodes as qc
 
 import nanotune as nt

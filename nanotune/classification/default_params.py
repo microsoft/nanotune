@@ -1,4 +1,4 @@
-from typing import Dict, Union, Any
+from typing import Any, Dict
 
 import sklearn as sk
 from sklearn.linear_model import LogisticRegression

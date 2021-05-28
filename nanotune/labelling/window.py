@@ -1,4 +1,3 @@
-import sys
 from functools import partial
 from typing import Optional, Dict
 
@@ -63,7 +62,7 @@ class Widgets(qtw.QWidget):
         super(Widgets, self).__init__(window)
         layout = qtw.QVBoxLayout(self)
 
-        n_labels = len(window.labels.items())
+        len(window.labels.items())
 
         figure_row = qtw.QVBoxLayout()
 

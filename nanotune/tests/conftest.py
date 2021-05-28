@@ -2,8 +2,6 @@ import os
 import gc
 import joblib
 import pytest
-import json
-from functools import partial
 import numpy as np
 from sklearn.dummy import DummyClassifier
 

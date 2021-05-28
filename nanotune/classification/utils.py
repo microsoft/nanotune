@@ -6,7 +6,6 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from operator import itemgetter
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -835,7 +834,7 @@ def summarize_hyper_parameter_optimization(
         for category in hparams[clf].keys():
             try:
                 besties[category][clf] = {}
-            except Exception as e:
+            except Exception:
                 besties[category] = {}
                 besties[category][clf] = {}
             best_score = 0.0

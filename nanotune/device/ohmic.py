@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List, Tuple, Union, Dict, Any, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from qcodes import validators as vals
 from qcodes import Instrument, InstrumentChannel

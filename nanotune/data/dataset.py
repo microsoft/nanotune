@@ -1,16 +1,12 @@
-import os
-import csv
 import logging
 import copy
 import json
 import xarray as xr
-from math import floor
-import sqlite3
 
 import numpy as np
 
 from scipy.ndimage import sobel, generic_gradient_magnitude
-from typing import Optional, Dict, List, Tuple, Union, Mapping, Any
+from typing import Any, Dict, List, Optional
 
 import scipy.signal as sg
 import scipy.fftpack as fp
@@ -148,11 +144,11 @@ class Dataset:
 
         try:
             self._snapshot = json.loads(qc_dataset.get_metadata("snapshot"))
-        except (RuntimeError, TypeError) as e:
+        except (RuntimeError, TypeError):
             pass
         try:
             self._nt_metadata = json.loads(qc_dataset.get_metadata(nt.meta_tag))
-        except (RuntimeError, TypeError) as e:
+        except (RuntimeError, TypeError):
             pass
 
         try:

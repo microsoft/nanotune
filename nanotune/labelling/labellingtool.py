@@ -1,8 +1,6 @@
-import os
 import logging
-import json
 
-from typing import Optional, List, Tuple, Union
+from typing import List, Optional, Tuple
 
 # from PyQt5.QtCore import *
 # from PyQt5.QtGui import *
@@ -105,7 +103,7 @@ class LabellingTool(qtw.QMainWindow):
                 qtw.QMessageBox.warning(
                     self, "Error instantiating LabellingTool.", msg, qtw.QMessageBox.Ok
                 )
-            except IndexError as I:
+            except IndexError:
                 msg = "Did not find any unlabelled data in experiment "
                 msg += self.experiment.name + "."
                 qtw.QMessageBox.warning(
@@ -145,7 +143,7 @@ class LabellingTool(qtw.QMainWindow):
             # Make sure database has nanotune label columns. Just a check.
             try:
                 ds = load_by_id(1)
-                quality = ds.get_metadata("good")
+                ds.get_metadata("good")
             except OperationalError:
                 logger.warning(
                     """No nanotune_label column found in current
@@ -232,7 +230,6 @@ class LabellingTool(qtw.QMainWindow):
                 except StopIteration:
                     logger.error("All datasets labelled.")
                     break
-                pass
 
         self._canvas = FigureCanvasQTAgg(self._figure)
         self._canvas.setParent(self._main_widget)
@@ -388,7 +385,6 @@ class LabellingTool(qtw.QMainWindow):
                     msg2 += " are labelled."
                     qtw.QMessageBox.information(self, msg1, msg2, qtw.QMessageBox.Ok)
                     return
-                pass
 
     def clear(self) -> None:
         """"""
@@ -464,7 +460,7 @@ class LabellingTool(qtw.QMainWindow):
     def exit(self) -> None:
         """"""
         # logger.warning('Saving labels.')
-        n_missing = self.n_total - len(self.labelled_ids)
+        self.n_total - len(self.labelled_ids)
         quit_msg1 = "Please don't go"  # , nanotune needs you! \n"
         # quit_msg1 += " " + str(n_missing) + ' datasets are calling for labels.'
         quit_msg2 = "Would you like to give it another try?"

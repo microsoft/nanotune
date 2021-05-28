@@ -4,7 +4,7 @@ import logging
 import textwrap
 from datetime import datetime
 
-from typing import Optional, List, Dict, Union, Any
+from typing import Dict, List, Optional
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -253,11 +253,10 @@ class TuningReport:
                 comment += self.comments["general"] + "<br/>"
 
                 comment += self.smalltalk + "<br/>"
-            except Exception as e:
+            except Exception:
                 logger.warning(
                     "Unable to summarize result of " + "dataset {}".format(qc_run_id)
                 )
-                pass
             comment_ts = comment + ts
             comment_ts = textwrap.fill(comment_ts, 70)
             comment_ts = comment_ts.replace("\n", "<br/>")
@@ -271,9 +270,9 @@ class TuningReport:
             line_widths = comments_p.getActualLineWidths0()
             number_of_lines = len(line_widths)
             if number_of_lines > 1:
-                actual_width = comm_height
+                pass
             if number_of_lines == 1:
-                actual_width = min(line_widths)
+                min(line_widths)
                 comm_width, comm_height = comments_p.wrap(im_width, avail_height)
 
             # Prepare features

@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Union, Tuple, Any
+from typing import List, Optional
 import nanotune as nt
 
 ALLOWED_CATEGORIES = list(dict(nt.config["core"]["features"]).keys())
