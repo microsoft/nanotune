@@ -7,7 +7,3 @@ Fit
 
    pinchfit/index
    dotfit/index
-
-
-
-

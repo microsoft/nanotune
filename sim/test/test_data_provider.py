@@ -5,12 +5,12 @@ import pytest
 from sim.mock_devices import Pin
 from sim.data_providers import QcodesDataProvider, StaticDataProvider
 
-simroot = os.path.dirname(os.path.abspath(sim.__file__))
+simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
 
 valid_db_path = os.path.join(
     simroot,
     "data",
-    "QuantumDots",
+    "tuning",
     "dot_tuning_sequences.db",
 )
 

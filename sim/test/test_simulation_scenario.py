@@ -17,7 +17,8 @@ def test_load_from_yaml():
 
     simroot = os.path.dirname(os.path.abspath(sim.__file__))
     yamlfile = os.path.join(simroot, "test", "test_simulation_scenario.yaml")
-    os.environ["sim_db_path"] = os.path.join(simroot, "data")
+    nt_root = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
+    os.environ["sim_db_path"] = nt_root
 
     qdsim = MockQuantumDot("qdsim")
     scenario = SimulationScenario.load_from_yaml(yamlfile)

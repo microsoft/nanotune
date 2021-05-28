@@ -99,8 +99,12 @@ def prep_data(
         features = []
 
         if dataset.features:
-            for feat in relevant_features:
-                features.append(dataset.features[readout_method][feat])
+            if all(isinstance(i, dict) for i in dataset.features.values()):
+                for feat in relevant_features:
+                    features.append(dataset.features[readout_method][feat])
+            else:
+                for feat in relevant_features:
+                    features.append(dataset.features[feat])
 
         # double check if current range is correct:
         if np.max(signal) > 1:
@@ -113,7 +117,7 @@ def prep_data(
             dataset.compute_power_spectrum()
 
         data_resized = resize(
-            signal, shape, anti_aliasing=True, mode="constant"
+            signal, shape, anti_aliasing=True, mode="edge"
         ).flatten()
 
         grad = generic_gradient_magnitude(signal, sobel)
@@ -166,14 +170,13 @@ def export_data(
     if db_folder is None:
         db_folder = nt.config["db_folder"]
 
-    if category in ["pinchoff", "clmboscs"]:
+    if category in ["pinchoff", "coulomboscillation"]:
         dim = 1
     elif category in [
         "dotregime",
         "singledot",
         "doubledot",
-        "clmbdiam",
-        "outerbarriers",
+        "coulombdiamonds",
     ]:
         dim = 2
     else:
