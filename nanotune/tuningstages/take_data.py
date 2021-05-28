@@ -1,12 +1,9 @@
 import json
-import copy
 import numpy as np
 from typing import Optional, Tuple, List, Dict, Any, Callable
 import logging
-from math import floor
 import qcodes as qc
 from qcodes.dataset.measurements import Measurement
-import nanotune as nt
 
 logger = logging.getLogger(__name__)
 

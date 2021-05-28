@@ -33,7 +33,7 @@ from qcodes.utils.helpers import NumpyJSONEncoder
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.fit.datafit import DataFit
-from .take_data import take_data, ramp_to_setpoint
+from .take_data import take_data
 from nanotune.device_tuner.tuningresult import TuningResult
 
 SetpointSettingsDict = TypedDict(

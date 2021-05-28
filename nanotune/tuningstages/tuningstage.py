@@ -1,40 +1,22 @@
 import logging
-import json
-import time
-import copy
-import numpy as np
 from functools import partial
 from abc import ABCMeta, abstractmethod
 from typing import (
-    Optional,
     Tuple,
     List,
     Dict,
     Any,
-    Sequence,
-    Union,
-    Generator,
-    Callable,
 )
-from contextlib import contextmanager
-
-import qcodes as qc
-from qcodes.dataset.measurements import Measurement as QC_Measurement
-from qcodes.dataset.experiment_container import load_by_id
-from qcodes.instrument.visa import VisaInstrument
 from nanotune.device_tuner.tuningresult import TuningResult
 import nanotune as nt
-from .take_data import take_data, ramp_to_setpoint
+from .take_data import ramp_to_setpoint
 from .base_tasks import (  # please update docstrings if import path changes
     save_machine_learning_result,
     save_extracted_features,
-    set_up_gates_for_measurement,
     prepare_metadata,
-    save_metadata,
     compute_linear_setpoints,
     swap_range_limits_if_needed,
     plot_fit,
-    get_measurement_features,
     take_data_add_metadata,
     print_tuningstage_status,
     run_stage,
@@ -44,7 +26,6 @@ from .base_tasks import (  # please update docstrings if import path changes
     DataSettingsDict,
     SetpointSettingsDict,
     ReadoutMethodsDict,
-    ReadoutMethodsLiteral,
 )
 
 logger = logging.getLogger(__name__)
@@ -66,9 +47,10 @@ class TuningStage(metaclass=ABCMeta):
         readout_methods: Dictionary mapping string identifiers such as
             'dc_current' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
-        current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
-        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
-            which gates don't blow up.
+        current_valid_ranges: List of voltages ranges (tuples of floats) to
+            measure.
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety
+            limits within which gates don't blow up.
         fit_class: Abstract property, to be specified in child classes. It is
             the class that should perform the data fitting, e.g. PinchoffFit.
     """
@@ -93,7 +75,8 @@ class TuningStage(metaclass=ABCMeta):
                 'normalization_constants'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
-                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+                'safety_voltage_ranges', 'parameters_to_sweep' and
+                'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
                 'dc_current' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -250,7 +233,8 @@ class TuningStage(metaclass=ABCMeta):
         """Displays tuning result and optionally plots the fitting result.
 
         Args:
-            plot_result: Bool indicating whether the data fit should be plotted.
+            plot_result: Bool indicating whether the data fit should be
+                plotted.
             current_id: QCoDeS data run ID.
             tuning_result: Result of a tuning stage run.
         """
@@ -332,12 +316,14 @@ class TuningStage(metaclass=ABCMeta):
             plot_result:
 
         Returns:
-            TuningResult: Tuning results of the last iteration, with the dataids
-            field containing QCoDeS run IDs of all datasets measured.
+            TuningResult: Tuning results of the last iteration, with the
+                dataids field containing QCoDeS run IDs of all datasets
+                measured.
         """
 
         nt.set_database(
-            self.data_settings["db_name"], db_folder=self.data_settings["db_folder"]
+            self.data_settings["db_name"],
+            db_folder=self.data_settings["db_folder"]
         )
 
         initial_voltages = get_current_voltages(
