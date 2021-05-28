@@ -1,5 +1,6 @@
 instruments:
   MockChip_123:
+<<<<<<< HEAD
     type: qcodes.instrument.delegate.instrument_group.InstrumentGroup
     init:
       submodules_type: qcodes.instrument.delegate.delegate_instrument.DelegateInstrument
@@ -17,14 +18,44 @@ instruments:
 
       set_initial_values_on_load: true
       initial_values:
+=======
+    type: forq.meta.ChipMeta
+    init:
+      devices:
+        C01R01:
+          gate: dac.ch01
+          source: dac.ch02
+          drain: dac.ch03
+
+      set_defaults_on_load: true
+      default_values:
+>>>>>>> 38903cb1637fc4a37919565509da91313d3508f5
         C01R01:
           gate.step: 5e-4
           gate.inter_delay: 12.5e-4
 
+<<<<<<< HEAD
   mux:
     type: qcodes.instrument.delegate.delegate_instrument.DelegateInstrument
     init:
       parameters:
+=======
+      connections:
+        dac.ch01:
+          - dac.ch01.voltage
+        dac.ch02:
+          - lockin.frequency
+          - lockin.amplitude
+          - lockin.phase
+          - lockin.time_constant
+        dac.ch03:
+          - lockin.X
+
+  mux:
+    type: forq.meta.InstrumentMeta
+    init:
+      aliases:
+>>>>>>> 38903cb1637fc4a37919565509da91313d3508f5
         drive:
           - rf_source1.frequency
           - rf_source1.power
@@ -39,17 +70,28 @@ instruments:
           - dmm.volt
 
   field:
+<<<<<<< HEAD
     type: qcodes.instrument.delegate.delegate_instrument.DelegateInstrument
     init:
       parameters:
+=======
+    type: forq.meta.InstrumentMeta
+    init:
+      aliases:
+>>>>>>> 38903cb1637fc4a37919565509da91313d3508f5
         X:
           - field_X.field
         X_block:
           - field_X.field
         ramp_rate:
           - field_X.ramp_rate
+<<<<<<< HEAD
       set_initial_values_on_load: true
       initial_values:
+=======
+      set_defaults_on_load: true
+      default_values:
+>>>>>>> 38903cb1637fc4a37919565509da91313d3508f5
         ramp_rate: 1.0
       setters:
         X:
