@@ -229,7 +229,7 @@ class Dataset:
         maxv = self.normalization_constants[signal_type][1]
 
         normalized_sig = (signal - minv) / (maxv - minv)
-        if np.max(normalized_sig) > 1 or np.min(normalized_sig) < 0:
+        if np.max(normalized_sig) > 1.01 or np.min(normalized_sig) < -0.01:
             msg = (
                 "Dataset {}: ".format(self.qc_run_id),
                 "Wrong normalization constant",
