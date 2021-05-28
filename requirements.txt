@@ -81,6 +81,7 @@ pickleshare==0.7.5
 Pillow==8.2.0
 pluggy==0.13.1
 ply==3.11
+prefect==0.14.20
 prettytable==2.1.0
 prometheus-client==0.10.1
 prompt-toolkit==3.0.18
