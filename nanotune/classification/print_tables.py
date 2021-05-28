@@ -1,14 +1,12 @@
 import os
+import pprint
+import warnings
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import pandas as pd
 
 from nanotune.classification.format_results import *
-
-import pprint
-import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)

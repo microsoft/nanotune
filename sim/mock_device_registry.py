@@ -1,4 +1,5 @@
 from typing import MutableMapping, Optional
+
 from sim.mock_device import IMockDevice
 from sim.mock_pin import IMockPin
 

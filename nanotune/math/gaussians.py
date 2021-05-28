@@ -1,6 +1,6 @@
 import numpy as np
-from scipy.stats import multivariate_normal
 from scipy import optimize
+from scipy.stats import multivariate_normal
 
 
 def gaussian1D_fct(height: float, center: float, width: float):

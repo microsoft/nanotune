@@ -1,32 +1,18 @@
 import logging
-from functools import partial
 from abc import ABCMeta, abstractmethod
-from typing import (
-    Tuple,
-    List,
-    Dict,
-    Any,
-)
-from nanotune.device_tuner.tuningresult import TuningResult
+from functools import partial
+from typing import Any, Dict, List, Tuple
+
 import nanotune as nt
-from .take_data import ramp_to_setpoint
+from nanotune.device_tuner.tuningresult import TuningResult
+
 from .base_tasks import (  # please update docstrings if import path changes
-    save_machine_learning_result,
-    save_extracted_features,
-    prepare_metadata,
-    compute_linear_setpoints,
-    swap_range_limits_if_needed,
-    plot_fit,
-    take_data_add_metadata,
-    print_tuningstage_status,
-    run_stage,
-    iterate_stage,
-    get_current_voltages,
-    set_voltages,
-    DataSettingsDict,
-    SetpointSettingsDict,
-    ReadoutMethodsDict,
-)
+    DataSettingsDict, ReadoutMethodsDict, SetpointSettingsDict,
+    compute_linear_setpoints, get_current_voltages, iterate_stage, plot_fit,
+    prepare_metadata, print_tuningstage_status, run_stage,
+    save_extracted_features, save_machine_learning_result, set_voltages,
+    swap_range_limits_if_needed, take_data_add_metadata)
+from .take_data import ramp_to_setpoint
 
 logger = logging.getLogger(__name__)
 

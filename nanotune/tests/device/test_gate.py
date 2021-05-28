@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
+import pytest
 from qcodes import Parameter
+
 from nanotune.device.gate import Gate
-from nanotune.drivers.dac_interface import DACInterface, DACChannelInterface
+from nanotune.drivers.dac_interface import DACChannelInterface, DACInterface
 
 
 def test_gate_attributes_after_init(dummy_device, dummy_dac):

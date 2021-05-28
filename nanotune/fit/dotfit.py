@@ -1,36 +1,32 @@
-import os
-import logging
-import json
 import copy
-
-import numpy as np
-import xarray as xr
+import json
+import logging
+import math
+import os
+from itertools import combinations
 from math import floor
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import math
-from itertools import combinations
-
-import scipy.fftpack as fp
-from numpy import linalg as lg
-import scipy as sc
-
 import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-
-from scipy.ndimage.filters import maximum_filter
-from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
-from scipy.ndimage import measurements as scm
-
+import numpy as np
 import qcodes as qc
-from qcodes.dataset.measurements import Measurement
-from qcodes.dataset.experiment_container import load_last_experiment, load_by_id
+import scipy as sc
+import scipy.fftpack as fp
+import xarray as xr
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from numpy import linalg as lg
 from qcodes.dataset.data_set import res_type
+from qcodes.dataset.experiment_container import (load_by_id,
+                                                 load_last_experiment)
+from qcodes.dataset.measurements import Measurement
+from scipy.ndimage import measurements as scm
+from scipy.ndimage.filters import maximum_filter
+from scipy.ndimage.morphology import binary_erosion, generate_binary_structure
 
 import nanotune as nt
-from nanotune.data.plotting import default_plot_params
 from nanotune.data.dataset import default_coord_names
+from nanotune.data.plotting import default_plot_params
 from nanotune.fit.datafit import DataFit
 from nanotune.utils import format_axes
 

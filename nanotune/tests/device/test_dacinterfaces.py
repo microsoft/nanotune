@@ -1,7 +1,7 @@
 import pytest
 
 from nanotune.drivers.dac_interface import DACChannelInterface, DACInterface
-from nanotune.tests.dac_mocks import DummyDACChannel, DummyDAC
+from nanotune.tests.dac_mocks import DummyDAC, DummyDACChannel
 
 
 def test_dacchannelinterface_methods():

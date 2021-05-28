@@ -1,24 +1,21 @@
-import smtplib
-import os
 import logging
+import os
+import smtplib
 import textwrap
 from datetime import datetime
-
-from typing import Dict, List, Optional
-
-from email.mime.multipart import MIMEMultipart
+from email import encoders
 from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
-from email import encoders
+from typing import Dict, List, Optional
 
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch  # , cm
 from reportlab.lib.utils import ImageReader
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, TableStyle
 
 import nanotune as nt

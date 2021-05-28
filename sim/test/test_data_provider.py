@@ -1,9 +1,10 @@
-import sim
 import os
+
 import pytest
 
-from sim.mock_devices import Pin
+import sim
 from sim.data_providers import QcodesDataProvider, StaticDataProvider
+from sim.mock_devices import Pin
 
 simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
 

@@ -1,4 +1,5 @@
 import pytest
+
 from nanotune.device.ohmic import Ohmic
 
 

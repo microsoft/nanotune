@@ -1,31 +1,29 @@
 import logging
-
+from sqlite3 import OperationalError
 from typing import List, Optional, Tuple
+
+import matplotlib
+import PyQt5.QtCore as qtc
+import PyQt5.QtGui as qtg
+import PyQt5.QtWidgets as qtw
+import qcodes as qc
+from matplotlib import rcParams
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+from qcodes.dataset.experiment_container import (experiments, load_by_id,
+                                                 load_experiment,
+                                                 load_experiment_by_name)
+from qcodes.dataset.plotting import plot_by_id
+
+import nanotune as nt
 
 # from PyQt5.QtCore import *
 # from PyQt5.QtGui import *
 # from PyQt5.QtWidgets import *
 
-import PyQt5.QtCore as qtc
-import PyQt5.QtGui as qtg
-import PyQt5.QtWidgets as qtw
 
-import matplotlib
-from matplotlib import rcParams
-from sqlite3 import OperationalError
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
 
-import qcodes as qc
-from qcodes.dataset.plotting import plot_by_id
-from qcodes.dataset.experiment_container import (
-    load_by_id,
-    experiments,
-    load_experiment_by_name,
-    load_experiment,
-)
-import nanotune as nt
 
 logger = logging.getLogger(__name__)
 

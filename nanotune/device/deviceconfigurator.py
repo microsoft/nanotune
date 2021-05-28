@@ -1,12 +1,11 @@
 import logging
 from copy import deepcopy
-
 from typing import Any, Dict, Optional, Union
-from ruamel.yaml import YAML
 
-from qcodes.station import Station
-from qcodes.monitor.monitor import Monitor
 from qcodes.instrument.parameter import Parameter as QC_Parameter
+from qcodes.monitor.monitor import Monitor
+from qcodes.station import Station
+from ruamel.yaml import YAML
 
 import nanotune as nt
 from nanotune.device.device import Device

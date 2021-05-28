@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Dict, Optional, Sequence
 
-from qcodes import validators as vals
 from qcodes import Instrument, InstrumentChannel
+from qcodes import validators as vals
 from qcodes.instrument.base import InstrumentBase
 
 from nanotune.drivers.dac_interface import DACInterface

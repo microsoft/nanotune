@@ -1,30 +1,30 @@
-import os
 import copy
 import logging
-
-import numpy as np
-import scipy as sc
-from scipy.signal import argrelextrema
-
+import os
 from typing import Dict, List, Optional, Tuple
 
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
+import numpy as np
+import scipy as sc
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from numpy import linalg as lg
+from scipy.optimize import least_squares
+from scipy.signal import argrelextrema
+from scipy.stats import norm
+
+import nanotune as nt
+from nanotune.data.plotting import (colors_dict, default_plot_params,
+                                    plot_params_type)
+from nanotune.fit.datafit import DataFit
+from nanotune.utils import format_axes
 
 # from matplotlib2tikz import save as tikz_save
 
-from scipy.optimize import least_squares
-from scipy.stats import norm
 
 # from qcodes.self.experiment_container import load_by_id
 
-import nanotune as nt
-from nanotune.fit.datafit import DataFit
-from nanotune.utils import format_axes
-from nanotune.data.plotting import default_plot_params, colors_dict, plot_params_type
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]

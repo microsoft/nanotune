@@ -2,16 +2,17 @@
 
 """ Defines classes that allow a scripted simulation scenario to be defined."""
 
+import importlib
+import logging
 from abc import ABC, abstractmethod
 from queue import SimpleQueue
 from typing import Any, Tuple
-import importlib
-import logging
+
 import ruamel.yaml
 
-from sim.mock_pin import IMockPin
 from sim.data_provider import IDataProvider
 from sim.mock_device_registry import MockDeviceRegistry
+from sim.mock_pin import IMockPin
 
 
 class SimulationAction(ABC):

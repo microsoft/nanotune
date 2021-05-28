@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Type
 
 import qcodes as qc
 from qcodes.instrument.base import Instrument
-from qcodes.instrument.channel import InstrumentChannel, ChannelList
+from qcodes.instrument.channel import ChannelList, InstrumentChannel
 
 
 class DACChannelInterface(InstrumentChannel, ABC):

@@ -1,15 +1,15 @@
+import copy
 import logging
 import time
-import copy
 from math import isclose
-import numpy as np
-from typing import Optional, List, Tuple, Union, Dict, Any, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
+import numpy as np
 import qcodes as qc
+from qcodes import ArrayParameter, Instrument, InstrumentChannel, Parameter
 from qcodes import validators as vals
-from qcodes.utils.validators import Validator
 from qcodes.instrument.base import InstrumentBase
-from qcodes import Instrument, InstrumentChannel, Parameter, ArrayParameter
+from qcodes.utils.validators import Validator
 
 import nanotune as nt
 from nanotune.drivers.dac_interface import DACInterface

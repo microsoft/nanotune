@@ -1,9 +1,11 @@
 #pylint: disable=too-many-arguments, too-many-locals
 
 from qcodes import Instrument, Parameter
-from sim.mock_pin import IMockPin
+
 from sim.data_provider import IDataProvider
 from sim.mock_devices import MockQuantumDot
+from sim.mock_pin import IMockPin
+
 
 class SimulationParameter(Parameter):
     """ Qcodes Parameter that wraps a Simulation Pin, which in turn

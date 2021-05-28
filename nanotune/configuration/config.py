@@ -1,13 +1,12 @@
 import copy
 import json
-import jsonschema
 import os
+from os.path import expanduser
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-from pathlib import Path
+import jsonschema
 import pkg_resources as pkgr
-
-from os.path import expanduser
 
 
 class Config:

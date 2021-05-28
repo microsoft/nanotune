@@ -1,39 +1,28 @@
-import os
-import logging
 import json
+import logging
+import os
 import time
-import numpy as np
-
-from typing import Optional, List, Dict, Union, Tuple, Any
-
-from scipy import interp
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
-from sklearn import svm
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-from sklearn.calibration import calibration_curve
-from sklearn.metrics import (
-    roc_curve,
-    brier_score_loss,
-    auc,
-    accuracy_score,
-    average_precision_score,
-    confusion_matrix,
-)
-from sklearn.model_selection import StratifiedKFold
-
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 from prettytable import PrettyTable
+from scipy import interp
+from sklearn import svm
+from sklearn.calibration import calibration_curve
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (accuracy_score, auc, average_precision_score,
+                             brier_score_loss, confusion_matrix, roc_curve)
+from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
 
 import nanotune as nt
 from nanotune.data.dataset import Dataset

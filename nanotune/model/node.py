@@ -2,10 +2,10 @@ import logging
 from typing import Optional
 
 import qcodes as qc
-from qcodes import validators as vals
-from qcodes.utils.validators import Validator
 from qcodes import Instrument, InstrumentChannel, Parameter
+from qcodes import validators as vals
 from qcodes.instrument.base import InstrumentBase
+from qcodes.utils.validators import Validator
 
 import nanotune as nt
 

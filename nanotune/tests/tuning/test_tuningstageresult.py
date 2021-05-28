@@ -1,6 +1,8 @@
-import pytest
 import json
-from nanotune.device_tuner.tuningresult import TuningResult, MeasurementHistory
+
+import pytest
+
+from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 
 
 def test_tuningresult():

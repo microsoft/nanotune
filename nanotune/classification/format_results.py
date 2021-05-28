@@ -1,11 +1,10 @@
-import os
 import glob
 import json
-
+import os
 import pprint
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-from typing import Any, Dict, List, Optional
 
 pp = pprint.PrettyPrinter(indent=4)
 train_score = "training"

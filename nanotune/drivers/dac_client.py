@@ -1,7 +1,5 @@
-import zmq
-
-
 import logging
+
 import zmq
 
 from nanotune.drivers.dac_interface import DACInterface

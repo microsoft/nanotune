@@ -1,11 +1,9 @@
-import os
 import logging
+import os
+from typing import Dict, List, Optional, Tuple
 
-from typing import List, Optional, Dict, Tuple
-
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import scipy.fftpack as fp
 from skimage.transform import resize
 

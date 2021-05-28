@@ -1,13 +1,11 @@
 import os
-import numpy as np
 from typing import List, Optional
 
 import matplotlib.pyplot as plt
-
-import scipy.signal as sg
+import numpy as np
 import scipy.fftpack as fp
-from scipy.ndimage import gaussian_filter
-from scipy.ndimage import sobel, generic_gradient_magnitude
+import scipy.signal as sg
+from scipy.ndimage import gaussian_filter, generic_gradient_magnitude, sobel
 from skimage.transform import resize
 
 import nanotune as nt

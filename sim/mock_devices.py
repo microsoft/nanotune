@@ -1,5 +1,6 @@
 # pylint: disable=too-many-arguments, too-many-locals
-from typing import Sequence, Mapping
+from typing import Mapping, Sequence
+
 from sim.data_providers import IDataProvider, StaticDataProvider
 from sim.mock_device import IMockDevice
 from sim.mock_device_registry import MockDeviceRegistry

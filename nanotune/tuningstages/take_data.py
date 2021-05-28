@@ -1,7 +1,8 @@
 import json
-import numpy as np
-from typing import Optional, Tuple, List, Dict, Any, Callable
 import logging
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+import numpy as np
 import qcodes as qc
 from qcodes.dataset.measurements import Measurement
 

@@ -2,39 +2,30 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-import json
 import copy
-import time
-import logging
 import datetime
-import numpy as np
-from string import Template
-from typing import (
-    Optional,
-    Tuple,
-    List,
-    Dict,
-    Any,
-    Sequence,
-    Union,
-    Generator,
-    Callable,
-    Type,
-)
-from typing_extensions import TypedDict, Literal
+import json
+import logging
+import time
 from contextlib import contextmanager
-import matplotlib.pyplot as plt
 from sqlite3 import OperationalError
+from string import Template
+from typing import (Any, Callable, Dict, Generator, List, Optional, Sequence,
+                    Tuple, Type, Union)
 
+import matplotlib.pyplot as plt
+import numpy as np
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.utils.helpers import NumpyJSONEncoder
+from typing_extensions import Literal, TypedDict
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
-from nanotune.fit.datafit import DataFit
-from .take_data import take_data
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.fit.datafit import DataFit
+
+from .take_data import take_data
 
 SetpointSettingsDict = TypedDict(
     "SetpointSettingsDict",

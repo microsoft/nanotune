@@ -1,16 +1,17 @@
-import pytest
 import pprint
 
 import numpy as np
-import scipy.signal as sg
+import pytest
 import scipy.fftpack as fp
+import scipy.signal as sg
+from scipy.ndimage import generic_gradient_magnitude, sobel
 from skimage.transform import resize
-from scipy.ndimage import sobel, generic_gradient_magnitude
 
 import nanotune as nt
-from nanotune.data.dataset import Dataset, default_readout_methods, default_coord_names
-from nanotune.tests.data_generator_methods import generate_doubledot_data
+from nanotune.data.dataset import (Dataset, default_coord_names,
+                                   default_readout_methods)
 from nanotune.math.gaussians import gaussian2D_fct
+from nanotune.tests.data_generator_methods import generate_doubledot_data
 
 pp = pprint.PrettyPrinter(indent=4)
 
