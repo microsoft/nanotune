@@ -14,6 +14,7 @@ from qcodes.tests.instrument_mocks import (DummyChannel,
                                            DummyChannelInstrument,
                                            DummyInstrument,
                                            DummyInstrumentWithMeasurement)
+from qcodes.dataset.database_extract_runs import extract_runs_into_db
 from sklearn.dummy import DummyClassifier
 
 import nanotune as nt
@@ -159,6 +160,25 @@ def nt_dataset_pinchoff(experiment, request):
         yield datasaver.dataset
     finally:
         datasaver.dataset.conn.close()
+
+
+@pytest.fixture(scope="function")
+def db_real_pinchoff(tmp_path):
+
+    nt_path = os.path.dirname(os.path.dirname(os.path.abspath(nt.__file__)))
+    path_device_characterization = os.path.join(
+        nt_path, 'data', 'tuning', 'device_characterization.db')
+
+    try:
+        nt.new_database("pinchoff_data.db", tmp_path)
+        extract_runs_into_db(
+            path_device_characterization,
+            os.path.join(tmp_path, 'pinchoff_data.db'),
+            1,
+        )
+        yield
+    finally:
+        gc.collect()
 
 
 @pytest.fixture(scope="function", params=["numeric"])
