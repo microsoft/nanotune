@@ -16,7 +16,7 @@ def take_data(
     finish_early_check: Optional[Callable[[Dict[str, float]], bool]] = None,
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
     metadata_addon: Optional[Tuple[str, Dict[str, Any]]] = None,
-) -> Tuple[int, List[int]]:
+) -> int:
     """
     Take 1D or 2D measurements with QCoDeS.
 
@@ -26,7 +26,8 @@ def take_data(
         setpoints:
         finish_early_check:
         metadata_addon: string with tag under which it will be added
-            and metadata iself. To save some important metadata before measuring
+            and metadata iself. To save some important metadata before
+            measuring.
 
     Returns:
         int:
@@ -42,7 +43,6 @@ def take_data(
     meas = Measurement()
     output = []
     output_dict: Dict[str, float] = {}
-    n_measured = [0, 0]
 
     for set_param in parameters_to_sweep:
         meas.register_parameter(set_param)
@@ -62,7 +62,6 @@ def take_data(
 
         for set_point0 in setpoints[0]:
             parameters_to_sweep[0](set_point0)
-            n_measured[0] += 1
 
             if len(parameters_to_sweep) == 2:
                 start_voltage = setpoints[1][0]
@@ -71,7 +70,6 @@ def take_data(
 
                 for set_point1 in setpoints[1]:
                     parameters_to_sweep[1](set_point1)
-                    n_measured[1] += 1
                     m_params = parameters_to_measure
                     for p, parameter in enumerate(m_params):
                         value = parameter.get()
@@ -101,7 +99,7 @@ def take_data(
             if done:
                 break
 
-    return datasaver.run_id, n_measured
+    return datasaver.run_id
 
 
 def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:

@@ -126,7 +126,8 @@ def test_prepare_metadata(dummy_dmm):
 
     assert metadata["normalization_constants"] == {"dc_current": (0, 1.2)}
     assert metadata["device_name"] == "test_device"
-    assert metadata["readout_methods"] == {"dc_current": dummy_dmm.dac1.full_name}
+    assert metadata["readout_methods"] == {
+        "dc_current": dummy_dmm.dac1.full_name}
     assert "git_hash" in metadata.keys()
     assert "features" in metadata.keys()
 
@@ -176,3 +177,109 @@ def test_get_elapsed_time():
 def test_plot_fit(nt_dataset_pinchoff, tmp_path):
     plot_fit(PinchoffFit, 1, "temp.db", db_folder=tmp_path)
     plt.close()
+
+
+def test_print_tuningstage_status(capsys):
+    tuning_result = TuningResult(
+        'pinchoff',
+        True,
+        termination_reasons=['device pinched off'],
+        data_ids=[1],
+        ml_result={'regime': 'pinchoff'},
+        timestamp="",
+    )
+    print_tuningstage_status(tuning_result)
+    captured = capsys.readouterr()
+
+    assert 'good' in captured.out.lower()
+    assert 'pinchoff' in captured.out.lower()
+    assert 'device pinched off' in captured.out.lower()
+
+
+def test_take_data_add_metadata(gate_1, gate_2, dummy_dmm, experiment):
+
+    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    params_to_measure = [dummy_dmm.dac1]
+    setpoints = [
+        list(np.linspace(-0.3, -0.1, 10)), list(np.linspace(-0.2, -0.1, 10)),
+    ]
+    pre_measurement_metadata = {
+        'device_name': 'test_sample',
+        'normalization_constants': {'dc_current': [0, 1.2]},
+        'readout_methods': {'dc_current': dummy_dmm.dac1.full_name},
+    }
+    run_id = take_data_add_metadata(
+        params_to_sweep,
+        params_to_measure,
+        setpoints,
+        pre_measurement_metadata,
+    )
+
+    dataset = load_by_id(run_id)
+    metadata = json.loads(dataset.get_metadata(nt.meta_tag))
+    print(metadata)
+
+    assert 'elapsed_time' in metadata
+    assert metadata['device_name'] == 'test_sample'
+    assert metadata['normalization_constants']['dc_current'] == [0, 1.2]
+    assert metadata['readout_methods']['dc_current'] == dummy_dmm.dac1.full_name
+
+
+def test_run_stage(experiment, gate_1, gate_2, dummy_dmm):
+
+    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    params_to_measure = [dummy_dmm.dac1]
+    ml_result = {'regime': 'pinchoff', 'quality': True}
+
+    compute_setpoint_task = partial(
+        compute_linear_setpoints, voltage_precision=0.1,
+    )
+
+    tuning_result = run_stage(
+        'pinchoff',
+        params_to_sweep,
+        params_to_measure,
+        [(-0.3, 0), (-0.3, 0)],
+        compute_setpoint_task,
+        take_data,
+        lambda x: ml_result,
+        save_machine_learning_result,
+        lambda x: True,
+    )
+
+    assert tuning_result.success
+    assert tuning_result.stage == 'pinchoff'
+    assert not tuning_result.termination_reasons
+    assert tuning_result.ml_result == ml_result
+    assert tuning_result.data_ids == [1]
+
+
+def test_iterate_stage(experiment, gate_1, gate_2, dummy_dmm):
+
+    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    params_to_measure = [dummy_dmm.dac1]
+    compute_setpoint_task = partial(
+        compute_linear_setpoints, voltage_precision=0.1,
+    )
+    ml_result = {'regime': 'pinchoff', 'quality': True}
+    run_stage_tasks = [
+        compute_setpoint_task,
+        take_data,
+        lambda x: ml_result,
+        save_machine_learning_result,
+        lambda x: True,
+    ]
+    conclude_iteration = lambda a, b, c, d, e: True, [(-0.3, 0), (-0.3, 0)], []
+    display_result = lambda a, b: None
+
+    tuning_result = iterate_stage(
+        'pinchoff',
+        params_to_sweep,
+        params_to_measure,
+        [(-0.3, 0), (-0.3, 0)],
+        [(-3, 0), (-3, 0)],
+        run_stage,
+        run_stage_tasks,
+        conclude_iteration,
+        display_result,
+    )

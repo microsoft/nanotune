@@ -226,8 +226,8 @@ class ChargeDiagram(TuningStage):
 
         Returns:
             dict: The classification outcome, both segment wise under the key
-                'dot_segments' as well as the overall outcome under 'regime' and
-                'quality'.
+                'dot_segments' as well as the overall outcome under 'regime'
+                and 'quality'.
         """
 
         dot_segments = segment_dot_data(

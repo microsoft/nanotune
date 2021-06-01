@@ -77,8 +77,9 @@ class GateCharacterization1D(TuningStage):
                 desired quantity (e.g. current throught the device).
             classifier: Pre-trained nt.Classifier predicting the quality of a
             pinchoff curve.
-            noise_level: Relative level above which a measured output is considered
-                being above the noise floor. Is compared to a normalized signal.
+            noise_level: Relative level above which a measured output is
+                considered being above the noise floor. Is compared to a
+                normalized signal.
             main_readout_method: Readout method to use for early finish check.
             voltage_interval_to_track: Voltage interval over which the measured
                 output is checked
@@ -247,7 +248,8 @@ class GateCharacterization1D(TuningStage):
             self.data_settings["db_name"],
             db_folder=self.data_settings["db_folder"],
         )
-        (range_update_directives, issues) = get_range_directives_gatecharacterization(
+        (range_update_directives,
+         issues) = get_range_directives_gatecharacterization(
             fit_range_update_directives,
             current_valid_ranges,
             safety_ranges,
