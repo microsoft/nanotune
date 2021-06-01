@@ -3,7 +3,7 @@ import os
 import pytest
 
 import sim
-from sim.data_providers import QcodesDataProvider, StaticDataProvider
+from sim.data_providers import PassthroughDataProvider, QcodesDataProvider, StaticDataProvider
 from sim.mock_devices import Pin
 
 simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
@@ -161,3 +161,27 @@ class TestStaticDataProvider:
         o1.set_data_provider(StaticDataProvider(3.14))
 
         assert o1.get_value() == 3.14
+
+
+class TestPassthroughDataProvider:
+
+    def test_passthrough_data_provider(self):
+
+        def assert_the_same(pin1 : Pin, pin2 : Pin, value: float) -> None:
+            assert(pin1.get_value() == value)
+            assert(pin2.get_value() == value)
+
+        pin1 = Pin("Pin1")
+        pin2 = Pin("Pin2")
+
+        pin2.set_data_provider(PassthroughDataProvider(pin1))
+        assert_the_same(pin1, pin2, 0.0)
+
+        pin1.set_value(1.0)
+        assert_the_same(pin1, pin2, 1.0)
+
+        pin2.set_value(2.0)
+        assert_the_same(pin1, pin2, 2.0)
+
+
+

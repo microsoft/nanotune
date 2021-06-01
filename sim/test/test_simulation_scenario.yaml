@@ -1,9 +1,10 @@
 "end to end scenario" :
+
   - "Test Simple Action" :
       type : "sim.simulation_scenario.SetDataProviderAction"
       init :
         pin : "qdsim.drain"
-        data_provider:
+        data_provider :
           type : "sim.data_providers.StaticDataProvider"
           init:
             value : 10.0
@@ -29,6 +30,15 @@
                   init:
                     value : 1.0
 
+  - "Test PassthroughDataProvider" :
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qdsim.c_barrier"
+        data_provider :
+          type : "sim.data_providers.PassthroughDataProvider"
+          init :
+            src_pin : "qdsim.l_plunger"
+
   - "Test QcodesDataProvider" :
       type : "sim.simulation_scenario.SetDataProviderAction"
       init :
@@ -40,3 +50,5 @@
             db_path : "${sim_db_path}/data/tuning/device_characterization.db"
             exp_name : "GB_Newtown_Dev_3_2"
             run_id : 1206
+
+

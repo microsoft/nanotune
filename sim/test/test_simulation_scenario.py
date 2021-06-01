@@ -21,14 +21,31 @@ def test_load_from_yaml():
     qdsim = MockQuantumDot("qdsim")
     scenario = SimulationScenario.load_from_yaml(yamlfile)
 
+
     # Test Simple Action
     scenario.run_next_step()
     assert qdsim.drain.get_value() == 10.0
+
 
     # Test ActionGroup
     scenario.run_next_step()
     assert qdsim.l_plunger.get_value() == -1.0
     assert qdsim.r_plunger.get_value() == 1.0
+
+
+    # Test PassthroughDataProvider (ties c_barrier to l_plunger)
+    assert(qdsim.c_barrier.get_value() != qdsim.l_plunger.get_value())
+    scenario.run_next_step()
+
+    # c_barrier should be mirroring l_pluner now
+    assert(qdsim.c_barrier.get_value() == -1.0)
+    assert(qdsim.c_barrier.get_value() == qdsim.l_plunger.get_value())
+
+    # Setting c_barrier should also set l_plunger
+    qdsim.c_barrier.set_value(-2.0)
+    assert(qdsim.l_plunger.get_value() == -2.0)
+    assert(qdsim.c_barrier.get_value() == qdsim.l_plunger.get_value())
+
 
     # Test QcodesDataProvider
     scenario.run_next_step()
