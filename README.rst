@@ -7,17 +7,17 @@ What it does
 
 Defining quantum dots in semiconductor-based heterostructures is an essential
 step in initializing solid-state qubits. With growing device complexity and
-increasing number of functional devices required for measurements, a manual
+an increasing number of functional devices required for measurements, a manual
 approach to finding suitable gate voltages to confine electrons electrostatically
 is impractical.
 
 Nanotune automates typical manual measurements and replaces
-the exerimenter's decision about next tuning steps by supervised machine learning.
-It has enabled the implementation of a two-stage device characterization and
+the exerimenter's decision about the next tuning steps by supervised machine learning.
+It has enabled the implementation of two-stage device characterization and
 dot-tuning process, which first determines whether devices are functional and
 then attempts to tune the functional devices to the single or double quantum-dot
-regime. Measurement quality assessement and charge state detection on charge stability
-diagrams is done using four binary classifiers trained with experimental data, reflecting
+regime. Measurement quality assessment and charge state detection on charge stability
+diagrams are done using four binary classifiers trained with experimental data, reflecting
 real device behavior.
 
 While autonomous tuning has been demonstrated on spin qubit devices in GaAs, published
@@ -76,4 +76,4 @@ nanotune strictly adheres to the `Microsoft Open Source Code of Conduct <https:/
 Acknowledgments
 ---------------
 
-A special thanks goes to Matthias Troyer, Maja Cassidy, David Reilly and Charles Marcus for initiating, supervising and pushing over the finish line the PhD project, which resulted in the original version of nanotune. Chris Granade, Nathan Wiebe, John Hornibrook - your inputs were invaluable in implementing several modules. Alice Mahoney, Sebastian Pauka, Rachpon Kalra - thank you for setting up fridges and prepping devices, making it possible for automated tuning to be developed, tested and demonstrated. William H.P. Nielsen and Jens Nielsen - both your patience and help with qcodes was essential.
+A special thanks go to Matthias Troyer, Maja Cassidy, David Reilly, and Charles Marcus for initiating, supervising, and pushing over the finish line of the Ph.D. project, which resulted in the original version of nanotune. Chris Granade, Nathan Wiebe, John Hornibrook - your inputs were invaluable in implementing several modules. Alice Mahoney, Sebastian Pauka, Rachpon Kalra - thank you for setting up fridges and prepping devices, making it possible for automated tuning to be developed, tested, and demonstrated. William H.P. Nielsen and Jens Nielsen - both your patience and help with qcodes was essential.
