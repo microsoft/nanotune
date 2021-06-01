@@ -99,12 +99,14 @@ class PinchoffFit(DataFit):
 
     def find_fit(self) -> None:
         """"""
+
         for r_meth in self.readout_methods:
-            (bounds, initial_guess) = self.compute_initial_guess(readout_method=r_meth)
+            (bounds,
+             initial_guess) = self.compute_initial_guess(readout_method=r_meth)
             smooth_signal = self.filtered_data[r_meth].values
 
             def err_func(p: List[float]) -> np.ndarray:
-                err = self.fit_fct(self._normalized_voltage, p)
+                err = self.fit_function(self._normalized_voltage, p)
                 err = (err - smooth_signal) / lg.norm(smooth_signal)
                 return err
 
@@ -142,8 +144,9 @@ class PinchoffFit(DataFit):
                     self.features[read_meth]["amplitude"],
                     self.features[read_meth]["slope"],
                     self.features[read_meth]["offset"],
+                    self.features[read_meth]["tanh_sign"],
                 ]
-                temp_sig = self.fit_fct(self._normalized_voltage, fit_feat)
+                temp_sig = self.fit_function(self._normalized_voltage, fit_feat)
                 temp_v = self._normalized_voltage
 
             gradient = np.gradient(temp_sig, temp_v)
@@ -179,8 +182,9 @@ class PinchoffFit(DataFit):
                     self.features[read_meth]["amplitude"],
                     self.features[read_meth]["slope"],
                     self.features[read_meth]["offset"],
+                    self.features[read_meth]["tanh_sign"],
                 ]
-                temp_sig = self.fit_fct(self._normalized_voltage, fit_feat)
+                temp_sig = self.fit_function(self._normalized_voltage, fit_feat)
                 temp_v = self._normalized_voltage
 
             fit_gradient = np.gradient(temp_sig, temp_v)
@@ -214,24 +218,34 @@ class PinchoffFit(DataFit):
         voltage_offset_min = -np.inf
         voltage_offset_max = np.inf
 
-        min_bounds = [amplitude_min, slope_min, voltage_offset_min]
-        max_bounds = [amplitude_max, slope_max, voltage_offset_max]
+        tanh_sign_min = -1.
+        tanh_sign_max = 1.
+        tanh_sign_init = 1.
+
+        min_bounds = [
+            amplitude_min, slope_min, voltage_offset_min, tanh_sign_min
+        ]
+        max_bounds = [
+            amplitude_max, slope_max, voltage_offset_max, tanh_sign_max
+        ]
 
         bounds = (min_bounds, max_bounds)
-        initial_guess = [amplitude_init, slope_init, voltage_offset_init]
+        initial_guess = [
+            amplitude_init, slope_init, voltage_offset_init, tanh_sign_init
+        ]
 
         return bounds, initial_guess
 
-    def fit_fct(self, v: np.ndarray, params: List[float]) -> np.ndarray:
+    def fit_function(self, v: np.ndarray, params: List[float]) -> np.ndarray:
         """
         Function we use to fit pinch off curves.
 
         x: input vector, usually gate voltage in V
         a: parameter referred to as 'amplitude'
         b: parameter referred to as 'slope'
-        c: a (kind of) shift
+        c: a shift
         """
-        fit = 1 + np.tanh(params[1] * v + params[2])
+        fit = 1 + params[3] * (np.tanh(params[1] * v + params[2]))
         return params[0] * fit
 
     def _retain_fit_result(self, subres, read_meth):
@@ -239,6 +253,7 @@ class PinchoffFit(DataFit):
         self._features[read_meth]["amplitude"] = subres.x[0]
         self._features[read_meth]["slope"] = subres.x[1]
         self._features[read_meth]["offset"] = subres.x[2]
+        self._features[read_meth]["tanh_sign"] = subres.x[3]
         self._features[read_meth]["residuals"] = lg.norm(subres.fun)
 
     def _retain_transition_features(self) -> None:
@@ -365,8 +380,9 @@ class PinchoffFit(DataFit):
                 self.features[read_meth]["amplitude"],
                 self.features[read_meth]["slope"],
                 self.features[read_meth]["offset"],
+                self.features[read_meth]["tanh_sign"]
             ]
-            fit = self.fit_fct(self._normalized_voltage, fit_feat)
+            fit = self.fit_function(self._normalized_voltage, fit_feat)
             ax[r_i, 0].plot(voltage, fit, label="fit", zorder=4)
             ax[r_i, 0].legend(loc="lower right", bbox_to_anchor=(1, 0.1))
 
@@ -442,11 +458,12 @@ class PinchoffFit(DataFit):
                 self.features[read_meth]["amplitude"],
                 self.features[read_meth]["slope"],
                 self.features[read_meth]["offset"],
+                self.features[read_meth]["tanh_sign"]
             ]
 
             ax[r_i, 0].plot(
                 voltage,
-                self.fit_fct(self._normalized_voltage, fit_feat),
+                self.fit_function(self._normalized_voltage, fit_feat),
                 linestyle="-",
                 label="fit",
                 zorder=6,
@@ -455,7 +472,7 @@ class PinchoffFit(DataFit):
             ax[r_i, 0].fill_between(
                 voltage,
                 signal,
-                self.fit_fct(self._normalized_voltage, fit_feat),
+                self.fit_function(self._normalized_voltage, fit_feat),
                 label="residuals",
                 color=fill_color,
                 hatch=fill_hatch,
