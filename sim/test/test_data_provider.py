@@ -182,6 +182,3 @@ class TestPassthroughDataProvider:
 
         pin2.set_value(2.0)
         assert_the_same(pin1, pin2, 2.0)
-
-
-
