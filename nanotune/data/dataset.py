@@ -94,7 +94,10 @@ class Dataset:
     @property
     def features(self) -> Dict[str, Dict[str, Any]]:
         """"""
-        return self._nt_metadata["features"]
+        if "features" in self._nt_metadata:
+            return self._nt_metadata["features"]
+        else:
+            return {}
 
     def get_plot_label(
         self, readout_method: str, axis: int, power_spect: bool = False
@@ -145,6 +148,10 @@ class Dataset:
         try:
             self._nt_metadata = json.loads(qc_dataset.get_metadata(nt.meta_tag))
         except (RuntimeError, TypeError):
+            # try:
+            #     self._nt_metadata = json.loads(
+            #         qc_dataset.get_metadata('nanotune_meta'))
+            # except (RuntimeError, TypeError):
             pass
 
         try:
@@ -227,6 +234,11 @@ class Dataset:
         """"""
         minv = self.normalization_constants[signal_type][0]
         maxv = self.normalization_constants[signal_type][1]
+
+        if maxv == 1.:
+            maxv = self.raw_data.max().to_array().values[0]
+        if minv == 0.:
+            minv = self.raw_data.min().to_array().values[0]
 
         normalized_sig = (signal - minv) / (maxv - minv)
         if np.max(normalized_sig) > 1.01 or np.min(normalized_sig) < -0.01:

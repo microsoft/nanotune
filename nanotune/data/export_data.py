@@ -68,6 +68,7 @@ def export_label(
 def prep_data(
     dataset: nt.Dataset,
     category: str,
+    flip_data: bool = False
 ) -> np.array:
     """
     Remove nans, normalize by normalization_constants and reshape into
@@ -84,6 +85,8 @@ def prep_data(
 
     for readout_method in dataset.readout_methods.keys():
         signal = dataset.data[readout_method].values
+        if flip_data:
+            signal = np.flip(signal)
         dimension = dataset.dimensions[readout_method]
 
         shape = tuple(nt.config["core"]["standard_shapes"][str(dimension)])
@@ -155,6 +158,7 @@ def export_data(
     db_names: List[str],
     stages: List[str],
     skip_ids: Optional[Dict[str, List[int]]] = None,
+    add_flipped_data: bool = False,
     quality: Optional[int] = None,
     filename: Optional[str] = None,
     db_folder: Optional[str] = None,
@@ -225,14 +229,30 @@ def export_data(
 
         for d_id in dataids:
             if d_id not in skip_us:
-                df = Dataset(d_id, db_name, db_folder=db_folder)
+                try:
+                    df = Dataset(d_id, db_name, db_folder=db_folder)
+                    condensed_data = prep_data(df, category)
+                    new_label = export_label(df.label, df.quality, category)
+                    condensed_data_all = np.append(
+                        condensed_data_all, condensed_data[0], axis=1
+                    )
+                    labels_exp.append(new_label)
 
-                condensed_data = prep_data(df, category)
-                condensed_data_all = np.append(
-                    condensed_data_all, condensed_data[0], axis=1
-                )
-                new_label = export_label(df.label, df.quality, category)
-                labels_exp.append(new_label)
+                    if add_flipped_data:
+                        condensed_data = prep_data(
+                            df, category, flip_data=True
+                        )
+                        new_label = export_label(
+                            df.label, df.quality, category
+                        )
+                        condensed_data_all = np.append(
+                            condensed_data_all, condensed_data[0], axis=1
+                        )
+                        labels_exp.append(new_label)
+                except (IndexError, ValueError, TypeError) as i_err:
+                    print(db_name)
+                    print(d_id)
+                    print(i_err)
 
     n = list(condensed_data_all.shape)
     n[-1] += 1

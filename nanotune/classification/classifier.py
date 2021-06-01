@@ -195,18 +195,16 @@ class Classifier:
         all_the_stuff = np.empty([len(DATA_TYPE_MAPPING), 0, len_2d])
         try:
             for ip in range(len(file_paths)):
-                print(file_paths[ip])
                 sub_data = np.array(
-                    np.load(file_paths[ip], allow_pickle=True), dtype=np.float64
+                    np.load(file_paths[ip], allow_pickle=True),
+                    dtype=np.float64
                 )
                 frac = file_fractions[ip]  # type: ignore
                 n_samples = int(round(sub_data.shape[1] * frac))
-                print("n_samples: {}".format(n_samples))
                 select = np.random.choice(sub_data.shape[1], n_samples, replace=False)
                 sub_data = sub_data[:, select, :]
 
                 all_the_stuff = np.concatenate([all_the_stuff, sub_data], axis=1)
-                print("shape all_the_stuff: {}".format(all_the_stuff.shape))
         except ValueError:
             len_1d = np.prod(nt.config["core"]["standard_shapes"]["1"]) + 1
             all_the_stuff = np.empty([len(DATA_TYPE_MAPPING), 0, len_1d])
@@ -774,10 +772,6 @@ class Classifier:
                 data_to_use, labels_to_use
             )
             if train_data_addon is not None:
-                # print(train_data_addon.shape)
-                # print(train_data.shape)
-                # print(train_labels_addon.shape)
-                # print(train_labels.shape)
 
                 train_data = np.concatenate([train_data, train_data_addon], axis=0)
                 train_labels = np.concatenate(
