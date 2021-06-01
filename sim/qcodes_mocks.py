@@ -1,15 +1,17 @@
 #pylint: disable=too-many-arguments, too-many-locals
-
+from typing import cast
 from qcodes import Instrument, Parameter
 
 from sim.data_provider import IDataProvider
+from sim.mock_device import IMockDevice
 from sim.mock_devices import MockQuantumDot
 from sim.mock_pin import IMockPin
 
 
 class SimulationParameter(Parameter):
-    """ Qcodes Parameter that wraps a Simulation Pin, which in turn
-        uses an IDataProvider as the backing data for the pin.
+    """ Qcodes Parameter that wraps an IMockPin, which in turn
+        uses an IDataProvider as the backing data for the value
+        of the pin.
     """
     def __init__(
             self,
@@ -41,63 +43,70 @@ class SimulationParameter(Parameter):
 
         self._pin.set_data_provider(data_provider)
 
+class MockDeviceInstrument(Instrument):
+    """ Base class for all qcodes mock instruments that wrap an IMockDevice """
+    def __init__(self, name : str, mock_device : IMockDevice):
+        super().__init__(name)
+        self._mock_device = mock_device
 
-class QuantumDotMockInstrument(Instrument):
+    @property
+    def mock_device(self) -> IMockDevice:
+        """ The mock device that this instrument is wrapping """
+        return self._mock_device
+
+
+class QuantumDotMockInstrument(MockDeviceInstrument):
     """ QCoDeS Mock Instrument that wraps a QuantumDotSim device """
 
     def __init__(self, name: str = "QuantumDotMockInstrument"):
 
-        super().__init__(name)
-
-        sim = MockQuantumDot(name)
-        self._simulator = sim
+        super().__init__(name, MockQuantumDot(name))
+        mock = self.mock_device
 
         self.add_parameter(
             "src",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.src,
+            sim_pin=mock.src,
         )
         self.add_parameter(
             "left_barrier",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.l_barrier,
+            sim_pin=mock.l_barrier,
         )
         self.add_parameter(
             "right_barrier",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.r_barrier
+            sim_pin=mock.r_barrier
         )
         self.add_parameter(
             "central_barrier",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.c_barrier,
+            sim_pin=mock.c_barrier,
         )
         self.add_parameter(
             "left_plunger",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.l_plunger,
+            sim_pin=mock.l_plunger,
         )
         self.add_parameter(
             "right_plunger",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=sim.r_plunger,
+            sim_pin=mock.r_plunger,
         )
         self.add_parameter(
             "drain",
             parameter_class=SimulationParameter,
             unit="I",
-            sim_pin=sim.drain
+            sim_pin=mock.drain
         )
 
     @property
     def mock_device(self) -> MockQuantumDot:
-        """Returns the IMockDevice instance to which this mock instrument is attached
-        """
-
-        return self._simulator
+        """ The mock device that this instrument is wrapping """
+        return cast(MockQuantumDot, super().mock_device)

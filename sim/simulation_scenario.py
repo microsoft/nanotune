@@ -4,18 +4,19 @@
 
 import importlib
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC, abstractclassmethod, abstractmethod
 from queue import SimpleQueue
-from typing import Any, Tuple
+from typing import Any, Mapping, Tuple
 
 import ruamel.yaml
 
 from sim.data_provider import IDataProvider
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_pin import IMockPin
+from sim.serializable import ISerializable
 
 
-class SimulationAction(ABC):
+class SimulationAction(ISerializable):
 
     """ Base class for all action types used with SimulationScenario """
 
@@ -25,12 +26,21 @@ class SimulationAction(ABC):
     @abstractmethod
     def run(self) -> None:
         """Performs the action"""
-        raise NotImplementedError
 
 
 class SetDataProviderAction(SimulationAction):
 
     """A simulation action that changes the data_provider an Mock Device Pin"""
+
+    @classmethod
+    def make(cls, **kwargs):
+
+        """ ISerializable override to create an instance of this class """
+
+        name = kwargs["name"]
+        pin = MockDeviceRegistry.resolve_pin(kwargs["pin"])
+        data_provider = ISerializable.create_from_type(**kwargs["data_provider"])
+        return cls(name, pin, data_provider)
 
     def __init__(self, name: str, pin: IMockPin, data_provider: IDataProvider):
         super().__init__(name)
@@ -60,6 +70,17 @@ class ActionGroup(SimulationAction):
 
     """Represents a group of actions that will be performed when this action is run.
     For example, if you wanted to change the data provider on multiple output pins at once"""
+
+    @classmethod
+    def make(cls, **kwargs):
+
+        """ ISerializable override to create an instance of this class """
+
+        name = kwargs["name"]
+        actions_node = kwargs["actions"]
+        actions = [ISerializable.create_from_named_node(action)
+                   for action in actions_node]
+        return cls(name, actions)
 
     def __init__(self, name, actions):
         super().__init__(name)
@@ -123,17 +144,6 @@ class SimulationScenario():
               See tests/sim_scenario for a sample yaml file
         """
 
-        def get_module_and_class(typename: str) -> Tuple[str, str]:
-            module_name = ".".join(typename.split(".")[:-1])
-            class_name = typename.split(".")[-1]
-            return (module_name, class_name)
-
-        def create_instance(full_type: str, **kwargs) -> Any:
-            module_name, class_name = get_module_and_class(full_type)
-            module = importlib.import_module(module_name)
-            cls = getattr(module, class_name)
-            return cls(**kwargs)
-
         scenario = None
         with open(yamlfile) as file:
 
@@ -141,15 +151,8 @@ class SimulationScenario():
             scenario_name = next(iter(data))
             scenario = SimulationScenario(scenario_name)
 
-            for actions in data[scenario_name]:
-                for name in actions:
-                    action = actions[name]
-                    sim_pin = MockDeviceRegistry.resolve_pin(action["sim_pin"])
-                    provider = create_instance(
-                        action["type"], **action["init"]
-                    )
-
-                    action = SetDataProviderAction(name, sim_pin, provider)
-                    scenario.append(action)
+            for action_node in data[scenario_name]:
+                action = ISerializable.create_from_named_node(action_node)
+                scenario.append(action)
 
         return scenario

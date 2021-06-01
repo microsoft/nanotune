@@ -1,15 +1,42 @@
 "end to end scenario" :
-  - "tie drain to 10.0" :
-      sim_pin: "qdsim.drain"
-      type: "sim.data_providers.StaticDataProvider"
-      init:
-        value: 10.0
+  - "Test Simple Action" :
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qdsim.drain"
+        data_provider:
+          type : "sim.data_providers.StaticDataProvider"
+          init:
+            value : 10.0
 
-  - "Left Barrier Pinchoff" :
-      sim_pin: "qdsim.drain"
-      type: "sim.data_providers.QcodesDataProvider"
-      init:
-        input_providers: ["qdsim.l_barrier"]
-        db_path : "${sim_db_path}/data/tuning/device_characterization.db"
-        exp_name : "GB_Newtown_Dev_3_2"
-        run_id : 1206
+  - "Test ActionGroup" :
+      type : sim.simulation_scenario.ActionGroup
+      init :
+        actions :
+          - "Set left plunger":
+              type : "sim.simulation_scenario.SetDataProviderAction"
+              init :
+                pin : "qdsim.l_plunger"
+                data_provider:
+                  type : "sim.data_providers.StaticDataProvider"
+                  init:
+                    value : -1.0
+          - "Set right plunger":
+              type : "sim.simulation_scenario.SetDataProviderAction"
+              init :
+                pin : "qdsim.r_plunger"
+                data_provider:
+                  type : "sim.data_providers.StaticDataProvider"
+                  init:
+                    value : 1.0
+
+  - "Test QcodesDataProvider" :
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qdsim.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qdsim.l_barrier"]
+            db_path : "${sim_db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1206

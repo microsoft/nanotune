@@ -1,3 +1,4 @@
+import logging
 import os
 from queue import Empty
 
@@ -20,11 +21,16 @@ def test_load_from_yaml():
     qdsim = MockQuantumDot("qdsim")
     scenario = SimulationScenario.load_from_yaml(yamlfile)
 
-    # tie drain to 10.0
+    # Test Simple Action
     scenario.run_next_step()
     assert qdsim.drain.get_value() == 10.0
 
-    # Left Barrier Pinchoff
+    # Test ActionGroup
+    scenario.run_next_step()
+    assert qdsim.l_plunger.get_value() == -1.0
+    assert qdsim.r_plunger.get_value() == 1.0
+
+    # Test QcodesDataProvider
     scenario.run_next_step()
 
     qdsim.l_barrier.set_value(-0.1)
