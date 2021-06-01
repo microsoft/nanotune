@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import matplotlib
 import numpy as np
 import xarray as xr
+import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 
 import nanotune as nt
@@ -56,7 +57,7 @@ class DataFit(ABC, Dataset):
     def save_features(self) -> None:
         """"""
         nt.set_database(self.db_name, db_folder=self.db_folder)
-        ds = load_by_id(self.qc_run_id)
+        ds = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
         try:
             nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
         except (RuntimeError, TypeError, OperationalError):
