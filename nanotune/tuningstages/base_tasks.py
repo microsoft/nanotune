@@ -193,7 +193,7 @@ def get_measurement_features(
 @contextmanager
 def set_up_gates_for_measurement(
     parameters_to_sweep: List[qc.Parameter],
-    setpoints: List[List[float]],
+    setpoints: Sequence[Sequence[float]],
 ) -> Generator[None, None, None]:
     """Context manager setting up gates before a measurement. It ramps them
     to their first setpoint before deactivating ramping (if supported) and
@@ -512,7 +512,10 @@ def run_stage(
     compute_setpoint_task: Callable[
         [List[Tuple[float, float]]], Sequence[Sequence[float]]
     ],
-    measure_task: Callable[[Sequence[Sequence[float]]], int],
+    measure_task: Callable[
+        [List[qc.Parameter], List[qc.Parameter], Sequence[Sequence[float]]],
+        int
+    ],
     machine_learning_task: Callable[[int], Any],
     save_machine_learning_result: Callable[[int, Any], None],
     validate_result: Callable[[Any], bool],
@@ -579,7 +582,8 @@ def iterate_stage(
             List[qc.Parameter],
             List[Tuple[float, float]],
             Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-            Callable[[Sequence[Sequence[float]]], int],
+            Callable[[List[qc.Parameter], List[qc.Parameter],
+                       Sequence[Sequence[float]]], int],
             Callable[[int], Any],
             Callable[[int, Any], None],
             Callable[[Any], bool],
@@ -588,7 +592,8 @@ def iterate_stage(
     ],
     run_stage_tasks: Tuple[
         Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-        Callable[[Sequence[Sequence[float]]], int],
+        Callable[[List[qc.Parameter], List[qc.Parameter],
+                  Sequence[Sequence[float]]], int],
         Callable[[int], Any],
         Callable[[int, Any], None],
         Callable[[Any], bool],

@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Sequence
 
 import numpy as np
 import qcodes as qc
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def take_data(
     parameters_to_sweep: List[qc.Parameter],
     parameters_to_measure: List[qc.Parameter],
-    setpoints: List[List[float]],
+    setpoints: Sequence[Sequence[float]],
     finish_early_check: Optional[Callable[[Dict[str, float]], bool]] = None,
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
     metadata_addon: Optional[Tuple[str, Dict[str, Any]]] = None,

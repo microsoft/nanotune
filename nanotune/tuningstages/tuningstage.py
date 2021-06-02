@@ -263,7 +263,7 @@ class TuningStage(metaclass=ABCMeta):
 
         run_id = take_data_add_metadata(
             parameters_to_sweep,
-            parameters_to_measure,  # type: ignore
+            parameters_to_measure,
             setpoints,
             finish_early_check=self.finish_early,
             do_at_inner_setpoint=ramp_to_setpoint,
@@ -330,7 +330,7 @@ class TuningStage(metaclass=ABCMeta):
         tuning_result = iterate_stage(
             self.stage,
             self.setpoint_settings["parameters_to_sweep"],
-            list(self.readout_methods.values()),
+            [*self.readout_methods.values()],  # type: ignore
             self.current_valid_ranges,
             self.safety_voltage_ranges,
             run_stage,
