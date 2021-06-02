@@ -6,6 +6,7 @@ import time
 
 import matplotlib.pyplot as plt
 import pytest
+from functools import partial
 
 import nanotune as nt
 from nanotune.fit.pinchofffit import PinchoffFit
@@ -269,8 +270,10 @@ def test_iterate_stage(experiment, gate_1, gate_2, dummy_dmm):
         save_machine_learning_result,
         lambda x: True,
     ]
-    conclude_iteration = lambda a, b, c, d, e: True, [(-0.3, 0), (-0.3, 0)], []
-    display_result = lambda a, b: None
+    def conclude_iteration(a, b, c, d, e):
+        return True, [(-0.3, 0), (-0.3, 0)], []
+    def display_result(a, b):
+        return None
 
     tuning_result = iterate_stage(
         'pinchoff',
@@ -283,3 +286,139 @@ def test_iterate_stage(experiment, gate_1, gate_2, dummy_dmm):
         conclude_iteration,
         display_result,
     )
+
+    assert tuning_result.ml_result == ml_result
+    assert tuning_result.data_ids == [1]
+    assert tuning_result.termination_reasons == []
+
+    # test multiple iterations
+    def conclude_iteration(a, b, c, current_iteration, max_n_iterations):
+        if current_iteration < max_n_iterations:
+            return False, [(-0.3, 0), (-0.3, 0)], ['not done yet']
+        else:
+            return True, [(-0.3, 0), (-0.3, 0)], ['not done yet']
+
+    tuning_result = iterate_stage(
+        'pinchoff',
+        params_to_sweep,
+        params_to_measure,
+        [(-1, 0), (-1, 0)],
+        [(-3, 0), (-3, 0)],
+        run_stage,
+        run_stage_tasks,
+        conclude_iteration,
+        display_result,
+        max_n_iterations=2,
+    )
+
+    assert tuning_result.ml_result == ml_result
+    assert tuning_result.data_ids == [2, 3]
+    assert tuning_result.termination_reasons == ['not done yet']
+
+def test_conclude_iteration_with_range_update():
+
+    tuning_result = TuningResult(
+        'pinchoff',
+        False,
+        termination_reasons=['device pinched off'],
+        data_ids=[1],
+        ml_result={'regime': 'pinchoff'},
+        timestamp="",
+    )
+    def get_range_update_directives(*args , **kwargs):
+        return ['x more negative'], ['open current']
+
+    def get_new_current_ranges(
+        current_valid_ranges,
+        safety_voltage_ranges,
+        range_update_directives):
+        return [(-0.3, 0), (-0.1, 0)]
+
+    # no successful tuning result and new voltage ranges returned:
+    (done,
+     new_voltage_ranges,
+     termination_reasons) = conclude_iteration_with_range_update(
+        tuning_result,
+        [(-0.1, 0), (-0.1, 0)],  # current_valid_ranges
+        [(-3, 0), (-3, 0)],  # safety_voltage_ranges,
+        get_range_update_directives,
+        get_new_current_ranges,
+        1,  # current_iteration,
+        2,  # max_n_iterations,
+    )
+    assert not done
+    assert new_voltage_ranges == [(-0.3, 0), (-0.1, 0)]
+    assert termination_reasons == ['open current']
+
+    # no successful tuning result but no range_update_directives:
+    def get_range_update_directives2(*args , **kwargs):
+        return [], ['safety ranges reached']
+
+    (done,
+     new_voltage_ranges,
+     termination_reasons) = conclude_iteration_with_range_update(
+        tuning_result,
+        [(-0.1, 0), (-0.1, 0)],  # current_valid_ranges
+        [(-3, 0), (-3, 0)],  # safety_voltage_ranges,
+        get_range_update_directives2,
+        get_new_current_ranges,
+        1,  # current_iteration,
+        2,  # max_n_iterations,
+    )
+    assert done
+    assert new_voltage_ranges == []
+    assert termination_reasons == ['safety ranges reached']
+
+    # max iteration reached:
+    (done,
+     new_voltage_ranges,
+     termination_reasons) = conclude_iteration_with_range_update(
+        tuning_result,
+        [(-0.1, 0), (-0.1, 0)],  # current_valid_ranges
+        [(-3, 0), (-3, 0)],  # safety_voltage_ranges,
+        get_range_update_directives,
+        get_new_current_ranges,
+        1,  # current_iteration,
+        1,  # max_n_iterations,
+    )
+    assert done
+    assert 'max_n_iterations reached' in termination_reasons
+
+    # successful tuning result found:
+    tuning_result.success = True
+    (done,
+     new_voltage_ranges,
+     termination_reasons) = conclude_iteration_with_range_update(
+        tuning_result,
+        [(-0.1, 0), (-0.1, 0)],  # current_valid_ranges
+        [(-3, 0), (-3, 0)],  # safety_voltage_ranges,
+        get_range_update_directives,
+        get_new_current_ranges,
+        1,  # current_iteration,
+        2,  # max_n_iterations,
+    )
+    assert done
+    assert termination_reasons == []
+
+def test_get_current_voltages(gate_1, gate_2):
+    gate_1.dc_voltage(-0.4)
+    gate_2.dc_voltage(-0.6)
+    voltages = get_current_voltages([gate_1.dc_voltage, gate_2.dc_voltage])
+    assert voltages == [-0.4, -0.6]
+
+def test_set_voltages(gate_1, gate_2):
+    gate_1.dc_voltage(-0.4)
+    gate_2.dc_voltage(-0.6)
+
+    set_voltages([gate_1.dc_voltage, gate_2.dc_voltage], [-0.5, -0.7])
+    assert gate_1.dc_voltage() == -0.5
+    assert gate_2.dc_voltage() == -0.7
+
+def test_get_fit_range_update_directives(db_real_pinchoff, tmp_path):
+    directives = get_fit_range_update_directives(
+        PinchoffFit,
+        345,
+        'pinchoff_data.db',
+        tmp_path,
+    )
+    assert directives == ['x more negative']
