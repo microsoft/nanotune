@@ -43,7 +43,7 @@ def get_new_gatecharacterization_range(
 
     for directive in range_update_directives:
         if directive not in ["x more negative", "x more positive"]:
-            logger.error("Unknown voltage range update directive.")
+            raise KeyError("Unknown voltage range update directive.")
 
     if "x more negative" in range_update_directives:
         new_min = safety_range[0]
@@ -57,6 +57,7 @@ def get_range_directives_gatecharacterization(
     fit_range_update_directives: List[str],
     current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
+    dV_stop: float = 0.1,
 ) -> Tuple[List[str], List[str]]:
     """Determines voltage range directives to update ranges for a subsequent
     tuning stage iteration. It checks if the voltage range update directives
@@ -68,6 +69,8 @@ def get_range_directives_gatecharacterization(
             during fitting.
         current_valid_ranges: Voltage range swept at previous iteration.
         safety_voltage_ranges: Safety range of gate/voltage parameter swept.
+        dV_stop: Mininmal voltage difference between current and safety ranges
+            for current ranges to be changed. Default is 100mV.
 
     Returns:
         list: Range update directives, e.g. 'x more negative'.
@@ -83,17 +86,19 @@ def get_range_directives_gatecharacterization(
     range_update_directives = []
     issues = []
 
-    if "x more negative" in fit_range_update_directives:
-        if neg_range_avail >= 0.1:
-            range_update_directives.append("x more negative")
+    for update_directive in fit_range_update_directives:
+        if update_directive == "x more negative":
+            if neg_range_avail >= dV_stop:
+                range_update_directives.append("x more negative")
+            else:
+                issues.append("negative safety voltage reached")
+        elif update_directive == "x more positive":
+            if pos_range_avail >= dV_stop:
+                range_update_directives.append("x more positive")
+            else:
+                issues.append("positive safety voltage reached")
         else:
-            issues.append("negative safety voltage reached")
-
-    if "x more positive" in fit_range_update_directives:
-        if pos_range_avail >= 0.1:
-            range_update_directives.append("x more positive")
-        else:
-            issues.append("positive safety voltage reached")
+            raise KeyError("Unknown voltage range update directive.")
 
     return range_update_directives, issues
 
@@ -131,6 +136,7 @@ def finish_early_pinched_off(
     new_recent_output = copy.deepcopy(recent_measurement_strengths)
     new_recent_output.append(last_measurement_strength)
     n_setpoints_to_track = int(voltage_interval_to_track / (voltage_precision))
+    n_setpoints_to_track += 1
     if len(new_recent_output) > n_setpoints_to_track:
         new_recent_output = new_recent_output[-n_setpoints_to_track:]
         avg_output = np.mean(new_recent_output)
