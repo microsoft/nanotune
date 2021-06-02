@@ -1,7 +1,7 @@
 # pylint: disable=too-many-arguments, too-many-locals
 
 import os
-from typing import Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import qcodes as qc
 import xarray as xr
@@ -26,9 +26,36 @@ class DataProvider(IDataProvider):
         """
         return self._settable
 
+class PassthroughDataProvider(DataProvider):
+    """ Data provider that simply passes through a value from another input """
+
+    @classmethod
+    def make(cls, **kwargs):
+        src_pin = MockDeviceRegistry.resolve_pin(kwargs["src_pin"])
+        return cls(src_pin)
+
+    def __init__(self, src_pin : IMockPin):
+        super().__init__(settable = False)
+        self._source = src_pin
+
+    def get_value(self) -> float:
+        return self._source.get_value()
+
+    def set_value(self, value : float) -> None:
+        self._source.set_value(value)
+
+    @property
+    def raw_data(self) -> Union[xr.DataArray, xr.Dataset]:
+        return super().raw_data
+
 
 class StaticDataProvider(DataProvider):
     """Data provider that returns a constant value for all inputs."""
+
+    @classmethod
+    def make(cls, **kwargs) -> Any:
+        """ ISerializable override to create an instance of this class """
+        return cls(kwargs["value"])
 
     def __init__(self, value: float) -> None:
         super().__init__(settable=True)
@@ -57,6 +84,19 @@ class StaticDataProvider(DataProvider):
 
 class QcodesDataProvider(DataProvider):
     """Data provider that sources it's data from a 1D or 2D QCoDeS dataset."""
+
+    @classmethod
+    def make(cls, **kwargs) -> Any:
+
+        """ ISerializable override to create an instance of this class """
+
+        input_providers : Sequence[str] = kwargs["input_providers"]
+        db_path : str= kwargs["db_path"]
+        exp_name : str = kwargs["exp_name"]
+        run_id : int = kwargs["run_id"]
+        model_param_name : Optional[str] = kwargs["model_param_name"] if "model_param_name" in kwargs else None
+
+        return cls(input_providers, db_path, exp_name, run_id)
 
     def __init__(
         self,

@@ -4,9 +4,10 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 import xarray as xr
+from .serializable import ISerializable
 
 
-class IDataProvider(ABC):
+class IDataProvider(ISerializable):
     """Interface for all data providers.
     A DataProvider serves as the backing data for simulation
     """
@@ -17,19 +18,16 @@ class IDataProvider(ABC):
         """Indicates whether this data provider allows its value to be set
         be set by calling set_value
         """
-        raise NotImplementedError
 
     @abstractmethod
     def get_value(self) -> float:
         """Returns the current value of this data provider"""
-        raise NotImplementedError
 
     @abstractmethod
     def set_value(self, value: float) -> None:
         """Set the value of this data provider.
         Raises exception if this data provider is read-only
         """
-        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -37,4 +35,3 @@ class IDataProvider(ABC):
         """Returns the raw data backing this provider as an
         xarray.DataArray
         """
-        raise NotImplementedError
