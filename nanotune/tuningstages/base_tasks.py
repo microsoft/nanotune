@@ -714,7 +714,7 @@ def conclude_iteration_with_range_update(
 
     if current_iteration >= max_n_iterations:
         done = True
-        termination_reasons.append("max current_iteration reached")
+        termination_reasons.append("max_n_iterations reached")
 
     return done, new_voltage_ranges, termination_reasons
 
