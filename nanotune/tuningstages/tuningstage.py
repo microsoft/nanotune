@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 from functools import partial
 from typing import Any, Dict, List, Tuple
 
+import qcodes as qc
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
 

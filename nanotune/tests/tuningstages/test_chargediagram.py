@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import qcodes as qc
 import nanotune as nt
 from nanotune.tests.mock_classifier import MockClassifer
 from nanotune.tuningstages.chargediagram import ChargeDiagram
