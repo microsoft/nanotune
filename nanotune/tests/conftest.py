@@ -2,6 +2,7 @@ import gc
 import os
 
 import joblib
+import shutil
 import numpy as np
 import pytest
 import qcodes as qc
@@ -170,12 +171,15 @@ def db_real_pinchoff(tmp_path):
         nt_path, 'data', 'tuning', 'device_characterization.db')
 
     try:
-        nt.new_database("pinchoff_data.db", tmp_path)
-        extract_runs_into_db(
+        shutil.copyfile(
             path_device_characterization,
-            os.path.join(tmp_path, 'pinchoff_data.db'),
-            1,
-        )
+            os.path.join(tmp_path, "pinchoff_data.db"))
+        # nt.new_database("pinchoff_data.db", tmp_path)
+        # extract_runs_into_db(
+        #     path_device_characterization,
+        #     os.path.join(tmp_path, 'pinchoff_data.db'),
+        #     *list(range(1, 16)),
+        # )
         yield
     finally:
         gc.collect()

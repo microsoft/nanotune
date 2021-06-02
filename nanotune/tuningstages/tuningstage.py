@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 from functools import partial
 from typing import Any, Dict, List, Tuple
 
+import qcodes as qc
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
 
@@ -55,8 +56,8 @@ class TuningStage(metaclass=ABCMeta):
         Args:
             stage: String identifier indicating which stage it implements, e.g.
                 gatecharacterization.
-            data_settings: Dictionary with information about data, e.g. where it
-                should be saved and how it should be normalized.
+            data_settings: Dictionary with information about data, e.g. where
+                it should be saved and how it should be normalized.
                 Required fields are 'db_name', 'db_folder' and
                 'normalization_constants'.
             setpoint_settings: Dictionary with information required to compute
@@ -118,7 +119,6 @@ class TuningStage(metaclass=ABCMeta):
             list: List of strings indicating failure modes.
         """
 
-
     @abstractmethod
     def verify_machine_learning_result(
         self,
@@ -135,7 +135,6 @@ class TuningStage(metaclass=ABCMeta):
             bool: Whether the desired outcome has been found.
         """
 
-
     @abstractmethod
     def machine_learning_task(
         self,
@@ -146,7 +145,6 @@ class TuningStage(metaclass=ABCMeta):
         Args:
             run_id: QCoDeS data run ID.
         """
-
 
     def save_ml_result(
         self,
@@ -249,6 +247,8 @@ class TuningStage(metaclass=ABCMeta):
 
     def measure(
         self,
+        parameters_to_sweep: List[qc.Parameter],
+        parameters_to_measure: List[qc.Parameter],
         setpoints: List[List[float]],
     ) -> int:
         """Takes 1D or 2D data and saves relevant metadata into the dataset.
@@ -262,8 +262,8 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         run_id = take_data_add_metadata(
-            self.setpoint_settings["parameters_to_sweep"],
-            list(self.readout_methods.values()),  # type: ignore
+            parameters_to_sweep,
+            parameters_to_measure,
             setpoints,
             finish_early_check=self.finish_early,
             do_at_inner_setpoint=ramp_to_setpoint,
@@ -329,6 +329,8 @@ class TuningStage(metaclass=ABCMeta):
 
         tuning_result = iterate_stage(
             self.stage,
+            self.setpoint_settings["parameters_to_sweep"],
+            [*self.readout_methods.values()],  # type: ignore
             self.current_valid_ranges,
             self.safety_voltage_ranges,
             run_stage,

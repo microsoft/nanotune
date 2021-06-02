@@ -193,7 +193,7 @@ def get_measurement_features(
 @contextmanager
 def set_up_gates_for_measurement(
     parameters_to_sweep: List[qc.Parameter],
-    setpoints: List[List[float]],
+    setpoints: Sequence[Sequence[float]],
 ) -> Generator[None, None, None]:
     """Context manager setting up gates before a measurement. It ramps them
     to their first setpoint before deactivating ramping (if supported) and
@@ -295,7 +295,7 @@ def compute_linear_setpoints(
     """
 
     setpoints_all = []
-    for gg, c_range in enumerate(ranges):
+    for c_range in ranges:
         delta = abs(c_range[1] - c_range[0])
         n_points = int(round(delta / voltage_precision))
         setpoints = np.linspace(c_range[0], c_range[1], n_points)
@@ -422,8 +422,8 @@ def plot_fit(
         db_folder: Path to folder containing database db_name.
     """
 
-    df = fit_class(run_id, db_name, db_folder=db_folder)
-    df.plot_fit()
+    data_fit = fit_class(run_id, db_name, db_folder=db_folder)
+    data_fit.plot_fit()
     plt.show()
 
 
@@ -453,7 +453,7 @@ def print_tuningstage_status(
 def take_data_add_metadata(
     parameters_to_sweep: List[qc.Parameter],
     parameters_to_measure: List[qc.Parameter],
-    setpoints: List[List[float]],
+    setpoints: Sequence[Sequence[float]],
     pre_measurement_metadata: Dict[str, Any],
     finish_early_check: Optional[Callable[[Dict[str, float]], bool]] = None,
     do_at_inner_setpoint: Optional[Callable[[Any], None]] = None,
@@ -481,7 +481,7 @@ def take_data_add_metadata(
 
     start_time = time.time()
     with set_up_gates_for_measurement(parameters_to_sweep, setpoints):
-        run_id, n_measured = take_data(
+        run_id = take_data(
             parameters_to_sweep,
             parameters_to_measure,
             setpoints,
@@ -490,10 +490,9 @@ def take_data_add_metadata(
             metadata_addon=(meta_tag, pre_measurement_metadata),
         )
     seconds, formatted_str = get_elapsed_time(start_time, time.time())
-    logger.info("Elapsed time to take data: " + formatted_str)
+    logger.info("Elapsed time to take data: %s", formatted_str)
 
     additional_metadata = {
-        "n_points": n_measured,
         "elapsed_time": seconds,
     }
     save_metadata(
@@ -507,16 +506,22 @@ def take_data_add_metadata(
 
 def run_stage(
     stage: str,
+    parameters_to_sweep: List[qc.Parameter],
+    parameters_to_measure: List[qc.Parameter],
     voltage_ranges: List[Tuple[float, float]],
     compute_setpoint_task: Callable[
         [List[Tuple[float, float]]], Sequence[Sequence[float]]
     ],
-    measure_task: Callable[[Sequence[Sequence[float]]], int],
+    measure_task: Callable[
+        [List[qc.Parameter], List[qc.Parameter], Sequence[Sequence[float]]],
+        int
+    ],
     machine_learning_task: Callable[[int], Any],
     save_machine_learning_result: Callable[[int, Any], None],
     validate_result: Callable[[Any], bool],
 ) -> TuningResult:
-    """Executes basic tasks of a tuning stage using functions supplied as input:
+    """Executes basic tasks of a tuning stage using functions supplied as
+    input:
         - computes setpoints
         - perform the actual measurement, i.e. take data
         - perform a machine learning task, e.g. classification
@@ -530,8 +535,8 @@ def run_stage(
         voltage_ranges: List of voltages ranges to sweep.
         compute_setpoint_task: Function computing setpoints.
         measure_task: Functions taking data.
-        machine_learning_task: Function performing the required machine learning
-            task.
+        machine_learning_task: Function performing the required machine
+            learning task.
         save_machine_learning_result: Function saving machine learning result.
             E.g. save prediction to metadata of the dataset.
         validate_result: Function validating the machine learning
@@ -541,9 +546,12 @@ def run_stage(
         TuningResult: Currently without db_name and db_folder set.
     """
 
-    termination_reasons: List[str] = []
     current_setpoints = compute_setpoint_task(voltage_ranges)
-    current_id = measure_task(current_setpoints)
+    current_id = measure_task(
+        parameters_to_sweep,
+        parameters_to_measure,
+        current_setpoints,
+    )
 
     ml_result = machine_learning_task(current_id)
     save_machine_learning_result(current_id, ml_result)
@@ -563,14 +571,19 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
+    parameters_to_sweep: List[qc.Parameter],
+    parameters_to_measure: List[qc.Parameter],
     current_valid_ranges: List[Tuple[float, float]],
     safety_voltage_ranges: List[Tuple[float, float]],
     run_stage: Callable[
         [
             str,
+            List[qc.Parameter],
+            List[qc.Parameter],
             List[Tuple[float, float]],
             Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-            Callable[[Sequence[Sequence[float]]], int],
+            Callable[[List[qc.Parameter], List[qc.Parameter],
+                       Sequence[Sequence[float]]], int],
             Callable[[int], Any],
             Callable[[int, Any], None],
             Callable[[Any], bool],
@@ -579,7 +592,8 @@ def iterate_stage(
     ],
     run_stage_tasks: Tuple[
         Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-        Callable[[Sequence[Sequence[float]]], int],
+        Callable[[List[qc.Parameter], List[qc.Parameter],
+                  Sequence[Sequence[float]]], int],
         Callable[[int], Any],
         Callable[[int, Any], None],
         Callable[[Any], bool],
@@ -595,13 +609,13 @@ def iterate_stage(
         Tuple[bool, List[Tuple[float, float]], List[str]],
     ],
     display_result: Callable[[int, TuningResult], None],
-    max_n_iterations: int,
+    max_n_iterations: int = 10,
 ) -> TuningResult:
     """Performs several iterations of a run_stage function, a sequence of basic
     tasks of a tuning stage. If desired, and implemented in conclude_iteration,
     new voltage ranges to sweep are determined for the iteration. Issues
-    encountered are saved in the TuningStage instance under termination_reasons.
-    It does not set back voltages to initial values.
+    encountered are saved in the TuningStage instance under
+    termination_reasons. It does not set back voltages to initial values.
 
     Args:
         stage: Name/indentifier of the tuning stage.
@@ -625,7 +639,13 @@ def iterate_stage(
 
     while not done:
         current_iteration += 1
-        tuning_result = run_stage(stage, current_valid_ranges, *run_stage_tasks)
+        tuning_result = run_stage(
+            stage,
+            parameters_to_sweep,
+            parameters_to_measure,
+            current_valid_ranges,
+            *run_stage_tasks,
+        )
         run_ids += tuning_result.data_ids
 
         done, current_valid_ranges, termination_reasons = conclude_iteration(
@@ -682,7 +702,8 @@ def conclude_iteration_with_range_update(
         done = True
         termination_reasons: List[str] = []
     else:
-        (range_update_directives, termination_reasons) = get_range_update_directives(
+        (range_update_directives,
+         termination_reasons) = get_range_update_directives(
             tuning_result.data_ids[-1],
             current_valid_ranges,
             safety_voltage_ranges,
@@ -698,7 +719,7 @@ def conclude_iteration_with_range_update(
 
     if current_iteration >= max_n_iterations:
         done = True
-        termination_reasons.append("max current_iteration reached")
+        termination_reasons.append("max_n_iterations reached")
 
     return done, new_voltage_ranges, termination_reasons
 
@@ -709,7 +730,8 @@ def get_current_voltages(
     """Returns the values set to parameters in ``parameters``.
 
     Args:
-        parameters: List of QCoDeS parameters, i.e. voltage parameters of gates.
+        parameters: List of QCoDeS parameters, i.e. voltage parameters of
+            gates.
 
     Returns:
         list: Values set the input parameters are at, in the same order as

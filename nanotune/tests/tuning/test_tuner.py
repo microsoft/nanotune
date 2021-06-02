@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import pytest
 
+import qcodes as qc
 import nanotune as nt
 from nanotune.device_tuner.tuner import (Tuner, set_back_valid_ranges,
                                          set_back_voltages)

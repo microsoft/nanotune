@@ -91,9 +91,9 @@ class PinchoffFit(DataFit):
         self._range_update_directives = []
         for read_meth in self.readout_methods:
             if self._high_signal[read_meth] < 0.8:
-                self._range_update_directives.append("x more negative")
-            if self._low_signal[read_meth] > 0.2:
                 self._range_update_directives.append("x more positive")
+            if self._low_signal[read_meth] > 0.2:
+                self._range_update_directives.append("x more negative")
 
         return self._range_update_directives
 
