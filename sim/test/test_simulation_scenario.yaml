@@ -16,7 +16,7 @@
           - "Set left plunger":
               type : "sim.simulation_scenario.SetDataProviderAction"
               init :
-                pin : "qdsim.l_plunger"
+                pin : "qdsim.left_plunger"
                 data_provider:
                   type : "sim.data_providers.StaticDataProvider"
                   init:
@@ -24,7 +24,7 @@
           - "Set right plunger":
               type : "sim.simulation_scenario.SetDataProviderAction"
               init :
-                pin : "qdsim.r_plunger"
+                pin : "qdsim.right_plunger"
                 data_provider:
                   type : "sim.data_providers.StaticDataProvider"
                   init:
@@ -33,11 +33,11 @@
   - "Test PassthroughDataProvider" :
       type : "sim.simulation_scenario.SetDataProviderAction"
       init :
-        pin : "qdsim.c_barrier"
+        pin : "qdsim.central_barrier"
         data_provider :
           type : "sim.data_providers.PassthroughDataProvider"
           init :
-            src_pin : "qdsim.l_plunger"
+            src_pin : "qdsim.left_plunger"
 
   - "Test QcodesDataProvider" :
       type : "sim.simulation_scenario.SetDataProviderAction"
@@ -46,7 +46,7 @@
         data_provider :
           type: "sim.data_providers.QcodesDataProvider"
           init:
-            input_providers: ["qdsim.l_barrier"]
+            input_providers: ["qdsim.left_barrier"]
             db_path : "${sim_db_path}/data/tuning/device_characterization.db"
             exp_name : "GB_Newtown_Dev_3_2"
             run_id : 1206

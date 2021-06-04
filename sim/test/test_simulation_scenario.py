@@ -4,7 +4,7 @@ from queue import Empty
 
 import sim
 from sim.data_providers import StaticDataProvider
-from sim.mock_devices import MockQuantumDot, Pin
+from sim.mock_devices import MockDoubleQuantumDot, Pin
 from sim.simulation_scenario import (ActionGroup, SetDataProviderAction,
                                      SimulationScenario)
 
@@ -18,7 +18,7 @@ def test_load_from_yaml():
     nt_root = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
     os.environ["sim_db_path"] = nt_root
 
-    qdsim = MockQuantumDot("qdsim")
+    qdsim = MockDoubleQuantumDot("qdsim")
     scenario = SimulationScenario.load_from_yaml(yamlfile)
 
 
@@ -29,31 +29,31 @@ def test_load_from_yaml():
 
     # Test ActionGroup
     scenario.run_next_step()
-    assert qdsim.l_plunger.get_value() == -1.0
-    assert qdsim.r_plunger.get_value() == 1.0
+    assert qdsim.left_plunger.get_value() == -1.0
+    assert qdsim.right_plunger.get_value() == 1.0
 
 
     # Test PassthroughDataProvider (ties c_barrier to l_plunger)
-    assert(qdsim.c_barrier.get_value() != qdsim.l_plunger.get_value())
+    assert(qdsim.central_barrier.get_value() != qdsim.left_plunger.get_value())
     scenario.run_next_step()
 
     # c_barrier should be mirroring l_pluner now
-    assert(qdsim.c_barrier.get_value() == -1.0)
-    assert(qdsim.c_barrier.get_value() == qdsim.l_plunger.get_value())
+    assert(qdsim.central_barrier.get_value() == -1.0)
+    assert(qdsim.central_barrier.get_value() == qdsim.left_plunger.get_value())
 
     # Setting c_barrier should also set l_plunger
-    qdsim.c_barrier.set_value(-2.0)
-    assert(qdsim.l_plunger.get_value() == -2.0)
-    assert(qdsim.c_barrier.get_value() == qdsim.l_plunger.get_value())
+    qdsim.central_barrier.set_value(-2.0)
+    assert(qdsim.left_plunger.get_value() == -2.0)
+    assert(qdsim.central_barrier.get_value() == qdsim.left_plunger.get_value())
 
 
     # Test QcodesDataProvider
     scenario.run_next_step()
 
-    qdsim.l_barrier.set_value(-0.1)
+    qdsim.left_barrier.set_value(-0.1)
     readout1 = qdsim.drain.get_value()
 
-    qdsim.l_barrier.set_value(-0.2)
+    qdsim.left_barrier.set_value(-0.2)
     readout2 = qdsim.drain.get_value()
     assert readout1 != readout2
 

@@ -90,7 +90,48 @@ class MockDevice(IMockDevice):
 # pylint: enable=too-few-public-methods
 
 
-class MockQuantumDot(MockDevice):
+class MockSingleQuantumDot(MockDevice):
+    """ Mock device for a 3 gate single quantum dot """
+    def __init__(self, name: str):
+        super().__init__(
+            name,
+            [
+                Pin("src"),
+                Pin("drain"),
+                Pin("left_barrier"),
+                Pin("right_barrier"),
+                Pin("plunger"),
+            ]
+        )
+
+    @property
+    def src(self) -> IMockPin:
+        """ Source Pin """
+        return self["src"]
+
+    @property
+    def drain(self) -> IMockPin:
+        """ Drain Pin """
+        return self["drain"]
+
+    @property
+    def left_barrier(self) -> IMockPin:
+        """ Left Barrier Gate Pin """
+        return self["left_barrier"]
+
+    @property
+    def right_barrier(self) -> IMockPin:
+        """ Right Barrier Gate Pin """
+        return self["right_barrier"]
+
+    @property
+    def plunger(self) -> IMockPin:
+        """ Central Plunger Gate Pin """
+        return self["plunger"]
+
+
+
+class MockDoubleQuantumDot(MockDevice):
     """Represents a mock quantum dot device"""
 
     def __init__(self, name: str):
@@ -98,11 +139,11 @@ class MockQuantumDot(MockDevice):
             name,
             [
                 Pin("src"),
-                Pin("l_barrier"),
-                Pin("l_plunger"),
-                Pin("c_barrier"),
-                Pin("r_plunger"),
-                Pin("r_barrier"),
+                Pin("left_barrier"),
+                Pin("left_plunger"),
+                Pin("central_barrier"),
+                Pin("right_plunger"),
+                Pin("right_barrier"),
                 Pin("drain"),
             ],
         )
@@ -114,34 +155,34 @@ class MockQuantumDot(MockDevice):
         return self["src"]
 
     @property
-    def l_barrier(self) -> IMockPin:
+    def left_barrier(self) -> IMockPin:
         """Left Barrier Pin"""
 
-        return self["l_barrier"]
+        return self["left_barrier"]
 
     @property
-    def l_plunger(self) -> IMockPin:
+    def left_plunger(self) -> IMockPin:
         """Left Plunger Pin"""
 
-        return self["l_plunger"]
+        return self["left_plunger"]
 
     @property
-    def c_barrier(self) -> IMockPin:
+    def central_barrier(self) -> IMockPin:
         """Central Barrier Pin"""
 
-        return self["c_barrier"]
+        return self["central_barrier"]
 
     @property
-    def r_plunger(self) -> IMockPin:
+    def right_plunger(self) -> IMockPin:
         """Right Plunger Pin"""
 
-        return self["r_plunger"]
+        return self["right_plunger"]
 
     @property
-    def r_barrier(self) -> IMockPin:
+    def right_barrier(self) -> IMockPin:
         """Right Barrier Pin"""
 
-        return self["r_barrier"]
+        return self["right_barrier"]
 
     @property
     def drain(self) -> IMockPin:
