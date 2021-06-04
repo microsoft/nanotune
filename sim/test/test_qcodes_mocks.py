@@ -34,4 +34,3 @@ def test_simulation_parameter_with_init():
 
     test_inst = TestInstrument()
     assert test_inst.src() == 1.23, "The Test Instrument failed to initialize the src parameter value"
-
