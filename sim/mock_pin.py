@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sim.data_provider import IDataProvider
+from sim.data_providers import IDataProvider
 
 
 class IMockPin(ABC):

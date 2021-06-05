@@ -10,7 +10,7 @@ from typing import Any, Mapping, Tuple
 
 import ruamel.yaml
 
-from sim.data_provider import IDataProvider
+from sim.data_providers import IDataProvider
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_pin import IMockPin
 from sim.serializable import ISerializable
