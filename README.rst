@@ -12,7 +12,7 @@ approach to finding suitable gate voltages to confine electrons electrostaticall
 is impractical.
 
 Nanotune automates typical manual measurements and replaces
-the exerimenter's decision about next tuning steps by supervised machine learning.
+the experimenter's decision about next tuning steps by supervised machine learning.
 It has enabled the implementation of a two-stage device characterization and
 dot-tuning process, which first determines whether devices are functional and
 then attempts to tune the functional devices to the single or double quantum-dot
@@ -24,7 +24,7 @@ While autonomous tuning has been demonstrated on spin qubit devices in GaAs, pub
 `here <https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.054005>`_,
 nanotune can easly be used to implement tuning sequences for other devices structures and materials.
 
-Nanotune also provides a data processing pipeline starting from data aquisition to machine learning algorihtm application.
+Nanotune also provides a data processing pipeline starting from data acquisition to machine learning algorihtm application.
 This allowed to conduct the comparison between synthetic and experimental training data detailed
 `here <https://arxiv.org/abs/2005.08131>`_.
 
