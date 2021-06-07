@@ -26,7 +26,7 @@ from nanotune.device_tuner.tuningresult import TuningResult
 logger = logging.getLogger(__name__)
 
 nrm_cnst_tp = Mapping[str, Tuple[float, float]]
-vltg_rngs_tp = Mapping[int, Tuple[Union[None, float], Union[None, float]]]
+vltg_rngs_tp = Dict[int, Tuple[Union[None, float], Union[None, float]]]
 
 def readout_formatter(
     *values: Any,
@@ -79,7 +79,11 @@ class Device(DelegateInstrument):
 
         self.gates, self.ohmics = self._initialize_channel_lists(channels)
 
-        param_names, paths = list(zip(*list(readout_parameters.items())))
+        if readout_parameters is None:
+            param_names: Sequence[str] = []
+            paths: Sequence[str] = []
+        else:
+            param_names, paths = list(zip(*list(readout_parameters.items())))
         super()._create_and_add_parameter(
             'readout',
             station,
@@ -93,7 +97,7 @@ class Device(DelegateInstrument):
 
 
         if initial_valid_ranges is None:
-            init_valid_ranges_renamed = {}
+            init_valid_ranges_renamed: Dict[int, Any] = {}
             for gate in self.gates:
                 gate_id = gate.gate_id()
                 init_valid_ranges_renamed[gate_id] = gate.safety_range()
@@ -161,7 +165,7 @@ class Device(DelegateInstrument):
         )
         if transition_voltages is None:
             transition_voltages_renamed = dict.fromkeys(
-                [gate.gate_id() for gate in self.gates], None
+                [gate.gate_id() for gate in self.gates], np.nan
             )
         else:
             transition_voltages_renamed = self._renamed_gate_key(
@@ -309,7 +313,7 @@ class Device(DelegateInstrument):
 
             self._current_valid_ranges.update({gate.gate_id(): new_range})
 
-    def get_transition_voltages(self) -> Mapping[DeviceChannel, float]:
+    def get_transition_voltages(self) -> Dict[int, float]:
         """"""
         return copy.deepcopy(self._transition_voltages)
 
@@ -356,8 +360,12 @@ class Device(DelegateInstrument):
 
     def _renamed_gate_key(
         self,
-        mapping_to_rename: Mapping[Union[DeviceChannel, str, int], Any],
-    ) -> Mapping[int, Any]:
+        mapping_to_rename: Union[
+            Mapping[DeviceChannel, Any],
+            Mapping[str, Any],
+            Mapping[int, Any]
+        ],
+    ) -> Dict[int, Any]:
         """ """
         new_dict = {}
         for gate_ref, param in mapping_to_rename.items():

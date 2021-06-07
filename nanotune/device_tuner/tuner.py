@@ -208,7 +208,7 @@ class Tuner(qc.Instrument):
                     gate.current_valid_range(gate.safety_range())
 
             measurement_result = MeasurementHistory(device.name)
-            with self.device_specific_settings(device):  # type: ignore
+            with self.device_specific_settings(device):
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
                     setpoint_settings["parameters_to_sweep"] = [gate.dc_voltage]
@@ -260,7 +260,7 @@ class Tuner(qc.Instrument):
         v_range = gate_to_set.safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
 
-        with self.device_specific_settings(device):  # type: ignore
+        with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
                 gate_to_set.dc_voltage(voltage)
@@ -297,7 +297,7 @@ class Tuner(qc.Instrument):
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
         setpoint_settings["parameters_to_sweep"] = [gate_to_set.dc_voltage]
-        with self.device_specific_settings(device):  # type: ignore
+        with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 
