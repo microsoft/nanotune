@@ -21,15 +21,15 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def set_dc_voltage(self, new_voltage: float) -> None:
+    def set_voltage(self, new_voltage: float) -> None:
         pass
 
     @abstractmethod
-    def get_dc_voltage(self) -> float:
+    def get_voltage(self) -> float:
         pass
 
     @abstractmethod
-    def set_dc_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
+    def set_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
         pass
 
     @abstractmethod
@@ -140,11 +140,11 @@ class DACInterface(Instrument):
 
         channels = ChannelList(self, "Channels", DACChannelClass, snapshotable=False)
         for chan_id in range(0, 64):
-            chan_name = f"nt channel {chan_id}"
+            chan_name = f"ch{chan_id:02d}"
             channel = DACChannelClass(self, chan_name, chan_id)
             channels.append(channel)
             self.add_submodule(chan_name, channel)
-        self.add_submodule("nt_channels", channels)
+        self.add_submodule("channels", channels)
 
     @abstractmethod
     def run(self):
