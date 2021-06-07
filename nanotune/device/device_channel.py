@@ -159,24 +159,6 @@ class DeviceChannel(InstrumentChannel):
         )
 
         super().add_parameter(
-            name="current_valid_range",
-            label=f"{label} current valid range",
-            set_cmd=self.set_current_valid_range,
-            get_cmd=self.get_current_valid_range,
-            initial_value=[],
-            vals=vals.Lists(),
-        )
-
-        super().add_parameter(
-            name="transition_voltage",
-            label=f"{label} transition voltage",
-            set_cmd=self.set_transition_voltage,
-            get_cmd=self.compute_transition_voltage,
-            initial_value=0,
-            vals=vals.Numbers(),
-        )
-
-        super().add_parameter(
             name="amplitude",
             label=f"{label} sawtooth amplitude",
             set_cmd=self._dac_channel.set_amplitude,
@@ -306,53 +288,3 @@ class DeviceChannel(InstrumentChannel):
 
     def set_max_jump(self, max_jump: float) -> None:
         self._max_jump = max_jump
-
-    def get_current_valid_range(self) -> List[float]:
-        """"""
-        return self._current_valid_range
-
-    def set_current_valid_range(
-        self,
-        new_range: Union[Tuple[float, float], List[float]],
-    ) -> None:
-        # Check if range is within safety range
-        new_range = list(new_range)
-        if len(new_range) == 0:
-            self._current_valid_range = self.safety_voltage_range()
-        elif len(new_range) == 2:
-            safe_new_range = new_range.copy()
-            safe_range = self.safety_voltage_range()
-            if safe_new_range:
-                if new_range[0] < safe_range[0]:
-                    safe_new_range[0] = safe_range[0]
-                    logger.info(
-                        f"{self.name}: new current_valid_range"
-                        " not within safety range. Taking lower "
-                        "safety limits instead."
-                    )
-                if new_range[1] > safe_range[1]:
-                    safe_new_range[1] = safe_range[1]
-                    logger.info(
-                        f"{self.name}: new current_valid_range"
-                        " not within safety range. Taking upper "
-                        "safety limits instead."
-                    )
-            self._current_valid_range = safe_new_range
-        else:
-            logger.error(self.label() + ": Incorrect current valid range.")
-            raise ValueError
-
-    def compute_transition_voltage(self) -> float:
-        """"""
-        return self._transition_voltage
-
-    def set_transition_voltage(self, new_T: float) -> None:
-
-        if new_T >= self.safety_voltage_range()[0] and new_T <= self.safety_voltage_range()[1]:
-            self._transition_voltage = new_T
-        else:
-            logger.error(
-                "Gate " + self.label() + ": "
-                "Invalid transition voltage. Keeping old one."
-            )
-            raise ValueError
