@@ -10,7 +10,7 @@ from functools import partial
 import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
-from qcodes.instrument.delegate import DelegateInstrument
+# from qcodes.instrument.delegate import DelegateInstrument
 from qcodes.instrument.delegate.grouped_parameter import (
     DelegateGroup,
     DelegateGroupParameter,
@@ -21,6 +21,7 @@ from qcodes.station import Station
 import nanotune as nt
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ def readout_formatter(
     return namedtuple(name, param_names)(*values, **kwargs)
 
 
-class Device(DelegateInstrument):
+class Device(DelegateChannelInstrument):
     """
     device_type: str, e.g 'doubledot'
     readout_methods = {
