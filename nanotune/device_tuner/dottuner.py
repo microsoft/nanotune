@@ -373,12 +373,12 @@ class DotTuner(Tuner):
                 db_folder=self.data_settings["db_folder"],
             )
             read_meths = device.readout_methods().keys()
-            if "dc_current" in read_meths:
-                signal = ds.data["dc_current"].values
-                voltage = ds.data["dc_current"]["voltage_x"].values
-            elif "dc_sensor" in read_meths:
-                signal = ds.data["dc_sensor"].values
-                voltage = ds.data["dc_sensor"]["voltage_x"].values
+            if "transport" in read_meths:
+                signal = ds.data["transport"].values
+                voltage = ds.data["transport"]["voltage_x"].values
+            elif "sensing" in read_meths:
+                signal = ds.data["sensing"].values
+                voltage = ds.data["sensing"]["voltage_x"].values
             elif "rf" in read_meths:
                 signal = ds.data["rf"].values
                 voltage = ds.data["rf"]["voltage_x"].values

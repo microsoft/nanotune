@@ -136,7 +136,7 @@ class Dataset:
 
     def _load_metadata_from_qcodes(self, qc_dataset: DataSet):
         self._normalization_constants = {
-            key: [0.0, 1.0] for key in ["dc_current", "rf", "dc_sensor"]
+            key: [0.0, 1.0] for key in ["transport", "rf", "sensing"]
         }
         self._snapshot = {}
         self._nt_metadata = {}

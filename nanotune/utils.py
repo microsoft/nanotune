@@ -109,7 +109,7 @@ def get_param_values(
                 for fname, fval in v.items():
                     features.append([fname, fval])
             elif name == "normalization_constants":
-                param_values.append(["dc normalization", str(v["dc_current"])])
+                param_values.append(["dc normalization", str(v["transport"])])
                 param_values.append(["rf normalization", str(v["rf"])])
             else:
                 if type(v) == list:

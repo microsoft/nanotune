@@ -68,7 +68,7 @@ class DataFit(ABC, Dataset):
     def get_edge(
         self,
         which_one: str,
-        readout_method: str = "dc_current",
+        readout_method: str = "transport",
         delta_v: float = 0.05,
         use_raw_data: bool = False,
     ) -> np.array:

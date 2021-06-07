@@ -34,12 +34,12 @@ logger = logging.getLogger(__name__)
 
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 default_dot_fit_parameters: Dict[str, Dict[str, Union[int, float]]] = {
-    "dc_current": {
+    "transport": {
         "noise_level": 0.02,
         "binary_neighborhood": 1,
         "distance_threshold": 0.05,
     },
-    "dc_sensor": {
+    "sensing": {
         "noise_level": 0.3,
         "binary_neighborhood": 2,
         "distance_threshold": 0.05,
@@ -81,7 +81,7 @@ class DotFit(DataFit):
     @property
     def range_update_directives(self) -> List[str]:
         """
-        signal_type: If more than one signal type (i.e dc, dc_sensor or rf)
+        signal_type: If more than one signal type (i.e dc, sensing or rf)
         have been measured, select which one to use to perform the edge
         analysis on. Use indexing and the order in which these signals have been
         measured.

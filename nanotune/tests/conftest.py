@@ -354,8 +354,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
     pinchoff_dmm.po_sensor.gate = gate_1
 
     readout_methods = {
-        "dc_current": pinchoff_dmm.po_current,
-        "dc_sensor": pinchoff_dmm.po_sensor,
+        "transport": pinchoff_dmm.po_current,
+        "sensing": pinchoff_dmm.po_sensor,
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
@@ -366,8 +366,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
     data_settings = {
         "db_name": "temp.db",
         "normalization_constants": {
-            "dc_current": [0, 1.2],
-            "dc_sensor": [-0.13, 1.1],
+            "transport": [0, 1.2],
+            "sensing": [-0.13, 1.1],
             "rf": [0, 1],
         },
         "db_folder": tmp_path,
@@ -392,8 +392,8 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
     dot_dmm.dot_sensor.gate_y = gate_2
 
     readout_methods = {
-        "dc_current": dot_dmm.dot_current,
-        "dc_sensor": dot_dmm.dot_sensor,
+        "transport": dot_dmm.dot_current,
+        "sensing": dot_dmm.dot_sensor,
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
@@ -409,8 +409,8 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
         "segment_db_name": "temp_dots_seg.db",
         "segment_db_folder": tmp_path,
         "normalization_constants": {
-            "dc_current": [0, 2],
-            "dc_sensor": [-0.32, 3],
+            "transport": [0, 2],
+            "sensing": [-0.32, 3],
             "rf": [0, 1],
         },
         "db_folder": tmp_path,
@@ -452,8 +452,8 @@ def device_gate_inputs(dummy_dac):
 @pytest.fixture(scope="function")
 def dot_readout_methods(dot_dmm):
     readout_methods = {
-        "dc_current": dot_dmm.dot_current,
-        "dc_sensor": dot_dmm.dot_sensor,
+        "transport": dot_dmm.dot_current,
+        "sensing": dot_dmm.dot_sensor,
     }
     yield readout_methods
 
@@ -461,8 +461,8 @@ def dot_readout_methods(dot_dmm):
 @pytest.fixture(scope="function")
 def device_pinchoff(pinchoff_dmm, device_gate_inputs):
     readout_methods = {
-        "dc_current": pinchoff_dmm.po_current,
-        "dc_sensor": pinchoff_dmm.po_sensor,
+        "transport": pinchoff_dmm.po_current,
+        "sensing": pinchoff_dmm.po_sensor,
     }
 
     device = nt.Device(

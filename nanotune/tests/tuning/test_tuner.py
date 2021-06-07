@@ -74,8 +74,8 @@ def test_update_normalization_constants(tuner_default_input, device_pinchoff, tm
     tuner.update_normalization_constants(device_pinchoff)
     updated_constants = device_pinchoff.normalization_constants()
 
-    assert np.allclose(updated_constants["dc_current"], [0.0, 1.2], atol=atol)
-    assert updated_constants["dc_sensor"] != updated_constants["dc_current"]
+    assert np.allclose(updated_constants["transport"], [0.0, 1.2], atol=atol)
+    assert updated_constants["sensing"] != updated_constants["transport"]
     assert np.allclose(updated_constants["rf"], [0, 1], atol=atol)
 
     tuner.close()
@@ -107,7 +107,7 @@ def test_device_specific_settings(tuner_default_input, device_pinchoff):
     original_fit_options = copy.deepcopy(tuner.fit_options())
 
     assert "normalization_constants" not in tuner.data_settings().keys()
-    n_csts = {"dc_current": (-0.3, 1.2), "dc_sensor": (0.2, 0.8), "rf": (0, 1)}
+    n_csts = {"transport": (-0.3, 1.2), "sensing": (0.2, 0.8), "rf": (0, 1)}
     device_pinchoff.normalization_constants(n_csts)
     with tuner.device_specific_settings(device_pinchoff):
         assert tuner.data_settings()["normalization_constants"] == n_csts

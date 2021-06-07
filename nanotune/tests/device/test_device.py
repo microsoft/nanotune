@@ -33,12 +33,12 @@ def test_device_gates(device_gate_inputs, dot_readout_methods):
 
     assert device.quality() == 0
     readout_methods = device.readout_methods()
-    assert all(key in readout_methods for key in ["dc_current", "dc_sensor"])
-    assert isinstance(readout_methods["dc_current"], qc.Parameter)
+    assert all(key in readout_methods for key in ["transport", "sensing"])
+    assert isinstance(readout_methods["transport"], qc.Parameter)
 
     n_sct = device.normalization_constants()
     assert isinstance(n_sct, dict)
-    assert all(key in n_sct for key in ["dc_current", "dc_sensor", "rf"])
+    assert all(key in n_sct for key in ["transport", "sensing", "rf"])
 
     assert device.sensor_side() == "left"
     with pytest.raises(ValueError):
