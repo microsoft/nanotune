@@ -1,23 +1,43 @@
 import copy
 import logging
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
-
+from typing import (
+    Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
+    MutableMapping, Iterable, Callable
+)
+from collections import namedtuple
+from functools import partial
 import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
+from qcodes.instrument.delegate import DelegateInstrument
+from qcodes.instrument.delegate.grouped_parameter import (
+    DelegateGroup,
+    DelegateGroupParameter,
+    GroupedParameter,
+)
+from qcodes.station import Station
 
 import nanotune as nt
-from nanotune.device.gate import Gate
+from nanotune.device.device_channel import DeviceChannel
 from nanotune.device.ohmic import Ohmic
 from nanotune.device_tuner.tuningresult import TuningResult
+
 
 logger = logging.getLogger(__name__)
 
 nrm_cnst_tp = Dict[str, Tuple[float, float]]
 vltg_rngs_tp = Dict[int, Tuple[Union[None, float], Union[None, float]]]
 
+def readout_formatter(
+    *values: Any,
+    param_names: List[str],
+    name: str,
+    **kwargs: Any,
+) -> Any:
+    return namedtuple(name, param_names)(*values, **kwargs)
 
-class Device(qc.Instrument):
+
+class Device(DelegateInstrument):
     """
     device_type: str, e.g 'fivedot'
     readout_methods = {
@@ -40,7 +60,7 @@ class Device(qc.Instrument):
         }
     }
     gate_parameters = {
-        layout_id: int = {
+        gate_id: int = {
             'channel_id': int,
             'dac_instrument': DACInterface,
             'label': str,
@@ -57,7 +77,7 @@ class Device(qc.Instrument):
         }
     }
     sensor_parameters = {
-        layout_id: int = {
+        gate_id: int = {
             'channel_id': int,
             'dac_instrument': DACInterface,
             'label': str,
@@ -69,123 +89,53 @@ class Device(qc.Instrument):
     def __init__(
         self,
         name: str,
-        device_type: str,
-        readout_methods: Optional[Dict[str, qc.Parameter]] = None,
-        gate_parameters: Optional[Dict[int, Any]] = None,
-        ohmic_parameters: Optional[Dict[int, Any]] = None,
-        sensor_parameters: Optional[Dict[int, Any]] = None,
-        measurement_options: Optional[Dict[str, Dict[str, Any]]] = None,
-        sensor_side: str = "left",
-        initial_valid_ranges: Optional[vltg_rngs_tp] = None,
+        station: Station,
+        parameters: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
+        channels: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
+        readout_parameters: Optional[Mapping[str, str]] = None,
+        initial_values: Optional[Mapping[str, Any]] = None,
+        set_initial_values_on_load: bool = False,
+        device_type: Optional[str] = '',
+        initial_valid_ranges: Optional[Mapping[str, Sequence[str]]] = None,
         normalization_constants: Optional[nrm_cnst_tp] = None,
+        **kwargs,
     ) -> None:
+        print(readout_parameters)
 
-        super().__init__(name)
+        super().__init__(
+            name,
+            station,
+            parameters,
+            channels,
+            initial_values,
+            set_initial_values_on_load,
+            metadata={'device_type': device_type},
+            **kwargs,
+            )
 
-        super().add_parameter(
-            name="device_type",
-            label="device type",
-            docstring="",
-            set_cmd=None,
-            get_cmd=None,
-            initial_value=device_type,
-            vals=vals.Strings(),
+        self.gates, self.ohmics = self._initialize_channel_lists(channels)
+
+        param_names, paths = list(zip(*list(readout_parameters.items())))
+        super()._create_and_add_parameter(
+            'readout',
+            station,
+            paths,
+            formatter=partial(
+                readout_formatter,
+                param_names=param_names,
+                name='readout',
+            )
         )
 
-        all_meths = nt.config["core"]["readout_methods"]
-        if readout_methods is not None:
-            assert list(set(all_meths).intersection(readout_methods.keys()))
-        else:
-            readout_methods = {}
-        self._readout_methods = readout_methods
-        super().add_parameter(
-            name="readout_methods",
-            label=f"{name} readout methods",
-            docstring="readout methods to use for measurements",
-            set_cmd=self.set_readout_methods,
-            get_cmd=self.get_readout_methods,
-            initial_value=readout_methods,
-            vals=vals.Dict(),
-        )
-
-        self._measurement_options = measurement_options
-        super().add_parameter(
-            name="measurement_options",
-            label=f"{name} measurement options",
-            docstring="readout methods to use for measurements",
-            set_cmd=self.set_measurement_options,
-            get_cmd=self.get_measurement_options,
-            initial_value=measurement_options,
-            vals=vals.Dict(),
-        )
-
-        super().add_parameter(
-            name="sensor_side",
-            label="sensor side",
-            docstring="side where the sensor is located",
-            set_cmd=None,
-            get_cmd=None,
-            initial_value=sensor_side,
-            vals=vals.Enum("left", "right"),
-        )
-
-        self.layout = nt.config["device"][self.device_type()]
-        self.gates: List[Gate] = []
-        self.sensor_gates: List[Gate] = []
-        self.ohmics: List[Ohmic] = []
-        required_parameter_fields = ["channel_id", "dac_instrument"]
-        if gate_parameters is not None:
-            for layout_id, gate_param in gate_parameters.items():
-                for required_param in required_parameter_fields:
-                    assert gate_param.get(required_param) is not None
-                alias = self.layout[layout_id]
-                gate_param["layout_id"] = layout_id
-                gate_param["use_ramp"] = True
-                gate = Gate(
-                    parent=self,
-                    name=alias,
-                    **gate_param,
-                )
-                super().add_submodule(alias, gate)
-                self.gates.append(gate)
-
-        # if self.sensor_side() == "right":
-        #     self.outer_barriers.reverse()
-        #     self.plungers.reverse()
-
-        if sensor_parameters is not None:
-            for layout_id, sens_param in sensor_parameters.items():
-                for required_param in required_parameter_fields:
-                    assert sens_param.get(required_param) is not None
-                alias = self.layout[layout_id]
-                sens_param["layout_id"] = layout_id
-                sens_param["use_ramp"] = True
-                gate = Gate(
-                    parent=self,
-                    name=alias,
-                    **sens_param,
-                )
-                super().add_submodule(alias, gate)
-                self.sensor_gates.append(gate)
-
-        if ohmic_parameters is not None:
-            for ohmic_id, ohm_param in ohmic_parameters.items():
-                for required_param in required_parameter_fields:
-                    assert ohm_param.get(required_param) is not None
-                alias = f"ohmic_{ohmic_id}"
-                ohm_param["ohmic_id"] = ohmic_id
-                ohmic = Ohmic(
-                    parent=self,
-                    name=alias,
-                    **ohm_param,
-                )
-                super().add_submodule(alias, ohmic)
-                self.ohmics.append(ohmic)
-
+        init_valid_ranges_renamed = {}
         if initial_valid_ranges is None:
-            initial_valid_ranges = {}
             for gate in self.gates:
-                initial_valid_ranges[gate.layout_id()] = gate.safety_range()
+                gate_id = gate.gate_id()
+                init_valid_ranges_renamed[gate_id] = gate.safety_range()
+        else:
+            for gate_name, valid_range in initial_valid_ranges.items():
+                gate_id = getattr(self, gate_name).gate_id()
+                init_valid_ranges_renamed[gate_id] = valid_range
 
         self._initial_valid_ranges: vltg_rngs_tp = {}
         super().add_parameter(
@@ -194,9 +144,28 @@ class Device(qc.Instrument):
             docstring="",
             set_cmd=self.set_initial_valid_ranges,
             get_cmd=self.get_initial_valid_ranges,
-            initial_value=initial_valid_ranges,
+            initial_value=init_valid_ranges_renamed,
             vals=vals.Dict(),
         )
+
+
+
+# TODO: Deal with ohmics?
+
+        # if ohmic_parameters is not None:
+        #     for ohmic_id, ohm_param in ohmic_parameters.items():
+        #         for required_param in required_parameter_fields:
+        #             assert ohm_param.get(required_param) is not None
+        #         alias = f"ohmic_{ohmic_id}"
+        #         ohm_param["ohmic_id"] = ohmic_id
+        #         ohmic = Ohmic(
+        #             parent=self,
+        #             name=alias,
+        #             **ohm_param,
+        #         )
+        #         super().add_submodule(alias, ohmic)
+        #         self.ohmics.append(ohmic)
+
 
         super().add_parameter(
             name="quality",
@@ -216,7 +185,7 @@ class Device(qc.Instrument):
 
         super().add_parameter(
             name="normalization_constants",
-            label="open circuit signal",
+            label="normalization constants",
             docstring=(
                 "Signal measured with all gates at  zero. Used as "
                 "normalization during data post processing"
@@ -227,23 +196,24 @@ class Device(qc.Instrument):
             vals=vals.Dict(),
         )
 
-    def snapshot_base(
-        self,
-        update: Optional[bool] = True,
-        params_to_skip_update: Optional[Sequence[str]] = None,
-    ) -> Dict[str, Any]:
-        snap = super().snapshot_base(update, params_to_skip_update)
+    def _initialize_channel_lists(self, channels_input_mapping):
+        gate_dict = {}
+        ohmic_dict = {}
+        for channel_name in channels_input_mapping.keys():
+            if channel_name != "type":
+                channel = getattr(self, channel_name)
+                if channel.gate_id() is not None:
+                    gate_dict[channel.gate_id()] = channel
+                elif channel.ohmic_id() is not None:
+                    ohmic_dict[channel.ohmic_id()] = channel
+        gates_list = []
+        for gate_id in range(0, len(gate_dict)):
+            gates_list.append(gate_dict[gate_id])
+        ohmics_list = []
+        for ohmic_id in range(0, len(ohmic_dict)):
+            ohmics_list.append(ohmic_dict[ohmic_id])
+        return gates_list, ohmics_list
 
-        name = "readout_methods"
-        snap["parameters"][name] = {}
-        for read_type, qc_param in self.readout_methods().items():
-            if qc_param is not None:
-                sub_snap = qc_param.snapshot()
-                snap["parameters"][name][read_type] = sub_snap
-            else:
-                snap["parameters"][name][read_type] = {}
-
-        return snap
 
     def get_normalization_constants(self) -> Dict[str, Tuple[float, float]]:
         """"""
@@ -261,34 +231,6 @@ class Device(qc.Instrument):
             )
         self._normalization_constants.update(new_normalization_constant)
 
-    def get_readout_methods(self) -> Dict[str, qc.Parameter]:
-        """
-        Update all attributed using normalization_constants?
-        """
-        return self._readout_methods
-
-    def set_readout_methods(
-        self,
-        readout_methods: Dict[str, qc.Parameter],
-    ) -> None:
-        """"""
-        self._readout_methods.update(readout_methods)
-
-    def get_measurement_options(self) -> Optional[Dict[str, Dict[str, Any]]]:
-        """
-        Update all attributed using normalization_constants?
-        """
-        return self._measurement_options
-
-    def set_measurement_options(
-        self,
-        measurement_options: Dict[str, Dict[str, Any]],
-    ) -> None:
-        """"""
-        if self._measurement_options is None:
-            self._measurement_options = {}
-        self._measurement_options.update(measurement_options)
-
     def get_initial_valid_ranges(self) -> vltg_rngs_tp:
         """"""
         return copy.deepcopy(self._initial_valid_ranges)
@@ -303,12 +245,13 @@ class Device(qc.Instrument):
     def ground_gates(self) -> None:
         for gate in self.gates:
             gate.ground()
-            logger.info("Gate {} grounded.".format(gate.name))
+            logger.info("DeviceChannel {} grounded.".format(gate.name))
 
     def float_ohmics(self) -> None:
         for ohmic in self.ohmics:
             ohmic.float_relay()
             logger.info("Ohmic {} floating.".format(ohmic.name))
+
 
     def get_gate_status(
         self,
@@ -321,7 +264,7 @@ class Device(qc.Instrument):
             current_gate_status[gate.name] = {}
             rng = gate.current_valid_range()
             current_gate_status[gate.name]["current_valid_range"] = rng
-            current_gate_status[gate.name]["dc_voltage"] = gate.dc_voltage()
+            current_gate_status[gate.name]["voltage"] = gate.voltage()
 
         return current_gate_status
 
@@ -331,7 +274,7 @@ class Device(qc.Instrument):
         Will use ramp if gate.use_ramp is set to True
         """
         for gate in self.gates:
-            gate.dc_voltage(gate.safety_range()[1])
+            gate.voltage(gate.safety_range()[1])
 
     def all_gates_to_lowest(self) -> None:
         """
@@ -339,4 +282,4 @@ class Device(qc.Instrument):
         Will use ramp if gate.use_ramp is set to True
         """
         for gate in self.gates:
-            gate.dc_voltage(gate.safety_range()[0])
+            gate.voltage(gate.safety_range()[0])
