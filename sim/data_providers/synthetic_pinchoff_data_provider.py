@@ -75,13 +75,13 @@ class SyntheticPinchoffDataProvider(DataProvider):
         self._raw_data_samples = raw_data_samples
 
     def get_value(self) -> float:
-        return self._compute(self._source.get_value())
+        return self.compute(self._source.get_value())
 
     def set_value(self, value : float) -> None:
         """Raises NotImplementedError.  This data provider type is read only"""
         raise NotImplementedError
 
-    def _compute(self, x : float) -> float:
+    def compute(self, x : float) -> float:
         """ Compute the result from a simulated pinchoff curve using the configured inputs """
         height : float = self._max - self._min
         sign : float = -1.0 if self._flip else 1.0
@@ -117,5 +117,5 @@ class SyntheticPinchoffDataProvider(DataProvider):
             the curve.
         """
         x = np.linspace(self._center - self._width, self._center + self._width, self._raw_data_samples)
-        y = [self._compute(val) for val in x]
+        y = [self.compute(val) for val in x]
         return xr.DataArray(y, dims=["x"], coords={"x": x})
