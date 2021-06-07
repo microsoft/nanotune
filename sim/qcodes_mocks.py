@@ -4,7 +4,7 @@ from qcodes import Instrument, Parameter
 
 from sim.data_provider import IDataProvider
 from sim.mock_device import IMockDevice
-from sim.mock_devices import MockQuantumDot
+from sim.mock_devices import MockSingleQuantumDot, MockDoubleQuantumDot
 from sim.mock_pin import IMockPin
 
 
@@ -18,8 +18,9 @@ class SimulationParameter(Parameter):
             sim_pin : IMockPin,
             **kwargs
          ):
-        super().__init__(**kwargs)
+        # must set our pin first, because super() may call set_raw on us
         self._pin = sim_pin
+        super().__init__(**kwargs)
 
     def get_raw(self) -> float:
         return self._pin.get_value()
@@ -55,12 +56,12 @@ class MockDeviceInstrument(Instrument):
         return self._mock_device
 
 
-class QuantumDotMockInstrument(MockDeviceInstrument):
-    """ QCoDeS Mock Instrument that wraps a QuantumDotSim device """
+class MockSingleQuantumDotInstrument(MockDeviceInstrument):
+    """ QCoDeS Mock Instrument that wraps a MockSingleQuantumDot device """
 
-    def __init__(self, name: str = "QuantumDotMockInstrument"):
+    def __init__(self, name: str = "MockSingleQuantumDotInstrument"):
 
-        super().__init__(name, MockQuantumDot(name))
+        super().__init__(name, MockSingleQuantumDot(name))
         mock = self.mock_device
 
         self.add_parameter(
@@ -73,31 +74,19 @@ class QuantumDotMockInstrument(MockDeviceInstrument):
             "left_barrier",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=mock.l_barrier,
+            sim_pin=mock.left_barrier,
         )
         self.add_parameter(
             "right_barrier",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=mock.r_barrier
+            sim_pin=mock.right_barrier
         )
         self.add_parameter(
-            "central_barrier",
+            "plunger",
             parameter_class=SimulationParameter,
             unit="V",
-            sim_pin=mock.c_barrier,
-        )
-        self.add_parameter(
-            "left_plunger",
-            parameter_class=SimulationParameter,
-            unit="V",
-            sim_pin=mock.l_plunger,
-        )
-        self.add_parameter(
-            "right_plunger",
-            parameter_class=SimulationParameter,
-            unit="V",
-            sim_pin=mock.r_plunger,
+            sim_pin=mock.plunger,
         )
         self.add_parameter(
             "drain",
@@ -107,6 +96,63 @@ class QuantumDotMockInstrument(MockDeviceInstrument):
         )
 
     @property
-    def mock_device(self) -> MockQuantumDot:
+    def mock_device(self) -> MockSingleQuantumDot:
         """ The mock device that this instrument is wrapping """
-        return cast(MockQuantumDot, super().mock_device)
+        return cast(MockSingleQuantumDot, super().mock_device)
+
+
+class MockDoubleQuantumDotInstrument(MockDeviceInstrument):
+    """ QCoDeS Mock Instrument that wraps a MockDoubleQuantumDot device """
+
+    def __init__(self, name: str = "MockDoubleQuantumDotInstrument"):
+
+        super().__init__(name, MockDoubleQuantumDot(name))
+        mock = self.mock_device
+
+        self.add_parameter(
+            "src",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.src,
+        )
+        self.add_parameter(
+            "left_barrier",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.left_barrier,
+        )
+        self.add_parameter(
+            "right_barrier",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.right_barrier
+        )
+        self.add_parameter(
+            "central_barrier",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.central_barrier,
+        )
+        self.add_parameter(
+            "left_plunger",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.left_plunger,
+        )
+        self.add_parameter(
+            "right_plunger",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.right_plunger,
+        )
+        self.add_parameter(
+            "drain",
+            parameter_class=SimulationParameter,
+            unit="I",
+            sim_pin=mock.drain
+        )
+
+    @property
+    def mock_device(self) -> MockDoubleQuantumDot:
+        """ The mock device that this instrument is wrapping """
+        return cast(MockDoubleQuantumDot, super().mock_device)
