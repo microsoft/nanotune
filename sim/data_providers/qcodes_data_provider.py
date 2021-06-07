@@ -7,79 +7,10 @@ import qcodes as qc
 import xarray as xr
 from scipy import interpolate
 
-from sim.data_provider import IDataProvider
+from sim.data_providers import DataProvider
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_pin import IMockPin
 from sim.qcodes_utils import QcodesDbConfig
-
-
-class DataProvider(IDataProvider):
-    """Base class for data providers"""
-
-    def __init__(self, settable: bool):
-        self._settable = settable
-
-    @property
-    def settable(self) -> bool:
-        """Indicates whether this data provider allows its value to
-        be set by calling set_value
-        """
-        return self._settable
-
-class PassthroughDataProvider(DataProvider):
-    """ Data provider that simply passes through a value from another input """
-
-    @classmethod
-    def make(cls, **kwargs):
-        src_pin = MockDeviceRegistry.resolve_pin(kwargs["src_pin"])
-        return cls(src_pin)
-
-    def __init__(self, src_pin : IMockPin):
-        super().__init__(settable = False)
-        self._source = src_pin
-
-    def get_value(self) -> float:
-        return self._source.get_value()
-
-    def set_value(self, value : float) -> None:
-        self._source.set_value(value)
-
-    @property
-    def raw_data(self) -> Union[xr.DataArray, xr.Dataset]:
-        return super().raw_data
-
-
-class StaticDataProvider(DataProvider):
-    """Data provider that returns a constant value for all inputs."""
-
-    @classmethod
-    def make(cls, **kwargs) -> Any:
-        """ ISerializable override to create an instance of this class """
-        return cls(kwargs["value"])
-
-    def __init__(self, value: float) -> None:
-        super().__init__(settable=True)
-        self._value = value
-
-    def __call__(self, *args) -> float:
-        return self._value
-
-    def get_value(self) -> float:
-        """The current value of this data provider"""
-
-        return self._value
-
-    def set_value(self, value: float) -> None:
-        """Set the static value of this data provider"""
-        self._value = value
-
-    @property
-    def raw_data(self) -> xr.DataArray:
-        """Returns the raw data backing this provider as an
-        xarray.DataArray
-        """
-
-        return xr.DataArray("0", dims="x", coords={"x": [1]})
 
 
 class QcodesDataProvider(DataProvider):

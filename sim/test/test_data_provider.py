@@ -1,9 +1,12 @@
 import os
+from itertools import product
+from math import isclose
+from sim.data_providers.synthetic_pinchoff_data_provider import SyntheticPinchoffDataProvider
 
 import pytest
 
 import sim
-from sim.data_providers import PassthroughDataProvider, QcodesDataProvider, StaticDataProvider
+from sim.data_providers import PassthroughDataProvider, QcodesDataProvider, StaticDataProvider, SyntheticPinchoffDataProvider
 from sim.mock_devices import Pin
 
 simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
@@ -182,3 +185,55 @@ class TestPassthroughDataProvider:
 
         pin2.set_value(2.0)
         assert_the_same(pin1, pin2, 2.0)
+
+class TestSyntheticPinchoffDataProvider:
+
+
+    def test_pinchoff(self):
+        """ Tests a variety of pinchoff curves occuring in each cartesian quadrant
+            with varying heights and widths, and both flipped and non-flipped """
+
+        pin = Pin("pin")
+        centers = [-2.5, -1.0, 0.0, 1.0, 2.5]
+        widths = [0.25, 0.5, 1.0, 2.0]
+        mins = [-4.0, -2.5, -1.0, 0.0, 1.0, 2.5, 4.0]
+        maxs = [-3.0, -1.5, -0.5, 0.0, 0.5, 3.5, 5.0]
+        flips = [False, True]
+
+        tolerance = 1e-6
+        for center, width, min, max, flip in product(centers, widths, mins, maxs, flips):
+            po = SyntheticPinchoffDataProvider(
+                pin,
+                min = min, max = max, center = center, width = width, flip = flip
+            )
+
+            if (min < max):
+                config = f"min={min}, max={max}, center={center}, width={width}, flip={flip}"
+
+                # Check expected center point value
+                mid = min + (max-min)/2
+                actual = po.compute(center)
+                assert isclose(mid, actual, abs_tol = tolerance), f"Expected value at center={mid}, Actual={actual}.  {config}"
+
+                # Check curve goes to expected bound left of center
+                x_left = center - 1.5*width
+                y_left = po.compute(x_left)
+                expected_left = max if flip else min
+                assert isclose(expected_left, y_left, abs_tol=tolerance), f"Expecte value at {x_left}={expected_left}, Actual={y_left}. {config}"
+
+                # Check curve goes to expected bound right of center
+                x_right = center + 1.5*width
+                y_right = po.compute(x_right)
+                expected_right = min if flip else max
+                assert isclose(expected_left, y_left, abs_tol=tolerance), f"Expecte value at {x_right}={expected_right}, Actual={y_right}. {config}"
+
+                # Check within the curve that we're not yet at the bounds
+                x_left = center - 0.5*width
+                y_left = po.compute(x_left)
+                expected_left = max if flip else min
+                assert not isclose(expected_left, y_left, abs_tol=tolerance), f"Expecte value at {x_left}={expected_left}, Actual={y_left}. {config}"
+
+                x_right = center + 0.5*width
+                y_right = po.compute(x_right)
+                expected_right = min if flip else max
+                assert not isclose(expected_left, y_left, abs_tol=tolerance), f"Expecte value at {x_right}={expected_right}, Actual={y_right}. {config}"

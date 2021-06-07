@@ -2,7 +2,7 @@
 from typing import cast
 from qcodes import Instrument, Parameter
 
-from sim.data_provider import IDataProvider
+from sim.data_providers import IDataProvider
 from sim.mock_device import IMockDevice
 from sim.mock_devices import MockSingleQuantumDot, MockDoubleQuantumDot
 from sim.mock_pin import IMockPin
