@@ -3,7 +3,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 from typing import Optional, Tuple
+from qcodes import validators as vals
 from nanotune.drivers.dac_interface import DACChannelInterface, DACInterface
+from qcodes.instrument.channel import ChannelList, InstrumentChannel
 
 
 class MockDACChannel(DACChannelInterface):
@@ -17,7 +19,7 @@ class MockDACChannel(DACChannelInterface):
 
         self._label = "mock channel"
         self._curr_voltage = 0
-        self._dc_voltage_limit = [-5, 5]
+        self._voltage_limit = [-5, 5]
         self._inter_delay = 0.01
         self._step = 0
         self._limit_rate = 0.2
@@ -30,18 +32,51 @@ class MockDACChannel(DACChannelInterface):
         self._period = 1
         self._phase = 0
 
+
+        super().add_parameter(
+            name="voltage",
+            label=f"{name} dc voltage",
+            set_cmd=self.set_voltage,
+            get_cmd=self.get_voltage,
+            vals=vals.Numbers(*self._voltage_limit),
+            )
+
+        super().add_parameter(
+            name="amplitude",
+            label=f"{name} amplitude",
+            set_cmd=self.set_amplitude,
+            get_cmd=self.get_amplitude,
+            vals=vals.Numbers(),
+            )
+
+        super().add_parameter(
+            name="frequency",
+            label=f"{name} frequency",
+            set_cmd=self.set_frequency,
+            get_cmd=self.get_frequency,
+            vals=vals.Numbers(),
+        )
+
+    @property
+    def gettable(self):
+        return False
+
+    @property
+    def settable(self):
+        return False
+
     @property
     def supports_hardware_ramp(self) -> bool:
         return False
 
-    def set_dc_voltage(self, new_voltage: float) -> None:
+    def set_voltage(self, new_voltage: float) -> None:
         self._curr_voltage = new_voltage
 
-    def get_dc_voltage(self) -> float:
+    def get_voltage(self) -> float:
         return self._curr_voltage
 
-    def set_dc_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
-        self._dc_voltage_limit = new_limits
+    def set_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
+        self._voltage_limit = new_limits
 
     def get_inter_delay(self) -> float:
         return self._inter_delay
