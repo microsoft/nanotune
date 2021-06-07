@@ -193,18 +193,6 @@ class DeviceChannel(InstrumentChannel):
         """ """
         self.relay_state("float")
 
-    def snapshot_base(
-        self,
-        update: Optional[bool] = True,
-        params_to_skip_update: Optional[Sequence[str]] = None,
-    ) -> Dict[Any, Any]:
-        """
-        Add dc voltage source name to snapshot for reference.
-        """
-        snap = super().snapshot_base(update, params_to_skip_update)
-        snap["dac_channel"] = self._dac_channel.name
-        return snap
-
     def set_voltage(self, new_value):
         """
         It will check if new voltage is within safety ranges before setting
@@ -212,6 +200,7 @@ class DeviceChannel(InstrumentChannel):
         safety range is reached.
         It ramp to the new value.
         """
+
         safe_range = self.safety_voltage_range()
         if new_value < safe_range[0] - 1e-5 or new_value > safe_range[1] + 1e-5:
             logger.error(
