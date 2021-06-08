@@ -54,7 +54,7 @@ class Device(DelegateChannelInstrument):
         name: str,
         station: Station,
         parameters: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
-        channels: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
+        channels: Optional[Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
         readout_parameters: Optional[Mapping[str, str]] = None,
         initial_values: Optional[Mapping[str, Any]] = None,
         set_initial_values_on_load: bool = False,
