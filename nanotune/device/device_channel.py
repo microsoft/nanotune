@@ -22,8 +22,9 @@ class DeviceChannel(InstrumentChannel):
 
     def __init__(
         self,
+        parent,
         name: str,
-        channel: InstrumentChannel,
+        channel: Union[str, InstrumentChannel],
         gate_id: Optional[int] = None,
         ohmic_id: Optional[int] = None,
         label: str = "device_channel",
@@ -41,9 +42,17 @@ class DeviceChannel(InstrumentChannel):
 
 
         """
-        assert issubclass(channel.parent.__class__, DACInterface)
-        super().__init__(channel.parent, name)
-        self._dac_channel = channel
+        if isinstance(channel, str):
+            _ , channel_name = channel.split('.')
+            instr_channel = getattr(parent, channel_name)
+            self._dac_channel = instr_channel
+        elif isinstance(channel, InstrumentChannel):
+            self._dac_channel = channel
+        else:
+            raise ValueError('Unknown input type for "channel".')
+
+        assert issubclass(parent.__class__, DACInterface)
+        super().__init__(parent, name)
 
         super().add_parameter(
             name="voltage",
