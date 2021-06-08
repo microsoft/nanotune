@@ -12,6 +12,7 @@ from typing import (
     Optional,
     Sequence,
     Union,
+    Type,
 )
 from qcodes import InstrumentChannel
 
@@ -66,7 +67,7 @@ class DelegateChannelInstrument(DelegateInstrument):
         name: str,
         station: Station,
         parameters: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
-        channels: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
+        channels: Optional[Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
         initial_values: Optional[Mapping[str, Any]] = None,
         set_initial_values_on_load: bool = False,
         setters: Optional[Mapping[str, MutableMapping[str, Any]]] = None,
@@ -96,7 +97,7 @@ class DelegateChannelInstrument(DelegateInstrument):
     def _create_and_add_channels(
         self,
         station: Station,
-        channels: Union[Mapping[str, Sequence[str]], Mapping[str, str]],
+        channels: Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]],
     ) -> None:
         """Add channels to the instrument.
 
@@ -123,12 +124,15 @@ class DelegateChannelInstrument(DelegateInstrument):
 
         channel_wrapper = None
         if 'type' in channels.keys():
-            module_name = '.'.join(channels['type'].split('.')[:-1])
-            instr_class_name = channels['type'].split('.')[-1]
+            channels_type = str(channels['type'])
+            module_name = '.'.join(channels_type.split('.')[:-1])
+            instr_class_name = channels_type.split('.')[-1]
             module = importlib.import_module(module_name)
             channel_wrapper = getattr(module, instr_class_name)
 
         for param_name, input_params in channels.items():
+            print(param_name)
+            print(input_params)
             if param_name != 'type':
                 self._create_and_add_channel(
                     param_name=param_name,
@@ -142,7 +146,7 @@ class DelegateChannelInstrument(DelegateInstrument):
         param_name: str,
         station: Station,
         input_params: Union[str, Mapping[str, Any]],
-        channel_wrapper: Optional[InstrumentChannel],
+        channel_wrapper: Optional[Type[InstrumentChannel]],
         **kwargs: Any
     ) -> None:
         """Adds a channel to the instrument.
@@ -167,20 +171,20 @@ class DelegateChannelInstrument(DelegateInstrument):
 
             except ValueError:
                 raise ValueError("Unknown channel path. Try: instrument.chXY")
-        else:
+        elif isinstance(input_params, Mapping) and channel_wrapper is not None:
             channel_str = input_params['channel']
 
             instrument_name, channel_name = channel_str.split('.')
             instrument = getattr(station, instrument_name)
             initial_channel = getattr(instrument, channel_name)
-            init_params = {x: input_params[x] for x in input_params.keys() if x not in ['channel']}
-
-            kwargs = dict(kwargs, **init_params)
+            kwargs = dict(kwargs, **input_params)
             channel = channel_wrapper(
+                instrument,
                 param_name,
-                initial_channel,
                 **kwargs
             )
+        else:
+            raise ValueError('Unknown input type.')
 
         self.add_submodule(param_name, channel)
 
