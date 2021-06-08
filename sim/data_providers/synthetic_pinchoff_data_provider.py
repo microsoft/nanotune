@@ -6,7 +6,7 @@ import numpy as np
 
 import xarray as xr
 
-from sim.data_providers import DataProvider
+from sim.data_provider import DataProvider
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_pin import IMockPin
 

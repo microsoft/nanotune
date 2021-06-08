@@ -7,7 +7,7 @@ import qcodes as qc
 import xarray as xr
 from scipy import interpolate
 
-from sim.data_providers import DataProvider
+from sim.data_provider import DataProvider
 from sim.mock_device_registry import MockDeviceRegistry
 from sim.mock_pin import IMockPin
 
