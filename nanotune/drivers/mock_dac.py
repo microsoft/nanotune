@@ -78,29 +78,23 @@ class MockDACChannel(DACChannelInterface):
     def set_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
         self._voltage_limit = new_limits
 
-    def get_inter_delay(self) -> float:
+    def get_voltage_inter_delay(self) -> float:
         return self._inter_delay
 
-    def set_inter_delay(self, new_inter_delay: float) -> None:
+    def set_voltage_inter_delay(self, new_inter_delay: float) -> None:
         self._inter_delay = new_inter_delay
 
-    def get_post_delay(self) -> float:
+    def get_voltage_post_delay(self) -> float:
         return self._post_delay
 
-    def set_post_delay(self, new_post_delay: float) -> None:
+    def set_voltage_post_delay(self, new_post_delay: float) -> None:
         self._post_delay = new_post_delay
 
-    def get_step(self) -> float:
+    def get_voltage_step(self) -> float:
         return self._step
 
-    def set_step(self, new_step: float) -> None:
+    def set_voltage_step(self, new_step: float) -> None:
         self._step = new_step
-
-    def get_label(self) -> str:
-        return self._label
-
-    def set_label(self, new_label: str) -> None:
-        self._label = new_label
 
     def get_frequency(self) -> float:
         return self._frequency
