@@ -22,7 +22,7 @@ import nanotune as nt
 import nanotune.tests.data_generator_methods as gm
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device
-from nanotune.device.gate import Gate
+from nanotune.device.device import DeviceChannel
 from nanotune.tests.data_generator_methods import (
     DotCurrent, DotSensor, PinchoffCurrent, PinchoffSensor,
     doubledot_triple_points, generate_coloumboscillation_metadata,
@@ -31,6 +31,9 @@ from nanotune.tests.data_generator_methods import (
     generate_pinchoff_data, generate_pinchoff_metadata,
     populate_db_coulomboscillations, populate_db_doubledots,
     populate_db_pinchoffs)
+
+from nanotune.drivers.mock_dac import MockDAC, MockDACChannel
+from nanotune.drivers.mock_readout_instruments import MockLockin, MockRF
 
 from .dac_mocks import DummyDAC, DummyDACChannel
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
@@ -119,13 +122,13 @@ def _make_dummy_inst():
         inst.close()
 
 
-@pytest.fixture(name="dummy_dac", scope="function")
-def _make_dummy_dac():
-    inst = DummyDAC("dummy_dac", DummyDACChannel)
-    try:
-        yield inst
-    finally:
-        inst.close()
+# @pytest.fixture(name="dummy_dac", scope="function")
+# def _make_dummy_dac():
+#     inst = DummyDAC("dummy_dac", DummyDACChannel)
+#     try:
+#         yield inst
+#     finally:
+#         inst.close()
 
 
 @pytest.fixture(name="dummy_device", scope="function")
@@ -315,33 +318,58 @@ def dot_dmm(dummy_dmm):
         dummy_dmm.close()
 
 
+@pytest.fixture(scope="session")
+def dac():
+    return MockDAC('dac', MockDACChannel)
+
+
+@pytest.fixture(scope="session")
+def lockin():
+    _lockin = MockLockin(
+        name='lockin'
+    )
+    return _lockin
+
+
+@pytest.fixture(scope="session")
+def rf():
+    return MockRF('rf')
+
+
+@pytest.fixture(scope="session")
+def station(dac, lockin, rf):
+    _station = qc.Station()
+    _station.add_component(dac)
+    _station.add_component(lockin)
+    _station.add_component(rf)
+    return _station
+
+
 @pytest.fixture(scope="function")
-def gate_1(dummy_dac, dummy_device):
-    gate = Gate(
-        dummy_device,
-        dummy_dac,
-        channel_id=1,
-        layout_id=1,
-        name="test_gate",
+def gate_1(station):
+    gate = DeviceChannel(
+        station.dac,
+        'test_gate',
+        station.dac.ch01,
+        gate_id=1,
         label="test_label",
         delay=0,
-        max_jump=0.01,
+        max_voltage_step=0.01,
         ramp_rate=0.2,
     )
     yield gate
 
 
 @pytest.fixture(scope="function")
-def gate_2(dummy_dac, dummy_device):
-    gate = Gate(
-        dummy_device,
-        dummy_dac,
-        channel_id=2,
-        layout_id=2,
-        name="test_gate_y",
-        label="test_label_y",
+def gate_2(station):
+    gate = DeviceChannel(
+        station.dac,
+        'test_gate_1',
+        station.dac.ch02,
+        gate_id=1,
+        label="test_label_2",
         delay=0,
-        max_jump=0.01,
+        max_voltage_step=0.01,
         ramp_rate=0.2,
     )
     yield gate
