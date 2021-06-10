@@ -10,18 +10,15 @@ from functools import partial
 import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
-# from qcodes.instrument.delegate import DelegateInstrument
-from qcodes.instrument.delegate.grouped_parameter import (
-    DelegateGroup,
-    DelegateGroupParameter,
-    GroupedParameter,
-)
 from qcodes.station import Station
 
 import nanotune as nt
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument
+if not qc.__version__.startswith('0.27'):
+    from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
+else:
+    from qcodes.instrument.delegate import DelegateInstrument
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +35,7 @@ def readout_formatter(
     return namedtuple(name, param_names)(*values, **kwargs)
 
 
-class Device(DelegateChannelInstrument):
+class Device(DelegateInstrument):
     """
     device_type: str, e.g 'doubledot'
     readout_methods = {
@@ -65,7 +62,6 @@ class Device(DelegateChannelInstrument):
         transition_voltages: Optional[Mapping[str, float]] = None,
         **kwargs,
     ) -> None:
-        print(current_valid_ranges)
 
         super().__init__(
             name,
@@ -96,11 +92,10 @@ class Device(DelegateChannelInstrument):
             )
         )
 
-
         if initial_valid_ranges is None:
             init_valid_ranges_renamed: Dict[int, Any] = {}
             for gate in self.gates:
-                gate_id = gate.gate_id()
+                gate_id = gate.gate_id
                 init_valid_ranges_renamed[gate_id] = gate.safety_range()
         else:
             init_valid_ranges_renamed = self._renamed_gate_key(
@@ -166,7 +161,7 @@ class Device(DelegateChannelInstrument):
         )
         if transition_voltages is None:
             transition_voltages_renamed = dict.fromkeys(
-                [gate.gate_id() for gate in self.gates], np.nan
+                [gate.gate_id for gate in self.gates], np.nan
             )
         else:
             transition_voltages_renamed = self._renamed_gate_key(
@@ -187,13 +182,13 @@ class Device(DelegateChannelInstrument):
     def _initialize_channel_lists(self, channels_input_mapping):
         gate_dict = {}
         ohmic_dict = {}
+        _ = channels_input_mapping.pop("type", None)
         for channel_name in channels_input_mapping.keys():
-            if channel_name != "type":
-                channel = getattr(self, channel_name)
-                if channel.gate_id() is not None:
-                    gate_dict[channel.gate_id()] = channel
-                elif channel.ohmic_id() is not None:
-                    ohmic_dict[channel.ohmic_id()] = channel
+            channel = getattr(self, channel_name)
+            if channel.gate_id is not None:
+                gate_dict[channel.gate_id] = channel
+            elif channel.ohmic_id is not None:
+                ohmic_dict[channel.ohmic_id] = channel
         gates_list = []
         for gate_id in range(0, len(gate_dict)):
             gates_list.append(gate_dict[gate_id])
@@ -312,7 +307,7 @@ class Device(DelegateChannelInstrument):
                 if new_range[1] < sfty_range[0]:
                     raise ValueError(msg2 + gate.name)
 
-            self._current_valid_ranges.update({gate.gate_id(): new_range})
+            self._current_valid_ranges.update({gate.gate_id: new_range})
 
     def get_transition_voltages(self) -> Dict[int, float]:
         """"""
@@ -342,7 +337,7 @@ class Device(DelegateChannelInstrument):
                     f"Setting invalid transition voltage for {gate.name}.\
                     Taking lower safety voltage. "
                 )
-            self._transition_voltages.update({gate.gate_id(): new_T})
+            self._transition_voltages.update({gate.gate_id: new_T})
 
     def _get_gate_from_identifier(
         self,
@@ -371,7 +366,7 @@ class Device(DelegateChannelInstrument):
         new_dict = {}
         for gate_ref, param in mapping_to_rename.items():
             gate = self._get_gate_from_identifier(gate_ref)
-            new_dict[gate.gate_id()] = param
+            new_dict[gate.gate_id] = param
         return new_dict
 
 
