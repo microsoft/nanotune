@@ -24,6 +24,7 @@ class DataFit(ABC, Dataset):
         qc_run_id: int,
         db_name: str,
         db_folder: Optional[str] = None,
+        **kwargs,
     ) -> None:
 
         if db_folder is None:
@@ -34,6 +35,7 @@ class DataFit(ABC, Dataset):
             qc_run_id,
             db_name,
             db_folder=db_folder,
+            **kwargs,
         )
         self._features: Dict[str, Any] = {}
         self._range_update_directives: List[str] = []
