@@ -5,7 +5,7 @@ import nanotune as nt
 
 
 def test_device_init_defaults():
-    device = nt.Device("test_fivedot", "doubledot_2D")
+    device = nt.Device("test_doubledot", "doubledot_2D")
 
     assert not device.gates
     assert not device.ohmics
@@ -17,7 +17,7 @@ def test_device_init_defaults():
 def test_device_gates(device_gate_inputs, dot_readout_methods):
 
     device = nt.Device(
-        name="test_fivedot",
+        name="test_doubledot",
         device_type="doubledot_2D",
         readout_methods=dot_readout_methods,
         **device_gate_inputs,
@@ -48,7 +48,7 @@ def test_device_gates(device_gate_inputs, dot_readout_methods):
 
 def test_device_gate_methods(device_gate_inputs, dot_readout_methods):
     device = nt.Device(
-        name="test_fivedot",
+        name="test_doubledot",
         device_type="doubledot_2D",
         readout_methods=dot_readout_methods,
         **device_gate_inputs,
@@ -71,7 +71,7 @@ def test_device_gate_methods(device_gate_inputs, dot_readout_methods):
 
 def test_device_snapshot(device_gate_inputs, dot_readout_methods):
     device = nt.Device(
-        name="test_fivedot",
+        name="test_doubledot",
         device_type="doubledot_2D",
         readout_methods=dot_readout_methods,
         **device_gate_inputs,
