@@ -123,22 +123,21 @@ class DelegateChannelInstrument(DelegateInstrument):
         """
 
         channel_wrapper = None
-        if 'type' in channels.keys():
-            channels_type = str(channels['type'])
-            module_name = '.'.join(channels_type.split('.')[:-1])
-            instr_class_name = channels_type.split('.')[-1]
+        channels_dict: Dict[str, Union[str, Mapping[str, Any]]] = dict(channels)
+        channel_type = channels_dict.pop("type", None)
+        if channel_type is not None:
+            channel_type_elems = str(channel_type).split(".")
+            module_name = '.'.join(channel_type_elems[:-1])
+            instr_class_name = channel_type_elems[-1]
             module = importlib.import_module(module_name)
             channel_wrapper = getattr(module, instr_class_name)
 
-        for param_name, input_params in channels.items():
-            print(param_name)
-            print(input_params)
-            if param_name != 'type':
-                self._create_and_add_channel(
-                    param_name=param_name,
-                    station=station,
-                    input_params=input_params,
-                    channel_wrapper=channel_wrapper,
+        for param_name, input_params in channels_dict.items():
+            self._create_and_add_channel(
+                param_name=param_name,
+                station=station,
+                input_params=input_params,
+                channel_wrapper=channel_wrapper,
                 )
 
     def _create_and_add_channel(
@@ -165,21 +164,18 @@ class DelegateChannelInstrument(DelegateInstrument):
 
         if isinstance(input_params, str):
             try:
-                instrument_name, channel_name = input_params.split('.')
-                instrument = getattr(station, instrument_name)
-                channel = getattr(instrument, channel_name)
-
+                channel = self.parse_instrument_path(station, input_params)
             except ValueError:
                 raise ValueError("Unknown channel path. Try: instrument.chXY")
-        elif isinstance(input_params, Mapping) and channel_wrapper is not None:
-            channel_str = input_params['channel']
 
-            instrument_name, channel_name = channel_str.split('.')
-            instrument = getattr(station, instrument_name)
-            initial_channel = getattr(instrument, channel_name)
+        elif isinstance(input_params, Mapping) and channel_wrapper is not None:
+            channel = self.parse_instrument_path(
+                station, input_params['channel']
+            )
             kwargs = dict(kwargs, **input_params)
+
             channel = channel_wrapper(
-                instrument,
+                channel.parent,
                 param_name,
                 **kwargs
             )
