@@ -57,6 +57,7 @@ class PinchoffFit(DataFit):
         db_folder: Optional[str] = None,
         gradient_percentile: float = 25,
         get_transition_from_fit: bool = False,
+        **kwargs,
     ) -> None:
         if db_folder is None:
             db_folder = nt.config["db_folder"]
@@ -66,6 +67,7 @@ class PinchoffFit(DataFit):
             run_id,
             db_name,
             db_folder=db_folder,
+            **kwargs,
         )
 
         self.gradient_percentile = gradient_percentile
@@ -259,15 +261,20 @@ class PinchoffFit(DataFit):
     def _retain_transition_features(self) -> None:
         for read_meth in self.readout_methods:
             v_x = self.data[read_meth]["voltage_x"].values
+            signal = self.data[read_meth].values
             low_idx = self._low_signal_index[read_meth]
             high_idx = self._high_signal_index[read_meth]
             trans_v = self._transition_voltage[read_meth]
             trans_s = self._transition_signal[read_meth]
 
             self._features[read_meth]["low_voltage"] = v_x[low_idx]
+            # self._features[read_meth]["low_signal"] = self._low_signal[read_meth]
+            self._features[read_meth]["low_signal"] = signal[low_idx]
+
             self._features[read_meth]["high_voltage"] = v_x[high_idx]
-            self._features[read_meth]["low_signal"] = self._low_signal[read_meth]
-            self._features[read_meth]["high_signal"] = self._high_signal[read_meth]
+            # self._features[read_meth]["high_signal"] = self._high_signal[read_meth]
+            self._features[read_meth]["high_signal"] = signal[high_idx]
+
             self._features[read_meth]["transition_voltage"] = trans_v
             self._features[read_meth]["transition_signal"] = trans_s
             sign = self.data[read_meth].values
