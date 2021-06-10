@@ -4,6 +4,7 @@ from typing import Optional, Tuple, Type
 import qcodes as qc
 from qcodes.instrument.base import Instrument
 from qcodes.instrument.channel import ChannelList, InstrumentChannel
+#TODO: Add a State class for relay state
 
 
 class DACChannelInterface(InstrumentChannel, ABC):
@@ -33,35 +34,27 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def get_inter_delay(self) -> float:
+    def get_voltage_inter_delay(self) -> float:
         pass
 
     @abstractmethod
-    def set_inter_delay(self, new_inter_delay: float) -> None:
+    def set_voltage_inter_delay(self, new_inter_delay: float) -> None:
         pass
 
     @abstractmethod
-    def get_post_delay(self) -> float:
+    def get_voltage_post_delay(self) -> float:
         pass
 
     @abstractmethod
-    def set_post_delay(self, new_post_delay: float) -> None:
+    def set_voltage_post_delay(self, new_post_delay: float) -> None:
         pass
 
     @abstractmethod
-    def get_step(self) -> float:
+    def get_voltage_step(self) -> float:
         pass
 
     @abstractmethod
-    def set_step(self, new_step: float) -> None:
-        pass
-
-    @abstractmethod
-    def get_label(self) -> str:
-        pass
-
-    @abstractmethod
-    def set_label(self, new_label: str) -> None:
+    def set_voltage_step(self, new_step: float) -> None:
         pass
 
     @abstractmethod
