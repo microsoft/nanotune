@@ -28,6 +28,7 @@ class CoulombOscillationFit(DataFit):
         db_folder: Optional[str] = None,
         relative_height_threshold: float = 0.5,
         sigma_dV: float = 0.005,
+        **kwargs,
     ) -> None:
 
         if db_folder is None:
@@ -38,6 +39,7 @@ class CoulombOscillationFit(DataFit):
             qc_run_id,
             db_name,
             db_folder=db_folder,
+            **kwargs,
         )
 
         self.relative_height_threshold = relative_height_threshold

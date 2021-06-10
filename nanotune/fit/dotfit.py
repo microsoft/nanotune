@@ -57,6 +57,7 @@ class DotFit(DataFit):
         segment_size: float = 0.05,
         signal_thresholds: List[float] = [0.004, 0.1],
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
+        **kwargs,
     ) -> None:
 
         if db_folder is None:
@@ -69,6 +70,7 @@ class DotFit(DataFit):
             qc_run_id,
             db_name,
             db_folder=db_folder,
+            **kwargs,
         )
 
         self.signal_thresholds = signal_thresholds

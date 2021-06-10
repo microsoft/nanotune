@@ -1,7 +1,7 @@
 import copy
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import qcodes as qc
@@ -43,6 +43,7 @@ class Dataset:
         qc_run_id: int,
         db_name: Optional[str] = None,
         db_folder: Optional[str] = None,
+        normalization_tolerances: Tuple[float, float] = (-0.1, 1.1),
     ) -> None:
 
         if db_folder is None:
@@ -59,6 +60,7 @@ class Dataset:
         self._snapshot: Dict[str, Any] = {}
         self._nt_metadata: Dict[str, Any] = {}
         self._normalization_constants: Dict[str, List[float]] = {}
+        self._normalization_tolerances = normalization_tolerances
 
         self.exp_id: int
         self.guid: str
@@ -235,13 +237,9 @@ class Dataset:
         minv = self.normalization_constants[signal_type][0]
         maxv = self.normalization_constants[signal_type][1]
 
-        if maxv == 1.:
-            maxv = self.raw_data.max().to_array().values[0]
-        if minv == 0.:
-            minv = self.raw_data.min().to_array().values[0]
-
         normalized_sig = (signal - minv) / (maxv - minv)
-        if np.max(normalized_sig) > 1.01 or np.min(normalized_sig) < -0.01:
+        min_tol, max_tol = self._normalization_tolerances
+        if np.max(normalized_sig) > max_tol or np.min(normalized_sig) < min_tol:
             msg = (
                 "Dataset {}: ".format(self.qc_run_id),
                 "Wrong normalization constant",
