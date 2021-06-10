@@ -43,7 +43,7 @@ class Dataset:
         qc_run_id: int,
         db_name: Optional[str] = None,
         db_folder: Optional[str] = None,
-        normalization_tolerances: Optional[Tuple[float, float]] = (-0.1, 1.1),
+        normalization_tolerances: Tuple[float, float] = (-0.1, 1.1),
     ) -> None:
 
         if db_folder is None:
