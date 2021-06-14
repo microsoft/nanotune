@@ -1,15 +1,24 @@
 import os
 from itertools import product
 from math import isclose
-from sim.data_providers.synthetic_pinchoff_data_provider import SyntheticPinchoffDataProvider
 
 import pytest
+import time
 
 import sim
-from sim.data_providers import PassthroughDataProvider, QcodesDataProvider, StaticDataProvider, SyntheticPinchoffDataProvider
-from sim.mock_devices import Pin
+from sim.data_providers import (
+    DelayedDataProvider,
+    PassthroughDataProvider,
+    QcodesDataProvider,
+    RampedValueDataProvider,
+    StaticDataProvider,
+    SyntheticPinchoffDataProvider )
+from sim.mock_devices import MockFieldWithRamp, Pin
+from sim.simulation_scenario import SimulationScenario
 
+testroot = os.path.dirname(os.path.abspath(__file__))
 simroot = os.path.dirname(os.path.dirname(os.path.abspath(sim.__file__)))
+scenario_root = os.path.join(testroot, "scenarios")
 
 valid_db_path = os.path.join(
     simroot,
@@ -56,6 +65,7 @@ class TestQcodesDataProvier:
         in2.set_value(-0.5)
         out1 = data_2d.get_value()
         assert out0 != out1
+
 
     def test_bad_db_filename(self):
         """Validate the correct error is raised when trying to load a bad
@@ -237,3 +247,150 @@ class TestSyntheticPinchoffDataProvider:
                 y_right = po.compute(x_right)
                 expected_right = min if flip else max
                 assert not isclose(expected_left, y_left, abs_tol=tolerance), f"Expecte value at {x_right}={expected_right}, Actual={y_right}. {config}"
+
+
+class TestRampedValueDataProvider:
+
+    def test_dataprovider(self):
+        """ Test the data provider bound to mock pins for its settings
+            Non-blocking mode"""
+
+        mock = MockFieldWithRamp("mock")
+        mock.block.set_value(0.0)
+
+        # Create the data provider and a ramp_rate input
+        data_provider = RampedValueDataProvider(mock.ramp_rate, mock.block, 0.0)
+        mock.field.set_data_provider(data_provider)
+
+        #Ramp from 0.0 to "target" at a rate of 10/sec
+        mock.ramp_rate.set_value(300.0)
+        target=3
+
+        mock.field.set_value(target)
+
+        start = time.time()
+        for t in range(0,target+2):
+            value = mock.field.get_value()
+            elapsed = time.time() - start
+            if (t < target):
+                assert(t <= value <= t+1)
+            else:
+                assert(value == target)
+            time.sleep(.2)
+
+    def test_dataprovider_with_blocking(self):
+        """ Test the data provider bound to mock pins for its settings
+            Blocking mode"""
+
+        mock = MockFieldWithRamp("mock")
+        mock.block.set_value(1.0)
+
+        # Create the data provider and a ramp_rate input
+
+        data_provider = RampedValueDataProvider(mock.ramp_rate, mock.block, 0.0)
+        mock.field.set_data_provider(data_provider)
+
+        mock.ramp_rate.set_value(120.0)
+        target=1
+
+        #this should block until ramp is complete
+        start = time.time()
+        mock.field.set_value(target)
+
+        elapsed = time.time() - start
+        value = mock.field.get_value()
+
+        assert(target < (elapsed*2) < target+0.1)
+        assert value == target
+
+    def test_dataprovider_create_method_non_blocking(self):
+        """ Test the data provider created using the 'create' helper,
+            which uses internal pins for the settings data.
+            Non-blocking mode"""
+
+        data_provider = RampedValueDataProvider.create(
+            ramp_rate_per_min=300, is_blocking=False, starting_value=0.0)
+
+        target = 3
+        data_provider.set_value(target)
+
+        for t in range(0,target+2):
+            value = data_provider.get_value()
+            if (t < target):
+                assert(t <= value <= t+1)
+            else:
+                assert(value == target)
+            time.sleep(.2)
+
+    def test_dataprovider_create_method_blocking(self):
+        """ Test the data provider created using the 'create' helper,
+            which uses internal pins for the settings data.
+            Non-blocking mode"""
+
+        data_provider = RampedValueDataProvider.create(
+            ramp_rate_per_min=120, is_blocking=True, starting_value=0.0)
+
+        target=1
+
+        #this should block until ramp is complete
+        start = time.time()
+        data_provider.set_value(target)
+
+        elapsed = time.time() - start
+        value = data_provider.get_value()
+
+        assert(target < (elapsed*2) < target+0.1)
+        assert value == target
+
+
+    def test_dataprovider_in_scenario(self):
+        """ Test using this data provider in a scenario """
+        scenario_file = os.path.join(scenario_root, "ramped_value_data_provider.yaml")
+
+        mock = MockFieldWithRamp("mock")
+        mock.ramp_rate.set_value(120.0)
+        mock.block.set_value(1.0)
+
+        scenario = SimulationScenario.load_from_yaml(scenario_file)
+
+        # This should set the ramping data provider onto the field pin of the mock
+        scenario.run_next_step()
+
+        target = 1.0
+        assert(mock.field.get_value() == 0.0)
+
+        start = time.time()
+        mock.field.set_value(target)
+
+        elapsed = time.time() - start
+        value = mock.field.get_value()
+
+        assert(target <= (elapsed*2) <= target+0.1)
+        assert(value == target)
+
+
+class TestDelayedDataProvider:
+
+    def test_data_provider(self):
+
+        read_delay = 0.1
+        write_delay = 0.2
+        data_provider = DelayedDataProvider(
+            read_delay = read_delay,
+            write_delay = write_delay)
+
+        max = 5
+        start = time.time()
+        expected_delay = 0
+
+        for i in range(0,max):
+            data_provider.set_value(i)
+            elapsed = time.time() - start
+            expected_delay = expected_delay + write_delay
+            assert(expected_delay <= elapsed < expected_delay + write_delay)
+
+            value = data_provider.get_value()
+            elapsed = time.time() - start
+            expected_delay = expected_delay + read_delay
+            assert(value == i)
+            assert(expected_delay <= elapsed < expected_delay + write_delay)

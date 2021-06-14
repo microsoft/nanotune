@@ -1,0 +1,11 @@
+"end to end scenario" :
+
+  - "Set Ramped Value Data Provider" :
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "mock.field"
+        data_provider :
+          type : "forq.sim.data_providers.RampedValueDataProvider"
+          init:
+            ramp_rate_provider : "mock.ramp_rate"
+            is_blocking_provider : "mock.block"
