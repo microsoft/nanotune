@@ -21,7 +21,7 @@ dataclasses==0.6
 decorator==4.4.2
 defusedxml==0.7.1
 entrypoints==0.3
-execnet==1.8.1
+execnet==1.9.0
 flatbuffers==1.12
 gast==0.4.0
 gitdb==4.0.7
