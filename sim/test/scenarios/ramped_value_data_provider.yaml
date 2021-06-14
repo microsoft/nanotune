@@ -5,7 +5,7 @@
       init :
         pin : "mock.field"
         data_provider :
-          type : "forq.sim.data_providers.RampedValueDataProvider"
+          type : "sim.data_providers.RampedValueDataProvider"
           init:
             ramp_rate_provider : "mock.ramp_rate"
             is_blocking_provider : "mock.block"
