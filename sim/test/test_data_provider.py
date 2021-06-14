@@ -13,7 +13,7 @@ from sim.data_providers import (
     RampedValueDataProvider,
     StaticDataProvider,
     SyntheticPinchoffDataProvider )
-from sim.mock_devices import MockFieldWithRamp, Pin
+from sim.mock_devices import MockFieldWithRamp, MockPin
 from sim.simulation_scenario import SimulationScenario
 
 testroot = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +33,7 @@ class TestQcodesDataProvier:
         different input values yields different outputs.
         """
 
-        in1 = Pin("in1")
+        in1 = MockPin("in1")
         data_1d = QcodesDataProvider(
             [in1], valid_db_path, "GB_Newtown_Dev_3_2", 986
         )
@@ -51,8 +51,8 @@ class TestQcodesDataProvier:
         different input values yields different outputs.
         """
 
-        in1 = Pin("in1")
-        in2 = Pin("in2")
+        in1 = MockPin("in1")
+        in2 = MockPin("in2")
         data_2d = QcodesDataProvider(
             [in1, in2], valid_db_path, "GB_Newtown_Dev_3_2", 991
         )
@@ -83,7 +83,7 @@ class TestQcodesDataProvier:
         """
         with pytest.raises(NameError):
             data_1d = QcodesDataProvider(
-                [Pin("in1")],
+                [MockPin("in1")],
                 valid_db_path,
                 "Bad_Experiment_Name",
                 986,
@@ -91,7 +91,7 @@ class TestQcodesDataProvier:
 
         with pytest.raises(NameError):
             data_1d = QcodesDataProvider(
-                [Pin("in1")],
+                [MockPin("in1")],
                 valid_db_path,
                 "GB_Newtown_Dev_3_2",
                 987654321,
@@ -103,7 +103,7 @@ class TestQcodesDataProvier:
         """
 
         data_1d = QcodesDataProvider(
-            [Pin("in1")],
+            [MockPin("in1")],
             valid_db_path,
             "GB_Newtown_Dev_3_2",
             986,
@@ -119,7 +119,7 @@ class TestQcodesDataProvier:
 
         with pytest.raises(KeyError):
             data_1d = QcodesDataProvider(
-                [Pin("in1")],
+                [MockPin("in1")],
                 valid_db_path,
                 "GB_Newtown_Dev_3_2",
                 986,
@@ -131,7 +131,7 @@ class TestQcodesDataProvier:
         specified for indexing into the specified dataset.
         """
 
-        in1 = Pin("in1")
+        in1 = MockPin("in1")
 
         with pytest.raises(ValueError):
             # This is a 2D data set, but only 1 input binding is specified
@@ -150,9 +150,9 @@ class TestQcodesDataProvier:
         are specified for indexing into the specified dataset.
         """
 
-        in1 = Pin("in1")
-        in2 = Pin("in2")
-        in3 = Pin("in3")
+        in1 = MockPin("in1")
+        in2 = MockPin("in2")
+        in3 = MockPin("in3")
 
         with pytest.raises(ValueError):
             # This is a 2D data set, but only 1 input binding is specified
@@ -170,7 +170,7 @@ class TestQcodesDataProvier:
 class TestStaticDataProvider:
 
     def test_static_data_provider(self):
-        o1 = Pin("O1")
+        o1 = MockPin("O1")
         o1.set_data_provider(StaticDataProvider(3.14))
 
         assert o1.get_value() == 3.14
@@ -180,12 +180,12 @@ class TestPassthroughDataProvider:
 
     def test_passthrough_data_provider(self):
 
-        def assert_the_same(pin1 : Pin, pin2 : Pin, value: float) -> None:
+        def assert_the_same(pin1 : MockPin, pin2 : MockPin, value: float) -> None:
             assert(pin1.get_value() == value)
             assert(pin2.get_value() == value)
 
-        pin1 = Pin("Pin1")
-        pin2 = Pin("Pin2")
+        pin1 = MockPin("Pin1")
+        pin2 = MockPin("Pin2")
 
         pin2.set_data_provider(PassthroughDataProvider(pin1))
         assert_the_same(pin1, pin2, 0.0)
@@ -203,7 +203,7 @@ class TestSyntheticPinchoffDataProvider:
         """ Tests a variety of pinchoff curves occuring in each cartesian quadrant
             with varying heights and widths, and both flipped and non-flipped """
 
-        pin = Pin("pin")
+        pin = MockPin("pin")
         centers = [-2.5, -1.0, 0.0, 1.0, 2.5]
         widths = [0.25, 0.5, 1.0, 2.0]
         mins = [-4.0, -2.5, -1.0, 0.0, 1.0, 2.5, 4.0]

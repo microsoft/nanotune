@@ -28,10 +28,10 @@ class RampedValueDataProvider(DataProvider):
             the ramp_rate and is_blocking parameters.  This is useful when you dont need to
             change the ramp rate or blocking behavior """
 
-        from sim.mock_devices.pin import Pin
+        from sim.mock_devices.mock_pin import MockPin
 
-        ramp_rate_pin : IMockPin = Pin("ramp_rate")
-        is_blocking_pin : IMockPin = Pin("blocking")
+        ramp_rate_pin : IMockPin = MockPin("ramp_rate")
+        is_blocking_pin : IMockPin = MockPin("blocking")
         ramp_rate_pin.set_value(ramp_rate_per_min)
         is_blocking_pin.set_value(1.0 if is_blocking else 0.0)
 

@@ -1,6 +1,6 @@
 from sim.mock_devices import MockDevice
 from sim.qcodes_mocks import MockDeviceInstrument, SimulationParameter
-from sim.mock_devices import Pin
+from sim.mock_devices import MockPin
 
 def test_simulation_parameter_with_init():
     """Verifies that a SimulationParameter instance can be properly initialized
@@ -11,7 +11,7 @@ def test_simulation_parameter_with_init():
             super().__init__(
                 "mock_device",
                 [
-                    Pin("pin")
+                    MockPin("pin")
                 ]
             )
 
