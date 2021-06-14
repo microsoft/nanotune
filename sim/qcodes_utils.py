@@ -74,4 +74,3 @@ def enum_datasets(db_path):
                 params = " || ".join(msg)
                 print(f"{dataset.captured_run_id}: {dataset.exp_name} {params}")
                 yield dataset
-
