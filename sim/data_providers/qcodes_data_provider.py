@@ -69,6 +69,7 @@ class QcodesDataProvider(DataProvider):
                 experiment_name=exp_name,
                 captured_run_id=run_id,
             )
+            self._dataset = dataset
             dataset_params = dataset.get_parameters()
 
             # if a model name was specified, make sure it is actually in the

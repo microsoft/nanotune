@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from sim.mock_pin import IMockPin
 
-
 class IMockDevice(ABC):
 
     """ Base interface for all mock devices """
@@ -11,9 +10,7 @@ class IMockDevice(ABC):
     @abstractmethod
     def name(self) -> str:
         """ Mock device name """
-        raise NotImplementedError
 
     @abstractmethod
     def get_pin(self, pin_name: str) -> IMockPin:
         """ Get pin by name """
-        raise NotImplementedError
