@@ -1,87 +1,87 @@
-import pytest
-import qcodes as qc
+# import pytest
+# import qcodes as qc
 
-import nanotune as nt
-
-
-def test_device_init_defaults():
-    device = nt.Device("test_doubledot", "doubledot_2D")
-
-    assert not device.gates
-    assert not device.ohmics
-
-    assert device.snapshot()
-    device.close()
+# import nanotune as nt
 
 
-def test_device_gates(device_gate_inputs, dot_readout_methods):
+# def test_device_init_defaults():
+#     device = nt.Device("test_doubledot", "doubledot_2D")
 
-    device = nt.Device(
-        name="test_doubledot",
-        device_type="doubledot_2D",
-        readout_methods=dot_readout_methods,
-        **device_gate_inputs,
-    )
-    assert len(device.gates) == 5
-    assert len(device.ohmics) == 1
-    assert len(device.sensor_gates) == 0
+#     assert not device.gates
+#     assert not device.ohmics
 
-    init_valid_ranges = {}
-    for gate in device.gates:
-        init_valid_ranges[gate.layout_id()] = gate.safety_range()
-    assert device.initial_valid_ranges() == init_valid_ranges
-
-    assert device.quality() == 0
-    readout_methods = device.readout_methods()
-    assert all(key in readout_methods for key in ["transport", "sensing"])
-    assert isinstance(readout_methods["transport"], qc.Parameter)
-
-    n_sct = device.normalization_constants()
-    assert isinstance(n_sct, dict)
-    assert all(key in n_sct for key in ["transport", "sensing", "rf"])
-
-    assert device.sensor_side() == "left"
-    with pytest.raises(ValueError):
-        device.sensor_side("anywhere")
-    device.close()
+#     assert device.snapshot()
+#     device.close()
 
 
-def test_device_gate_methods(device_gate_inputs, dot_readout_methods):
-    device = nt.Device(
-        name="test_doubledot",
-        device_type="doubledot_2D",
-        readout_methods=dot_readout_methods,
-        **device_gate_inputs,
-    )
+# def test_device_gates(device_gate_inputs, dot_readout_methods):
 
-    for gate in device.gates:
-        gate.dc_voltage(-1)
-        gate.relay_state("unknown")
-    device.all_gates_to_highest()
-    device.ground_gates()
-    for gate in device.gates:
-        assert gate.dc_voltage() == 0
-        assert gate.relay_state() == "ground"
+#     device = nt.Device(
+#         name="test_doubledot",
+#         device_type="doubledot_2D",
+#         readout_methods=dot_readout_methods,
+#         **device_gate_inputs,
+#     )
+#     assert len(device.gates) == 5
+#     assert len(device.ohmics) == 1
+#     assert len(device.sensor_gates) == 0
 
-    device.ohmics[0].relay_state("unknown")
-    device.float_ohmics()
-    assert device.ohmics[0].relay_state() == "float"
-    device.close()
+#     init_valid_ranges = {}
+#     for gate in device.gates:
+#         init_valid_ranges[gate.layout_id()] = gate.safety_range()
+#     assert device.initial_valid_ranges() == init_valid_ranges
+
+#     assert device.quality() == 0
+#     readout_methods = device.readout_methods()
+#     assert all(key in readout_methods for key in ["transport", "sensing"])
+#     assert isinstance(readout_methods["transport"], qc.Parameter)
+
+#     n_sct = device.normalization_constants()
+#     assert isinstance(n_sct, dict)
+#     assert all(key in n_sct for key in ["transport", "sensing", "rf"])
+
+#     assert device.sensor_side() == "left"
+#     with pytest.raises(ValueError):
+#         device.sensor_side("anywhere")
+#     device.close()
 
 
-def test_device_snapshot(device_gate_inputs, dot_readout_methods):
-    device = nt.Device(
-        name="test_doubledot",
-        device_type="doubledot_2D",
-        readout_methods=dot_readout_methods,
-        **device_gate_inputs,
-    )
-    snap = device.snapshot()
-    assert isinstance(snap["parameters"]["readout_methods"], dict)
-    snap_keys = list(snap["parameters"]["readout_methods"].keys())
-    readout_methods = device.readout_methods().keys()
-    assert all(key in readout_methods for key in snap_keys)
-    for key in snap_keys:
-        assert isinstance(snap["parameters"]["readout_methods"][key], dict)
+# def test_device_gate_methods(device_gate_inputs, dot_readout_methods):
+#     device = nt.Device(
+#         name="test_doubledot",
+#         device_type="doubledot_2D",
+#         readout_methods=dot_readout_methods,
+#         **device_gate_inputs,
+#     )
 
-    device.close()
+#     for gate in device.gates:
+#         gate.dc_voltage(-1)
+#         gate.relay_state("unknown")
+#     device.all_gates_to_highest()
+#     device.ground_gates()
+#     for gate in device.gates:
+#         assert gate.dc_voltage() == 0
+#         assert gate.relay_state() == "ground"
+
+#     device.ohmics[0].relay_state("unknown")
+#     device.float_ohmics()
+#     assert device.ohmics[0].relay_state() == "float"
+#     device.close()
+
+
+# def test_device_snapshot(device_gate_inputs, dot_readout_methods):
+#     device = nt.Device(
+#         name="test_doubledot",
+#         device_type="doubledot_2D",
+#         readout_methods=dot_readout_methods,
+#         **device_gate_inputs,
+#     )
+#     snap = device.snapshot()
+#     assert isinstance(snap["parameters"]["readout_methods"], dict)
+#     snap_keys = list(snap["parameters"]["readout_methods"].keys())
+#     readout_methods = device.readout_methods().keys()
+#     assert all(key in readout_methods for key in snap_keys)
+#     for key in snap_keys:
+#         assert isinstance(snap["parameters"]["readout_methods"][key], dict)
+
+#     device.close()
