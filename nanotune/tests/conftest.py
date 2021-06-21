@@ -1,43 +1,27 @@
 import gc
 import os
 
-import joblib
 import shutil
-import numpy as np
 import pytest
 import qcodes as qc
 from qcodes import new_experiment
-from qcodes.dataset.data_set import DataSet
-from qcodes.dataset.experiment_container import experiments, load_by_id
-from qcodes.dataset.measurements import Measurement
-from qcodes.instrument.base import Instrument
-from qcodes.tests.instrument_mocks import (DummyChannel,
-                                           DummyChannelInstrument,
-                                           DummyInstrument,
-                                           DummyInstrumentWithMeasurement)
-from qcodes.dataset.database_extract_runs import extract_runs_into_db
-from sklearn.dummy import DummyClassifier
+from qcodes.tests.instrument_mocks import DummyInstrument
 
 import nanotune as nt
-import nanotune.tests.data_generator_methods as gm
-from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device
 from nanotune.device.device import DeviceChannel
 from nanotune.tests.data_generator_methods import (
     DotCurrent, DotSensor, PinchoffCurrent, PinchoffSensor,
-    doubledot_triple_points, generate_coloumboscillation_metadata,
-    generate_coulomboscillations, generate_default_metadata,
+    generate_coloumboscillation_metadata,
+    generate_coulomboscillations,
     generate_doubledot_data, generate_doubledot_metadata,
     generate_pinchoff_data, generate_pinchoff_metadata,
-    populate_db_coulomboscillations, populate_db_doubledots,
-    populate_db_pinchoffs)
+    populate_db_doubledots, populate_db_pinchoffs)
 
 from nanotune.drivers.mock_dac import MockDAC, MockDACChannel
 from nanotune.drivers.mock_readout_instruments import MockLockin, MockRF
 
-from .dac_mocks import DummyDAC, DummyDACChannel
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
-from .mock_classifier import MockClassifer
 
 ideal_run_labels = {
     0: "pinchoff",
@@ -120,27 +104,6 @@ def _make_dummy_inst():
         yield inst
     finally:
         inst.close()
-
-
-# @pytest.fixture(name="dummy_dac", scope="function")
-# def _make_dummy_dac():
-#     inst = DummyDAC("dummy_dac", DummyDACChannel)
-#     try:
-#         yield inst
-#     finally:
-#         inst.close()
-
-
-@pytest.fixture(name="dummy_device", scope="function")
-def _make_dummy_device(experiment, tmp_path):
-    device = Device(
-        "test_sample",
-        "doubledot_2D",
-    )
-    try:
-        yield device
-    finally:
-        device.close()
 
 
 @pytest.fixture(scope="function", params=["numeric"])
@@ -451,30 +414,6 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
         "data_settings": data_settings,
     }
     yield tuningstage_settings
-
-
-@pytest.fixture(scope="function")
-def device_gate_inputs(dummy_dac):
-    gate_parameters = {}
-    for gate_id in range(5):
-        gate_parameters[gate_id] = {
-            "channel_id": gate_id,
-            "dac_instrument": dummy_dac,
-            "label": f"test_gate{gate_id}",
-            "safety_range": (-2, 0),
-        }
-    ohmic_parameters = {
-        0: {
-            "dac_instrument": dummy_dac,
-            "channel_id": 10,
-            "label": "test_ohmic",
-        }
-    }
-    gate_inputs = {
-        "gate_parameters": gate_parameters,
-        "ohmic_parameters": ohmic_parameters,
-    }
-    yield gate_inputs
 
 
 @pytest.fixture(scope="function")
