@@ -4,26 +4,20 @@
 # https://opensource.org/licenses/MIT
 from typing import Optional, Tuple
 from qcodes import validators as vals
-from nanotune.drivers.dac_interface import DACChannelInterface, DACInterface
-from qcodes.instrument.channel import ChannelList, InstrumentChannel
+from nanotune.drivers.dac_interface import (DACChannelInterface, DACInterface,
+    RelayState)
 
 
 class MockDACChannel(DACChannelInterface):
     def __init__(self, parent, name, channel_id):
         super().__init__(parent, name, channel_id)
 
-        self._gnd: str = "close"
-        self._bus: str = "close"
-        self._smc: str = "close"
-        self._dac_output: str = "close"
-
         self._label = "mock channel"
         self._curr_voltage = 0
         self._voltage_limit = [-5, 5]
-        self._inter_delay = 0.01
         self._step = 0
         self._limit_rate = 0.2
-        self._relay_state = "smc"
+        self._relay_state: RelayState = RelayState.smc
         self._filter = 1
         self._waveform = "saw"
         self._amplitude = 0
@@ -76,25 +70,28 @@ class MockDACChannel(DACChannelInterface):
         return self._curr_voltage
 
     def set_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
-        self._voltage_limit = new_limits
+        self.voltage.vals = vals.Numbers(*new_limits)
+
+    def get_voltage_limit(self) -> Tuple[float, float]:
+        return self.voltage.vals.valid_values
 
     def get_voltage_inter_delay(self) -> float:
-        return self._inter_delay
+        return self.voltage.inter_delay
 
     def set_voltage_inter_delay(self, new_inter_delay: float) -> None:
-        self._inter_delay = new_inter_delay
+        self.voltage.inter_delay = new_inter_delay
 
     def get_voltage_post_delay(self) -> float:
-        return self._post_delay
+        return self.voltage.post_delay
 
     def set_voltage_post_delay(self, new_post_delay: float) -> None:
-        self._post_delay = new_post_delay
+        self.voltage.post_delay = new_post_delay
 
     def get_voltage_step(self) -> float:
-        return self._step
+        return self.voltage.step
 
     def set_voltage_step(self, new_step: float) -> None:
-        self._step = new_step
+        self.voltage.step = new_step
 
     def get_frequency(self) -> float:
         return self._frequency
@@ -147,7 +144,7 @@ class MockDACChannel(DACChannelInterface):
     def ramp_voltage(
         self, target_voltage: float, ramp_rate: Optional[float] = None
     ) -> None:
-        self._curr_voltage = target_voltage
+        raise NotImplementedError
 
 
 class MockDAC(DACInterface):
