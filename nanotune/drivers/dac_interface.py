@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple, Type
+from enum import Enum
 
 import qcodes as qc
 from qcodes.instrument.base import Instrument
 from qcodes.instrument.channel import ChannelList, InstrumentChannel
-#TODO: Add a State class for relay state
+
+
+class RelayState(Enum):
+    ground = 0
+    smc = 1
+    bus = 2
+    floating = 3
 
 
 class DACChannelInterface(InstrumentChannel, ABC):
@@ -34,19 +41,7 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def get_voltage_inter_delay(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_voltage_inter_delay(self, new_inter_delay: float) -> None:
-        pass
-
-    @abstractmethod
-    def get_voltage_post_delay(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_voltage_post_delay(self, new_post_delay: float) -> None:
+    def get_voltage_limit(self) -> Tuple[float, float]:
         pass
 
     @abstractmethod
@@ -82,12 +77,13 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def get_relay_state(self) -> str:
+    def get_relay_state(self) -> RelayState:
         pass
 
     @abstractmethod
-    def set_relay_state(self, value: str):
-        """ Needs to accept 'ground' TODO: add it as type hint """
+    def set_relay_state(self, new_state: RelayState):
+        """ """
+        pass
 
     @abstractmethod
     def ramp_voltage(self, target_voltage: float, ramp_rate: Optional[float] = None):
@@ -99,22 +95,6 @@ class DACChannelInterface(InstrumentChannel, ABC):
 
     @abstractmethod
     def get_ramp_rate(self) -> float:
-        pass
-
-    @abstractmethod
-    def get_limit_rate(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_limit_rate(self, value: float):
-        pass
-
-    @abstractmethod
-    def get_filter(self) -> int:
-        pass
-
-    @abstractmethod
-    def set_filter(self, filter_id: int):
         pass
 
     @abstractmethod
