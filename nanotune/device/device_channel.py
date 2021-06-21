@@ -1,30 +1,81 @@
 import copy
 import logging
 import time
+import importlib
 from contextlib import contextmanager
 from math import isclose
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Tuple, Union, Any, Sequence
 
-import numpy as np
 import qcodes as qc
-from qcodes import ArrayParameter, Instrument, InstrumentChannel, Parameter
+from qcodes import InstrumentChannel
 from qcodes import validators as vals
-from qcodes.instrument.base import InstrumentBase
-from qcodes.utils.validators import Validator
+from qcodes.station import Station
 
-import nanotune as nt
-from nanotune.drivers.dac_interface import DACInterface
+from nanotune.drivers.dac_interface import DACInterface, RelayState
 
 logger = logging.getLogger(__name__)
 
 
 class DeviceChannel(InstrumentChannel):
-    """"""
+    """Class representing a channel of a device such as gate or ohmic.
 
+        It emulates an existing intrument channel and adds convenience
+        functionality for tuning. It implements its own voltage setting method
+        which, for example, checks whether the value is within the safety range
+        before starting to set anything - as opposed to qcodes. The emulated
+        channel must be a channel of a subclass of
+        `nanotune.drivers.dac_interface.DACInterface`. When setting a voltage,
+        it can be either ramped or set, specified by the `use_ramp` parameter.
+        A hardware ramp is performed if the underlying instrument channel
+        supports it, which is indicated by the `supports_hardware_ramp`
+        property. Otherwise QCoDeS' software ramp using delay and step
+        properties is used.
+
+        Attributes:
+            gate_id: Integer identifier of the gate with respect to the device
+                layout. Not to be set if it is an ohmic.
+            ohmic_id: Integer identifier of the ohmic with respect to the
+                device layout. Not to be set if it is a gate.
+            label: String identifier to be printed on plots.
+            safety_voltage_range: Range of voltages within which safe operation
+                is guaranteed.
+            use_ramp: Whether voltages should be ramped.
+            ramp_rate: Rate at which voltages should be ramped. In V/s.
+            max_voltage_step: Maximum voltage difference to be applied in a
+                single step. Note that this step does not apply when `use_ramp`
+                is set to False.
+            post_delay: Delay to wait after a voltage is set, in seconds. If
+                ramping in software (supports_hardware_ramp == False and
+                use_ramp() == True and thus using QCoDeS' delay and step
+                parameter) and `inter_delay` is not set, then `post_delay` will
+                be used.
+            inter_delay: Delay to wait between voltage setpoints, in seconds.
+                If set to zero but `post_delay` is not zero, software ramp
+                (supports_hardware_ramp == False and use_ramp() == True) will
+                take the `post_delay` as delay between sets.
+            supports_hardware_ramp: Bool indicating whether under the
+                underlying intrument channel supports voltage ramping in
+                hardware.
+            relay_state: State of DAC relay, one of
+                `nanotune.dac_interface.RelayState`'s members.
+            frequency: Frequency parameter, part of the AWG functionality of
+                the underlying channel (if supported - as defined by the
+                instance of DACInterface instance).
+            offset: Offset parameter, part of the AWG functionality of
+                the underlying channel (if supported - as defined by the
+                instance of DACInterface instance).
+            amplitude: Amplitude parameter, part of the AWG functionality of
+                the underlying channel (if supported - as defined by the
+                instance of DACInterface instance).
+
+        Methods:
+            ground: Set relay_state to RelayState.ground
+            float: Set relay_state to RelayState.floating
+            set_voltage: Voltage setter.
+    """
     def __init__(
         self,
-        parent: InstrumentBase,
-        name: str,
+        station: qc.Station,
         channel: Union[str, InstrumentChannel],
         gate_id: Optional[int] = None,
         ohmic_id: Optional[int] = None,
@@ -37,22 +88,46 @@ class DeviceChannel(InstrumentChannel):
         inter_delay: float = 0.001,
         **kwargs,
     ) -> None:
-
-        """
+        """DeviceChannel init.
 
         Args:
-
-
+            channel: existing instrument channel, e.g. of a DAC: dac.ch01.
+                Either a string or instrument channel instance.
+            gate_id: Integer identifier of the gate with respect to the device
+                layout. Not to be set if it is an ohmic.
+            ohmic_id: Integer identifier of the ohmic with respect to the
+                device layout. Not to be set if it is a gate.
+            label: String identifier to be printed on plots.
+            safety_voltage_range: Range of voltages within which safe operation
+                is guaranteed.
+            use_ramp: Whether voltages should be ramped.
+            ramp_rate: Rate at which voltages should be ramped. In V/s.
+            max_voltage_step: Maximum voltage difference to be applied in a
+                single step. Note that this step does not apply when `use_ramp`
+                is set to False.
+            post_delay: Delay to wait after a voltage is set, in seconds. If
+                ramping in software (supports_hardware_ramp == False and
+                use_ramp() == True and thus using QCoDeS' delay and step
+                parameter) and `inter_delay` is not set, then `post_delay` will
+                be used.
+            inter_delay: Delay to wait between voltage setpoints, in seconds.
+                If set to zero but `post_delay` is not zero, software ramp
+                (supports_hardware_ramp == False and use_ramp() == True) will
+                take the `post_delay` as delay between sets.
         """
-
-        self._channel = self._get_channel_instance(channel)
+        self._channel = self._get_channel_instance(station, channel)
 
         if gate_id is not None and ohmic_id is not None:
-            raise ValueError(f"Initializing {name} as both gate and ohmic.")
+            raise ValueError(
+                f"Initializing DeviceChannel of {self._channel} as both gate \
+                    and ohmic."
+            )
 
         channel_name = self._channel.name
-        if channel_name.startswith(parent.name):
-            channel_name = channel_name.replace(parent.name+"_", "", 1)
+        if channel_name.startswith(self._channel.parent.name):
+            channel_name = channel_name.replace(
+                self._channel.parent.name+"_", "", 1
+            )
 
         static_metadata = kwargs.pop('metadata', {})
         static_metadata.update({
@@ -60,15 +135,15 @@ class DeviceChannel(InstrumentChannel):
             'gate_id':gate_id,
             'ohmic_id': ohmic_id}
         )
-        assert issubclass(parent.__class__, DACInterface)
+        assert issubclass(self._channel.parent.__class__, DACInterface)
 
         super().__init__(
-            parent,
+            self._channel.parent,
             channel_name,
             metadata=static_metadata,
             **kwargs,
         )
-
+        self.label = label
         self._gate_id = gate_id
         self._ohmic_id = ohmic_id
 
@@ -80,9 +155,9 @@ class DeviceChannel(InstrumentChannel):
             vals=vals.Numbers(*safety_voltage_range),
         )
 
-        self.label = label
         self.inter_delay = inter_delay
         self.post_delay = post_delay
+        self.max_voltage_step = max_voltage_step
 
         super().add_parameter(
             name="safety_voltage_range",
@@ -91,15 +166,6 @@ class DeviceChannel(InstrumentChannel):
             get_cmd=self._get_safety_voltage_range,
             initial_value=list(safety_voltage_range),
             vals=vals.Lists(),
-        )
-
-        super().add_parameter(
-            name="max_voltage_step",
-            label=f"{label} maximum voltage jump",
-            set_cmd=self._set_max_voltage_step,
-            get_cmd=self._get_max_voltage_step,
-            initial_value=max_voltage_step,
-            vals=vals.Numbers(),
         )
 
         super().add_parameter(
@@ -126,7 +192,7 @@ class DeviceChannel(InstrumentChannel):
             set_cmd=self._channel.set_relay_state,
             get_cmd=self._channel.get_relay_state,
             initial_value=self._channel.get_relay_state(),
-            vals=vals.Strings(),
+            vals=vals.Enum(*[e for e in RelayState]),
         )
 
         super().add_parameter(
@@ -158,18 +224,23 @@ class DeviceChannel(InstrumentChannel):
 
     @property
     def gate_id(self) -> int:
+        """Device layout ID of a gate."""
         return self._gate_id
 
     @property
     def ohmic_id(self) -> int:
+        """Device layout ID of an ohmic."""
         return self._ohmic_id
 
     @property
-    def has_ramp(self) -> float:
+    def supports_hardware_ramp(self) -> float:
+        """Boolean indication whether the underlying instrument channel
+        supports hardware ramp."""
         return self._channel.supports_hardware_ramp
 
     @property
     def post_delay(self) -> float:
+        """Waiting time in seconds after a sequence of set operations."""
         return self._channel.get_voltage_post_delay()
 
     @post_delay.setter
@@ -178,57 +249,75 @@ class DeviceChannel(InstrumentChannel):
 
     @property
     def inter_delay(self) -> float:
+        """Waiting time in seconds between set operations."""
         return self._channel.get_voltage_inter_delay()
 
     @inter_delay.setter
     def inter_delay(self, new_value: float) -> None:
         self._channel.set_voltage_inter_delay(new_value)
 
+    @property
+    def max_voltage_step(self) -> float:
+        """Maximum voltage difference between consecutive voltage sets. """
+        return self._channel.get_voltage_step()
+
+    @max_voltage_step.setter
+    def max_voltage_step(self, new_value: float) -> None:
+        self._channel.set_voltage_step(new_value)
+
     def ground(self) -> None:
-        """ """
-        self.relay_state("ground")
+        """Set relay state to ground."""
+        self.relay_state(RelayState.ground)
 
     def float_relay(self) -> None:
-        """ """
-        self.relay_state("float")
+        """Set relay state to float."""
+        self.relay_state(RelayState.floating)
 
     def set_voltage(self, new_value: float, tol: float = 1e-5):
-        """Voltage setter wich checks if new voltage is within safety ranges
+        """Voltage setter.
+
+        It checks if the new value is within safety ranges
         before setting anything - as opposed to qcodes, which throws an error
         only once the safety range is reached.
         It ramps to the new value if ramping is enabled, using either software
-        or hardware ramps depending on `has_ramp`. It's a blocking ramp.
-
+        or hardware ramps - depending on `supports_hardware_ramp`. It's a
+        blocking ramp.
         Args:
             new_value: New voltage value to set.
-            tol: Tolerance in Volt.
+            tol: Tolerance in Volt. Used to check if ramp has finished.
         """
-
         safe_range = self.safety_voltage_range()
         if new_value < safe_range[0] - tol or new_value > safe_range[1] + tol:
             raise ValueError(
                 f"Setting voltage outside of permitted range: \
                     {self.label} to {new_value}.")
 
-        current_range = self.current_valid_range()
-        if new_value < current_range[0] - 1e-5 or new_value > current_range[0]:
-            logger.debug(
-                f"Setting {self.label}'s voltage outside of current valid \
-                    range."
-            )
-
-        if self.has_ramp and self.use_ramp():
+        if self.supports_hardware_ramp and self.use_ramp():
             self._channel.ramp_voltage(new_value)
             while not isclose(new_value, self.voltage(), abs_tol=tol):
-                time.sleep(0.02)
-            time.sleep(self.post_delay())
-        elif not self.has_ramp and self.use_ramp():
-            # Use qcodes software ramp
-            step = self.max_voltage_step()
-            with set_inter_delay(self.max_voltage_step(), self.ramp_rate()):
-                self._channel.set_voltage(new_value)
+                time.sleep(0.01)
+            time.sleep(self.post_delay)
+
+        elif not self.supports_hardware_ramp and self.use_ramp():
+            if self.inter_delay == 0 and self.post_delay > 0:
+                delay = self.post_delay
+            else:
+                delay = self.inter_delay
+            if self.max_voltage_step == 0 or delay == 0:
+                logger.warning(
+                    "Using software ramp without max_voltage_step \
+                    or inter_delay set."
+                )
+            self._channel.voltage(new_value)
+
         elif not self.use_ramp():
-            self._channel.set_voltage(new_value)
+            if abs(self.voltage() - new_value) > self.max_voltage_step:
+                raise ValueError("Setting voltage in steps larger than \
+                    max_voltage_step. Decrease \
+                    max_voltage_step or set use_ramp(True).")
+            with self._set_temp_inter_delay_and_step(0, 0):
+                self._channel.voltage(new_value)
+
         else:
             raise ValueError(
                 "Unknown voltage setting mode. Should I ramp or not?"
@@ -238,8 +327,16 @@ class DeviceChannel(InstrumentChannel):
         return copy.deepcopy(self._safety_voltage_range)
 
     def _set_safety_voltage_range(self, new_range: List[float]) -> None:
-        assert len(new_range) == 2
-        self._safety_voltage_range = sorted(new_range)
+        """ """
+        if len(new_range) != 2:
+            raise ValueError("Invalid safety voltage range.")
+
+        new_range = sorted(new_range)
+        current_v = self.voltage()
+        if current_v < new_range[0] or current_v > new_range[1]:
+            raise ValueError('Current voltage not within new safety range.')
+
+        self._safety_voltage_range = new_range
         logger.info(f"{self.name}: changing safety range to {new_range}")
 
         self._channel.set_voltage_limit(new_range)
@@ -265,33 +362,40 @@ class DeviceChannel(InstrumentChannel):
             )
         self._ramp = on
 
-    def _get_max_voltage_step(self) -> float:
-        return self._channel.get_voltage_step()
-
-    def _set_max_voltage_step(self, max_voltage_step: float) -> None:
-        self._channel.set_voltage_step(max_voltage_step)
-
     def _get_channel_instance(
         self,
+        station: Station,
         channel: Union[str, InstrumentChannel],
     ) -> InstrumentChannel:
         if isinstance(channel, str):
-            _ , channel_name = channel.split('.')
-            instr_channel = getattr(parent, channel_name)
+            def _parse_path(parent: Any, elem: Sequence[str]) -> Any:
+                child = getattr(parent, elem[0])
+                if len(elem) == 1:
+                    return child
+                return _parse_path(child, elem[1:])
+
+            return _parse_path(station, channel.split("."))
+
         elif isinstance(channel, InstrumentChannel):
             instr_channel = channel
         else:
-            raise ValueError(f'Invalid type for "channel" input of {name}.')
+            raise ValueError(f'Invalid type for "channel" input.')
         return instr_channel
 
     @contextmanager
-    def set_inter_delay(max_voltage_step: float, ramp_rate: float):
-        initial_rate = self._channel.get_voltage_inter_delay()
-        init_step = self._channel.get_voltage_step()
-        self._channel.set_voltage_inter_delay(max_voltage_step / ramp_rate)
-        self._channel.set_voltage_step(max_voltage_step)
+    def _set_temp_inter_delay_and_step(
+        self,
+        inter_delay: float,
+        max_voltage_step: float,
+    ) -> None:
+        """ """
+        current_inter_delay = self.inter_delay
+        current_step = self.max_voltage_step
+
+        self.inter_delay = inter_delay
+        self.max_voltage_step = max_voltage_step
         try:
             yield
         finally:
-            self._channel.set_voltage_inter_delay(initial_rate)
-            self._channel.set_voltage_step(init_step)
+            self.inter_delay = current_inter_delay
+            self.max_voltage_step = current_step
