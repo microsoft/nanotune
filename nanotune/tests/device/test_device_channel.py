@@ -186,6 +186,3 @@ def test_set_temp_inter_delay_and_step(gate_1):
 
     assert gate_1.inter_delay == 0.5
     assert gate_1.max_voltage_step == 0.06
-
-
-

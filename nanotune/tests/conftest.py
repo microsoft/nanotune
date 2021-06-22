@@ -469,4 +469,3 @@ def device_pinchoff(pinchoff_dmm, device, station):
     pinchoff_dmm.po_current.gate = device.top_barrier
     pinchoff_dmm.po_sensor.gate = device.top_barrier
     yield device
-
