@@ -1,20 +1,19 @@
 import copy
 import logging
+from nanotune.tests.device.conftest import gate
 from typing import (
     Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
-    MutableMapping, Iterable, Callable
 )
-
+from enum import Enum
 from collections import namedtuple
 from functools import partial
 import numpy as np
+from dataclasses import dataclass
 import qcodes as qc
 from qcodes import validators as vals
 from qcodes.station import Station
 
-import nanotune as nt
 from nanotune.device.device_channel import DeviceChannel
-from nanotune.device_tuner.tuningresult import TuningResult
 if not qc.__version__.startswith('0.27'):
     from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
 else:
@@ -22,9 +21,17 @@ else:
 
 
 logger = logging.getLogger(__name__)
+READOUTMETHODS = ['transport', 'sensing', 'rf']
 
 nrm_cnst_tp = Mapping[str, Tuple[float, float]]
 vltg_rngs_tp = Dict[int, Tuple[Union[None, float], Union[None, float]]]
+# TODO: Use dataclass for normalization constants
+# @dataclass
+# class NormalizationConstants:
+#     transport: Sequence[float]
+#     sensing: Sequence[float]
+#     rf: Sequence[float]
+
 
 def readout_formatter(
     *values: Any,
@@ -38,7 +45,7 @@ def readout_formatter(
 class Device(DelegateInstrument):
     """
     device_type: str, e.g 'doubledot'
-    readout_methods = {
+    readout = {
         'transport': qc.Parameter,
         'sensing': qc.Parameter,
         'rf': qc.Parameter,
@@ -50,9 +57,11 @@ class Device(DelegateInstrument):
         self,
         name: str,
         station: Station,
-        parameters: Optional[Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
-        channels: Optional[Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
-        readout_parameters: Optional[Mapping[str, str]] = None,
+        parameters: Optional[
+            Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
+        channels: Optional[
+            Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
+        readout: Optional[Mapping[str, str]] = None,
         initial_values: Optional[Mapping[str, Any]] = None,
         set_initial_values_on_load: bool = False,
         device_type: Optional[str] = '',
@@ -62,6 +71,8 @@ class Device(DelegateInstrument):
         transition_voltages: Optional[Mapping[str, float]] = None,
         **kwargs,
     ) -> None:
+
+        channels = _add_station_and_label_to_channel_init(station, channels)
 
         super().__init__(
             name,
@@ -73,36 +84,45 @@ class Device(DelegateInstrument):
             metadata={'device_type': device_type},
             **kwargs,
             )
-
-        self.gates, self.ohmics = self._initialize_channel_lists(channels)
-
-        if readout_parameters is None:
-            param_names: Sequence[str] = []
-            paths: Sequence[str] = []
+        if channels is not None:
+            (self.gates,
+             self.ohmics,
+             self._gate_labels) = self.initialize_channel_lists(channels)
         else:
-            param_names, paths = list(zip(*list(readout_parameters.items())))
-        super()._create_and_add_parameter(
-            'readout',
-            station,
-            paths,
-            formatter=partial(
-                readout_formatter,
-                param_names=param_names,
-                name='readout',
+            self.gates, self.ohmics = [], []
+
+        if readout is None:
+            self.readout = None
+        else:
+            param_names, paths = list(zip(*list(readout.items())))
+            for param_name in param_names:
+                if param_name not in READOUTMETHODS:
+                    raise KeyError(f"Invalid readout method key. Use one of \
+                        {READOUTMETHODS}")
+            super()._create_and_add_parameter(
+                'readout',
+                station,
+                paths,
+                formatter=partial(
+                    readout_formatter,
+                    param_names=param_names,
+                    name='readout',
+                )
             )
-        )
 
         if initial_valid_ranges is None:
             init_valid_ranges_renamed: Dict[int, Any] = {}
             for gate in self.gates:
                 gate_id = gate.gate_id
-                init_valid_ranges_renamed[gate_id] = gate.safety_range()
+                init_valid_ranges_renamed[gate_id] = gate.safety_voltage_range()
         else:
-            init_valid_ranges_renamed = self._renamed_gate_key(
+            init_valid_ranges_renamed = self.rename_gate_identifier(
                 initial_valid_ranges
             )
+            init_valid_ranges_renamed = self._fill_missing_voltage_ranges(
+                init_valid_ranges_renamed)
 
-        self._initial_valid_ranges: vltg_rngs_tp = {}
+        self._initial_valid_ranges: vltg_rngs_tp = init_valid_ranges_renamed
         self.add_parameter(
             name="initial_valid_ranges",
             label="initial valid ranges",
@@ -133,8 +153,8 @@ class Device(DelegateInstrument):
             name="normalization_constants",
             label="normalization constants",
             docstring=(
-                "Signal measured with all gates at  zero. Used as "
-                "normalization during data post processing"
+                "Signal measured with all gates at  zero. Used as \
+                normalization during data post processing"
             ),
             set_cmd=self.set_normalization_constants,
             get_cmd=self.get_normalization_constants,
@@ -145,10 +165,12 @@ class Device(DelegateInstrument):
         if current_valid_ranges is None:
             current_valid_ranges_renamed = init_valid_ranges_renamed
         else:
-            current_valid_ranges_renamed = self._renamed_gate_key(
+            current_valid_ranges_renamed = self.rename_gate_identifier(
                 current_valid_ranges
             )
-        print(current_valid_ranges_renamed)
+            current_valid_ranges_renamed = self._fill_missing_voltage_ranges(
+                current_valid_ranges_renamed)
+
         self._current_valid_ranges = current_valid_ranges_renamed
         self.add_parameter(
             name="current_valid_ranges",
@@ -164,9 +186,14 @@ class Device(DelegateInstrument):
                 [gate.gate_id for gate in self.gates], np.nan
             )
         else:
-            transition_voltages_renamed = self._renamed_gate_key(
+            transition_voltages_renamed = self.rename_gate_identifier(
                 transition_voltages
             )
+            defaults = {gate.gate_id: None for gate in self.gates}
+            defaults.update(transition_voltages_renamed)
+            transition_voltages_renamed = defaults
+            # transition_voltages_renamed = self._fill_missing_voltage_ranges(
+            #     current_valid_ranges_renamed, None)
 
         self._transition_voltages = transition_voltages_renamed
         self.add_parameter(
@@ -178,24 +205,6 @@ class Device(DelegateInstrument):
             initial_value=transition_voltages_renamed,
             vals=vals.Dict(),
         )
-
-    def _initialize_channel_lists(self, channels_input_mapping):
-        gate_dict = {}
-        ohmic_dict = {}
-        _ = channels_input_mapping.pop("type", None)
-        for channel_name in channels_input_mapping.keys():
-            channel = getattr(self, channel_name)
-            if channel.gate_id is not None:
-                gate_dict[channel.gate_id] = channel
-            elif channel.ohmic_id is not None:
-                ohmic_dict[channel.ohmic_id] = channel
-        gates_list = []
-        for gate_id in range(0, len(gate_dict)):
-            gates_list.append(gate_dict[gate_id])
-        ohmics_list = []
-        for ohmic_id in range(0, len(ohmic_dict)):
-            ohmics_list.append(ohmic_dict[ohmic_id])
-        return gates_list, ohmics_list
 
 
     def get_normalization_constants(self) -> Dict[str, Tuple[float, float]]:
@@ -210,9 +219,11 @@ class Device(DelegateInstrument):
         if not isinstance(new_normalization_constant, Mapping):
             raise TypeError('Wrong normalization constant type, expect dict.')
         for key in new_normalization_constant.keys():
-            if (not isinstance(new_normalization_constant[key], Sequence)):
+            if not isinstance(new_normalization_constant[key], Sequence):
                 raise TypeError('Wrong normalization constant item type, \
                      expect list or tuple.')
+            if key not in READOUTMETHODS:
+                raise KeyError(f'Invalid key, use one of {READOUTMETHODS}')
         self._normalization_constants.update(new_normalization_constant)
 
     def ground_gates(self) -> None:
@@ -233,11 +244,12 @@ class Device(DelegateInstrument):
         current_gate_status: Dict[
             str, Dict[str, Union[Tuple[float, float], float]]
         ] = {}
+        current_valid_ranges = self.current_valid_ranges()
         for gate in self.gates:
-            current_gate_status[gate.name] = {}
-            rng = gate.current_valid_range()
-            current_gate_status[gate.name]["current_valid_range"] = rng
-            current_gate_status[gate.name]["voltage"] = gate.voltage()
+            current_gate_status[gate.label] = {}
+            rng = current_valid_ranges[gate.gate_id]
+            current_gate_status[gate.label]["current_valid_range"] = rng
+            current_gate_status[gate.label]["voltage"] = gate.voltage()
 
         return current_gate_status
 
@@ -247,7 +259,7 @@ class Device(DelegateInstrument):
         Will use ramp if gate.use_ramp is set to True
         """
         for gate in self.gates:
-            gate.voltage(gate.safety_range()[1])
+            gate.voltage(gate.safety_voltage_range()[1])
 
     def all_gates_to_lowest(self) -> None:
         """
@@ -255,59 +267,43 @@ class Device(DelegateInstrument):
         Will use ramp if gate.use_ramp is set to True
         """
         for gate in self.gates:
-            gate.voltage(gate.safety_range()[0])
+            gate.voltage(gate.safety_voltage_range()[0])
 
     def get_initial_valid_ranges(self) -> vltg_rngs_tp:
         """"""
         return copy.deepcopy(self._initial_valid_ranges)
 
-    def set_initial_valid_ranges(self, new_valid_ranges: vltg_rngs_tp) -> None:
-        """
-        will update existing dict, not simply over write
-        and set current valid ranges to ranges stored in initial_valid_ranges
-        """
-        self._initial_valid_ranges.update(new_valid_ranges)
+    def set_initial_valid_ranges(self, new_range) -> None:
+        """ """
+        self._initial_valid_ranges = self.voltage_range_setter(
+            self._initial_valid_ranges, new_range
+        )
 
     def get_current_valid_ranges(self) -> vltg_rngs_tp:
         """"""
         return copy.deepcopy(self._current_valid_ranges)
 
-    def set_current_valid_ranges(
+    def set_current_valid_ranges(self, new_range) -> None:
+        """ """
+        self._current_valid_ranges = self.voltage_range_setter(
+            self._current_valid_ranges, new_range
+        )
+
+    def voltage_range_setter(
         self,
-        new_current_ranges: Mapping[
-            Union[DeviceChannel, int, str], Tuple[float, float]
-        ],
+        voltage_ranges: Dict[int, Sequence[float]],
+        new_sub_dict: Dict[int, Sequence[float]],
     ) -> None:
-        """
-        will update existing dict, not simply over write
-        and set current valid ranges to ranges stored in current_valid_ranges
-        """
+        new_voltage_ranges = copy.deepcopy(voltage_ranges)
+        for gate_identifier, new_range in new_sub_dict.items():
+            gate_id = self.get_gate_id(gate_identifier)
+            sfty_range = self.gates[gate_id].safety_voltage_range()
+            new_range = self.check_and_update_new_voltage_range(
+                new_range, sfty_range
+            )
+            new_voltage_ranges.update({gate_id: new_range})
 
-        msg = "Setting invalid current valid range for "
-        msg2 = "Something is seriously wrong. New current valid range far off \
-            safety range for "
-        for gate_identifier, new_range in new_current_ranges.items():
-            if not isinstance(new_range, list) or not len(new_range) == 2:
-                raise TypeError('Wrong voltage range type.')
-            new_range = sorted(new_range)
-            gate = self._get_gate_from_identifier(gate_identifier)
-            sfty_range = gate.safety_voltage_range()
-            if new_range[1] > sfty_range[1]:
-                new_range[1] = sfty_range[1]
-                logger.warning(
-                    msg + f"{gate.name}. Taking upper safety voltage."
-                )
-                if new_range[0] > sfty_range[1]:
-                    raise ValueError(msg2 + gate.name)
-            if new_range[0] < sfty_range[0]:
-                new_range[0] = sfty_range[0]
-                logger.warning(
-                    msg+ f"{gate.name}. Taking lower safety voltage."
-                )
-                if new_range[1] < sfty_range[0]:
-                    raise ValueError(msg2 + gate.name)
-
-            self._current_valid_ranges.update({gate.gate_id: new_range})
+        return new_voltage_ranges
 
     def get_transition_voltages(self) -> Dict[int, float]:
         """"""
@@ -323,38 +319,26 @@ class Device(DelegateInstrument):
         """
 
         for gate_identifier, new_T in new_transition_voltages.items():
-            gate = self._get_gate_from_identifier(gate_identifier)
-            sfty_range = gate.safety_voltage_range()
-            if new_T > sfty_range[1]:
-                new_T = sfty_range[1]
-                logger.warning(
-                    f"Setting invalid transition voltage for {gate.name}.\
-                    Taking upper safety voltage. "
-                )
-            if new_T < sfty_range[0]:
-                new_T = sfty_range[0]
-                logger.warning(
-                    f"Setting invalid transition voltage for {gate.name}.\
-                    Taking lower safety voltage. "
-                )
-            self._transition_voltages.update({gate.gate_id: new_T})
+            gate_id = self.get_gate_id(gate_identifier)
+            sfty_range = self.gates[gate_id].safety_voltage_range()
+            if new_T is not None:
+                if new_T > sfty_range[1]:
+                    new_T = sfty_range[1]
+                    logger.warning(
+                        f"Setting invalid transition voltage for \
+                        {self._gate_labels[gate_id]}.\
+                        Taking upper safety voltage. "
+                    )
+                if new_T < sfty_range[0]:
+                    new_T = sfty_range[0]
+                    logger.warning(
+                        f"Setting invalid transition voltage for \
+                        {self._gate_labels[gate_id]}.\
+                        Taking lower safety voltage. "
+                    )
+            self._transition_voltages.update({gate_id: new_T})
 
-    def _get_gate_from_identifier(
-        self,
-        reference: Union[DeviceChannel, int, str],
-    ) -> DeviceChannel:
-        """ """
-        if isinstance(reference, str):
-            gate = getattr(self, reference)
-        elif isinstance(reference, int):
-            gate = self.gates[reference]
-        elif isinstance(reference, DeviceChannel):
-            gate = reference
-        else:
-            raise ValueError('Unknown gate identifier')
-        return gate
-
-    def _renamed_gate_key(
+    def rename_gate_identifier(
         self,
         mapping_to_rename: Union[
             Mapping[DeviceChannel, Any],
@@ -365,8 +349,105 @@ class Device(DelegateInstrument):
         """ """
         new_dict = {}
         for gate_ref, param in mapping_to_rename.items():
-            gate = self._get_gate_from_identifier(gate_ref)
-            new_dict[gate.gate_id] = param
+            gate_id = self.get_gate_id(gate_ref)
+            new_dict[gate_id] = param
         return new_dict
 
+    def initialize_channel_lists(self, channels_input_mapping):
+        gate_dict = {}
+        ohmic_dict = {}
+        gate_labels = {}
+        _ = channels_input_mapping.pop("type", None)
+        for channel_name in channels_input_mapping.keys():
+            channel = getattr(self, channel_name)
+            if channel.gate_id is not None:
+                gate_dict[channel.gate_id] = channel
+                gate_labels[channel.gate_id] = channel_name
+            elif channel.ohmic_id is not None:
+                ohmic_dict[channel.ohmic_id] = channel
+        gates_list = []
+        for gate_id in range(0, len(gate_dict)):
+            gates_list.append(gate_dict[gate_id])
+        ohmics_list = []
+        for ohmic_id in range(0, len(ohmic_dict)):
+            ohmics_list.append(ohmic_dict[ohmic_id])
+        return gates_list, ohmics_list, gate_labels
 
+    def check_and_update_new_voltage_range(
+        self,
+        new_range: Sequence[float],
+        safety_range: Sequence[float],
+    ) ->Sequence[float]:
+        """ """
+        if not isinstance(new_range, Sequence) or not len(new_range) == 2:
+            raise ValueError('Wrong voltage range type.')
+        new_range = sorted(new_range)
+        if new_range[1] > safety_range[1]:
+            new_range[1] = safety_range[1]
+            logger.warning(
+                "New range out of safety range. Taking upper safety limit."
+            )
+            if new_range[0] > safety_range[1]:
+                raise ValueError(
+                    "New lower voltage range is higher than upper safety \
+                        limit. Something seems quite wrong."
+                )
+        if new_range[0] < safety_range[0]:
+            new_range[0] = safety_range[0]
+            logger.warning(
+                "New range out of safety range. Taking lower safety limit."
+            )
+            if new_range[1] < safety_range[0]:
+                raise ValueError("New upper voltage range is lower than upper \
+                    safety limit. Something seems quite wrong."
+                )
+        return new_range
+
+    def get_gate_id(
+        self,
+        gate_identifier: Union[int, str, DeviceChannel]
+    ) -> int:
+        if isinstance(gate_identifier, DeviceChannel):
+            if gate_identifier not in self.gates:
+                raise ValueError("Gate not found in device.gates.")
+            gate_id = gate_identifier.gate_id
+        elif isinstance(gate_identifier, int):
+            if gate_identifier not in self._gate_labels.keys():
+                raise ValueError("Unknown gate ID - gate not found in \
+                    device.gates.")
+            gate_id = gate_identifier
+        elif isinstance(gate_identifier, str):
+            if gate_identifier not in self._gate_labels.values():
+                raise ValueError("Unknown gate label - gate not found in \
+                    device.gates.")
+            gate_id = getattr(self, gate_identifier).gate_id
+        else:
+            raise ValueError("Invalid gate specifier. Use gate_id, label or \
+                the channel itself.")
+        return gate_id
+
+    def _fill_missing_voltage_ranges(
+        self,
+        current_values: Dict[int, Sequence[float]],
+    ) -> Dict[int, Sequence[float]]:
+        for gate in self.gates:
+            if gate.gate_id not in current_values.keys():
+                current_values[gate.gate_id] = gate.safety_voltage_range()
+        return current_values
+
+
+def _add_station_and_label_to_channel_init(
+    station: qc.Station,
+    channels: Optional[
+            Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
+) -> Optional[Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]]:
+    if channels is None:
+        return None
+    for name, channel_value in channels.items():
+        if isinstance(channel_value, Mapping):
+            if 'station' not in channel_value.keys():
+                channel_value['station'] = station
+            if 'label' not in channel_value.keys():
+                channel_value['label'] = name
+
+    return channels
