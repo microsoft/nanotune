@@ -5,16 +5,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import qcodes as qc
+from qcodes.dataset.data_set import DataSet
 import scipy.fftpack as fp
 import scipy.signal as sg
 import xarray as xr
-from qcodes.dataset.data_export import (get_shaped_data_by_runid,
-                                        reshape_2D_data)
-from qcodes.dataset.data_set import DataSet, new_data_set
-from qcodes.dataset.experiment_container import load_by_id, load_experiment
-from scipy.ndimage import gaussian_filter, generic_gradient_magnitude, sobel
-from skimage.transform import resize
-from sklearn.impute import SimpleImputer
+from scipy.ndimage import gaussian_filter
 
 import nanotune as nt
 
@@ -22,6 +17,10 @@ LABELS = list(nt.config["core"]["labels"].keys())
 default_coord_names = {
     "voltage": ["voltage_x", "voltage_y"],
     "frequency": ["frequency_x", "frequency_y"],
+}
+old_readout_methods = {
+    'dc_current': 'transport',
+    'dc_sensor': 'sensing',
 }
 default_readout_methods = nt.config["core"]["readout_methods"]
 logger = logging.getLogger(__name__)
@@ -125,7 +124,6 @@ class Dataset:
 
     def from_qcodes_dataset(self):
         """ Load data from qcodes dataset """
-        # qc_dataset = load_by_id(self.qc_run_id)
         qc_dataset = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
         self.exp_id = qc_dataset.exp_id
         self.guid = qc_dataset.guid
@@ -158,6 +156,9 @@ class Dataset:
 
         try:
             nm = self._nt_metadata["normalization_constants"]
+            for old_key, new_key in old_readout_methods.items():
+                if old_key in nm.keys():
+                    nm[new_key] = nm.pop(old_key)
             self._normalization_constants.update(nm)
         except KeyError:
             pass

@@ -31,12 +31,13 @@ def test_segment_dot_data(db_dot_tuning, tmp_path):
     assert bool(ds.data.transport.voltage_x[0] == dot_segments[1]['voltage_ranges'][0][0])
     assert bool(ds.data.transport.voltage_y[0] == dot_segments[1]['voltage_ranges'][1][0])
 
-def test_classify_dot_segments(tmp_path):
+def test_classify_dot_segments(db_dot_tuning, tmp_path):
     df = DotFit(
         1001, 'dot_tuning_data.db',
         db_folder=tmp_path, segment_size = 0.1
     )
-    dot_segments = df.save_segmented_data_return_info()
+    dot_segments = df.save_segmented_data_return_info(
+        'segmented_dot_tuning_data.db', segment_db_folder=tmp_path)
     classifiers={
         'singledot': MockClassifer('singledot'),
         'doubledot': MockClassifer('doubledot'),

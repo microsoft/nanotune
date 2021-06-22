@@ -4,7 +4,7 @@ import time
 import importlib
 from contextlib import contextmanager
 from math import isclose
-from typing import List, Optional, Tuple, Union, Any, Sequence
+from typing import List, Optional, Tuple, Union, Any, Sequence, Generator
 
 import qcodes as qc
 from qcodes import InstrumentChannel
@@ -225,12 +225,12 @@ class DeviceChannel(InstrumentChannel):
         )
 
     @property
-    def gate_id(self) -> int:
+    def gate_id(self) -> Optional[int]:
         """Device layout ID of a gate."""
         return self._gate_id
 
     @property
-    def ohmic_id(self) -> int:
+    def ohmic_id(self) -> Optional[int]:
         """Device layout ID of an ohmic."""
         return self._ohmic_id
 
@@ -389,7 +389,7 @@ class DeviceChannel(InstrumentChannel):
         self,
         inter_delay: float,
         max_voltage_step: float,
-    ) -> None:
+    ) -> Generator[None, None, None]:
         """ """
         current_inter_delay = self.inter_delay
         current_step = self.max_voltage_step

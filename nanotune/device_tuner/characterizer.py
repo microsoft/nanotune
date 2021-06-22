@@ -10,11 +10,8 @@ from qcodes.dataset.experiment_container import (load_experiment,
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device as Nt_Device
-from nanotune.device.gate import Gate
 from nanotune.device_tuner.tuner import Tuner, set_back_voltages
 from nanotune.device_tuner.tuningresult import MeasurementHistory
-from nanotune.fit.pinchofffit import PinchoffFit
-
 logger = logging.getLogger(__name__)
 
 
@@ -87,8 +84,8 @@ class Characterizer(Tuner):
                 gate_id = gate.layout_id()
                 if gate_id in gate_configurations.keys():
                     gate_conf = gate_configurations[gate_id].items()
-                    for other_id, dc_voltage in gate_conf:
-                        device.gates[other_id].dc_voltage(dc_voltage)
+                    for other_id, voltage in gate_conf:
+                        device.gates[other_id].voltage(voltage)
 
                 sub_result = self.characterize_gates(
                     device,

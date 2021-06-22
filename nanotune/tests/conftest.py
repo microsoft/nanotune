@@ -3,6 +3,7 @@ import os
 
 import shutil
 import pytest
+import pathlib
 import qcodes as qc
 from qcodes import new_experiment
 from qcodes.tests.instrument_mocks import DummyInstrument
@@ -22,6 +23,7 @@ from nanotune.drivers.mock_dac import MockDAC, MockDACChannel
 from nanotune.drivers.mock_readout_instruments import MockLockin, MockRF
 
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
+PARENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 ideal_run_labels = {
     0: "pinchoff",
@@ -140,12 +142,22 @@ def db_real_pinchoff(tmp_path):
         shutil.copyfile(
             path_device_characterization,
             os.path.join(tmp_path, "pinchoff_data.db"))
-        # nt.new_database("pinchoff_data.db", tmp_path)
-        # extract_runs_into_db(
-        #     path_device_characterization,
-        #     os.path.join(tmp_path, 'pinchoff_data.db'),
-        #     *list(range(1, 16)),
-        # )
+        yield
+    finally:
+        gc.collect()
+
+
+@pytest.fixture(scope="function")
+def db_dot_tuning(tmp_path):
+
+    nt_path = os.path.dirname(os.path.dirname(os.path.abspath(nt.__file__)))
+    path_device_characterization = os.path.join(
+        nt_path, 'data', 'tuning', 'dot_tuning_sequences.db')
+
+    try:
+        shutil.copyfile(
+            path_device_characterization,
+            os.path.join(tmp_path, "dot_tuning_data.db"))
         yield
     finally:
         gc.collect()
@@ -153,7 +165,6 @@ def db_real_pinchoff(tmp_path):
 
 @pytest.fixture(scope="function", params=["numeric"])
 def qc_dataset_doubledot(experiment, request):
-    """"""
     datasaver = save_2Ddata_with_qcodes(generate_doubledot_data, None)
 
     try:
@@ -196,7 +207,6 @@ def experiment_doubledots(empty_temp_db):
 
 @pytest.fixture(scope="function", params=["numeric"])
 def nt_dataset_coulomboscillation(experiment, request):
-    """"""
     datasaver = save_1Ddata_with_qcodes(
         generate_coulomboscillations, generate_coloumboscillation_metadata
     )
@@ -235,7 +245,7 @@ def pinchoff_dmm(dummy_dmm):
         "po_current",
         parameter_class=PinchoffCurrent,
         initial_value=0,
-        label="pinchoff dc current",
+        label="pinchoff transport",
         unit="A",
         get_cmd=None,
         set_cmd=None,
@@ -312,11 +322,11 @@ def station(dac, lockin, rf):
 def gate_1(station):
     gate = DeviceChannel(
         station.dac,
-        'test_gate',
         station.dac.ch01,
-        gate_id=1,
+        gate_id=0,
         label="test_label",
-        delay=0,
+        inter_delay=0,
+        post_delay=0,
         max_voltage_step=0.01,
         ramp_rate=0.2,
     )
@@ -327,11 +337,11 @@ def gate_1(station):
 def gate_2(station):
     gate = DeviceChannel(
         station.dac,
-        'test_gate_1',
         station.dac.ch02,
         gate_id=1,
         label="test_label_2",
-        delay=0,
+        inter_delay=0,
+        post_delay=0,
         max_voltage_step=0.01,
         ramp_rate=0.2,
     )
@@ -340,7 +350,7 @@ def gate_2(station):
 
 @pytest.fixture(scope="function")
 def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
-    gate_1.current_valid_range([-0.1, 0])
+    # gate_1.current_valid_range([-0.1, 0])
     pinchoff_dmm.po_current.gate = gate_1
     pinchoff_dmm.po_sensor.gate = gate_1
 
@@ -350,8 +360,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
-        "parameters_to_sweep": [gate_1.dc_voltage],
-        "current_valid_ranges": [gate_1.current_valid_range()],
+        "parameters_to_sweep": [gate_1.voltage],
+        "current_valid_ranges": [[-0.1, 0]],
         "safety_voltage_ranges": [(-3, 0)],
     }
     data_settings = {
@@ -373,8 +383,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
 
 @pytest.fixture(scope="function")
 def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
-    gate_1.current_valid_range([-0.2, -0.1])
-    gate_2.current_valid_range([-0.3, -0.2])
+    # gate_1.current_valid_range([-0.2, -0.1])
+    # gate_2.current_valid_range([-0.3, -0.2])
 
     dot_dmm.dot_current.gate_x = gate_1
     dot_dmm.dot_current.gate_y = gate_2
@@ -388,10 +398,10 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
-        "parameters_to_sweep": [gate_1.dc_voltage, gate_2.dc_voltage],
+        "parameters_to_sweep": [gate_1.voltage, gate_2.voltage],
         "current_valid_ranges": [
-            gate_1.current_valid_range(),
-            gate_2.current_valid_range(),
+            [-0.2, -0.1],
+            [-0.3, -0.2],
         ],
         "safety_voltage_ranges": [(-3, 0), (-3, 0)],
     }
@@ -425,23 +435,38 @@ def dot_readout_methods(dot_dmm):
     yield readout_methods
 
 
+@pytest.fixture()
+def chip_config():
+    return os.path.join(PARENT_DIR, "chip.yaml")
+
+
+@pytest.fixture()
+def device(station, chip_config):
+    if hasattr(station, "device_on_chip"):
+        return station.device_on_chip
+
+    station.load_config_file(chip_config)
+    _chip = station.load_device_on_chip(station=station)
+    return _chip
+
+
 @pytest.fixture(scope="function")
-def device_pinchoff(pinchoff_dmm, device_gate_inputs):
+def device_pinchoff(pinchoff_dmm, device, station):
+    # station.add_component(pinchoff_dmm)
     readout_methods = {
-        "transport": pinchoff_dmm.po_current,
-        "sensing": pinchoff_dmm.po_sensor,
+        "transport": 'pinchoff_dmm.po_current',
+        "sensing": 'pinchoff_dmm.po_sensor',
     }
 
-    device = nt.Device(
-        name="test_doubledot",
-        device_type="doubledot_2D",
-        readout_methods=readout_methods,
-        **device_gate_inputs,
-    )
+    device._create_and_add_parameters(
+                station=station,
+                parameters=readout_methods,
+                setters={},
+                units={},
+            )
 
-    pinchoff_dmm.po_current.gate = device.left_barrier
-    pinchoff_dmm.po_sensor.gate = device.left_barrier
-    try:
-        yield device
-    finally:
-        device.close()
+
+    pinchoff_dmm.po_current.gate = device.top_barrier
+    pinchoff_dmm.po_sensor.gate = device.top_barrier
+    yield device
+

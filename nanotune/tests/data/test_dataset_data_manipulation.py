@@ -36,8 +36,8 @@ def test_dataset_1ddata_loading(nt_dataset_pinchoff, tmp_path):
 
     assert ds.get_plot_label("transport", 0) == "voltage x [V]"
     assert ds.get_plot_label("sensing", 0) == "voltage x [V]"
-    assert ds.get_plot_label("transport", 1) == "dc current [A]"
-    assert ds.get_plot_label("sensing", 1) == "dc sensor [A]"
+    assert ds.get_plot_label("transport", 1) == "transport [A]"
+    assert ds.get_plot_label("sensing", 1) == "sensing [A]"
     with pytest.raises(AssertionError):
         ds.get_plot_label("sensing", 2)
 
@@ -72,8 +72,8 @@ def test_dataset_2ddata_loading(nt_dataset_doubledot, tmp_path):
     assert ds.get_plot_label("sensing", 0) == "voltage x [V]"
     assert ds.get_plot_label("transport", 1) == "voltage y [V]"
     assert ds.get_plot_label("sensing", 1) == "voltage y [V]"
-    assert ds.get_plot_label("transport", 2) == "dc current [A]"
-    assert ds.get_plot_label("sensing", 2) == "dc sensor [A]"
+    assert ds.get_plot_label("transport", 2) == "transport [A]"
+    assert ds.get_plot_label("sensing", 2) == "sensing [A]"
 
 
 def test_dataset_normalisation(nt_dataset_pinchoff, tmp_path):

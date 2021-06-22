@@ -67,16 +67,16 @@ def test_pinchofffit_fit_result(db_real_pinchoff, tmp_path):
     fit_result = pf.features
 
     assert math.isclose(
-        fit_result["transport"]["amplitude"], 0.48884395508522754, rel_tol=rtol
+        fit_result["transport"]["amplitude"], 0.4888668323074263, rel_tol=rtol
     )
     assert math.isclose(
-        fit_result["transport"]["offset"], -2.1549051629513722, rel_tol=rtol
+        fit_result["transport"]["offset"], -2.1514752061615368, rel_tol=rtol
     )
     assert math.isclose(
-        fit_result["transport"]["slope"], 9.22764249314201, rel_tol=rtol
+        fit_result["transport"]["slope"], 9.21625077246654, rel_tol=rtol
     )
     assert math.isclose(
-        fit_result["transport"]["residuals"], 0.023885718621872495, rel_tol=rtol
+        fit_result["transport"]["residuals"], 0.023764265886924343, rel_tol=rtol
     )
     val = -0.270903010033445
     assert math.isclose(
@@ -87,7 +87,7 @@ def test_pinchofffit_fit_result(db_real_pinchoff, tmp_path):
         fit_result["transport"]["transition_signal"], val, rel_tol=rtol
     )
     assert math.isclose(
-        fit_result["transport"]["high_signal"], 0.8563844277925945, rel_tol=rtol
+        fit_result["transport"]["high_signal"], 0.8806341442655204, rel_tol=rtol
     )
 
 
@@ -100,21 +100,21 @@ def test_pinchofffit_transition_interval_fitting(db_real_pinchoff, tmp_path):
     pf.compute_transition_interval()
 
     assert math.isclose(
-        pf._high_signal["transport"], 0.8804979049446513, rel_tol=rtol
+        pf._high_signal["transport"], 0.8804356596950539, rel_tol=rtol
     )
     assert math.isclose(
-        pf._low_signal["transport"], 0.06264994065176097, rel_tol=rtol
+        pf._low_signal["transport"], 0.06293784636252235, rel_tol=rtol
     )
 
     pf.get_transition_from_fit = False
     pf.compute_transition_interval()
 
     assert math.isclose(
-        pf._high_signal["transport"], 0.8563844277925945, rel_tol=rtol
+        pf._high_signal["transport"], 0.8564693436060934, rel_tol=rtol
     )
 
     assert math.isclose(
-        pf._low_signal["transport"], 0.07166448591226553, rel_tol=rtol
+        pf._low_signal["transport"], 0.07221338436503792, rel_tol=rtol
     )
 
 
@@ -127,7 +127,7 @@ def test_pinchofffit_transition_voltage_fitting(db_real_pinchoff, tmp_path):
     pf.compute_transition_voltage()
 
     assert math.isclose(
-        pf._transition_signal["transport"], 0.49681376908666475, rel_tol=rtol
+        pf._transition_signal["transport"], 0.4972033484175746, rel_tol=rtol
     )
 
     assert pf._transition_signal_index["transport"] == 8
@@ -136,7 +136,7 @@ def test_pinchofffit_transition_voltage_fitting(db_real_pinchoff, tmp_path):
     pf.compute_transition_voltage()
 
     assert math.isclose(
-        pf._transition_signal["transport"], 0.38847524234053754, rel_tol=rtol
+        pf._transition_signal["transport"], 0.3888368195808968, rel_tol=rtol
     )
 
     assert pf._transition_signal_index["transport"] == 7

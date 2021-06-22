@@ -8,10 +8,6 @@ from typing import List, Tuple
 
 import numpy as np
 
-from nanotune.device.gate import Gate
-
-from .base_tasks import get_fit_range_update_directives
-
 logger = logging.getLogger(__name__)
 
 

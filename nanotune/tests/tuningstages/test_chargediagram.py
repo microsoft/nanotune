@@ -9,7 +9,7 @@ from nanotune.tuningstages.chargediagram import ChargeDiagram
 atol = 1e-03
 
 
-def test_chargediagram_run_stage(chargediagram_settings):
+def test_chargediagram_run_stage(chargediagram_settings, experiment):
 
     chdiag = ChargeDiagram(
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.

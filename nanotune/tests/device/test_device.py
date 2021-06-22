@@ -107,7 +107,7 @@ def test_voltage_range_setter(device):
     assert new_ranges == {0: [-1, 0], 1: [-0.2, 0]}
 
 
-def test_device_get_gate_id(device, gate):
+def test_device_get_gate_id(device, gate_1):
     assert device.get_gate_id(0) == 0
     assert device.get_gate_id(device.left_plunger) == 1
     assert device.get_gate_id('top_barrier') == 0
@@ -117,7 +117,7 @@ def test_device_get_gate_id(device, gate):
     with pytest.raises(ValueError):
         device.get_gate_id('center')
     with pytest.raises(ValueError):
-        device.get_gate_id(gate)
+        device.get_gate_id(gate_1)
     with pytest.raises(ValueError):
         device.get_gate_id([0])
 

@@ -2,8 +2,6 @@ import os
 import pathlib
 import pytest
 from qcodes.tests.instrument_mocks import MockDAC as QcodesMockDAC
-from nanotune.device.device_channel import DeviceChannel
-PARENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 
 @pytest.fixture(scope="session")
@@ -13,30 +11,6 @@ def qcodes_dac():
         yield dac
     finally:
         dac.close()
-
-
-@pytest.fixture()
-def chip_config():
-    return os.path.join(PARENT_DIR, "chip.yaml")
-
-
-@pytest.fixture()
-def device(station, chip_config):
-    if hasattr(station, "device_on_chip"):
-        return station.device_on_chip
-
-    station.load_config_file(chip_config)
-    _chip = station.load_device_on_chip(station=station)
-    return _chip
-
-@pytest.fixture()
-def gate(station):
-    gate = DeviceChannel(
-        station,
-        station.dac.ch01,
-        gate_id=0,
-    )
-    return gate
 
 
 @pytest.fixture(name="moc_dac_server")

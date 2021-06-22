@@ -1,6 +1,5 @@
 import copy
 import logging
-from nanotune.tests.device.conftest import gate
 from typing import (
     Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
 )
@@ -17,14 +16,14 @@ from nanotune.device.device_channel import DeviceChannel
 if not qc.__version__.startswith('0.27'):
     from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
 else:
-    from qcodes.instrument.delegate import DelegateInstrument
+    from qcodes.instrument.delegate import DelegateInstrument  # type: ignore
 
 
 logger = logging.getLogger(__name__)
 READOUTMETHODS = ['transport', 'sensing', 'rf']
 
 nrm_cnst_tp = Mapping[str, Tuple[float, float]]
-vltg_rngs_tp = Dict[int, Tuple[Union[None, float], Union[None, float]]]
+voltage_range_type = Dict[int, Sequence[float]]
 # TODO: Use dataclass for normalization constants
 # @dataclass
 # class NormalizationConstants:
@@ -122,7 +121,7 @@ class Device(DelegateInstrument):
             init_valid_ranges_renamed = self._fill_missing_voltage_ranges(
                 init_valid_ranges_renamed)
 
-        self._initial_valid_ranges: vltg_rngs_tp = init_valid_ranges_renamed
+        self._initial_valid_ranges: voltage_range_type = init_valid_ranges_renamed
         self.add_parameter(
             name="initial_valid_ranges",
             label="initial valid ranges",
@@ -269,7 +268,7 @@ class Device(DelegateInstrument):
         for gate in self.gates:
             gate.voltage(gate.safety_voltage_range()[0])
 
-    def get_initial_valid_ranges(self) -> vltg_rngs_tp:
+    def get_initial_valid_ranges(self) -> voltage_range_type:
         """"""
         return copy.deepcopy(self._initial_valid_ranges)
 
@@ -279,7 +278,7 @@ class Device(DelegateInstrument):
             self._initial_valid_ranges, new_range
         )
 
-    def get_current_valid_ranges(self) -> vltg_rngs_tp:
+    def get_current_valid_ranges(self) -> voltage_range_type:
         """"""
         return copy.deepcopy(self._current_valid_ranges)
 
@@ -291,12 +290,14 @@ class Device(DelegateInstrument):
 
     def voltage_range_setter(
         self,
-        voltage_ranges: Dict[int, Sequence[float]],
-        new_sub_dict: Dict[int, Sequence[float]],
-    ) -> None:
+        voltage_ranges: voltage_range_type,
+        new_sub_dict: voltage_range_type,
+    ) -> voltage_range_type:
         new_voltage_ranges = copy.deepcopy(voltage_ranges)
         for gate_identifier, new_range in new_sub_dict.items():
             gate_id = self.get_gate_id(gate_identifier)
+            if gate_id is None:
+                raise ValueError(f'Gate {gate_identifier} has not gate_id.')
             sfty_range = self.gates[gate_id].safety_voltage_range()
             new_range = self.check_and_update_new_voltage_range(
                 new_range, sfty_range
@@ -350,6 +351,8 @@ class Device(DelegateInstrument):
         new_dict = {}
         for gate_ref, param in mapping_to_rename.items():
             gate_id = self.get_gate_id(gate_ref)
+            if gate_id is None:
+                raise ValueError(f'Gate {gate_ref} has not gate_id.')
             new_dict[gate_id] = param
         return new_dict
 
@@ -405,8 +408,8 @@ class Device(DelegateInstrument):
 
     def get_gate_id(
         self,
-        gate_identifier: Union[int, str, DeviceChannel]
-    ) -> int:
+        gate_identifier: Union[Optional[int], str, DeviceChannel]
+    ) -> Optional[int]:
         if isinstance(gate_identifier, DeviceChannel):
             if gate_identifier not in self.gates:
                 raise ValueError("Gate not found in device.gates.")
@@ -438,16 +441,15 @@ class Device(DelegateInstrument):
 
 def _add_station_and_label_to_channel_init(
     station: qc.Station,
-    channels: Optional[
-            Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
-) -> Optional[Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]]:
+    channels: Optional[Mapping[str, Union[str, Mapping[str, Any]]]] = None,
+) -> Optional[Mapping[str, Union[str, Any]]]:
     if channels is None:
         return None
     for name, channel_value in channels.items():
         if isinstance(channel_value, Mapping):
             if 'station' not in channel_value.keys():
-                channel_value['station'] = station
+                channel_value['station'] = station  # type: ignore
             if 'label' not in channel_value.keys():
-                channel_value['label'] = name
+                channel_value['label'] = name  # type: ignore
 
     return channels

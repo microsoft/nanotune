@@ -13,7 +13,7 @@ from qcodes.dataset.experiment_container import (load_experiment,
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device as Nt_Device
-from nanotune.device.gate import Gate
+from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.utils import flatten_list
@@ -27,24 +27,24 @@ DATA_DIMS = {
 
 
 @contextmanager
-def set_back_voltages(gates: List[Gate]) -> Generator[None, None, None]:
-    """Sets gates back to their respective dc_voltage they are at before
+def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]:
+    """Sets gates back to their respective voltage they are at before
     the contextmanager was called. If gates need to be set in a specific
     order, then this order needs to be respected on the list 'gates'.
     """
     initial_voltages = []
     for gate in gates:
-        initial_voltages.append(gate.dc_voltage())
+        initial_voltages.append(gate.voltage())
     try:
         yield
     finally:
         for ig, gate in enumerate(gates):
-            gate.dc_voltage(initial_voltages[ig])
+            gate.voltage(initial_voltages[ig])
 
 
 @contextmanager
-def set_back_valid_ranges(gates: List[Gate]) -> Generator[None, None, None]:
-    """Sets gates back to their respective dc_voltage they are at before
+def set_back_valid_ranges(gates: List[DeviceChannel]) -> Generator[None, None, None]:
+    """Sets gates back to their respective voltage they are at before
     the contextmanager was called. If gates need to be set in a specific
     order, then this order needs to be respected on the list 'gates'.
     """
@@ -184,7 +184,8 @@ class Tuner(qc.Instrument):
 
     def characterize_gates(
         self,
-        gates: List[Gate],
+        device: Nt_Device,
+        gates: List[DeviceChannel],
         use_safety_ranges: bool = False,
         comment: Optional[str] = None,
     ) -> MeasurementHistory:
@@ -194,8 +195,6 @@ class Tuner(qc.Instrument):
 
         returns instance of MeasurementHistory
         """
-
-        device = gates[0].parent
 
         if comment is None:
             comment = f"Characterizing {gates}."
@@ -211,7 +210,7 @@ class Tuner(qc.Instrument):
             with self.device_specific_settings(device):
                 for gate in gates:
                     setpoint_settings = copy.deepcopy(self.setpoint_settings())
-                    setpoint_settings["parameters_to_sweep"] = [gate.dc_voltage]
+                    setpoint_settings["parameters_to_sweep"] = [gate.voltage]
 
                     stage = GateCharacterization1D(
                         data_settings=self.data_settings(),
@@ -231,15 +230,16 @@ class Tuner(qc.Instrument):
 
     def measure_initial_ranges(
         self,
-        gate_to_set: Gate,
-        gates_to_sweep: List[Gate],
+        device: Nt_Device,
+        gate_to_set: DeviceChannel,
+        gates_to_sweep: List[DeviceChannel],
         voltage_step: float = 0.2,
     ) -> Tuple[Tuple[float, float], MeasurementHistory]:
         """
         Estimate the default voltage range to consider
 
         Args:
-            gate_to_set (nt.Gate):
+            gate_to_set (nt.DeviceChannel):
             gates_to_sweep (list)
             voltage_step (flaot)
         Returns:
@@ -248,8 +248,6 @@ class Tuner(qc.Instrument):
         """
         if "pinchoff" not in self.classifiers.keys():
             raise KeyError("No pinchoff classifier found.")
-
-        device = gates_to_sweep[0].parent
 
         device.all_gates_to_highest()
 
@@ -263,12 +261,12 @@ class Tuner(qc.Instrument):
         with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
-                gate_to_set.dc_voltage(voltage)
+                gate_to_set.voltage(voltage)
 
                 for gate in gates_to_sweep:
                     if not skip_gates[gate.layout_id()]:
                         setpoint_sets = copy.deepcopy(self.setpoint_settings())
-                        setpoint_sets["parameters_to_sweep"] = [gate.dc_voltage]
+                        setpoint_sets["parameters_to_sweep"] = [gate.voltage]
                         stage = GateCharacterization1D(
                             data_settings=self.data_settings(),
                             setpoint_settings=setpoint_sets,
@@ -287,7 +285,7 @@ class Tuner(qc.Instrument):
 
                 if all(skip_gates.values()):
                     break
-        min_voltage = gate_to_set.dc_voltage()
+        min_voltage = gate_to_set.voltage()
 
         # Swap top_barrier and last barrier to pinch off agains it to
         # determine opposite corner of valid voltage space.
@@ -296,12 +294,12 @@ class Tuner(qc.Instrument):
         v_range = device.gates[last_gate].safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
         setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings["parameters_to_sweep"] = [gate_to_set.dc_voltage]
+        setpoint_settings["parameters_to_sweep"] = [gate_to_set.voltage]
         with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 
-                device.gates[last_gate].dc_voltage(voltage)
+                device.gates[last_gate].voltage(voltage)
                 stage = GateCharacterization1D(
                     data_settings=self.data_settings(),
                     setpoint_settings=setpoint_settings,

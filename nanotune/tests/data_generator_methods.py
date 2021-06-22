@@ -32,7 +32,7 @@ class DotCurrent(qc.Parameter):
         next(self._cr)
 
     def get_raw(self):
-        val = self._cr.send((self.gate_x.dc_voltage(), self.gate_y.dc_voltage()))
+        val = self._cr.send((self.gate_x.voltage(), self.gate_y.voltage()))
         next(self._cr)
         return val
 
@@ -52,7 +52,7 @@ class DotSensor(qc.Parameter):
         next(self._se)
 
     def get_raw(self):
-        val = self._se.send((self.gate_x.dc_voltage(), self.gate_y.dc_voltage()))
+        val = self._se.send((self.gate_x.voltage(), self.gate_y.voltage()))
         next(self._se)
         return val
 
@@ -73,7 +73,7 @@ class PinchoffCurrent(qc.Parameter):
         next(self._cr)
 
     def get_raw(self):
-        val = self._cr.send(self.gate.dc_voltage())
+        val = self._cr.send(self.gate.voltage())
         next(self._cr)
         return val
 
@@ -93,7 +93,7 @@ class PinchoffSensor(qc.Parameter):
         next(self._se)
 
     def get_raw(self):
-        val = self._se.send(self.gate.dc_voltage())
+        val = self._se.send(self.gate.voltage())
         next(self._se)
         return val
 

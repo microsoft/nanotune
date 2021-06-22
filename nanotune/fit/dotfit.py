@@ -11,14 +11,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import qcodes as qc
-import scipy as sc
-import scipy.fftpack as fp
 import xarray as xr
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from numpy import linalg as lg
-from qcodes.dataset.data_set import res_type
-from qcodes.dataset.experiment_container import (load_by_id,
-                                                 load_last_experiment)
 from qcodes.dataset.measurements import Measurement
 from scipy.ndimage import measurements as scm
 from scipy.ndimage.filters import maximum_filter
@@ -28,7 +22,6 @@ import nanotune as nt
 from nanotune.data.dataset import default_coord_names
 from nanotune.data.plotting import default_plot_params
 from nanotune.fit.datafit import DataFit
-from nanotune.utils import format_axes
 
 logger = logging.getLogger(__name__)
 
@@ -216,7 +209,7 @@ class DotFit(DataFit):
         if not self.segmented_data:
             self.prepare_segmented_data(use_raw_data=True)
         if not os.path.isfile(os.path.join(segment_db_folder, segment_db_name)):
-            ds = load_by_id(self.qc_run_id)
+            ds = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
             nt.new_database(segment_db_name, db_folder=segment_db_folder)
             qc.new_experiment(f"segmented_{ds.exp_name}", sample_name=ds.sample_name)
 

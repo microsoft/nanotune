@@ -87,7 +87,7 @@ def get_param_values(
     for submod in submods:
         gate_val = device_snap["submodules"][submod]["parameters"]
         try:
-            gate_val = gate_val["dc_voltage"]["value"]
+            gate_val = gate_val["voltage"]["value"]
         except KeyError:
             gate_val = gate_val["state"]["value"]
         param_values.append([submod, gate_val])

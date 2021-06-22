@@ -13,6 +13,7 @@ from typing import (
     Sequence,
     Union,
     Type,
+    Dict,
 )
 from qcodes import InstrumentChannel
 

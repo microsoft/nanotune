@@ -90,7 +90,7 @@ class DeviceConfigurator:
         device = Device(name=name, **device_kwargs)
 
         for gate in device.gates:
-            self.monitor_parameters[id(gate.dc_voltage)] = gate.dc_voltage
+            self.monitor_parameters[id(gate.voltage)] = gate.voltage
 
         for ohmic in device.ohmics:
             self.monitor_parameters[id(ohmic.state)] = ohmic.state

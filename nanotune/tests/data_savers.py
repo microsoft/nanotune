@@ -13,7 +13,7 @@ def save_1Ddata_with_qcodes(data_generator_method, metadata_generator_method):
     meas.register_custom_parameter(
         "current",
         paramtype="numeric",
-        label="dc current",
+        label="transport",
         unit="A",
         setpoints=("voltage",),
     )
@@ -21,7 +21,7 @@ def save_1Ddata_with_qcodes(data_generator_method, metadata_generator_method):
     meas.register_custom_parameter(
         "sensor",
         paramtype="numeric",
-        label="dc sensor",
+        label="sensing",
         unit="A",
         setpoints=("voltage",),
     )
@@ -51,14 +51,14 @@ def save_2Ddata_with_qcodes(data_generator_method, metadata_generator_method):
     meas.register_custom_parameter(
         "current",
         paramtype="numeric",
-        label="dc current",
+        label="transport",
         unit="A",
         setpoints=("v_x", "v_y"),
     )
     meas.register_custom_parameter(
         "sensor",
         paramtype="numeric",
-        label="dc sensor",
+        label="sensing",
         unit="A",
         setpoints=("v_x", "v_y"),
     )

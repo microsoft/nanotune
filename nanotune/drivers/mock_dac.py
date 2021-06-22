@@ -111,10 +111,10 @@ class MockDACChannel(DACChannelInterface):
     def set_amplitude(self, new_amplitude: float) -> None:
         self._amplitude = new_amplitude
 
-    def get_relay_state(self) -> str:
+    def get_relay_state(self) -> RelayState:
         return self._relay_state
 
-    def set_relay_state(self, new_relay_state: str) -> None:
+    def set_relay_state(self, new_relay_state: RelayState) -> None:
         self._relay_state = new_relay_state
 
     def set_ramp_rate(self, new_ramp_rate: float) -> None:
