@@ -9,7 +9,7 @@ from nanotune.tuningstages.chargediagram import ChargeDiagram
 atol = 1e-03
 
 
-def test_chargediagram_run_stage(chargediagram_settings):
+def test_chargediagram_run_stage(chargediagram_settings, experiment):
 
     chdiag = ChargeDiagram(
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.
@@ -25,7 +25,7 @@ def test_chargediagram_run_stage(chargediagram_settings):
     features = tuning_result.ml_result["features"]
     print(features)
 
-    dc_current_features = features["dc_current"]["triple_points"]
-    assert features["dc_current"]["triple_points"]
-    assert features["dc_sensor"]["triple_points"]
-    assert np.isclose(dc_current_features[0][0][0], 0.03583013287130833, atol=atol)
+    transport_features = features["transport"]["triple_points"]
+    assert features["transport"]["triple_points"]
+    assert features["sensing"]["triple_points"]
+    assert np.isclose(transport_features[0][0][0], 0.03583013287130833, atol=atol)

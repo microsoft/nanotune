@@ -55,7 +55,7 @@ class ChargeDiagram(TuningStage):
             setpoints. Required keys are 'parameters_to_sweep',
             'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
-            'dc_current' to QCoDeS parameters measuring/returning the desired
+            'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to
             measure.
@@ -95,7 +95,7 @@ class ChargeDiagram(TuningStage):
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
-                'dc_current' to QCoDeS parameters measuring/returning the
+                'transport' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
             classifiers: Pre-trained classifiers predicting single and dot
                 quality, and the dotregime. String keys indicating the type of

@@ -1,40 +1,29 @@
 import gc
 import os
 
-import joblib
 import shutil
-import numpy as np
 import pytest
+import pathlib
 import qcodes as qc
 from qcodes import new_experiment
-from qcodes.dataset.data_set import DataSet
-from qcodes.dataset.experiment_container import experiments, load_by_id
-from qcodes.dataset.measurements import Measurement
-from qcodes.instrument.base import Instrument
-from qcodes.tests.instrument_mocks import (DummyChannel,
-                                           DummyChannelInstrument,
-                                           DummyInstrument,
-                                           DummyInstrumentWithMeasurement)
-from qcodes.dataset.database_extract_runs import extract_runs_into_db
-from sklearn.dummy import DummyClassifier
+from qcodes.tests.instrument_mocks import DummyInstrument
 
 import nanotune as nt
-import nanotune.tests.data_generator_methods as gm
-from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device
-from nanotune.device.gate import Gate
+from nanotune.device.device import DeviceChannel
 from nanotune.tests.data_generator_methods import (
     DotCurrent, DotSensor, PinchoffCurrent, PinchoffSensor,
-    doubledot_triple_points, generate_coloumboscillation_metadata,
-    generate_coulomboscillations, generate_default_metadata,
+    generate_coloumboscillation_metadata,
+    generate_coulomboscillations,
     generate_doubledot_data, generate_doubledot_metadata,
     generate_pinchoff_data, generate_pinchoff_metadata,
-    populate_db_coulomboscillations, populate_db_doubledots,
-    populate_db_pinchoffs)
+    populate_db_doubledots, populate_db_pinchoffs)
 
-from .dac_mocks import DummyDAC, DummyDACChannel
+from nanotune.drivers.mock_dac import MockDAC, MockDACChannel
+from nanotune.drivers.mock_readout_instruments import MockLockin, MockRF
+
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
-from .mock_classifier import MockClassifer
+PARENT_DIR = pathlib.Path(__file__).parent.absolute()
 
 ideal_run_labels = {
     0: "pinchoff",
@@ -119,27 +108,6 @@ def _make_dummy_inst():
         inst.close()
 
 
-@pytest.fixture(name="dummy_dac", scope="function")
-def _make_dummy_dac():
-    inst = DummyDAC("dummy_dac", DummyDACChannel)
-    try:
-        yield inst
-    finally:
-        inst.close()
-
-
-@pytest.fixture(name="dummy_device", scope="function")
-def _make_dummy_device(experiment, tmp_path):
-    device = Device(
-        "test_sample",
-        "doubledot_2D",
-    )
-    try:
-        yield device
-    finally:
-        device.close()
-
-
 @pytest.fixture(scope="function", params=["numeric"])
 def qc_dataset_pinchoff(experiment, request):
     """"""
@@ -174,12 +142,22 @@ def db_real_pinchoff(tmp_path):
         shutil.copyfile(
             path_device_characterization,
             os.path.join(tmp_path, "pinchoff_data.db"))
-        # nt.new_database("pinchoff_data.db", tmp_path)
-        # extract_runs_into_db(
-        #     path_device_characterization,
-        #     os.path.join(tmp_path, 'pinchoff_data.db'),
-        #     *list(range(1, 16)),
-        # )
+        yield
+    finally:
+        gc.collect()
+
+
+@pytest.fixture(scope="function")
+def db_dot_tuning(tmp_path):
+
+    nt_path = os.path.dirname(os.path.dirname(os.path.abspath(nt.__file__)))
+    path_device_characterization = os.path.join(
+        nt_path, 'data', 'tuning', 'dot_tuning_sequences.db')
+
+    try:
+        shutil.copyfile(
+            path_device_characterization,
+            os.path.join(tmp_path, "dot_tuning_data.db"))
         yield
     finally:
         gc.collect()
@@ -187,7 +165,6 @@ def db_real_pinchoff(tmp_path):
 
 @pytest.fixture(scope="function", params=["numeric"])
 def qc_dataset_doubledot(experiment, request):
-    """"""
     datasaver = save_2Ddata_with_qcodes(generate_doubledot_data, None)
 
     try:
@@ -230,7 +207,6 @@ def experiment_doubledots(empty_temp_db):
 
 @pytest.fixture(scope="function", params=["numeric"])
 def nt_dataset_coulomboscillation(experiment, request):
-    """"""
     datasaver = save_1Ddata_with_qcodes(
         generate_coulomboscillations, generate_coloumboscillation_metadata
     )
@@ -269,7 +245,7 @@ def pinchoff_dmm(dummy_dmm):
         "po_current",
         parameter_class=PinchoffCurrent,
         initial_value=0,
-        label="pinchoff dc current",
+        label="pinchoff transport",
         unit="A",
         get_cmd=None,
         set_cmd=None,
@@ -315,33 +291,58 @@ def dot_dmm(dummy_dmm):
         dummy_dmm.close()
 
 
+@pytest.fixture(scope="session")
+def dac():
+    return MockDAC('dac', MockDACChannel)
+
+
+@pytest.fixture(scope="session")
+def lockin():
+    _lockin = MockLockin(
+        name='lockin'
+    )
+    return _lockin
+
+
+@pytest.fixture(scope="session")
+def rf():
+    return MockRF('rf')
+
+
+@pytest.fixture(scope="session")
+def station(dac, lockin, rf):
+    _station = qc.Station()
+    _station.add_component(dac)
+    _station.add_component(lockin)
+    _station.add_component(rf)
+    return _station
+
+
 @pytest.fixture(scope="function")
-def gate_1(dummy_dac, dummy_device):
-    gate = Gate(
-        dummy_device,
-        dummy_dac,
-        channel_id=1,
-        layout_id=1,
-        name="test_gate",
+def gate_1(station):
+    gate = DeviceChannel(
+        station.dac,
+        station.dac.ch01,
+        gate_id=0,
         label="test_label",
-        delay=0,
-        max_jump=0.01,
+        inter_delay=0,
+        post_delay=0,
+        max_voltage_step=0.01,
         ramp_rate=0.2,
     )
     yield gate
 
 
 @pytest.fixture(scope="function")
-def gate_2(dummy_dac, dummy_device):
-    gate = Gate(
-        dummy_device,
-        dummy_dac,
-        channel_id=2,
-        layout_id=2,
-        name="test_gate_y",
-        label="test_label_y",
-        delay=0,
-        max_jump=0.01,
+def gate_2(station):
+    gate = DeviceChannel(
+        station.dac,
+        station.dac.ch02,
+        gate_id=1,
+        label="test_label_2",
+        inter_delay=0,
+        post_delay=0,
+        max_voltage_step=0.01,
         ramp_rate=0.2,
     )
     yield gate
@@ -349,25 +350,25 @@ def gate_2(dummy_dac, dummy_device):
 
 @pytest.fixture(scope="function")
 def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
-    gate_1.current_valid_range([-0.1, 0])
+    # gate_1.current_valid_range([-0.1, 0])
     pinchoff_dmm.po_current.gate = gate_1
     pinchoff_dmm.po_sensor.gate = gate_1
 
     readout_methods = {
-        "dc_current": pinchoff_dmm.po_current,
-        "dc_sensor": pinchoff_dmm.po_sensor,
+        "transport": pinchoff_dmm.po_current,
+        "sensing": pinchoff_dmm.po_sensor,
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
-        "parameters_to_sweep": [gate_1.dc_voltage],
-        "current_valid_ranges": [gate_1.current_valid_range()],
+        "parameters_to_sweep": [gate_1.voltage],
+        "current_valid_ranges": [[-0.1, 0]],
         "safety_voltage_ranges": [(-3, 0)],
     }
     data_settings = {
         "db_name": "temp.db",
         "normalization_constants": {
-            "dc_current": [0, 1.2],
-            "dc_sensor": [-0.13, 1.1],
+            "transport": [0, 1.2],
+            "sensing": [-0.13, 1.1],
             "rf": [0, 1],
         },
         "db_folder": tmp_path,
@@ -382,8 +383,8 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
 
 @pytest.fixture(scope="function")
 def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
-    gate_1.current_valid_range([-0.2, -0.1])
-    gate_2.current_valid_range([-0.3, -0.2])
+    # gate_1.current_valid_range([-0.2, -0.1])
+    # gate_2.current_valid_range([-0.3, -0.2])
 
     dot_dmm.dot_current.gate_x = gate_1
     dot_dmm.dot_current.gate_y = gate_2
@@ -392,15 +393,15 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
     dot_dmm.dot_sensor.gate_y = gate_2
 
     readout_methods = {
-        "dc_current": dot_dmm.dot_current,
-        "dc_sensor": dot_dmm.dot_sensor,
+        "transport": dot_dmm.dot_current,
+        "sensing": dot_dmm.dot_sensor,
     }
     setpoint_settings = {
         "voltage_precision": 0.001,
-        "parameters_to_sweep": [gate_1.dc_voltage, gate_2.dc_voltage],
+        "parameters_to_sweep": [gate_1.voltage, gate_2.voltage],
         "current_valid_ranges": [
-            gate_1.current_valid_range(),
-            gate_2.current_valid_range(),
+            [-0.2, -0.1],
+            [-0.3, -0.2],
         ],
         "safety_voltage_ranges": [(-3, 0), (-3, 0)],
     }
@@ -409,8 +410,8 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
         "segment_db_name": "temp_dots_seg.db",
         "segment_db_folder": tmp_path,
         "normalization_constants": {
-            "dc_current": [0, 2],
-            "dc_sensor": [-0.32, 3],
+            "transport": [0, 2],
+            "sensing": [-0.32, 3],
             "rf": [0, 1],
         },
         "db_folder": tmp_path,
@@ -426,55 +427,45 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
 
 
 @pytest.fixture(scope="function")
-def device_gate_inputs(dummy_dac):
-    gate_parameters = {}
-    for gate_id in range(5):
-        gate_parameters[gate_id] = {
-            "channel_id": gate_id,
-            "dac_instrument": dummy_dac,
-            "label": f"test_gate{gate_id}",
-            "safety_range": (-2, 0),
-        }
-    ohmic_parameters = {
-        0: {
-            "dac_instrument": dummy_dac,
-            "channel_id": 10,
-            "label": "test_ohmic",
-        }
-    }
-    gate_inputs = {
-        "gate_parameters": gate_parameters,
-        "ohmic_parameters": ohmic_parameters,
-    }
-    yield gate_inputs
-
-
-@pytest.fixture(scope="function")
 def dot_readout_methods(dot_dmm):
     readout_methods = {
-        "dc_current": dot_dmm.dot_current,
-        "dc_sensor": dot_dmm.dot_sensor,
+        "transport": dot_dmm.dot_current,
+        "sensing": dot_dmm.dot_sensor,
     }
     yield readout_methods
 
 
+@pytest.fixture()
+def chip_config():
+    return os.path.join(PARENT_DIR, "chip.yaml")
+
+
+@pytest.fixture()
+def device(station, chip_config):
+    if hasattr(station, "device_on_chip"):
+        return station.device_on_chip
+
+    station.load_config_file(chip_config)
+    _chip = station.load_device_on_chip(station=station)
+    return _chip
+
+
 @pytest.fixture(scope="function")
-def device_pinchoff(pinchoff_dmm, device_gate_inputs):
+def device_pinchoff(pinchoff_dmm, device, station):
+    # station.add_component(pinchoff_dmm)
     readout_methods = {
-        "dc_current": pinchoff_dmm.po_current,
-        "dc_sensor": pinchoff_dmm.po_sensor,
+        "transport": 'pinchoff_dmm.po_current',
+        "sensing": 'pinchoff_dmm.po_sensor',
     }
 
-    device = nt.Device(
-        name="test_doubledot",
-        device_type="doubledot_2D",
-        readout_methods=readout_methods,
-        **device_gate_inputs,
-    )
+    device._create_and_add_parameters(
+                station=station,
+                parameters=readout_methods,
+                setters={},
+                units={},
+            )
 
-    pinchoff_dmm.po_current.gate = device.left_barrier
-    pinchoff_dmm.po_sensor.gate = device.left_barrier
-    try:
-        yield device
-    finally:
-        device.close()
+
+    pinchoff_dmm.po_current.gate = device.top_barrier
+    pinchoff_dmm.po_sensor.gate = device.top_barrier
+    yield device

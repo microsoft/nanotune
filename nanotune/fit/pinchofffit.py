@@ -82,7 +82,7 @@ class PinchoffFit(DataFit):
         self._high_signal_index: Dict[str, float] = {}
         self._transition_signal_index: Dict[str, float] = {}
 
-        n_points = self.data["dc_current"]["voltage_x"].shape[0]
+        n_points = self.data["transport"]["voltage_x"].shape[0]
         self._normalized_voltage = np.linspace(0, 1, n_points)
 
     @property
@@ -198,7 +198,7 @@ class PinchoffFit(DataFit):
 
     def compute_initial_guess(
         self,
-        readout_method: str = "dc_current",
+        readout_method: str = "transport",
     ) -> Tuple[Tuple[List[float], List[float]], List[float]]:
         """"""
         signal = self.data[readout_method].values

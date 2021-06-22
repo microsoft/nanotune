@@ -48,12 +48,12 @@ DataSettingsDict = TypedDict(
     },
     total=False,
 )
-ReadoutMethodsLiteral = Literal["dc_current", "dc_sensor", "rf"]
+ReadoutMethodsLiteral = Literal["transport", "sensing", "rf"]
 ReadoutMethodsDict = TypedDict(
     "ReadoutMethodsDict",
     {
-        "dc_current": qc.Parameter,
-        "dc_sensor": qc.Parameter,
+        "transport": qc.Parameter,
+        "sensing": qc.Parameter,
         "rf": qc.Parameter,
     },
     total=False,

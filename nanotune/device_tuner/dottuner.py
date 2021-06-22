@@ -11,7 +11,7 @@ from qcodes.dataset.experiment_container import (load_experiment,
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import Device as Nt_Device
-from nanotune.device.gate import Gate
+from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuner import Tuner
 from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 from nanotune.fit.pinchofffit import PinchoffFit
@@ -111,7 +111,7 @@ class DotTuner(Tuner):
             # tb_voltage = 0.5 * (H + T)
 
         device.gates[0].current_valid_range(top_barrier_ranges)
-        device.gates[0].dc_voltage(top_barrier_ranges[1])
+        device.gates[0].voltage(top_barrier_ranges[1])
 
     def tune_1D(
         self,
@@ -253,7 +253,7 @@ class DotTuner(Tuner):
             max_range_change=0.05,
             min_range_change=0.01,
         )
-        device.top_barrier.dc_voltage(new_top)
+        device.top_barrier.voltage(new_top)
         logger.info(
             (
                 f"Setting top barrier to {new_top}"
@@ -289,7 +289,7 @@ class DotTuner(Tuner):
                     else:
                         new_action = "more positive"
                 else:
-                    device.gates[gate_layout_id].dc_voltage(new_voltage)
+                    device.gates[gate_layout_id].voltage(new_voltage)
                     logger.info(
                         (
                             "Choosing new voltage range for"
@@ -338,7 +338,7 @@ class DotTuner(Tuner):
                 else:
                     new_action = "more positive"
             else:
-                barrier.dc_voltage(new_voltage)
+                barrier.voltage(new_voltage)
                 barrier.current_valid_range((L, H))
                 barrier.transition_voltage(T)
                 logger.info(f"Setting {barrier.name} to {new_voltage}.")
@@ -364,7 +364,7 @@ class DotTuner(Tuner):
         features = result.tuningresults[key].features
 
         if desired_regime == 1:
-            self.central_barrier.dc_voltage(features["high_voltage"])
+            self.central_barrier.voltage(features["high_voltage"])
         elif desired_regime == 3:
             data_id = result.tuningresults[key].data_ids[-1]
             ds = nt.Dataset(
@@ -373,12 +373,12 @@ class DotTuner(Tuner):
                 db_folder=self.data_settings["db_folder"],
             )
             read_meths = device.readout_methods().keys()
-            if "dc_current" in read_meths:
-                signal = ds.data["dc_current"].values
-                voltage = ds.data["dc_current"]["voltage_x"].values
-            elif "dc_sensor" in read_meths:
-                signal = ds.data["dc_sensor"].values
-                voltage = ds.data["dc_sensor"]["voltage_x"].values
+            if "transport" in read_meths:
+                signal = ds.data["transport"].values
+                voltage = ds.data["transport"]["voltage_x"].values
+            elif "sensing" in read_meths:
+                signal = ds.data["sensing"].values
+                voltage = ds.data["sensing"]["voltage_x"].values
             elif "rf" in read_meths:
                 signal = ds.data["rf"].values
                 voltage = ds.data["rf"]["voltage_x"].values
@@ -387,7 +387,7 @@ class DotTuner(Tuner):
             v_sat_idx = np.argwhere(signal < float(2 / 3))[-1][0]
             three_quarter = voltage[v_sat_idx]
 
-            self.central_barrier.dc_voltage(three_quarter)
+            self.central_barrier.voltage(three_quarter)
         else:
             raise ValueError
 
@@ -395,7 +395,7 @@ class DotTuner(Tuner):
             [features["low_voltage"], features["high_voltage"]]
         )
 
-        logger.info(f"Central barrier to {self.central_barrier.dc_voltage()}")
+        logger.info(f"Central barrier to {self.central_barrier.voltage()}")
 
     def update_gate_configuration(
         self,
@@ -478,7 +478,7 @@ class DotTuner(Tuner):
         based on current_valid_range or safety_range if no current_valid_range
         is set
         """
-        curr_v = device.gates[layout_id].dc_voltage()
+        curr_v = device.gates[layout_id].voltage()
         sfty_rng = device.gates[layout_id].safety_range()
         try:
             L, H = device.gates[layout_id].current_valid_range()
@@ -548,7 +548,7 @@ class DotTuner(Tuner):
     def get_charge_diagram(
         self,
         device: Nt_Device,
-        gates_to_sweep: List[Gate],
+        gates_to_sweep: List[DeviceChannel],
         voltage_precision: Optional[float] = None,
         signal_thresholds: Optional[List[float]] = None,
         iterate: bool = False,
