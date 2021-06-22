@@ -128,6 +128,7 @@ class DeviceChannel(InstrumentChannel):
             channel_name = channel_name.replace(
                 self._channel.parent.name+"_", "", 1
             )
+        assert issubclass(self._channel.parent.__class__, DACInterface)
 
         static_metadata = kwargs.pop('metadata', {})
         static_metadata.update({
@@ -135,11 +136,12 @@ class DeviceChannel(InstrumentChannel):
             'gate_id':gate_id,
             'ohmic_id': ohmic_id}
         )
-        assert issubclass(self._channel.parent.__class__, DACInterface)
 
+        if 'parent' not in kwargs.keys():
+            kwargs['parent'] = self._channel.parent
+
+        kwargs['name'] = channel_name
         super().__init__(
-            self._channel.parent,
-            channel_name,
             metadata=static_metadata,
             **kwargs,
         )
