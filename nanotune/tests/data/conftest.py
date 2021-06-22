@@ -52,7 +52,7 @@ def nt_dataset_doubledot_partial_metadata(experiment, tmp_path):
         datasaver.dataset.add_metadata(label, value)
     meta_dict = {
         "device_max_signal": 1,
-        "normalization_constants": {"dc_current": [0, 1.4]},
+        "normalization_constants": {"transport": [0, 1.4]},
     }
     datasaver.dataset.add_metadata(nt.meta_tag, json.dumps(meta_dict))
     try:

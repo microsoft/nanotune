@@ -36,7 +36,7 @@ class GateCharacterization1D(TuningStage):
             setpoints. Necessary keys are 'current_valid_ranges',
             'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
-            'dc_current' to QCoDeS parameters measuring/returning the desired
+            'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
         safety_ranges: List of satefy voltages ranges, i.e. safety limits within
@@ -59,7 +59,7 @@ class GateCharacterization1D(TuningStage):
         readout_methods: ReadoutMethodsDict,
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
-        main_readout_method: ReadoutMethodsLiteral = "dc_current",
+        main_readout_method: ReadoutMethodsLiteral = "transport",
         voltage_interval_to_track=0.3,
     ) -> None:
         """Initializes a gate characterization tuning stage.
@@ -73,7 +73,7 @@ class GateCharacterization1D(TuningStage):
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
-                'dc_current' to QCoDeS parameters measuring/returning the
+                'transport' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
             classifier: Pre-trained nt.Classifier predicting the quality of a
             pinchoff curve.

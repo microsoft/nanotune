@@ -143,14 +143,14 @@ def generate_pinchoff_metadata():
     nt_metadata = dict.fromkeys(META_FIELDS, None)
     nt_metadata["device_name"] = "test_device"
     nt_metadata["normalization_constants"] = {
-        "dc_current": [0, 1.2],
-        "dc_sensor": [-0.13, 1.1],
+        "transport": [0, 1.2],
+        "sensing": [-0.13, 1.1],
         "rf": [0, 1],
     }
     nt_metadata["device_max_signal"] = 1.2
-    nt_metadata["readout_methods"] = {"dc_current": "current", "dc_sensor": "sensor"}
+    nt_metadata["readout_methods"] = {"transport": "current", "sensing": "sensor"}
     nt_metadata["features"] = {
-        "dc_current": {
+        "transport": {
             "amplitude": 0.6,
             "slope": 1000,
             "low_signal": 0,
@@ -162,7 +162,7 @@ def generate_pinchoff_metadata():
             "high_voltage": -0.03,
             "transition_voltage": -0.05,
         },
-        "dc_sensor": {
+        "sensing": {
             "amplitude": 0.5,
             "slope": 800,
             "low_signal": 0,
@@ -212,14 +212,14 @@ def generate_doubledot_metadata():
     nt_metadata = dict.fromkeys(META_FIELDS, None)
     nt_metadata["device_name"] = "test_device"
     nt_metadata["normalization_constants"] = {}
-    nt_metadata["normalization_constants"]["dc_current"] = [0, 2]
-    nt_metadata["normalization_constants"]["dc_sensor"] = [-0.32, 3]
+    nt_metadata["normalization_constants"]["transport"] = [0, 2]
+    nt_metadata["normalization_constants"]["sensing"] = [-0.32, 3]
     nt_metadata["normalization_constants"]["rf"] = [0, 1]
     nt_metadata["device_max_signal"] = 2
-    nt_metadata["readout_methods"] = {"dc_current": "current", "dc_sensor": "sensor"}
+    nt_metadata["readout_methods"] = {"transport": "current", "sensing": "sensor"}
     nt_metadata["features"] = {
-        "dc_current": {"triple_points": None},
-        "dc_sensor": {"triple_points": None},
+        "transport": {"triple_points": None},
+        "sensing": {"triple_points": None},
     }
 
     return nt_metadata, current_label
@@ -229,10 +229,10 @@ def generate_default_metadata():
     nt_metadata = dict.fromkeys(META_FIELDS, None)
     nt_metadata["device_name"] = "test_device"
     nt_metadata["normalization_constants"] = {
-        key: (0, 1) for key in ["dc_current", "rf", "dc_sensor"]
+        key: (0, 1) for key in ["transport", "rf", "sensing"]
     }
     nt_metadata["device_max_signal"] = 1
-    nt_metadata["readout_methods"] = {"dc_current": "current"}
+    nt_metadata["readout_methods"] = {"transport": "current"}
 
     current_label = dict.fromkeys(NT_LABELS, 0)
     return nt_metadata, current_label
@@ -266,11 +266,11 @@ def generate_coloumboscillation_metadata():
     nt_metadata = dict.fromkeys(META_FIELDS, None)
     nt_metadata["device_name"] = "test_device"
     nt_metadata["normalization_constants"] = {}
-    nt_metadata["normalization_constants"]["dc_current"] = [0.013, 1.4]
-    nt_metadata["normalization_constants"]["dc_sensor"] = [-0.03, 1.1]
+    nt_metadata["normalization_constants"]["transport"] = [0.013, 1.4]
+    nt_metadata["normalization_constants"]["sensing"] = [-0.03, 1.1]
     nt_metadata["normalization_constants"]["rf"] = [0, 1]
     nt_metadata["device_max_signal"] = 1.4
-    nt_metadata["readout_methods"] = {"dc_current": "current", "dc_sensor": "sensor"}
+    nt_metadata["readout_methods"] = {"transport": "current", "sensing": "sensor"}
     nt_metadata["features"] = {}
 
     return nt_metadata, current_label

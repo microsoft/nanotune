@@ -32,7 +32,7 @@ class TuningStage(metaclass=ABCMeta):
             setpoints. Necessary keys are 'current_valid_ranges',
             'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
         readout_methods: Dictionary mapping string identifiers such as
-            'dc_current' to QCoDeS parameters measuring/returning the desired
+            'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to
             measure.
@@ -65,7 +65,7 @@ class TuningStage(metaclass=ABCMeta):
                 'safety_voltage_ranges', 'parameters_to_sweep' and
                 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
-                'dc_current' to QCoDeS parameters measuring/returning the
+                'transport' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
         """
 

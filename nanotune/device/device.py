@@ -41,16 +41,16 @@ class Device(DelegateInstrument):
     """
     device_type: str, e.g 'fivedot'
     readout_methods = {
-        'dc_current': qc.Parameter,
-        'dc_sensor': qc.Parameter,
+        'transport': qc.Parameter,
+        'sensing': qc.Parameter,
         'rf': qc.Parameter,
     }
     measurement_options = {
-        'dc_current': {
+        'transport': {
             'delay': <float>,
             'inter_delay': <float>,
         }
-        'dc_sensor': {
+        'sensing': {
             'delay': <float>,
             'inter_delay': <float>,
         }
@@ -149,7 +149,6 @@ class Device(DelegateInstrument):
         )
 
 
-
 # TODO: Deal with ohmics?
 
         # if ohmic_parameters is not None:
@@ -180,7 +179,7 @@ class Device(DelegateInstrument):
             self._normalization_constants = normalization_constants
         else:
             self._normalization_constants = {
-                key: (0, 1) for key in ["dc_current", "rf", "dc_sensor"]
+                key: (0, 1) for key in ["transport", "sensing"]
             }
 
         super().add_parameter(

@@ -151,12 +151,12 @@ def test_get_triple_point_distances(nt_dataset_doubledot, tmp_path):
     df = DotFit(1, "temp.db", db_folder=str(tmp_path))
 
     df.fit_parameters = {
-        "dc_current": {
+        "transport": {
             "noise_level": 0.02,
             "binary_neighborhood": 1,
             "distance_threshold": 0.05,
         },
-        "dc_sensor": {
+        "sensing": {
             "noise_level": 0.3,
             "binary_neighborhood": 2,
             "distance_threshold": 0.05,
@@ -164,41 +164,41 @@ def test_get_triple_point_distances(nt_dataset_doubledot, tmp_path):
     }
 
     relevant_distances = df.get_triple_point_distances()
-    print(relevant_distances["dc_sensor"])
+    print(relevant_distances["sensing"])
 
-    assert len(relevant_distances["dc_current"]) == 2
-    dc_current_distance = np.asarray(relevant_distances["dc_current"])
+    assert len(relevant_distances["transport"]) == 2
+    transport_distance = np.asarray(relevant_distances["transport"])
     found = False
-    for dist in dc_current_distance[:, 0, 0]:
+    for dist in transport_distance[:, 0, 0]:
         if math.isclose(0.036055512754639925, dist, rel_tol=atol):
             found = True
     assert found
 
-    assert [-0.14, -0.28] in dc_current_distance[:, 2]
-    assert [-0.17, -0.22] in dc_current_distance[:, 3]
+    assert [-0.14, -0.28] in transport_distance[:, 2]
+    assert [-0.17, -0.22] in transport_distance[:, 3]
     # fit results of sensor
-    dc_sensor_distance = np.asarray(relevant_distances["dc_sensor"])
-    assert len(dc_sensor_distance) == 2
+    sensing_distance = np.asarray(relevant_distances["sensing"])
+    assert len(sensing_distance) == 2
     found = False
-    for dist in dc_sensor_distance[:, 0, 0]:
+    for dist in sensing_distance[:, 0, 0]:
         if math.isclose(0.0353774292452123, dist, rel_tol=atol):
             found = True
     assert found
 
-    assert [-0.19, -0.25] in dc_sensor_distance[:, 2]
-    assert [-0.12, -0.25] in dc_sensor_distance[:, 3]
+    assert [-0.19, -0.25] in sensing_distance[:, 2]
+    assert [-0.12, -0.25] in sensing_distance[:, 3]
 
 
 def test_dotfit_plot(nt_dataset_doubledot, tmp_path):
     df = DotFit(1, "temp.db", db_folder=str(tmp_path))
 
     df.fit_parameters = {
-        "dc_current": {
+        "transport": {
             "noise_level": 0.02,
             "binary_neighborhood": 1,
             "distance_threshold": 0.05,
         },
-        "dc_sensor": {
+        "sensing": {
             "noise_level": 0.3,
             "binary_neighborhood": 2,
             "distance_threshold": 0.05,

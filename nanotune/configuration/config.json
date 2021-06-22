@@ -19,7 +19,7 @@
         "implemented_fits": ["pinchofffit",
                             "dotfit"],
         "setpoint_methods": "linear",
-        "readout_methods": ["dc_current", "dc_sensor", "rf"],
+        "readout_methods": ["transport", "sensing", "rf"],
         "data_types": {
             "signal": 0,
             "frequencies": 1,

@@ -121,14 +121,14 @@ def test_compute_linear_setpoints():
 def test_prepare_metadata(dummy_dmm):
     metadata = prepare_metadata(
         "test_device",
-        {"dc_current": (0, 1.2)},
-        {"dc_current": dummy_dmm.dac1},
+        {"transport": (0, 1.2)},
+        {"transport": dummy_dmm.dac1},
     )
 
-    assert metadata["normalization_constants"] == {"dc_current": (0, 1.2)}
+    assert metadata["normalization_constants"] == {"transport": (0, 1.2)}
     assert metadata["device_name"] == "test_device"
     assert metadata["readout_methods"] == {
-        "dc_current": dummy_dmm.dac1.full_name}
+        "transport": dummy_dmm.dac1.full_name}
     assert "git_hash" in metadata.keys()
     assert "features" in metadata.keys()
 
@@ -139,11 +139,11 @@ def test_add_metadata_to_dict(dummy_dmm):
         meta_dict,
         {
             "features": {"amplitude": 0.2},
-            "readout_methods": {"dc_current": dummy_dmm.dac1},
+            "readout_methods": {"transport": dummy_dmm.dac1},
         },
     )
     assert new_dict["features"] == {"amplitude": 0.2}
-    assert new_dict["readout_methods"]["dc_current"] == dummy_dmm.dac1
+    assert new_dict["readout_methods"]["transport"] == dummy_dmm.dac1
 
 
 def test_save_metadata(qc_dataset_pinchoff, tmp_path):
@@ -206,8 +206,8 @@ def test_take_data_add_metadata(gate_1, gate_2, dummy_dmm, experiment):
     ]
     pre_measurement_metadata = {
         'device_name': 'test_sample',
-        'normalization_constants': {'dc_current': [0, 1.2]},
-        'readout_methods': {'dc_current': dummy_dmm.dac1.full_name},
+        'normalization_constants': {'transport': [0, 1.2]},
+        'readout_methods': {'transport': dummy_dmm.dac1.full_name},
     }
     run_id = take_data_add_metadata(
         params_to_sweep,
@@ -222,8 +222,8 @@ def test_take_data_add_metadata(gate_1, gate_2, dummy_dmm, experiment):
 
     assert 'elapsed_time' in metadata
     assert metadata['device_name'] == 'test_sample'
-    assert metadata['normalization_constants']['dc_current'] == [0, 1.2]
-    assert metadata['readout_methods']['dc_current'] == dummy_dmm.dac1.full_name
+    assert metadata['normalization_constants']['transport'] == [0, 1.2]
+    assert metadata['readout_methods']['transport'] == dummy_dmm.dac1.full_name
 
 
 def test_run_stage(experiment, gate_1, gate_2, dummy_dmm):
