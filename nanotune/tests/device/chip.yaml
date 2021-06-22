@@ -13,11 +13,14 @@ instruments:
         top_barrier:
           channel: dac.ch01
           gate_id: 0
+        left_plunger:
+          channel: dac.ch02
+          gate_id: 1
         left_ohmic:
           channel: dac.ch10
           ohmic_id: 0
-      readout_parameters:
-        dc_transport:
+      readout:
+        transport:
           lockin.X
         sensing:
           rf.phase
