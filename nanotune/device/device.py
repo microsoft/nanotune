@@ -1,3 +1,4 @@
+from __future__ import annotations
 import copy
 import logging
 from typing import (
@@ -7,7 +8,7 @@ from enum import Enum
 from collections import namedtuple
 from functools import partial
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import qcodes as qc
 from qcodes import validators as vals
 from qcodes.station import Station
@@ -17,19 +18,72 @@ if not qc.__version__.startswith('0.27'):
     from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
 else:
     from qcodes.instrument.delegate import DelegateInstrument  # type: ignore
-
+from qcodes.instrument.delegate.grouped_parameter import GroupedParameter
 
 logger = logging.getLogger(__name__)
-READOUTMETHODS = ['transport', 'sensing', 'rf']
 
 nrm_cnst_tp = Mapping[str, Tuple[float, float]]
 voltage_range_type = Dict[int, Sequence[float]]
-# TODO: Use dataclass for normalization constants
-# @dataclass
-# class NormalizationConstants:
-#     transport: Sequence[float]
-#     sensing: Sequence[float]
-#     rf: Sequence[float]
+
+
+@dataclass
+class NormalizationConstants:
+    transport: Tuple[float, float] = (0., 1.)
+    sensing: Tuple[float, float] = (0., 1.)
+    rf: Tuple[float, float] = (0., 1.)
+
+    def update(
+        self,
+        new_constants: Union[
+            Dict[str, Tuple[float, float]], NormalizationConstants],
+    ) -> None:
+        if isinstance(new_constants, NormalizationConstants):
+            new_constants_dict = asdict(new_constants)
+        elif isinstance(new_constants, Dict):
+            new_constants_dict = new_constants
+        else:
+            raise ValueError('Invalid normalization constants. Use \
+                NormalizationConstants or a Dict instead.')
+
+        for read_type, constant in new_constants_dict.items():
+            if not isinstance(constant, Sequence):
+                raise TypeError('Wrong normalization constant item type, \
+                    expect list or tuple.')
+            if not hasattr(self, read_type):
+                raise KeyError(f'Invalid normalization constant identifyer, \
+                    use one of {self.__dataclass_fields__.keys()}')
+            setattr(self, read_type,constant)
+
+
+@dataclass
+class ReadoutMethods:
+    transport: Optional[GroupedParameter] = None
+    sensing: Optional[GroupedParameter] = None
+    rf: Optional[GroupedParameter] = None
+
+    def get_parameters(self):
+        readout_params = []
+        for field in ReadoutMethods.__dataclass_fields__.keys():
+            parameter = getattr(self, field)
+            if parameter is not None:
+                readout_params.append(parameter)
+        return readout_params
+
+    def as_name_dict(self):
+        param_dict = {}
+        for field in ReadoutMethods.__dataclass_fields__.keys():
+            readout = getattr(self, field)
+            if readout is not None:
+                param_dict[field] = readout.full_name
+        return param_dict
+
+    def available_readout(self):
+        param_dict = {}
+        for field in ReadoutMethods.__dataclass_fields__.keys():
+            readout = getattr(self, field)
+            if readout is not None:
+                param_dict[field] = readout
+        return param_dict
 
 
 def readout_formatter(
@@ -44,11 +98,7 @@ def readout_formatter(
 class Device(DelegateInstrument):
     """
     device_type: str, e.g 'doubledot'
-    readout = {
-        'transport': qc.Parameter,
-        'sensing': qc.Parameter,
-        'rf': qc.Parameter,
-    }
+    readout: ReadoutMethods
 
     """
 
@@ -90,24 +140,27 @@ class Device(DelegateInstrument):
         else:
             self.gates, self.ohmics = [], []
 
+        self.readout = ReadoutMethods()
         if readout is None:
             self.readout = None
         else:
             param_names, paths = list(zip(*list(readout.items())))
             for param_name in param_names:
-                if param_name not in READOUTMETHODS:
+                if param_name not in ReadoutMethods.__dataclass_fields__.keys():
                     raise KeyError(f"Invalid readout method key. Use one of \
-                        {READOUTMETHODS}")
-            super()._create_and_add_parameter(
-                'readout',
-                station,
-                paths,
-                formatter=partial(
-                    readout_formatter,
-                    param_names=param_names,
-                    name='readout',
+                        {ReadoutMethods.__dataclass_fields__.keys()}")
+                super()._create_and_add_parameter(
+                    'param_name',
+                    station,
+                    paths,
+                    formatter=partial(
+                        readout_formatter,
+                        param_names=param_name,
+                        name='readout',
+                    )
                 )
-            )
+                setattr(self.readout, param_name, self.param_name)
+
 
         if initial_valid_ranges is None:
             init_valid_ranges_renamed: Dict[int, Any] = {}
@@ -142,24 +195,10 @@ class Device(DelegateInstrument):
             vals=vals.Numbers(),
         )
         if normalization_constants is not None:
-            self._normalization_constants = dict(normalization_constants)
+            self._normalization_constants = NormalizationConstants(
+                **normalization_constants)
         else:
-            self._normalization_constants = {
-                key: (0, 1) for key in ["transport", "sensing"]
-            }
-
-        self.add_parameter(
-            name="normalization_constants",
-            label="normalization constants",
-            docstring=(
-                "Signal measured with all gates at  zero. Used as \
-                normalization during data post processing"
-            ),
-            set_cmd=self.set_normalization_constants,
-            get_cmd=self.get_normalization_constants,
-            initial_value=self._normalization_constants,
-            vals=vals.Dict(),
-        )
+            self._normalization_constants = NormalizationConstants()
 
         if current_valid_ranges is None:
             current_valid_ranges_renamed = init_valid_ranges_renamed
@@ -205,25 +244,19 @@ class Device(DelegateInstrument):
             vals=vals.Dict(),
         )
 
-
-    def get_normalization_constants(self) -> Dict[str, Tuple[float, float]]:
-        """"""
+    @property
+    def normalization_constants(self):
         return self._normalization_constants
 
-    def set_normalization_constants(
+    @normalization_constants.setter
+    def normalization_constants(
         self,
-        new_normalization_constant: Dict[str, Tuple[float, float]],
+        new_constants: Union[Dict, NormalizationConstants],
     ) -> None:
-        """"""
-        if not isinstance(new_normalization_constant, Mapping):
-            raise TypeError('Wrong normalization constant type, expect dict.')
-        for key in new_normalization_constant.keys():
-            if not isinstance(new_normalization_constant[key], Sequence):
-                raise TypeError('Wrong normalization constant item type, \
-                     expect list or tuple.')
-            if key not in READOUTMETHODS:
-                raise KeyError(f'Invalid key, use one of {READOUTMETHODS}')
-        self._normalization_constants.update(new_normalization_constant)
+        self._normalization_constants.update(new_constants)
+        self.metadata.update(
+            {'normalization_constants': asdict(self._normalization_constants)}
+        )
 
     def ground_gates(self) -> None:
         for gate in self.gates:
@@ -379,28 +412,28 @@ class Device(DelegateInstrument):
     def check_and_update_new_voltage_range(
         self,
         new_range: Sequence[float],
-        safety_range: Sequence[float],
+        safety_voltage_range: Sequence[float],
     ) ->Sequence[float]:
         """ """
         if not isinstance(new_range, Sequence) or not len(new_range) == 2:
             raise ValueError('Wrong voltage range type.')
         new_range = sorted(new_range)
-        if new_range[1] > safety_range[1]:
-            new_range[1] = safety_range[1]
+        if new_range[1] > safety_voltage_range[1]:
+            new_range[1] = safety_voltage_range[1]
             logger.warning(
                 "New range out of safety range. Taking upper safety limit."
             )
-            if new_range[0] > safety_range[1]:
+            if new_range[0] > safety_voltage_range[1]:
                 raise ValueError(
                     "New lower voltage range is higher than upper safety \
                         limit. Something seems quite wrong."
                 )
-        if new_range[0] < safety_range[0]:
-            new_range[0] = safety_range[0]
+        if new_range[0] < safety_voltage_range[0]:
+            new_range[0] = safety_voltage_range[0]
             logger.warning(
                 "New range out of safety range. Taking lower safety limit."
             )
-            if new_range[1] < safety_range[0]:
+            if new_range[1] < safety_voltage_range[0]:
                 raise ValueError("New upper voltage range is lower than upper \
                     safety limit. Something seems quite wrong."
                 )
