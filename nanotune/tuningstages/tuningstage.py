@@ -4,6 +4,9 @@ from functools import partial
 from typing import Any, Dict, List, Tuple
 
 import qcodes as qc
+from qcodes.dataset.experiment_container import (load_last_experiment,
+                                                 new_experiment,
+                                                 load_experiment)
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
 
@@ -162,8 +165,8 @@ class TuningStage(metaclass=ABCMeta):
         save_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         save_machine_learning_result(run_id, ml_result)
 
@@ -200,7 +203,7 @@ class TuningStage(metaclass=ABCMeta):
 
         setpoints = compute_linear_setpoints(
             current_valid_ranges,
-            self.setpoint_settings["voltage_precision"],
+            self.setpoint_settings.voltage_precision,
         )
         return setpoints
 
@@ -223,8 +226,8 @@ class TuningStage(metaclass=ABCMeta):
             plot_fit(
                 self.fit_class,
                 current_id,
-                self.data_settings["db_name"],
-                db_folder=self.data_settings["db_folder"],
+                self.data_settings.db_name,
+                db_folder=self.data_settings.db_folder,
             )
         print_tuningstage_status(tuning_result)
 
@@ -236,11 +239,11 @@ class TuningStage(metaclass=ABCMeta):
             dict: Metadata dict with fields known prior to a measurement filled
                 in.
         """
-        example_param = self.setpoint_settings["parameters_to_sweep"][0]
+        example_param = self.setpoint_settings.parameters_to_sweep[0]
         device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
             device_name,
-            self.data_settings["normalization_constants"],
+            self.data_settings.normalization_constants,
             self.readout_methods,
         )
         return nt_meta
@@ -304,12 +307,26 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         nt.set_database(
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"]
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder
         )
+        if self.data_settings.experiment_id is None:
+            try:
+                qcodes_experiment = load_last_experiment()
+            except ValueError:
+                logger.warning(
+                    "No qcodes experiment found. Starting a new "
+                    'one called "automated_tuning", with an unknown sample.'
+                )
+                qcodes_experiment = new_experiment(
+                    "automated_tuning", sample_name="unknown"
+                )
+            self.data_settings.experiment_id = qcodes_experiment.exp_id
+        else:
+            load_experiment(self.data_settings.experiment_id)
 
         initial_voltages = get_current_voltages(
-            self.setpoint_settings["parameters_to_sweep"]
+            self.setpoint_settings.parameters_to_sweep
         )
 
         self.current_valid_ranges = swap_range_limits_if_needed(
@@ -329,7 +346,7 @@ class TuningStage(metaclass=ABCMeta):
 
         tuning_result = iterate_stage(
             self.stage,
-            self.setpoint_settings["parameters_to_sweep"],
+            self.setpoint_settings.parameters_to_sweep,
             [*self.readout_methods.values()],  # type: ignore
             self.current_valid_ranges,
             self.safety_voltage_ranges,
@@ -340,11 +357,11 @@ class TuningStage(metaclass=ABCMeta):
             max_iterations,
         )
         set_voltages(
-            self.setpoint_settings["parameters_to_sweep"],
+            self.setpoint_settings.parameters_to_sweep,
             initial_voltages,
         )
 
-        tuning_result.db_name = self.data_settings["db_name"]
-        tuning_result.db_folder = self.data_settings["db_folder"]
+        tuning_result.db_name = self.data_settings.db_name
+        tuning_result.db_folder = self.data_settings.db_folder
 
         return tuning_result

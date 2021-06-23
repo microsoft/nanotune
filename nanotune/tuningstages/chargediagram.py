@@ -110,10 +110,10 @@ class ChargeDiagram(TuningStage):
         """
 
         if "segment_db_folder" not in data_settings.keys():
-            data_settings["segment_db_folder"] = nt.config["db_folder"]
+            data_settings.segment_db_folder = nt.config["db_folder"]
         if "segment_db_name" not in data_settings.keys():
             seg_db_name = f'segmented_{nt.config["db_name"]}'
-            data_settings["segment_db_name"] = seg_db_name
+            data_settings.segment_db_name = seg_db_name
         if "normalization_constants" not in data_settings.keys():
             logger.warning("No normalisation constants specified.")
         if "segment_size" not in data_settings.keys():
@@ -232,18 +232,18 @@ class ChargeDiagram(TuningStage):
 
         dot_segments = segment_dot_data(
             run_id,
-            self.data_settings["db_name"],
-            self.data_settings["db_folder"],
-            self.data_settings["segment_db_name"],
-            self.data_settings["segment_db_folder"],
+            self.data_settings.db_name,
+            self.data_settings.db_folder,
+            self.data_settings.segment_db_name,
+            self.data_settings.segment_db_folder,
             self.data_settings["segment_size"],
         )
 
         classification_outcome = classify_dot_segments(
             self.classifiers,
             [run_id for run_id in dot_segments.keys()],
-            self.data_settings["segment_db_name"],
-            self.data_settings["segment_db_folder"],
+            self.data_settings.segment_db_name,
+            self.data_settings.segment_db_folder,
         )
         segment_regimes = get_dot_segment_regimes(
             classification_outcome,
@@ -265,8 +265,8 @@ class ChargeDiagram(TuningStage):
         ml_result["features"] = get_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
 
         return ml_result
@@ -299,8 +299,8 @@ class ChargeDiagram(TuningStage):
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         (range_update_directives, issues) = get_range_directives_chargediagram(
             fit_range_update_directives,

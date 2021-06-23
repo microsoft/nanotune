@@ -3,55 +3,28 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
-import qcodes as qc
-from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (load_experiment,
-                                                 load_last_experiment)
 
 import nanotune as nt
-from nanotune.classification.classifier import Classifier
-from nanotune.device.device import Device as Nt_Device
+from nanotune.device.device import Device
 from nanotune.device.device_channel import DeviceChannel
-from nanotune.device_tuner.tuner import Tuner
+from nanotune.device_tuner.tuner import (Tuner, DataSettings, SetpointSettings,
+    Classifiers)
 from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
-from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.chargediagram import ChargeDiagram
-from nanotune.utils import flatten_list
 
 logger = logging.getLogger(__name__)
-DATA_DIMS = {
-    "gatecharacterization1d": 1,
-    "chargediagram": 2,
-    "coulomboscillations": 1,
-}
 
 
 class DotTuner(Tuner):
     """
-    classifiers = {
-        'pinchoff': Optional[Classifier],
-        'singledot': Optional[Classifier],
-        'doubledot': Optional[Classifier],
-        'dotregime': Optional[Classifier],
-    }
-    data_settings = {
-        'db_name': str,
-        'db_folder': Optional[str],
-        'qc_experiment_id': Optional[int],
-        'segment_db_name': Optional[str],
-        'segment_db_folder': Optional[str],
-    }
-    setpoint_settings = {
-        'voltage_precision': float,
-    }
     """
 
     def __init__(
         self,
         name: str,
-        data_settings: Dict[str, Any],
-        classifiers: Dict[str, Classifier],
-        setpoint_settings: Dict[str, Any],
+        data_settings: DataSettings,
+        classifiers: Classifiers,
+        setpoint_settings: SetpointSettings,
     ) -> None:
         super().__init__(
             name,
@@ -63,7 +36,7 @@ class DotTuner(Tuner):
 
     def tune(
         self,
-        device: Nt_Device,
+        device: Device,
         desired_regime: str = "doubledot",
         max_iter: int = 100,
         take_high_res: bool = False,
@@ -76,7 +49,7 @@ class DotTuner(Tuner):
         if device.name not in self._tuningresults_all.keys():
             self._tuningresults_all[device.name] = MeasurementHistory(device.name)
 
-        if self.qcodes_experiment.sample_name != Nt_Device.name:
+        if self.qcodes_experiment.sample_name != Device.name:
             logger.warning(
                 "The device's name does match the"
                 + " the sample name in qcodes experiment."
@@ -97,7 +70,7 @@ class DotTuner(Tuner):
 
     def set_top_barrier(
         self,
-        device: Nt_Device,
+        device: Device,
     ) -> None:
         """ """
         if device.initial_valid_ranges()[0] == device.gates[0].safety_range():
@@ -115,7 +88,7 @@ class DotTuner(Tuner):
 
     def tune_1D(
         self,
-        device: Nt_Device,
+        device: Device,
         desired_regime: str,
         max_iter: int = 100,
         set_barriers: bool = True,
@@ -241,7 +214,7 @@ class DotTuner(Tuner):
 
     def update_top_barrier(
         self,
-        device: Nt_Device,
+        device: Device,
         new_action: str,
     ) -> None:
         """ """
@@ -263,7 +236,7 @@ class DotTuner(Tuner):
 
     def update_barriers(
         self,
-        device: Nt_Device,
+        device: Device,
         barrier_actions: Dict[int, str],
         range_change: float = 0.1,
     ) -> Tuple[bool, str]:
@@ -301,7 +274,7 @@ class DotTuner(Tuner):
 
     def set_outer_barriers(
         self,
-        device: Nt_Device,
+        device: Device,
     ) -> Tuple[bool, str]:
         """
         Will not update upper valid range limit. We assume it has been
@@ -347,11 +320,11 @@ class DotTuner(Tuner):
 
     def set_central_barrier(
         self,
-        device: Nt_Device,
+        device: Device,
         desired_regime: str = "doubledot",
     ) -> None:
         """"""
-        setpoint_settings = copy.deepcopy(self.setpoint_settings())
+        setpoint_settings = copy.deepcopy(self.data_settings)
         setpoint_settings["gates_to_sweep"] = [device.central_barrier]
 
         result = self.characterize_gates(
@@ -369,8 +342,8 @@ class DotTuner(Tuner):
             data_id = result.tuningresults[key].data_ids[-1]
             ds = nt.Dataset(
                 data_id,
-                self.data_settings["db_name"],
-                db_folder=self.data_settings["db_folder"],
+                self.data_settings.db_name,
+                db_folder=self.data_settings.db_folder,
             )
             read_meths = device.readout_methods().keys()
             if "transport" in read_meths:
@@ -399,7 +372,7 @@ class DotTuner(Tuner):
 
     def update_gate_configuration(
         self,
-        device: Nt_Device,
+        device: Device,
         last_result: TuningResult,
         desired_regime: str,
         # range_change: float = 0.1,
@@ -467,7 +440,7 @@ class DotTuner(Tuner):
 
     def choose_new_gate_voltage(
         self,
-        device: Nt_Device,
+        device: Device,
         layout_id: int,
         action: str,
         range_change: float = 0.5,
@@ -504,7 +477,7 @@ class DotTuner(Tuner):
 
     def set_new_plunger_ranges(
         self,
-        device: Nt_Device,
+        device: Device,
         noise_floor: float = 0.02,
         open_signal: float = 0.1,
     ) -> Tuple[bool, Dict[int, str]]:
@@ -547,7 +520,7 @@ class DotTuner(Tuner):
 
     def get_charge_diagram(
         self,
-        device: Nt_Device,
+        device: Device,
         gates_to_sweep: List[DeviceChannel],
         voltage_precision: Optional[float] = None,
         signal_thresholds: Optional[List[float]] = None,
@@ -562,9 +535,9 @@ class DotTuner(Tuner):
             if clf not in self.classifiers.keys():
                 raise KeyError(f"No {clf} classifier found.")
 
-        setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings["parameters_to_sweep"] = gates_to_sweep
-        setpoint_settings["voltage_precision"] = voltage_precision
+        setpoint_settings = copy.deepcopy(self.data_settings)
+        setpoint_settings.parameters_to_sweep = gates_to_sweep
+        setpoint_settings.voltage_precision = voltage_precision
 
         with self.device_specific_settings(device):
             stage = ChargeDiagram(

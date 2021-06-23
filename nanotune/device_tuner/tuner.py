@@ -1,29 +1,51 @@
 import copy
+from dataclasses import dataclass, asdict
 import logging
 from contextlib import contextmanager
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Any, Callable, Dict, Generator, List, Optional, Sequence, Tuple
 
 import numpy as np
 import qcodes as qc
 from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (load_experiment,
-                                                 load_last_experiment,
+from qcodes.dataset.experiment_container import (load_last_experiment,
                                                  new_experiment)
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
-from nanotune.device.device import Device as Nt_Device
+from nanotune.device.device import Device, voltage_range_type
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
-from nanotune.utils import flatten_list
 
 logger = logging.getLogger(__name__)
-DATA_DIMS = {
-    "gatecharacterization1d": 1,
-    "chargediagram": 2,
-    "coulomboscillations": 1,
-}
+
+
+@dataclass
+class DataSettings:
+    db_name: str = nt.config['db_name']
+    db_folder: str = nt.config['db_folder']
+    normalizations_constants: Optional[Dict[str, Tuple[float, float]]] = None
+    experiment_id: Optional[int] = None
+    segment_db_name: Optional[str] = None
+    segment_db_folder: Optional[str] = None
+    segment_experiment_id: Optional[int] = None
+
+
+@dataclass
+class SetpointSettings:
+    voltage_precision: float
+    parameters_to_sweep: Optional[List[qc.Parameter]] = None
+    setpoint_method: Optional[
+        Callable[[Any], Sequence[Sequence[float]]]] = None
+
+
+@dataclass
+class Classifiers:
+    pinchoff: Optional[Classifier] = None
+    singledot: Optional[Classifier] = None
+    doubledot: Optional[Classifier] = None
+    dotregime: Optional[Classifier] = None
+
 
 
 @contextmanager
@@ -42,116 +64,62 @@ def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]
             gate.voltage(initial_voltages[ig])
 
 
-@contextmanager
-def set_back_valid_ranges(gates: List[DeviceChannel]) -> Generator[None, None, None]:
-    """Sets gates back to their respective voltage they are at before
-    the contextmanager was called. If gates need to be set in a specific
-    order, then this order needs to be respected on the list 'gates'.
-    """
-    valid_ranges = []
-    for gate in gates:
-        valid_ranges.append(gate.current_valid_range())
-    try:
-        yield
-    finally:
-        for ig, gate in enumerate(gates):
-            gate.current_valid_range(valid_ranges[ig])
+# @contextmanager
+# def set_back_valid_ranges(
+#     gates: List[DeviceChannel],
+#     valid_ranges: voltage_range_type,
+# ) -> Generator[None, None, None]:
+#     """Sets gates back to their respective voltage they are at before
+#     the contextmanager was called. If gates need to be set in a specific
+#     order, then this order needs to be respected on the list 'gates'.
+#     """
+#     # valid_ranges = []
+#     for gate in gates:
+#         valid_ranges.append(gate.current_valid_range())
+#     try:
+#         yield
+#     finally:
+#         for ig, gate in enumerate(gates):
+#             gate.current_valid_range(valid_ranges[ig])
 
 
 class Tuner(qc.Instrument):
     """
-    classifiers = {
-        'pinchoff': Optional[Classifier],
-        'singledot': Optional[Classifier],
-        'doubledot': Optional[Classifier],
-        'dotregime': Optional[Classifier],
-    }
-    data_settings = {
-        'db_name': str,
-        'db_folder': Optional[str],
-        'qc_experiment_id': Optional[int],
-        'segment_db_name': Optional[str],
-        'segment_db_folder': Optional[str],
-    }
-    setpoint_settings = {
-        'voltage_precision': float,
-    }
-    fit_options = {
-        'pinchofffit': Dict[str, Any],
-        'dotfit': Dict[str, Any],
-    }
-
     """
 
     def __init__(
         self,
         name: str,
-        data_settings: Dict[str, Any],
-        classifiers: Dict[str, Classifier],
-        setpoint_settings: Dict[str, Any],
-        fit_options: Optional[Dict[str, Dict[str, Any]]] = None,
+        data_settings: DataSettings,
+        classifiers: Classifiers,
+        setpoint_settings: SetpointSettings,
     ) -> None:
         super().__init__(name)
 
         self.classifiers = classifiers
 
-        assert "db_name" in data_settings.keys()
-        if "db_folder" in data_settings.keys():
-            nt.set_database(
-                data_settings["db_name"], db_folder=data_settings["db_folder"]
-            )
-        else:
-            nt.set_database(data_settings["db_name"])
+        self.data_settings = data_settings
+        self.setpoint_settings = setpoint_settings
 
-        if data_settings.get("qc_experiment_id") is None:
-            try:
-                self.qcodes_experiment = load_last_experiment()
-            except ValueError:
-                logger.warning(
-                    "No qcodes experiment found. Starting a new "
-                    'one called "automated_tuning", with an unknown sample.'
-                )
-                self.qcodes_experiment = new_experiment(
-                    "automated_tuning", sample_name="unknown"
-                )
-            exp_id = self.qcodes_experiment.exp_id
-            data_settings["qc_experiment_id"] = exp_id
+    @property
+    def setpoint_settings(self) -> SetpointSettings:
+        return self._setpoint_settings
 
-        self._data_settings = data_settings
-        super().add_parameter(
-            name="data_settings",
-            label="data_settings",
-            docstring="",
-            set_cmd=self.update_data_settings,
-            get_cmd=self.get_data_settings,
-            initial_value=data_settings,
-            vals=vals.Dict(),
-        )
-        if fit_options is None or not fit_options:
-            fit_options = {key: {} for key in nt.config["core"]["implemented_fits"]}
+    @property.setter
+    def setpoint_settings(self, new_settings: SetpointSettings) -> None:
+        self._setpoint_settings = new_settings
+        self.metadata.update({'setpoint_settings': asdict(new_settings)})
 
-        self._fit_options = fit_options
-        super().add_parameter(
-            name="fit_options",
-            label="fit_options",
-            docstring="",
-            set_cmd=self.set_fit_options,
-            get_cmd=self.get_fit_options,
-            initial_value=fit_options,
-            vals=vals.Dict(),
-        )
+    @property
+    def data_settings(self) -> DataSettings:
+        return self._setpoint_settings
 
-        super().add_parameter(
-            name="setpoint_settings",
-            label="setpoint_settings",
-            docstring="options for setpoint determination",
-            set_cmd=None,
-            get_cmd=None,
-            initial_value=setpoint_settings,
-            vals=vals.Dict(),
-        )
+    @property.setter
+    def data_settings(self, new_settings: DataSettings) -> None:
+        self._data_settings = new_settings
+        self.metadata.update({'data_settings': asdict(new_settings)})
 
-    def update_normalization_constants(self, device: Nt_Device):
+    def update_normalization_constants(self, device: Device):
         """
         Get the maximum and minimum signal measured of a device, for all
         readout methods specified in device.readout_methods. It will first
@@ -184,7 +152,7 @@ class Tuner(qc.Instrument):
 
     def characterize_gates(
         self,
-        device: Nt_Device,
+        device: Device,
         gates: List[DeviceChannel],
         use_safety_ranges: bool = False,
         comment: Optional[str] = None,
@@ -209,14 +177,14 @@ class Tuner(qc.Instrument):
             measurement_result = MeasurementHistory(device.name)
             with self.device_specific_settings(device):
                 for gate in gates:
-                    setpoint_settings = copy.deepcopy(self.setpoint_settings())
-                    setpoint_settings["parameters_to_sweep"] = [gate.voltage]
+                    setpoint_settings = copy.deepcopy(self.data_settings)
+                    setpoint_settings.parameters_to_sweep = [gate.voltage]
 
                     stage = GateCharacterization1D(
-                        data_settings=self.data_settings(),
+                        data_settings=self.data_settings,
                         setpoint_settings=setpoint_settings,
                         readout_methods=device.readout_methods(),
-                        classifier=self.classifiers["pinchoff"],
+                        classifier=self.classifiers.pinchoff,
                     )
                     tuningresult = stage.run_stage()
                     tuningresult.status = device.get_gate_status()
@@ -230,7 +198,7 @@ class Tuner(qc.Instrument):
 
     def measure_initial_ranges(
         self,
-        device: Nt_Device,
+        device: Device,
         gate_to_set: DeviceChannel,
         gates_to_sweep: List[DeviceChannel],
         voltage_step: float = 0.2,
@@ -265,13 +233,13 @@ class Tuner(qc.Instrument):
 
                 for gate in gates_to_sweep:
                     if not skip_gates[gate.layout_id()]:
-                        setpoint_sets = copy.deepcopy(self.setpoint_settings())
+                        setpoint_sets = copy.deepcopy(self.data_settings)
                         setpoint_sets["parameters_to_sweep"] = [gate.voltage]
                         stage = GateCharacterization1D(
-                            data_settings=self.data_settings(),
+                            data_settings=self.data_settings,
                             setpoint_settings=setpoint_sets,
                             readout_methods=device.readout_methods(),
-                            classifier=self.classifiers["pinchoff"],
+                            classifier=self.classifiers.pinchoff,
                         )
                         tuningresult = stage.run_stage()
                         tuningresult.status = device.get_gate_status()
@@ -293,18 +261,18 @@ class Tuner(qc.Instrument):
 
         v_range = device.gates[last_gate].safety_range()
         n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
-        setpoint_settings = copy.deepcopy(self.setpoint_settings())
-        setpoint_settings["parameters_to_sweep"] = [gate_to_set.voltage]
+        setpoint_settings = copy.deepcopy(self.data_settings)
+        setpoint_settings.parameters_to_sweep = [gate_to_set.voltage]
         with self.device_specific_settings(device):
             v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
             for voltage in v_steps:
 
                 device.gates[last_gate].voltage(voltage)
                 stage = GateCharacterization1D(
-                    data_settings=self.data_settings(),
+                    data_settings=self.data_settings,
                     setpoint_settings=setpoint_settings,
                     readout_methods=device.readout_methods(),
-                    classifier=self.classifiers["pinchoff"],
+                    classifier=self.classifiers.pinchoff,
                 )
 
                 tuningresult = stage.run_stage()
@@ -327,7 +295,7 @@ class Tuner(qc.Instrument):
     @contextmanager
     def device_specific_settings(
         self,
-        device: Nt_Device,
+        device: Device,
     ) -> Generator[None, None, None]:
         """Add device relevant readout settings
 
@@ -335,26 +303,12 @@ class Tuner(qc.Instrument):
             Generator yielding nothing.
         """
 
-        copy.deepcopy(self.data_settings())
+        copy.deepcopy(self.data_settings)
         self.data_settings(
             {"normalization_constants": device.normalization_constants()},
         )
         try:
             yield
         finally:
-            del self._data_settings["normalization_constants"]
+            del self._data_settings.normalization_constants
 
-    def set_fit_options(self, new_fit_options: Dict[str, Any]) -> None:
-        """ """
-        self._fit_options.update(new_fit_options)
-
-    def get_fit_options(self) -> Dict[str, Any]:
-        """ """
-        return self._fit_options
-
-    def get_data_settings(self) -> Dict[str, Any]:
-        """ """
-        return self._data_settings
-
-    def update_data_settings(self, new_settings: Dict[str, Any]):
-        self._data_settings.update(new_settings)

@@ -99,11 +99,11 @@ class GateCharacterization1D(TuningStage):
         self.voltage_interval_to_track = voltage_interval_to_track
 
         self._recent_readout_output: List[float] = []
-        params = self.setpoint_settings["parameters_to_sweep"]
+        params = self.setpoint_settings.parameters_to_sweep
         if isinstance(params, qc.Parameter):
-            self.setpoint_settings["parameters_to_sweep"] = [params]
+            self.setpoint_settings.parameters_to_sweep = [params]
 
-        assert len(self.setpoint_settings["parameters_to_sweep"]) == 1
+        assert len(self.setpoint_settings.parameters_to_sweep) == 1
 
     @property
     def fit_class(self):
@@ -134,14 +134,14 @@ class GateCharacterization1D(TuningStage):
         ml_result["features"] = get_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         ml_result["quality"] = check_measurement_quality(
             self.classifier,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         ml_result["regime"] = "pinchoff"
         return ml_result
@@ -245,8 +245,8 @@ class GateCharacterization1D(TuningStage):
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         (range_update_directives,
          issues) = get_range_directives_gatecharacterization(
@@ -277,14 +277,14 @@ class GateCharacterization1D(TuningStage):
         param = self.readout_methods[self.main_readout_method]
         last_measurement_strength = current_output_dict[param.full_name]
 
-        norm_consts = self.data_settings["normalization_constants"]
+        norm_consts = self.data_settings.normalization_constants
         normalization_constant = norm_consts[self.main_readout_method]
 
         finish, self._recent_readout_output = finish_early_pinched_off(
             last_measurement_strength,
             normalization_constant,
             self._recent_readout_output,
-            self.setpoint_settings["voltage_precision"],
+            self.setpoint_settings.voltage_precision,
             self.noise_level,
             self.voltage_interval_to_track,
         )

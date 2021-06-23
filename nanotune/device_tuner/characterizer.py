@@ -1,65 +1,34 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
-import numpy as np
-import qcodes as qc
-from qcodes import validators as vals
-from qcodes.dataset.experiment_container import (load_experiment,
-                                                 load_last_experiment)
-
-import nanotune as nt
-from nanotune.classification.classifier import Classifier
-from nanotune.device.device import Device as Nt_Device
-from nanotune.device_tuner.tuner import Tuner, set_back_voltages
+from nanotune.device.device import Device
+from nanotune.device_tuner.tuner import (Tuner, set_back_voltages,
+    DataSettings, SetpointSettings, Classifiers)
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 logger = logging.getLogger(__name__)
 
 
 class Characterizer(Tuner):
     """
-    classifiers = {
-        'pinchoff': Optional[Classifier],
-    }
-    data_settings = {
-        'db_name': str,
-        'db_folder': Optional[str],
-        'qc_experiment_id': Optional[int],
-        'segment_db_name': Optional[str],
-        'segment_db_folder': Optional[str],
-    }
-    setpoint_settings = {
-        'voltage_precision': float,
-    }
-    fit_options = {
-        'pinchofffit': Dict[str, Any],
-        'dotfit': Dict[str, Any],
-    }
-    measurement_options = {
-        'delay': float,
-        'inter_delay': float,
-        'setpoint_method': str,
-    }
     """
 
     def __init__(
         self,
         name: str,
-        data_settings: Dict[str, Any],
-        classifiers: Dict[str, Classifier],
-        setpoint_settings: Dict[str, Any],
-        fit_options: Optional[Dict[str, Dict[str, Any]]] = None,
+        data_settings: DataSettings,
+        classifiers: Classifiers,
+        setpoint_settings: SetpointSettings,
     ) -> None:
         super().__init__(
             name,
             data_settings,
             classifiers,
             setpoint_settings,
-            fit_options=fit_options,
         )
 
     def characterize(
         self,
-        device: Nt_Device,
+        device: Device,
         gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
     ) -> MeasurementHistory:
         """
@@ -67,7 +36,7 @@ class Characterizer(Tuner):
         configuration to be applied for individual gate characterizations.
         Example: Set top barrier of a 2DEG device.
         """
-        if self.qcodes_experiment.sample_name != Nt_Device.name:
+        if self.qcodes_experiment.sample_name != Device.name:
             logger.warning(
                 (
                     "The device's name does match the"
