@@ -5,13 +5,12 @@ import qcodes as qc
 
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.device import ReadoutMethods
+from nanotune.device.device import ReadoutMethods, ReadoutMethodsLiteral
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.tuningstage import (TuningStage, DataSettings,
     SetpointSettings)
 
 from .base_tasks import (  # please update docstrings if import path changes
-    ReadoutMethodsLiteral,
     check_measurement_quality,
     conclude_iteration_with_range_update, get_extracted_features,
     get_fit_range_update_directives)

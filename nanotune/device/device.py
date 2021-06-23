@@ -4,6 +4,7 @@ import logging
 from typing import (
     Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
 )
+from typing_extensions import Literal
 from collections import namedtuple
 from functools import partial
 import numpy as np
@@ -83,7 +84,7 @@ class ReadoutMethods:
             if readout is not None:
                 param_dict[field] = readout
         return param_dict
-
+ReadoutMethodsLiteral = Literal[ReadoutMethods.__dataclass_fields__.keys()]
 
 def readout_formatter(
     *values: Any,

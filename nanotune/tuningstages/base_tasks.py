@@ -320,7 +320,7 @@ def add_metadata_to_dict(
     new_meta_dict = copy.deepcopy(meta_dict)
     for key, value in additional_metadata.items():
         try:
-            _ = json.dumps(value, cls=NumpyJSONEncoder)
+            dump = json.dumps(value, cls=NumpyJSONEncoder)
         except (TypeError, OverflowError):
             raise TypeError(f"Adding non-serializable value to meta dict: {value}.")
         new_meta_dict[key] = value
