@@ -12,14 +12,12 @@ from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.device.device import ReadoutMethods
 
 from .base_tasks import (  # please update docstrings if import path changes
-    DataSettingsDict, ReadoutMethodsDict, SetpointSettingsDict,
     compute_linear_setpoints, get_current_voltages, iterate_stage, plot_fit,
     prepare_metadata, print_tuningstage_status, run_stage,
     save_extracted_features, save_machine_learning_result, set_voltages,
     swap_range_limits_if_needed, take_data_add_metadata)
 from .take_data import ramp_to_setpoint
-from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
-    Classifiers)
+from nanotune.tuningstages.settings import DataSettings, SetpointSettings
 
 logger = logging.getLogger(__name__)
 

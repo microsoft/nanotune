@@ -3,7 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 from dataclasses import dataclass
-from typing import Optional, Mapping, Sequence, Callable, Any
+from typing import Optional, Sequence, Callable, Any
 import qcodes as qc
 import nanotune as nt
 from nanotune.classification.classifier import Classifier

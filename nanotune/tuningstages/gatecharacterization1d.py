@@ -2,9 +2,7 @@ import logging
 from typing import Any, Dict, List, Tuple
 
 import qcodes as qc
-from typing_extensions import Literal
 
-import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.device.device import ReadoutMethods

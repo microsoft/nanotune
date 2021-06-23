@@ -19,7 +19,6 @@ import numpy as np
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.utils.helpers import NumpyJSONEncoder
-from typing_extensions import Literal, TypedDict
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
@@ -28,38 +27,6 @@ from nanotune.device.device import NormalizationConstants, ReadoutMethods
 from nanotune.fit.datafit import DataFit
 
 from .take_data import take_data
-
-SetpointSettingsDict = TypedDict(
-    "SetpointSettingsDict",
-    {
-        "parameters_to_sweep": List[qc.Parameter],
-        "current_valid_ranges": List[Tuple[float, float]],
-        "safety_voltage_ranges": List[Tuple[float, float]],
-        "voltage_precision": float,
-    },
-)
-DataSettingsDict = TypedDict(
-    "DataSettingsDict",
-    {
-        "db_name": str,
-        "db_folder": str,
-        "normalization_constants": Dict[str, Tuple[float, float]],
-        "segment_size": float,
-        "segment_db_name": str,
-        "segment_db_folder": str,
-    },
-    total=False,
-)
-ReadoutMethodsLiteral = Literal["transport", "sensing", "rf"]
-ReadoutMethodsDict = TypedDict(
-    "ReadoutMethodsDict",
-    {
-        "transport": qc.Parameter,
-        "sensing": qc.Parameter,
-        "rf": qc.Parameter,
-    },
-    total=False,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -353,7 +320,7 @@ def add_metadata_to_dict(
     new_meta_dict = copy.deepcopy(meta_dict)
     for key, value in additional_metadata.items():
         try:
-            dump = json.dumps(value, cls=NumpyJSONEncoder)
+            _ = json.dumps(value, cls=NumpyJSONEncoder)
         except (TypeError, OverflowError):
             raise TypeError(f"Adding non-serializable value to meta dict: {value}.")
         new_meta_dict[key] = value

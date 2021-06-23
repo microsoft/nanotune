@@ -4,7 +4,6 @@ import logging
 from typing import (
     Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
 )
-from enum import Enum
 from collections import namedtuple
 from functools import partial
 import numpy as np

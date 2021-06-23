@@ -1,14 +1,11 @@
-import copy
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 import logging
 from contextlib import contextmanager
-from typing import Any, Callable, Dict, Generator, List, Optional, Sequence, Tuple
+from typing import Generator, List, Optional, Sequence, Tuple
 
 import numpy as np
 import qcodes as qc
-import nanotune as nt
-from nanotune.classification.classifier import Classifier
-from nanotune.device.device import Device, voltage_range_type
+from nanotune.device.device import Device
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
