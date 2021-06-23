@@ -18,7 +18,7 @@ def test_device_init_defaults(station):
     assert not device.readout
     assert not device.initial_valid_ranges()
     assert device.quality() == 0
-    assert device.normalization_constants() == {
+    assert device.normalization_constants == {
                 key: (0, 1) for key in ["transport", "sensing"]
             }
     assert device.current_valid_ranges() == device.initial_valid_ranges()
@@ -39,7 +39,7 @@ def test_device_init(device, station):
     assert device.initial_valid_ranges() == {0: [-3, 0], 1: [-3, 0]}
     assert device.transition_voltages() == {0: -0.4, 1: None}
 
-    norm_constants = device.normalization_constants()
+    norm_constants = device.normalization_constants
     assert norm_constants["transport"] == [0, 2]
     assert norm_constants["sensing"] == [-0.3, 0.6]
 
@@ -68,10 +68,10 @@ def test_device_normalization_constants_setter(device):
     with pytest.raises(KeyError):
         device.normalization_constants({'dc_transport': [0, 1]})
 
-    current_norms = device.normalization_constants()
+    current_norms = device.normalization_constants
     device.normalization_constants({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
     current_norms.update({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
-    assert device.normalization_constants() == current_norms
+    assert device.normalization_constants == current_norms
 
 
 def test_device_initial_valid_ranges(device):
@@ -124,27 +124,27 @@ def test_device_get_gate_id(device, gate_1):
 
 def test_device_check_and_update_new_voltage_range(device):
     v_range = [-1, 0]
-    safety_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_range)
+    safety_voltage_range = [-2, 0]
+    new_range = device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
     assert new_range == v_range
 
-    new_range = device.check_and_update_new_voltage_range([0, -1], safety_range)
+    new_range = device.check_and_update_new_voltage_range([0, -1], safety_voltage_range)
     assert new_range == v_range
 
     v_range = [-2.3, 0.5]
-    safety_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_range)
+    safety_voltage_range = [-2, 0]
+    new_range = device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
     assert new_range == [-2, 0]
 
     v_range = [-3, -2.5]
-    safety_range = [-2, 0]
+    safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_range)
+        device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
 
     v_range = [1, 2]
-    safety_range = [-2, 0]
+    safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_range)
+        device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
 
 def test_device_methods(device):
 

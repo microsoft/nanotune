@@ -59,7 +59,7 @@ class ChargeDiagram(TuningStage):
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to
             measure.
-        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
             the device stays alive.
         target_regime: String indicating the desired final charge state/dot
             regime.
@@ -93,7 +93,7 @@ class ChargeDiagram(TuningStage):
                 'normalization_constants', 'segment_size'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
-                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
             readout_methods: Dictionary mapping string identifiers such as
                 'transport' to QCoDeS parameters measuring/returning the
                 desired quantity (e.g. current throught the device).
@@ -289,7 +289,7 @@ class ChargeDiagram(TuningStage):
         Args:
             run_id: QCoDeS data run ID.
             current_valid_ranges: Last voltage range swept.
-            safety_ranges: Safety range of gate swept.
+            safety_voltage_ranges: Safety range of gate swept.
 
         Returns:
             list: List with range update directives.

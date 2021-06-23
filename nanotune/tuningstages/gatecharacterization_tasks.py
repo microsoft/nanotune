@@ -35,16 +35,16 @@ def get_new_gatecharacterization_range(
     assert len(safety_voltage_ranges) == 1
 
     new_min, new_max = current_valid_ranges[0]
-    safety_range = safety_voltage_ranges[0]
+    safety_voltage_range = safety_voltage_ranges[0]
 
     for directive in range_update_directives:
         if directive not in ["x more negative", "x more positive"]:
             raise KeyError("Unknown voltage range update directive.")
 
     if "x more negative" in range_update_directives:
-        new_min = safety_range[0]
+        new_min = safety_voltage_range[0]
     if "x more positive" in range_update_directives:
-        new_max = safety_range[1]
+        new_max = safety_voltage_range[1]
 
     return [(new_min, new_max)]
 

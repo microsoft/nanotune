@@ -3,6 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 import copy
+from dataclasses import asdict
 import datetime
 import json
 import logging
@@ -23,6 +24,7 @@ from typing_extensions import Literal, TypedDict
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import NormalizationConstants, ReadoutMethods
 from nanotune.fit.datafit import DataFit
 
 from .take_data import take_data
@@ -305,8 +307,9 @@ def compute_linear_setpoints(
 
 def prepare_metadata(
     device_name: str,
-    normalization_constants: Dict[str, Tuple[float, float]],
-    readout_methods: ReadoutMethodsDict,
+    normalization_constants: Union[
+        Dict[str, Tuple[float, float]], NormalizationConstants],
+    readout_methods: ReadoutMethods,
 ) -> Dict[str, Any]:
     """Sets up a metadata dictionary with fields known prior to a measurement
     set.
@@ -319,11 +322,12 @@ def prepare_metadata(
         dict: Metadata dict with fields known prior to a measurement filled in.
     """
     nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
-
+    if isinstance(normalization_constants, NormalizationConstants):
+        normalization_constants = asdict(normalization_constants)
     nt_meta["normalization_constants"] = normalization_constants
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
-    readout_dict = {k: param.full_name for (k, param) in readout_methods.items()}  # type: ignore
+    readout_dict = readout_methods.as_name_dict()  # type: ignore
     nt_meta["readout_methods"] = readout_dict
     nt_meta["features"] = {}
 

@@ -7,12 +7,14 @@ from typing_extensions import Literal
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import ReadoutMethods
 from nanotune.fit.pinchofffit import PinchoffFit
-from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.tuningstages.tuningstage import (TuningStage, DataSettings,
+    SetpointSettings)
 
 from .base_tasks import (  # please update docstrings if import path changes
-    DataSettingsDict, ReadoutMethodsDict, ReadoutMethodsLiteral,
-    SetpointSettingsDict, check_measurement_quality,
+    ReadoutMethodsLiteral,
+    check_measurement_quality,
     conclude_iteration_with_range_update, get_extracted_features,
     get_fit_range_update_directives)
 from .gatecharacterization_tasks import (
@@ -34,12 +36,12 @@ class GateCharacterization1D(TuningStage):
             'normalization_constants'.
         setpoint_settings: Dictionary with information required to compute
             setpoints. Necessary keys are 'current_valid_ranges',
-            'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-        readout_methods: Dictionary mapping string identifiers such as
+            'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+        readout: Dictionary mapping string identifiers such as
             'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to measure.
-        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
             which gates don't blow up.
         classifier: Pre-trained nt.Classifier predicting the quality of a
             pinchoff curve.
@@ -54,9 +56,9 @@ class GateCharacterization1D(TuningStage):
 
     def __init__(
         self,
-        data_settings: DataSettingsDict,
-        setpoint_settings: SetpointSettingsDict,
-        readout_methods: ReadoutMethodsDict,
+        data_settings: DataSettings,
+        setpoint_settings: SetpointSettings,
+        readout: ReadoutMethods,
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
         main_readout_method: ReadoutMethodsLiteral = "transport",
@@ -71,10 +73,8 @@ class GateCharacterization1D(TuningStage):
                 'normalization_constants'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
-                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-            readout_methods: Dictionary mapping string identifiers such as
-                'transport' to QCoDeS parameters measuring/returning the
-                desired quantity (e.g. current throught the device).
+                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            readout: ReadoutMethods instance.
             classifier: Pre-trained nt.Classifier predicting the quality of a
             pinchoff curve.
             noise_level: Relative level above which a measured output is
@@ -90,7 +90,7 @@ class GateCharacterization1D(TuningStage):
             "gatecharacterization1d",
             data_settings,
             setpoint_settings,
-            readout_methods,
+            readout,
         )
 
         self.classifier = classifier
@@ -216,7 +216,7 @@ class GateCharacterization1D(TuningStage):
         self,
         run_id: int,
         current_valid_ranges: List[Tuple[float, float]],
-        safety_ranges: List[Tuple[float, float]],
+        safety_voltage_ranges: List[Tuple[float, float]],
     ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data
@@ -230,7 +230,7 @@ class GateCharacterization1D(TuningStage):
         Args:
             run_id: QCoDeS data run ID.
             current_valid_ranges: Last voltage range swept.
-            safety_ranges: Safety range of gate swept.
+            safety_voltage_ranges: Safety range of gate swept.
 
         Returns:
             list: List with range update directives.
@@ -239,8 +239,8 @@ class GateCharacterization1D(TuningStage):
 
         if isinstance(current_valid_ranges, tuple):
             current_valid_ranges = [current_valid_ranges]
-        if isinstance(safety_ranges, tuple):
-            safety_ranges = [safety_ranges]
+        if isinstance(safety_voltage_ranges, tuple):
+            safety_voltage_ranges = [safety_voltage_ranges]
 
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
@@ -252,7 +252,7 @@ class GateCharacterization1D(TuningStage):
          issues) = get_range_directives_gatecharacterization(
             fit_range_update_directives,
             current_valid_ranges,
-            safety_ranges,
+            safety_voltage_ranges,
         )
 
         return range_update_directives, issues
@@ -274,11 +274,11 @@ class GateCharacterization1D(TuningStage):
             bool: Whether the measurement can be stopped early.
         """
 
-        param = self.readout_methods[self.main_readout_method]
+        param = getattr(self.readout, self.main_readout_method)
         last_measurement_strength = current_output_dict[param.full_name]
 
         norm_consts = self.data_settings.normalization_constants
-        normalization_constant = norm_consts[self.main_readout_method]
+        normalization_constant = getattr(norm_consts, self.main_readout_method)
 
         finish, self._recent_readout_output = finish_early_pinched_off(
             last_measurement_strength,

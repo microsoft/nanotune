@@ -2,13 +2,14 @@ import logging
 from abc import ABCMeta, abstractmethod
 from functools import partial
 from typing import Any, Dict, List, Tuple
-
+from dataclasses import asdict
 import qcodes as qc
 from qcodes.dataset.experiment_container import (load_last_experiment,
                                                  new_experiment,
                                                  load_experiment)
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import ReadoutMethods
 
 from .base_tasks import (  # please update docstrings if import path changes
     DataSettingsDict, ReadoutMethodsDict, SetpointSettingsDict,
@@ -17,6 +18,8 @@ from .base_tasks import (  # please update docstrings if import path changes
     save_extracted_features, save_machine_learning_result, set_voltages,
     swap_range_limits_if_needed, take_data_add_metadata)
 from .take_data import ramp_to_setpoint
+from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
+    Classifiers)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +37,7 @@ class TuningStage(metaclass=ABCMeta):
         setpoint_settings: Dictionary with information required to compute
             setpoints. Necessary keys are 'current_valid_ranges',
             'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-        readout_methods: Dictionary mapping string identifiers such as
+        readout: Dictionary mapping string identifiers such as
             'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to
@@ -48,9 +51,9 @@ class TuningStage(metaclass=ABCMeta):
     def __init__(
         self,
         stage: str,
-        data_settings: DataSettingsDict,
-        setpoint_settings: SetpointSettingsDict,
-        readout_methods: ReadoutMethodsDict,
+        data_settings: DataSettings,
+        setpoint_settings: SetpointSettings,
+        readout: ReadoutMethods,
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
         safety voltages are determined from the list of parameters in
@@ -67,19 +70,16 @@ class TuningStage(metaclass=ABCMeta):
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_voltage_ranges', 'parameters_to_sweep' and
                 'voltage_precision'.
-            readout_methods: Dictionary mapping string identifiers such as
-                'transport' to QCoDeS parameters measuring/returning the
-                desired quantity (e.g. current throught the device).
+            readout: Dataclass of DelegateParameter used for readout
         """
 
         self.stage = stage
         self.data_settings = data_settings
         self.setpoint_settings = setpoint_settings
-        self.readout_methods = readout_methods
+        self.readout = readout
 
-        ranges = self.setpoint_settings["current_valid_ranges"]
+        ranges = self.setpoint_settings.ranges_to_sweep
         self.current_valid_ranges = ranges
-        self.safety_voltage_ranges = self.setpoint_settings["safety_voltage_ranges"]
 
     @property
     @abstractmethod
@@ -243,8 +243,8 @@ class TuningStage(metaclass=ABCMeta):
         device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
             device_name,
-            self.data_settings.normalization_constants,
-            self.readout_methods,
+            asdict(self.data_settings.normalization_constants),
+            self.readout,
         )
         return nt_meta
 
@@ -347,9 +347,9 @@ class TuningStage(metaclass=ABCMeta):
         tuning_result = iterate_stage(
             self.stage,
             self.setpoint_settings.parameters_to_sweep,
-            [*self.readout_methods.values()],  # type: ignore
+            self.readout.get_parameters(),  # type: ignore
             self.current_valid_ranges,
-            self.safety_voltage_ranges,
+            self.setpoint_settings.safety_voltage_ranges,
             run_stage,
             run_stage_tasks,  # type: ignore
             self.conclude_iteration,
