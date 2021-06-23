@@ -50,7 +50,7 @@ class Characterizer(Tuner):
 
         for gate in device.gates:
             with set_back_voltages(device.gates):
-                gate_id = gate.layout_id()
+                gate_id = gate.gate_id
                 if gate_id in gate_configurations.keys():
                     gate_conf = gate_configurations[gate_id].items()
                     for other_id, voltage in gate_conf:
@@ -59,7 +59,7 @@ class Characterizer(Tuner):
                 sub_result = self.characterize_gates(
                     device,
                     gates=device.gates,
-                    use_safety_ranges=True,
+                    use_safety_voltage_ranges=True,
                 )
                 measurement_result.update(sub_result)
 
