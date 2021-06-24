@@ -35,7 +35,7 @@ class NormalizationConstants:
     def update(
         self,
         new_constants: Union[
-            Dict[str, Tuple[float, float]], NormalizationConstants],
+            Dict[str, Sequence[float]], NormalizationConstants],
     ) -> None:
         if isinstance(new_constants, NormalizationConstants):
             new_constants_dict = asdict(new_constants)
@@ -52,22 +52,25 @@ class NormalizationConstants:
             if not hasattr(self, read_type):
                 raise KeyError(f'Invalid normalization constant identifyer, \
                     use one of {self.__dataclass_fields__.keys()}')
-            setattr(self, read_type,constant)
+            setattr(self, read_type, tuple(constant))
 
 
 @dataclass
 class ReadoutMethods:
-    transport: Optional[GroupedParameter] = None
-    sensing: Optional[GroupedParameter] = None
-    rf: Optional[GroupedParameter] = None
+    transport: Optional[Union[GroupedParameter, qc.Parameter]] = None
+    sensing: Optional[Union[GroupedParameter, qc.Parameter]] = None
+    rf: Optional[Union[GroupedParameter, qc.Parameter]] = None
+
+    def available_readout(self):
+        param_dict = {}
+        for field in ReadoutMethods.__dataclass_fields__.keys():
+            readout = getattr(self, field)
+            if readout is not None:
+                param_dict[field] = readout
+        return param_dict
 
     def get_parameters(self):
-        readout_params = []
-        for field in ReadoutMethods.__dataclass_fields__.keys():
-            parameter = getattr(self, field)
-            if parameter is not None:
-                readout_params.append(parameter)
-        return readout_params
+        return list(self.available_readout().values())
 
     def as_name_dict(self):
         param_dict = {}
@@ -77,14 +80,9 @@ class ReadoutMethods:
                 param_dict[field] = readout.full_name
         return param_dict
 
-    def available_readout(self):
-        param_dict = {}
-        for field in ReadoutMethods.__dataclass_fields__.keys():
-            readout = getattr(self, field)
-            if readout is not None:
-                param_dict[field] = readout
-        return param_dict
+
 ReadoutMethodsLiteral = Literal[ReadoutMethods.__dataclass_fields__.keys()]
+
 
 def readout_formatter(
     *values: Any,
@@ -116,7 +114,7 @@ class Device(DelegateInstrument):
         device_type: Optional[str] = '',
         initial_valid_ranges: Optional[Mapping[str, Sequence[str]]] = None,
         current_valid_ranges: Optional[Mapping[str, Sequence[str]]] = None,
-        normalization_constants: Optional[nrm_cnst_tp] = None,
+        normalization_constants: Optional[NormalizationConstants] = None,
         transition_voltages: Optional[Mapping[str, float]] = None,
         **kwargs,
     ) -> None:
@@ -149,8 +147,9 @@ class Device(DelegateInstrument):
                 if param_name not in ReadoutMethods.__dataclass_fields__.keys():
                     raise KeyError(f"Invalid readout method key. Use one of \
                         {ReadoutMethods.__dataclass_fields__.keys()}")
+                print(param_name)
                 super()._create_and_add_parameter(
-                    'param_name',
+                    param_name,
                     station,
                     paths,
                     formatter=partial(
@@ -159,7 +158,8 @@ class Device(DelegateInstrument):
                         name='readout',
                     )
                 )
-                setattr(self.readout, param_name, self.param_name)
+                setattr(self.readout, param_name, getattr(self, param_name))
+            self.metadata['readout'] = self.readout.as_name_dict()
 
 
         if initial_valid_ranges is None:
@@ -194,11 +194,9 @@ class Device(DelegateInstrument):
             initial_value=0,
             vals=vals.Numbers(),
         )
+        self._normalization_constants = NormalizationConstants()
         if normalization_constants is not None:
-            self._normalization_constants = NormalizationConstants(
-                **normalization_constants)
-        else:
-            self._normalization_constants = NormalizationConstants()
+            self._normalization_constants.update(normalization_constants)
 
         if current_valid_ranges is None:
             current_valid_ranges_renamed = init_valid_ranges_renamed
@@ -230,8 +228,7 @@ class Device(DelegateInstrument):
             defaults = {gate.gate_id: None for gate in self.gates}
             defaults.update(transition_voltages_renamed)
             transition_voltages_renamed = defaults
-            # transition_voltages_renamed = self._fill_missing_voltage_ranges(
-            #     current_valid_ranges_renamed, None)
+
 
         self._transition_voltages = transition_voltages_renamed
         self.add_parameter(
@@ -245,14 +242,16 @@ class Device(DelegateInstrument):
         )
 
     @property
-    def normalization_constants(self):
+    def normalization_constants(self) -> NormalizationConstants:
         return self._normalization_constants
 
     @normalization_constants.setter
     def normalization_constants(
         self,
-        new_constants: Union[Dict, NormalizationConstants],
+        new_constants: Union[
+            Dict[str, Sequence[float]], NormalizationConstants],
     ) -> None:
+        print(f"updating with {new_constants}")
         self._normalization_constants.update(new_constants)
         self.metadata.update(
             {'normalization_constants': asdict(self._normalization_constants)}
