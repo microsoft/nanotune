@@ -9,6 +9,7 @@ import pytest
 from functools import partial
 
 import nanotune as nt
+from nanotune.device.device import ReadoutMethods, NormalizationConstants
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tests.mock_classifier import MockClassifer
 from nanotune.tuningstages.base_tasks import *
@@ -121,11 +122,12 @@ def test_compute_linear_setpoints():
 def test_prepare_metadata(dummy_dmm):
     metadata = prepare_metadata(
         "test_device",
-        {"transport": (0, 1.2)},
-        {"transport": dummy_dmm.dac1},
+        NormalizationConstants(transport=(0, 1.2)),
+        ReadoutMethods(transport=dummy_dmm.dac1),
     )
 
-    assert metadata["normalization_constants"] == {"transport": (0, 1.2)}
+    assert metadata["normalization_constants"] == {
+        "transport": (0, 1.2), "sensing": (0., 1.), "rf": (0., 1.)}
     assert metadata["device_name"] == "test_device"
     assert metadata["readout_methods"] == {
         "transport": dummy_dmm.dac1.full_name}

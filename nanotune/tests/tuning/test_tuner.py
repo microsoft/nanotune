@@ -2,12 +2,11 @@ import copy
 
 import numpy as np
 import pytest
-
-import qcodes as qc
-import nanotune as nt
-from nanotune.device_tuner.tuner import (Tuner, set_back_valid_ranges,
-                                         set_back_voltages)
+from dataclasses import asdict
+from nanotune.device_tuner.tuner import Tuner, set_back_voltages
+from nanotune.device.device import NormalizationConstants
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.tuningstages.settings import DataSettings
 from nanotune.tests.mock_classifier import MockClassifer
 
 atol = 1e-05
@@ -33,17 +32,18 @@ def test_set_back_voltages(gate_1, gate_2):
 
 def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
     tuner = Tuner(**tuner_default_input)
-    data_settings = copy.deepcopy(tuner.data_settings)
-    assert data_settings.db_name == "temp.db"
-    assert data_settings.db_folder == str(tmp_path)
-    assert data_settings["qc_experiment_id"] == 1
+    assert tuner.data_settings.db_name == "temp.db"
+    assert tuner.data_settings.db_folder == str(tmp_path)
+    assert tuner.data_settings.experiment_id == None
 
-    new_data_settings = {"db_name": "other_temp.db"}
-    tuner.data_settings(new_data_settings)
+    new_data_settings = DataSettings(db_name="other_temp.db")
+    data_settings = DataSettings(**asdict(tuner.data_settings))
+
+    tuner.data_settings = new_data_settings
     data_settings.update(new_data_settings)
     assert tuner.data_settings == data_settings
 
-    assert tuner.data_settings["voltage_precision"] == 0.001
+    assert tuner.setpoint_settings.voltage_precision == 0.001
 
     tuner.close()
 
@@ -51,7 +51,7 @@ def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
 def test_update_normalization_constants(tuner_default_input, device, tmp_path):
 
     tuner = Tuner(**tuner_default_input)
-    device.normalization_constants({})
+    device.normalization_constants = {}
 
     tuner.update_normalization_constants(device)
     updated_constants = device.normalization_constants
@@ -63,15 +63,15 @@ def test_update_normalization_constants(tuner_default_input, device, tmp_path):
     tuner.close()
 
 
-def test_characterize_gates(tuner_default_input, device_pinchoff):
+def test_characterize_gates(tuner_default_input, device):
     tuner = Tuner(
         **tuner_default_input,
     )
     tuner.classifiers = {"pinchoff": MockClassifer("pinchoff")}
     result = tuner.characterize_gates(
-        [device_pinchoff.top_barrier, device_pinchoff.top_barrier]
+        [device.top_barrier, device.top_barrier]
     )
-    gate_name = "characterization_" + device_pinchoff.top_barrier.name
+    gate_name = "characterization_" + device.top_barrier.name
     assert gate_name in result.tuningresults.keys()
     print(result)
     tuningresult = result.tuningresults[gate_name]
@@ -80,24 +80,9 @@ def test_characterize_gates(tuner_default_input, device_pinchoff):
     tuner.close()
 
 
-def test_device_specific_settings(tuner_default_input, device_pinchoff):
+def test_measurement_setpoint_settings(tuner_default_input, device):
     tuner = Tuner(
         **tuner_default_input,
     )
-    original_setpoints = copy.deepcopy(tuner.data_settings)
-    original_classifiers = copy.deepcopy(tuner.classifiers)
-    original_fit_options = copy.deepcopy(tuner.fit_options())
-
-    assert "normalization_constants" not in tuner.data_settings.keys()
-    n_csts = {"transport": (-0.3, 1.2), "sensing": (0.2, 0.8), "rf": (0, 1)}
-    device_pinchoff.normalization_constants(n_csts)
-    with tuner.device_specific_settings(device_pinchoff):
-        assert tuner.data_settings.normalization_constants == n_csts
-
-        assert tuner.data_settings == original_setpoints
-        assert tuner.classifiers == original_classifiers
-        assert tuner.fit_options() == original_fit_options
-
-    assert "normalization_constants" not in tuner.data_settings.keys()
 
     tuner.close()

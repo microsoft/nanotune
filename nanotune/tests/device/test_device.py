@@ -1,10 +1,10 @@
+from dataclasses import asdict
 import pytest
-import os
-import qcodes as qc
 
 import nanotune as nt
 from nanotune.drivers.dac_interface import RelayState
-from nanotune.device.device import _add_station_and_label_to_channel_init
+from nanotune.device.device import (ReadoutMethods, _add_station_and_label_to_channel_init,
+    NormalizationConstants)
 
 
 def test_device_init_defaults(station):
@@ -18,9 +18,7 @@ def test_device_init_defaults(station):
     assert not device.readout
     assert not device.initial_valid_ranges()
     assert device.quality() == 0
-    assert device.normalization_constants == {
-                key: (0, 1) for key in ["transport", "sensing"]
-            }
+    assert device.normalization_constants == NormalizationConstants()
     assert device.current_valid_ranges() == device.initial_valid_ranges()
     assert not device.transition_voltages()
 
@@ -40,15 +38,10 @@ def test_device_init(device, station):
     assert device.transition_voltages() == {0: -0.4, 1: None}
 
     norm_constants = device.normalization_constants
-    assert norm_constants["transport"] == [0, 2]
-    assert norm_constants["sensing"] == [-0.3, 0.6]
+    assert norm_constants.transport == (0, 2)
+    assert norm_constants.sensing == (-0.3, 0.6)
 
-    result = device.readout()
-    assert hasattr(result, 'transport')
-    assert hasattr(result, 'sensing')
-    assert isinstance(
-        device.readout,
-        qc.instrument. delegate.grouped_parameter.GroupedParameter)
+    assert isinstance(device.readout, ReadoutMethods)
 
     with pytest.raises(KeyError):
         _ = nt.Device(
@@ -59,19 +52,24 @@ def test_device_init(device, station):
 
 
 def test_device_normalization_constants_setter(device):
-    with pytest.raises(TypeError):
-        device.normalization_constants([0, 1.1])
 
-    with pytest.raises(TypeError):
-        device.normalization_constants({'transport': -1})
+    device.normalization_constants = {
+        'transport': (-1.9, -1.2), 'rf': (-2, 0)
+    }
+    assert device.normalization_constants.transport == (-1.9, -1.2)
+    assert device.normalization_constants.rf == (-2, 0)
 
-    with pytest.raises(KeyError):
-        device.normalization_constants({'dc_transport': [0, 1]})
+    norm_dict = asdict(device.normalization_constants)
+    assert device.metadata['normalization_constants'] == norm_dict
 
-    current_norms = device.normalization_constants
-    device.normalization_constants({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
-    current_norms.update({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
-    assert device.normalization_constants == current_norms
+    device.normalization_constants = NormalizationConstants(
+        transport=(-1, 1.1)
+    )
+    assert device.normalization_constants.transport == (-1, 1.1)
+    assert device.normalization_constants.sensing == (0, 1)
+
+    norm_dict = asdict(device.normalization_constants)
+    assert device.metadata['normalization_constants'] == norm_dict
 
 
 def test_device_initial_valid_ranges(device):
