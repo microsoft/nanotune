@@ -85,14 +85,18 @@ class Tuner(qc.Instrument):
         with set_back_voltages(device.gates):
             device.all_gates_to_lowest()
             for read_meth in available_readout.keys():
-                val = float(device.readout[read_meth].get())
-                normalization_constants[read_meth][0] = val
+                val = float(getattr(device.readout, read_meth).get())
+                prev = getattr(normalization_constants, read_meth)
+                new_tuple = (val, prev[1])
+                setattr(normalization_constants, read_meth, new_tuple)
 
             device.all_gates_to_highest()
             for read_meth in available_readout.keys():
-                val = float(device.readout[read_meth].get())
-                normalization_constants[read_meth][1] = val
-        device.normalization_constants(normalization_constants)
+                val = float(getattr(device.readout, read_meth).get())
+                prev = getattr(normalization_constants, read_meth)
+                new_tuple = (prev[0], val)
+                setattr(normalization_constants, read_meth, new_tuple)
+        device.normalization_constants = normalization_constants
 
     def characterize_gates(
         self,
