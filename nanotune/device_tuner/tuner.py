@@ -5,7 +5,7 @@ from typing import Generator, List, Optional, Sequence, Tuple
 
 import numpy as np
 import qcodes as qc
-from nanotune.device.device import Device
+from nanotune.device.device import Device, NormalizationConstants
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
@@ -79,20 +79,19 @@ class Tuner(qc.Instrument):
         """
         available_readout = device.readout.available_readout()
 
-        normalization_constants = {
-            key: [0.0, 1.0] for key in available_readout.keys()
-        }
+        normalization_constants = NormalizationConstants()
+
         with set_back_voltages(device.gates):
             device.all_gates_to_lowest()
             for read_meth in available_readout.keys():
-                val = float(getattr(device.readout, read_meth).get())
+                val = getattr(device.readout, read_meth).get()
                 prev = getattr(normalization_constants, read_meth)
                 new_tuple = (val, prev[1])
                 setattr(normalization_constants, read_meth, new_tuple)
 
             device.all_gates_to_highest()
             for read_meth in available_readout.keys():
-                val = float(getattr(device.readout, read_meth).get())
+                val = getattr(device.readout, read_meth).get()
                 prev = getattr(normalization_constants, read_meth)
                 new_tuple = (prev[0], val)
                 setattr(normalization_constants, read_meth, new_tuple)
@@ -274,3 +273,4 @@ class Tuner(qc.Instrument):
         new_settings.ranges_to_sweep = ranges_to_sweep
         new_settings.safety_voltage_ranges = safety_voltage_ranges
         return new_settings
+

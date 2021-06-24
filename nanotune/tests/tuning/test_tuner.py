@@ -56,9 +56,9 @@ def test_update_normalization_constants(tuner_default_input, device, tmp_path):
     tuner.update_normalization_constants(device)
     updated_constants = device.normalization_constants
 
-    assert np.allclose(updated_constants["transport"], [0.0, 1.2], atol=atol)
-    assert updated_constants["sensing"] != updated_constants["transport"]
-    assert np.allclose(updated_constants["rf"], [0, 1], atol=atol)
+    assert np.allclose(updated_constants.transport, [0.0, 1.2], atol=atol)
+    assert updated_constants.sensing != updated_constants.transport
+    assert np.allclose(updated_constants.rf, [0, 1], atol=atol)
 
     tuner.close()
 
@@ -86,3 +86,4 @@ def test_measurement_setpoint_settings(tuner_default_input, device):
     )
 
     tuner.close()
+
