@@ -274,8 +274,7 @@ def compute_linear_setpoints(
 
 def prepare_metadata(
     device_name: str,
-    normalization_constants: Union[
-        Dict[str, Tuple[float, float]], NormalizationConstants],
+    normalization_constants: NormalizationConstants,
     readout_methods: ReadoutMethods,
 ) -> Dict[str, Any]:
     """Sets up a metadata dictionary with fields known prior to a measurement
@@ -289,9 +288,7 @@ def prepare_metadata(
         dict: Metadata dict with fields known prior to a measurement filled in.
     """
     nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
-    if isinstance(normalization_constants, NormalizationConstants):
-        normalization_constants = asdict(normalization_constants)
-    nt_meta["normalization_constants"] = normalization_constants
+    nt_meta["normalization_constants"] = asdict(normalization_constants)
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
     readout_dict = readout_methods.as_name_dict()  # type: ignore

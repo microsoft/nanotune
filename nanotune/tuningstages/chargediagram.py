@@ -8,12 +8,14 @@ from typing_extensions import TypedDict
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import ReadoutMethods
 from nanotune.fit.dotfit import DotFit
 from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
+    Classifiers)
 
 from .base_tasks import (  # please update docstrings if import path changes
-    DataSettingsDict, ReadoutMethodsDict, ReadoutMethodsLiteral,
-    SetpointSettingsDict, conclude_iteration_with_range_update,
+    conclude_iteration_with_range_update,
     get_extracted_features, get_fit_range_update_directives)
 from .chargediagram_tasks import (DotClassifierDict, classify_dot_segments,
                                   conclude_dot_classification,
@@ -54,9 +56,7 @@ class ChargeDiagram(TuningStage):
         setpoint_settings: Dictionary with information about how to compute
             setpoints. Required keys are 'parameters_to_sweep',
             'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
-        readout_methods: Dictionary mapping string identifiers such as
-            'transport' to QCoDeS parameters measuring/returning the desired
-            quantity (e.g. current throught the device).
+        readout:
         current_valid_ranges: List of voltages ranges (tuples of floats) to
             measure.
         safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
@@ -75,10 +75,10 @@ class ChargeDiagram(TuningStage):
 
     def __init__(
         self,
-        data_settings: DataSettingsDict,
-        setpoint_settings: SetpointSettingsDict,
-        readout_methods: ReadoutMethodsDict,
-        classifiers: DotClassifierDict,
+        data_settings: DataSettings,
+        setpoint_settings: SetpointSettings,
+        readout: ReadoutMethods,
+        classifiers: Classifiers,
         target_regime: str = "doubledot",
         range_change_settings: Optional[RangeChangeSettingsDict] = None,
     ) -> None:
@@ -94,9 +94,7 @@ class ChargeDiagram(TuningStage):
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-            readout_methods: Dictionary mapping string identifiers such as
-                'transport' to QCoDeS parameters measuring/returning the
-                desired quantity (e.g. current throught the device).
+            readout:
             classifiers: Pre-trained classifiers predicting single and dot
                 quality, and the dotregime. String keys indicating the type of
                 classifier map onto the classifiers itself. Required keys are
@@ -108,24 +106,15 @@ class ChargeDiagram(TuningStage):
             sweep.
 
         """
-
-        if "segment_db_folder" not in data_settings.keys():
-            data_settings.segment_db_folder = nt.config["db_folder"]
-        if "segment_db_name" not in data_settings.keys():
-            seg_db_name = f'segmented_{nt.config["db_name"]}'
-            data_settings.segment_db_name = seg_db_name
-        if "normalization_constants" not in data_settings.keys():
-            logger.warning("No normalisation constants specified.")
-        if "segment_size" not in data_settings.keys():
-            data_settings["segment_size"] = 0.02
-            logger.warning("Setting default segment size of 0.2V.")
+        if data_settings.normalization_constants is None:
+            raise ValueError("No normalisation constant.")
 
         TuningStage.__init__(
             self,
             "chargediagram",
             data_settings,
             setpoint_settings,
-            readout_methods,
+            readout,
         )
         if range_change_settings is None:
             range_change_settings = {}  # type: ignore
@@ -236,7 +225,7 @@ class ChargeDiagram(TuningStage):
             self.data_settings.db_folder,
             self.data_settings.segment_db_name,
             self.data_settings.segment_db_folder,
-            self.data_settings["segment_size"],
+            self.data_settings.segment_size,
         )
 
         classification_outcome = classify_dot_segments(

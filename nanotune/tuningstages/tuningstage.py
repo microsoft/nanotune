@@ -241,7 +241,7 @@ class TuningStage(metaclass=ABCMeta):
         device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
             device_name,
-            asdict(self.data_settings.normalization_constants),
+            self.data_settings.normalization_constants,
             self.readout,
         )
         return nt_meta
