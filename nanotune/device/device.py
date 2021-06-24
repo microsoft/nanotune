@@ -90,6 +90,15 @@ def readout_formatter(
     name: str,
     **kwargs: Any,
 ) -> Any:
+    # if formatter is None and len(parameters) == 1:
+    #         self._formatter = lambda result: result
+    #     elif formatter is None:
+    #         self._formatter = self._namedtuple
+    #     else:
+    #         self._formatter = formatter
+
+    # def _namedtuple(self, *args: Any, **kwargs: Any) -> Tuple[Any, ...]:
+    #     return namedtuple(self.name, self._parameter_names)(*args, **kwargs)
     return namedtuple(name, param_names)(*values, **kwargs)
 
 
@@ -143,20 +152,16 @@ class Device(DelegateInstrument):
             self.readout = None
         else:
             param_names, paths = list(zip(*list(readout.items())))
-            for param_name in param_names:
+            for param_name, path in zip(param_names, paths):
                 if param_name not in ReadoutMethods.__dataclass_fields__.keys():
                     raise KeyError(f"Invalid readout method key. Use one of \
                         {ReadoutMethods.__dataclass_fields__.keys()}")
-                print(param_name)
+                if not isinstance(path, list):
+                    path = [path]
                 super()._create_and_add_parameter(
                     param_name,
                     station,
-                    paths,
-                    formatter=partial(
-                        readout_formatter,
-                        param_names=param_name,
-                        name='readout',
-                    )
+                    path,
                 )
                 setattr(self.readout, param_name, getattr(self, param_name))
             self.metadata['readout'] = self.readout.as_name_dict()
