@@ -452,6 +452,16 @@ def device(station, chip_config):
     _chip = station.load_device_on_chip(station=station)
     return _chip
 
+@pytest.fixture()
+def device2(station, chip_config):
+    if hasattr(station, "device2"):
+        return station.device2
+
+    station.load_config_file(chip_config)
+    _chip = station.load_device2(station=station)
+    return _chip
+
+
 
 @pytest.fixture(scope="function")
 def device_pinchoff(pinchoff_dmm, device, station):

@@ -30,3 +30,29 @@ instruments:
         top_barrier: [-0.5, 0]
       transition_voltages:
         top_barrier: -0.4
+
+  device2:
+    type: nanotune.device.device.Device
+    init:
+      device_type:
+        doubledot
+      normalization_constants:
+        transport: [0, 2]
+        sensing: [-0.3, 0.6]
+      channels:
+        type: nanotune.device.device_channel.DeviceChannel
+        top_barrier:
+          channel: dac.ch01
+          gate_id: 0
+        left_plunger:
+          channel: dac.ch02
+          gate_id: 1
+        left_ohmic:
+          channel: dac.ch10
+          ohmic_id: 0
+      readout:
+        transport:
+          lockin.X
+        sensing:
+          - rf.phase
+          - lockin.Y
