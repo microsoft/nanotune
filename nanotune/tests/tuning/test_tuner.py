@@ -2,11 +2,12 @@ import copy
 
 import numpy as np
 import pytest
+import matplotlib.pyplot as plt
 from dataclasses import asdict
 from nanotune.device_tuner.tuner import Tuner, set_back_voltages
 from nanotune.device.device import NormalizationConstants
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.tuningstages.settings import DataSettings
+from nanotune.tuningstages.settings import Classifiers, DataSettings
 from nanotune.tests.mock_classifier import MockClassifer
 
 atol = 1e-05
@@ -48,42 +49,76 @@ def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
     tuner.close()
 
 
-def test_update_normalization_constants(tuner_default_input, device, tmp_path):
-
+def test_update_normalization_constants(
+    tuner_default_input,
+    sim_device_pinchoff,
+):
     tuner = Tuner(**tuner_default_input)
-    device.normalization_constants = {}
+    previous_constants = sim_device_pinchoff.normalization_constants
+    sim_device_pinchoff.normalization_constants = NormalizationConstants()
 
-    tuner.update_normalization_constants(device)
-    updated_constants = device.normalization_constants
+    tuner.update_normalization_constants(sim_device_pinchoff)
+    updated_constants = sim_device_pinchoff.normalization_constants
 
-    assert np.allclose(updated_constants.transport, [0.0, 1.2], atol=atol)
-    assert updated_constants.sensing != updated_constants.transport
-    assert np.allclose(updated_constants.rf, [0, 1], atol=atol)
+    assert updated_constants.transport == previous_constants.transport
+    assert updated_constants.sensing == (0., 1.)
+    assert updated_constants.rf == (0., 1.)
 
     tuner.close()
 
 
-def test_characterize_gates(tuner_default_input, device):
-    tuner = Tuner(
-        **tuner_default_input,
+def test_characterize_gates(
+    tuner_default_input,
+    sim_device_pinchoff,
+):
+    tuner = Tuner(**tuner_default_input)
+
+    measurement_result = tuner.characterize_gates(
+        sim_device_pinchoff,
+        [sim_device_pinchoff.right_plunger],
+        use_safety_voltage_ranges=True,
     )
-    tuner.classifiers = {"pinchoff": MockClassifer("pinchoff")}
-    result = tuner.characterize_gates(
-        [device.top_barrier, device.top_barrier]
-    )
-    gate_name = "characterization_" + device.top_barrier.name
-    assert gate_name in result.tuningresults.keys()
-    print(result)
-    tuningresult = result.tuningresults[gate_name]
+    plt.close('all')
+
+    stage_name = "characterization_" + sim_device_pinchoff.right_plunger.name
+    tuningresult = measurement_result.tuningresults[stage_name]
     assert isinstance(tuningresult, TuningResult)
+    assert tuningresult.status == sim_device_pinchoff.get_gate_status()
     assert tuningresult.success
+    comment = f"Characterizing {[sim_device_pinchoff.right_plunger]}."
+    assert tuningresult.comment == comment
+
+
+    sim_device_pinchoff.current_valid_ranges(
+        {sim_device_pinchoff.right_plunger.gate_id: (-0.2, 0)}
+    )
+    measurement_result = tuner.characterize_gates(
+        sim_device_pinchoff,
+        [sim_device_pinchoff.right_plunger],
+        use_safety_voltage_ranges=False,
+        comment = "first run"
+    )
+    tuningresult = measurement_result.tuningresults[stage_name]
+    assert tuningresult.comment == "first run"
+
+    # TODO: Add test with iterate = True
+
+    with pytest.raises(KeyError):
+        tuner.classifiers = Classifiers()
+        _ = tuner.characterize_gates(
+            sim_device_pinchoff,
+            [sim_device_pinchoff.right_plunger],
+            use_safety_voltage_ranges=True,
+        )
+
     tuner.close()
 
 
-def test_measurement_setpoint_settings(tuner_default_input, device):
-    tuner = Tuner(
-        **tuner_default_input,
-    )
+def test_measurement_setpoint_settings(
+    tuner_default_input,
+    sim_device_pinchoff,
+):
+    tuner = Tuner(**tuner_default_input)
 
     tuner.close()
 
