@@ -15,7 +15,7 @@ instruments:
           gate_id: 0
         left_plunger:
           channel: dac.ch02
-          gate_id: 1
+          gate_id: 2
         left_ohmic:
           channel: dac.ch10
           ohmic_id: 0
@@ -31,7 +31,7 @@ instruments:
       transition_voltages:
         top_barrier: -0.4
 
-  device2:
+  sim_device:
     type: nanotune.device.device.Device
     init:
       device_type:
@@ -44,15 +44,24 @@ instruments:
         top_barrier:
           channel: dac.ch01
           gate_id: 0
+        left_barrier:
+          channel: dac.ch03
+          gate_id: 1
         left_plunger:
           channel: dac.ch02
-          gate_id: 1
+          gate_id: 2
+        central_barrier:
+          channel: dac.ch04
+          gate_id: 3
+        right_plunger:
+          channel: dac.ch05
+          gate_id: 4
+        right_barrier:
+          channel: dac.ch06
+          gate_id: 5
         left_ohmic:
           channel: dac.ch10
           ohmic_id: 0
       readout:
         transport:
-          lockin.X
-        sensing:
-          - rf.phase
-          - lockin.Y
+          qd_mock_instrument.drain
