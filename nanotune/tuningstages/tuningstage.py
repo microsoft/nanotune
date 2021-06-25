@@ -78,6 +78,7 @@ class TuningStage(metaclass=ABCMeta):
 
         ranges = self.setpoint_settings.ranges_to_sweep
         self.current_valid_ranges = ranges
+        self.allow_range_swap = True
 
     @property
     @abstractmethod
@@ -326,11 +327,11 @@ class TuningStage(metaclass=ABCMeta):
         initial_voltages = get_current_voltages(
             self.setpoint_settings.parameters_to_sweep
         )
-
-        self.current_valid_ranges = swap_range_limits_if_needed(
-            initial_voltages,
-            self.current_valid_ranges,
-        )
+        if self.allow_range_swap:
+            self.current_valid_ranges = swap_range_limits_if_needed(
+                initial_voltages,
+                self.current_valid_ranges,
+            )
 
         run_stage_tasks = [
             self.compute_setpoints,
