@@ -103,6 +103,7 @@ class Tuner(qc.Instrument):
         gates: List[DeviceChannel],
         use_safety_voltage_ranges: bool = False,
         comment: Optional[str] = None,
+        iterate: bool = False,
     ) -> MeasurementHistory:
         """
         Characterize multiple gates.
@@ -121,6 +122,7 @@ class Tuner(qc.Instrument):
         for gate in gates:
             if use_safety_voltage_ranges:
                 v_range = gate.safety_voltage_range()
+                iterate = False
             else:
                 v_range = device.current_valid_ranges()[gate.gate_id]
 
@@ -134,7 +136,8 @@ class Tuner(qc.Instrument):
                 readout=device.readout,
                 classifier=self.classifiers.pinchoff,
             )
-            tuningresult = stage.run_stage()
+
+            tuningresult = stage.run_stage(iterate=iterate)
             tuningresult.status = device.get_gate_status()
             tuningresult.comment = comment
             measurement_result.add_result(
