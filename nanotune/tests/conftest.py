@@ -12,6 +12,7 @@ import nanotune as nt
 from nanotune.tuningstages.settings import DataSettings, SetpointSettings
 from nanotune.device.device import NormalizationConstants, ReadoutMethods
 from nanotune.device.device_channel import DeviceChannel
+from nanotune.classification.classifier import Classifier
 from nanotune.tests.data_generator_methods import (
     DotCurrent, DotSensor, PinchoffCurrent, PinchoffSensor,
     generate_coloumboscillation_metadata,
@@ -25,6 +26,8 @@ from nanotune.drivers.mock_readout_instruments import MockLockin, MockRF
 
 from .data_savers import save_1Ddata_with_qcodes, save_2Ddata_with_qcodes
 PARENT_DIR = pathlib.Path(__file__).parent.absolute()
+from sim.data_providers import QcodesDataProvider
+from sim.qcodes_mocks import MockDoubleQuantumDotInstrument
 
 ideal_run_labels = {
     0: "pinchoff",
@@ -292,7 +295,7 @@ def dot_dmm(dummy_dmm):
         dummy_dmm.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def dac():
     _dac = MockDAC('dac', MockDACChannel)
     try:
@@ -302,7 +305,7 @@ def dac():
 
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def lockin():
     _lockin = MockLockin(
         name='lockin'
@@ -313,7 +316,7 @@ def lockin():
         _lockin.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def rf():
     _rf = MockRF('rf')
     try:
@@ -322,13 +325,16 @@ def rf():
         _rf.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def station(dac, lockin, rf):
     _station = qc.Station()
     _station.add_component(dac)
     _station.add_component(lockin)
     _station.add_component(rf)
-    return _station
+    try:
+        yield _station
+    finally:
+        _station.close_all_registered_instruments()
 
 
 @pytest.fixture(scope="function")
@@ -438,12 +444,12 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
     yield tuningstage_settings
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def chip_config():
     return os.path.join(PARENT_DIR, "device", "chip.yaml")
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def device(station, chip_config):
     if hasattr(station, "device_on_chip"):
         return station.device_on_chip
@@ -452,33 +458,72 @@ def device(station, chip_config):
     _chip = station.load_device_on_chip(station=station)
     return _chip
 
-@pytest.fixture()
-def device2(station, chip_config):
-    if hasattr(station, "device2"):
-        return station.device2
 
-    station.load_config_file(chip_config)
-    _chip = station.load_device2(station=station)
-    return _chip
-
+@pytest.fixture(scope="function")
+def sim_station(station):
+    station.add_component(
+        MockDoubleQuantumDotInstrument('qd_mock_instrument')
+    )
+    try:
+        yield station
+    finally:
+        station.close_all_registered_instruments()
 
 
 @pytest.fixture(scope="function")
-def device_pinchoff(pinchoff_dmm, device, station):
-    # station.add_component(pinchoff_dmm)
-    readout_methods = {
-        "transport": 'dummy_dmm.po_current',
-        "sensing": 'dummy_dmm.po_sensor',
-    }
+def sim_device(sim_station, chip_config):
+    if hasattr(sim_station, "sim_device"):
+        return sim_station.sim_device
 
-    device._create_and_add_parameters(
-                station=station,
-                parameters=readout_methods,
-                setters={},
-                units={},
+    sim_station.load_config_file(chip_config)
+    _dev = sim_station.load_sim_device(station=sim_station)
+    return _dev
+
+
+@pytest.fixture(scope="function")
+def nanotune_path():
+    return os.path.dirname(os.path.dirname(os.path.abspath(nt.__file__)))
+
+
+@pytest.fixture(scope="function")
+def tuning_data_path():
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(nt.__file__)), "..", "data", "tuning"
     )
+    return path
 
 
-    pinchoff_dmm.po_current.gate = device.top_barrier
-    pinchoff_dmm.po_sensor.gate = device.top_barrier
-    yield device
+@pytest.fixture(scope="function")
+def sim_device_pinchoff(tuning_data_path, sim_station, sim_device):
+    db_path = os.path.join(tuning_data_path, "device_characterization.db")
+    qd_mock_instrument = sim_station.qd_mock_instrument
+
+    pinchoff_data = QcodesDataProvider(
+        [qd_mock_instrument.mock_device.right_plunger],
+        db_path, "GB_Newtown_Dev_3_2", 1206)
+    # Configure the simulator's drain pin to use the backing data
+    qd_mock_instrument.mock_device.drain.set_data_provider(
+        pinchoff_data)
+
+    sim_device.right_plunger.voltage = qd_mock_instrument.right_plunger
+    sim_device.all_gates_to_highest()
+    ds = nt.Dataset(
+        1206,
+        "device_characterization.db",
+        db_folder=tuning_data_path
+    )
+    sim_device.normalization_constants = ds.normalization_constants
+    return sim_device
+
+
+# @pytest.fixture(scope="function")
+# def pinchoff_classifier(nanotune_path):
+#     _pinchoff_classifier = Classifier(
+#         ['pinchoff.npy'],
+#         'pinchoff',
+#         data_types=["signal"],
+#         classifier="MLPClassifier",
+#         folder_path=os.path.join(nanotune_path, 'data', 'training_data'),
+#     )
+#     _pinchoff_classifier.train()
+#     return _pinchoff_classifier
