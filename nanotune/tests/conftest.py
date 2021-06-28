@@ -516,14 +516,14 @@ def sim_device_pinchoff(tuning_data_path, sim_station, sim_device):
     return sim_device
 
 
-# @pytest.fixture(scope="function")
-# def pinchoff_classifier(nanotune_path):
-#     _pinchoff_classifier = Classifier(
-#         ['pinchoff.npy'],
-#         'pinchoff',
-#         data_types=["signal"],
-#         classifier="MLPClassifier",
-#         folder_path=os.path.join(nanotune_path, 'data', 'training_data'),
-#     )
-#     _pinchoff_classifier.train()
-#     return _pinchoff_classifier
+@pytest.fixture(scope="function")
+def pinchoff_classifier(nanotune_path):
+    _pinchoff_classifier = Classifier(
+        ['pinchoff.npy'],
+        'pinchoff',
+        data_types=["signal"],
+        classifier="MLPClassifier",
+        folder_path=os.path.join(nanotune_path, 'data', 'training_data'),
+    )
+    _pinchoff_classifier.train()
+    return _pinchoff_classifier
