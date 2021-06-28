@@ -1,4 +1,5 @@
 import copy
+from nanotune.tests.conftest import sim_device
 
 import numpy as np
 import pytest
@@ -125,11 +126,45 @@ def test_characterize_gates(
     tuner.close()
 
 
+def test_measure_initial_ranges_2D(
+    tuner_default_input,
+    sim_device_pinchoff,
+):
+    tuner = Tuner(**tuner_default_input)
+
+    ((min_voltage, max_voltage),
+    measurement_result) = tuner.measure_initial_ranges_2D(
+        sim_device_pinchoff,
+        gate_to_set=sim_device_pinchoff.top_barrier,
+        gates_to_sweep=[sim_device_pinchoff.top_barrier],
+        voltage_step=0.2,
+    )
+
+
+def test_measurement_data_settings(
+    tuner_default_input,
+    sim_device_pinchoff,
+):
+    tuner = Tuner(**tuner_default_input)
+    prev_settings = copy.deepcopy(tuner.data_settings)
+    new_data_settings = tuner.measurement_data_settings(sim_device_pinchoff)
+    assert prev_settings.normalization_constants != new_data_settings.normalization_constants
+    assert new_data_settings.normalization_constants == sim_device_pinchoff.normalization_constants
+
+    tuner.close()
+
+
 def test_measurement_setpoint_settings(
     tuner_default_input,
     sim_device_pinchoff,
 ):
     tuner = Tuner(**tuner_default_input)
+    prev_settings = copy.deepcopy(tuner.setpoint_settings)
+    new_settings = tuner.measurement_setpoint_settings(sim_device_pinchoff)
+    assert prev_settings != new_settings
+    assert new_settings.parameters_to_sweep == sim_device_pinchoff.parameters_to_sweep
+    assert new_settings.ranges_to_sweep == sim_device_pinchoff.ranges_to_sweep
+    assert new_settings.safety_voltage_ranges == sim_device_pinchoff.safety_voltage_ranges
 
     tuner.close()
 
