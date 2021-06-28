@@ -108,7 +108,6 @@ def do_nothing(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     """
 
 
-
 def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
     """Ramps nanotune gates (or other instrument parameter with 'use_ramp'
     attribute)to a new setpoint. Sets `use_ramp` back to false after ramping.

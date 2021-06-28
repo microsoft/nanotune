@@ -102,7 +102,7 @@ class GateCharacterization1D(TuningStage):
 
         assert len(self.setpoint_settings.parameters_to_sweep) == 1
 
-        self.allow_range_swap = True
+        # self.allow_range_swap = True
 
     @property
     def fit_class(self):

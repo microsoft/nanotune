@@ -256,7 +256,6 @@ class Device(DelegateInstrument):
         new_constants: Union[
             Dict[str, Sequence[float]], NormalizationConstants],
     ) -> None:
-        print(f"updating with {new_constants}")
         self._normalization_constants.update(new_constants)
         self.metadata.update(
             {'normalization_constants': asdict(self._normalization_constants)}
