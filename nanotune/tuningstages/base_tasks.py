@@ -7,6 +7,7 @@ from dataclasses import asdict
 import datetime
 import json
 import logging
+from os import initgroups
 import time
 from contextlib import contextmanager
 from sqlite3 import OperationalError
@@ -513,14 +514,12 @@ def run_stage(
     Returns:
         TuningResult: Currently without db_name and db_folder set.
     """
-
     current_setpoints = compute_setpoint_task(voltage_ranges)
     current_id = measure_task(
         parameters_to_sweep,
         parameters_to_measure,
         current_setpoints,
     )
-
     ml_result = machine_learning_task(current_id)
     save_machine_learning_result(current_id, ml_result)
     success = validate_result(ml_result)
@@ -607,11 +606,15 @@ def iterate_stage(
 
     while not done:
         current_iteration += 1
+        ranges_to_sweep = swap_range_limits_if_needed(
+            get_current_voltages(parameters_to_sweep),
+            current_valid_ranges,
+        )
         tuning_result = run_stage(
             stage,
             parameters_to_sweep,
             parameters_to_measure,
-            current_valid_ranges,
+            ranges_to_sweep,
             *run_stage_tasks,
         )
         run_ids += tuning_result.data_ids
