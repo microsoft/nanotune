@@ -70,8 +70,10 @@ def test_update_normalization_constants(
 def test_characterize_gates(
     tuner_default_input,
     sim_device_pinchoff,
+    pinchoff_classifier,
 ):
     tuner = Tuner(**tuner_default_input)
+    tuner.classifiers = Classifiers(pinchoff=pinchoff_classifier)
 
     measurement_result = tuner.characterize_gates(
         sim_device_pinchoff,
@@ -84,7 +86,6 @@ def test_characterize_gates(
     tuningresult = measurement_result.tuningresults[stage_name]
     assert isinstance(tuningresult, TuningResult)
     assert tuningresult.status == sim_device_pinchoff.get_gate_status()
-    assert tuningresult.success
     comment = f"Characterizing {[sim_device_pinchoff.right_plunger]}."
     assert tuningresult.comment == comment
 
@@ -96,12 +97,22 @@ def test_characterize_gates(
         sim_device_pinchoff,
         [sim_device_pinchoff.right_plunger],
         use_safety_voltage_ranges=False,
-        comment = "first run"
+        comment = "first run",
+        iterate=False,
     )
     tuningresult = measurement_result.tuningresults[stage_name]
     assert tuningresult.comment == "first run"
+    assert not tuningresult.success
 
-    # TODO: Add test with iterate = True
+    measurement_result = tuner.characterize_gates(
+        sim_device_pinchoff,
+        [sim_device_pinchoff.right_plunger],
+        use_safety_voltage_ranges=False,
+        iterate=True,
+    )
+    tuningresult = measurement_result.tuningresults[stage_name]
+    assert tuningresult.success
+    assert len(tuningresult.data_ids) == 2
 
     with pytest.raises(KeyError):
         tuner.classifiers = Classifiers()
