@@ -84,24 +84,6 @@ class ReadoutMethods:
 ReadoutMethodsLiteral = Literal[ReadoutMethods.__dataclass_fields__.keys()]
 
 
-def readout_formatter(
-    *values: Any,
-    param_names: List[str],
-    name: str,
-    **kwargs: Any,
-) -> Any:
-    # if formatter is None and len(parameters) == 1:
-    #         self._formatter = lambda result: result
-    #     elif formatter is None:
-    #         self._formatter = self._namedtuple
-    #     else:
-    #         self._formatter = formatter
-
-    # def _namedtuple(self, *args: Any, **kwargs: Any) -> Tuple[Any, ...]:
-    #     return namedtuple(self.name, self._parameter_names)(*args, **kwargs)
-    return namedtuple(name, param_names)(*values, **kwargs)
-
-
 class Device(DelegateInstrument):
     """
     device_type: str, e.g 'doubledot'
@@ -143,9 +125,12 @@ class Device(DelegateInstrument):
         if channels is not None:
             (self.gates,
              self.ohmics,
-             self._gate_labels) = self.initialize_channel_lists(channels)
+             self._gate_labels,
+             self._gates_dict,
+             self._ohmics_dict) = self.initialize_channel_lists(channels)
         else:
             self.gates, self.ohmics = [], []
+            self._gates_dict, self._ohmics_dict = {}, {}
 
         self.readout = ReadoutMethods()
         if readout is None:
@@ -334,7 +319,7 @@ class Device(DelegateInstrument):
             gate_id = self.get_gate_id(gate_identifier)
             if gate_id is None:
                 raise ValueError(f'Gate {gate_identifier} has not gate_id.')
-            sfty_range = self.gates[gate_id].safety_voltage_range()
+            sfty_range = self._gates_dict[gate_id].safety_voltage_range()
             new_range = self.check_and_update_new_voltage_range(
                 new_range, sfty_range
             )
@@ -405,12 +390,13 @@ class Device(DelegateInstrument):
             elif channel.ohmic_id is not None:
                 ohmic_dict[channel.ohmic_id] = channel
         gates_list = []
-        for gate_id in range(0, len(gate_dict)):
+        for gate_id in sorted(gate_dict.keys()): # range(0, len(gate_dict)):
             gates_list.append(gate_dict[gate_id])
         ohmics_list = []
-        for ohmic_id in range(0, len(ohmic_dict)):
+        for ohmic_id in sorted(ohmic_dict.keys()):
             ohmics_list.append(ohmic_dict[ohmic_id])
-        return gates_list, ohmics_list, gate_labels
+        return gates_list, ohmics_list, gate_labels, gate_dict, ohmic_dict
+
 
     def check_and_update_new_voltage_range(
         self,
