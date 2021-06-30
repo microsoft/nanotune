@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, Optional
+from nanotune.device.device_channel import DeviceChannel
+from typing import Dict, Optional, Sequence
 
 from nanotune.device.device import Device
 from nanotune.device_tuner.tuner import (Tuner, set_back_voltages,
@@ -29,6 +30,7 @@ class Characterizer(Tuner):
     def characterize(
         self,
         device: Device,
+        skip_gates: Optional[Sequence[DeviceChannel]],
         gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
     ) -> MeasurementHistory:
         """
@@ -36,7 +38,7 @@ class Characterizer(Tuner):
         configuration to be applied for individual gate characterizations.
         Example: Set top barrier of a 2DEG device.
         """
-        if self.qcodes_experiment.sample_name != Device.name:
+        if self.qcodes_experiment.sample_name != device.name:
             logger.warning(
                 (
                     "The device's name does match the"
@@ -49,18 +51,19 @@ class Characterizer(Tuner):
         measurement_result = MeasurementHistory(device.name)
 
         for gate in device.gates:
-            with set_back_voltages(device.gates):
-                gate_id = gate.gate_id
-                if gate_id in gate_configurations.keys():
-                    gate_conf = gate_configurations[gate_id].items()
-                    for other_id, voltage in gate_conf:
-                        device.gates[other_id].voltage(voltage)
+            if gate not in skip_gates:
+                with set_back_voltages(device.gates):
+                    gate_id = gate.gate_id
+                    if gate_id in gate_configurations.keys():
+                        gate_conf = gate_configurations[gate_id]
+                        for other_id, voltage in gate_conf.items():
+                            device.gates[other_id].voltage(voltage)
 
-                sub_result = self.characterize_gates(
-                    device,
-                    gates=device.gates,
-                    use_safety_voltage_ranges=True,
-                )
-                measurement_result.update(sub_result)
+                    sub_result = self.characterize_gates(
+                        device,
+                        gates=[gate],
+                        use_safety_voltage_ranges=True,
+                    )
+                    measurement_result.add_result(sub_result)
 
         return measurement_result
