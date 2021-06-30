@@ -7,7 +7,7 @@ import numpy as np
 import qcodes as qc
 from nanotune.device.device import Device, NormalizationConstants
 from nanotune.device.device_channel import DeviceChannel
-from nanotune.device_tuner.tuningresult import MeasurementHistory
+from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
     Classifiers)
@@ -104,7 +104,7 @@ class Tuner(qc.Instrument):
         use_safety_voltage_ranges: bool = False,
         comment: Optional[str] = None,
         iterate: bool = False,
-    ) -> MeasurementHistory:
+    ) -> TuningResult:
         """
         Characterize multiple gates.
         It does not set any voltages.
@@ -117,7 +117,6 @@ class Tuner(qc.Instrument):
         if self.classifiers.pinchoff is None:
             raise KeyError("No pinchoff classifier found.")
 
-        measurement_result = MeasurementHistory(device.name)
         updated_data_settings = self.measurement_data_settings(device)
         for gate in gates:
             if use_safety_voltage_ranges:
@@ -140,12 +139,8 @@ class Tuner(qc.Instrument):
             tuningresult = stage.run_stage(iterate=iterate)
             tuningresult.status = device.get_gate_status()
             tuningresult.comment = comment
-            measurement_result.add_result(
-                tuningresult,
-                "characterization_" + gate.name,
-            )
 
-        return measurement_result
+        return tuningresult
 
     def measure_initial_ranges_2D(
         self,
@@ -162,89 +157,85 @@ class Tuner(qc.Instrument):
         Args:
             gate_to_set (nt.DeviceChannel):
             gates_to_sweep (list)
-            voltage_step (flaot)
+            voltage_step (float)
         Returns:
             tuple(float, float):
             MeasurementHistory:
         """
         if self.classifiers.pinchoff is None:
             raise KeyError("No pinchoff classifier.")
+        device.all_gates_to_highest()
+
+        v_steps = linear_voltage_steps(
+            gate_to_set.safety_voltage_range(), voltage_step)
+
+        (measurement_result,
+         last_gate_to_pinchoff,
+         last_voltage) = self.get_pairwise_pinchoff(
+            device,
+            gate_to_set,
+            gates_to_sweep,
+            v_steps,
+        )
+        min_voltage = last_voltage
 
         device.all_gates_to_highest()
-        data_settings = self.measurement_data_settings(device)
+
+        # Swap top_barrier and last barrier to pinch off agains it to
+        # determine opposite corner of valid voltage space.
+        v_steps = linear_voltage_steps(
+            last_gate_to_pinchoff.safety_voltage_range(), voltage_step)
+
+        (measurement_result2,
+         _,
+         _) = self.get_pairwise_pinchoff(
+            device,
+            last_gate_to_pinchoff,
+            [gate_to_set],
+            v_steps,
+        )
+        # The line below is correct with max_voltage = ... "low_voltage"
+        features = measurement_result2.last_added.ml_result["features"]
+        max_voltage = features["transport"]["low_voltage"]
+
+        measurement_result.update(measurement_result2)
+        device.all_gates_to_highest()
+
+        return (min_voltage, max_voltage), measurement_result
+
+    def get_pairwise_pinchoff(
+        self,
+        device,
+        gate_to_set,
+        gates_to_sweep,
+        voltages_to_set,
+    ) -> Tuple[TuningResult, DeviceChannel]:
+        """ """
         measurement_result = MeasurementHistory(device.name)
         layout_ids = [g.gate_id for g in gates_to_sweep]
         skip_gates = dict.fromkeys(layout_ids, False)
 
-        v_range = gate_to_set.safety_voltage_range()
-        n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
-
-        v_steps = np.linspace(np.max(v_range), np.min(v_range), n_steps)
-        for voltage in v_steps:
-            gate_to_set.voltage(voltage)
+        for last_voltage in voltages_to_set:
+            gate_to_set.voltage(last_voltage)
 
             for gate in gates_to_sweep:
                 if not skip_gates[gate.gate_id]:
-                    setpoint_settings = self.measurement_setpoint_settings(
-                        [gate.voltage],
-                        [gate.safety_voltage_range()],
-                        [gate.safety_voltage_range()]
+                    sub_tuning_result = self.characterize_gates(
+                        device,
+                        [gate],
+                        use_safety_voltage_ranges=True,
+                        comment=f"Measuring initial range of {gate.full_name} \
+                            with {gate_to_set.full_name} at {last_voltage}."
                     )
-                    stage = GateCharacterization1D(
-                        data_settings=data_settings,
-                        setpoint_settings=setpoint_settings,
-                        readout=device.readout,
-                        classifier=self.classifiers.pinchoff,
-                    )
-                    tuningresult = stage.run_stage()
-                    tuningresult.status = device.get_gate_status()
-                    measurement_result.add_result(
-                        tuningresult,
-                        f"characterization_{gate.name}",
-                    )
-                    if tuningresult.success:
+                    measurement_result.add_result(sub_tuning_result)
+                    if sub_tuning_result.success:
                         skip_gates[gate.gate_id] = True
-                        last_gate = gate
+                        last_gate_to_pinchoff = gate
 
             if all(skip_gates.values()):
                 break
-        min_voltage = gate_to_set.voltage()
 
-        # Swap top_barrier and last barrier to pinch off agains it to
-        # determine opposite corner of valid voltage space.
-        device.all_gates_to_highest()
-
-        setpoint_settings = self.measurement_setpoint_settings(
-            [gate_to_set.voltage],
-            [gate.safety_voltage_range()], [gate.safety_voltage_range()]
-        )
-
-        v_range = last_gate.safety_voltage_range()
-        n_steps = int(abs(v_range[0] - v_range[1]) / voltage_step)
-        v_steps = np.linspace(v_range[1], v_range[0], n_steps)
-
-        for voltage in v_steps:
-            last_gate.voltage(voltage)
-            stage = GateCharacterization1D(
-                data_settings=self.data_settings,
-                setpoint_settings=setpoint_settings,
-                readout=device.readout,
-                classifier=self.classifiers.pinchoff,
-            )
-
-            tuningresult = stage.run_stage()
-            tuningresult.status = device.get_gate_status()
-            measurement_result.add_result(
-                tuningresult,
-                f"characterization_{gate.name}",
-            )
-            if tuningresult.success:
-                max_voltage = tuningresult.features["low_voltage"]
-                break
-
-        gate_to_set.parent.all_gates_to_highest()
-
-        return (min_voltage, max_voltage), measurement_result
+        return measurement_result, last_gate_to_pinchoff, last_voltage
 
     def measurement_data_settings(
         self,
@@ -276,4 +267,9 @@ class Tuner(qc.Instrument):
         new_settings.ranges_to_sweep = ranges_to_sweep
         new_settings.safety_voltage_ranges = safety_voltage_ranges
         return new_settings
+
+
+def linear_voltage_steps(voltage_range, voltage_step):
+    n_steps = int(abs(voltage_range[0] - voltage_range[1]) / voltage_step)
+    return np.linspace(voltage_range[1], voltage_range[0], n_steps)
 
