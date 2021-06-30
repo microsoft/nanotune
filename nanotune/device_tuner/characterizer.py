@@ -38,13 +38,6 @@ class Characterizer(Tuner):
         configuration to be applied for individual gate characterizations.
         Example: Set top barrier of a 2DEG device.
         """
-        if self.qcodes_experiment.sample_name != device.name:
-            logger.warning(
-                (
-                    "The device's name does match the"
-                    " the sample name in qcodes experiment."
-                )
-            )
         if gate_configurations is None:
             gate_configurations = {}
 
