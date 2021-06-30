@@ -15,7 +15,7 @@ instruments:
           gate_id: 0
         left_plunger:
           channel: dac.ch02
-          gate_id: 2
+          gate_id: 1
         left_ohmic:
           channel: dac.ch10
           ohmic_id: 0

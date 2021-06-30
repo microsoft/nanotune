@@ -229,11 +229,17 @@ def test_device_initialize_channel_lists(station):
                 station=station,
                 channels=channels_input_mapping,
             )
-    gates, ohmics, gate_labels = device.initialize_channel_lists(
+    (gates,
+     ohmics,
+     gate_labels,
+     gates_list,
+     ohmics_list) = device.initialize_channel_lists(
         channels_input_mapping)
     ## gates and ohmic without IDs are ignored
     assert len(gates) == 2
     assert len(ohmics) == 1
+    assert len(gates_list) == 2
+    assert len(ohmics_list) == 1
     assert len(gate_labels) == 2
     assert gates[0] == device.top_barrier
     assert gates[1] == device.left_plunger
