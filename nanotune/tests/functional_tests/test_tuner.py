@@ -3,15 +3,16 @@ from nanotune.device_tuner.tuner import linear_voltage_steps
 from nanotune.device_tuner.tuningresult import MeasurementHistory
 from nanotune.tuningstages.settings import Classifiers
 
+
 def test_measure_initial_ranges_2D(
     tuner,
-    sim_device_init_ranges,
+    sim_device_playback,
     sim_scenario_init_ranges,
     pinchoff_classifier,
 ):
     self = tuner
     self.classifiers = Classifiers(pinchoff=pinchoff_classifier)
-    device = sim_device_init_ranges
+    device = sim_device_playback
     gate_to_set = device.top_barrier
     voltage_step = 0.2
     scenario = sim_scenario_init_ranges

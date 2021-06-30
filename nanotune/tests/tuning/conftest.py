@@ -27,3 +27,4 @@ def sim_device_gatecharacterization2d(
     sim_device.normalization_constants = {
         'transport': [0, 1.1e-09], 'rf': [0, 1], 'sensing': [0, 1]}
     return sim_device
+

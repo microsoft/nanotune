@@ -1,0 +1,64 @@
+"init ranges 2D":
+
+  - "Sweep left barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.left_barrier"]
+            db_path : "${db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1203
+
+  - "Sweep left plunger":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.left_plunger"]
+            db_path : "${db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1204
+
+  - "Sweep central barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.central_barrier"]
+            db_path : "${db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1205
+
+  - "Sweep right plunger":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.right_plunger"]
+            db_path : "${db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1206
+
+  - "Sweep right barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.right_barrier"]
+            db_path : "${db_path}/data/tuning/device_characterization.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1207
+
+
+
