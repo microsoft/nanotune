@@ -47,3 +47,5 @@ def test_characterize_device_default(
                 assert sub_result.success
 
     assert len(measurement_result.to_dict()) == 6
+
+    self.close()
