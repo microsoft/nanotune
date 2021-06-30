@@ -120,6 +120,12 @@ class MockDoubleQuantumDotInstrument(MockDeviceInstrument):
             sim_pin=mock.src,
         )
         self.add_parameter(
+            "top_barrier",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.top_barrier,
+        )
+        self.add_parameter(
             "left_barrier",
             parameter_class=SimulationParameter,
             unit="V",
