@@ -2,6 +2,7 @@ import os
 import pytest
 import nanotune as nt
 from sim.data_providers import QcodesDataProvider
+from nanotune.device_tuner.dottuner import DotTuner
 
 
 @pytest.fixture(scope="function")
@@ -27,4 +28,14 @@ def sim_device_gatecharacterization2d(
     sim_device.normalization_constants = {
         'transport': [0, 1.1e-09], 'rf': [0, 1], 'sensing': [0, 1]}
     return sim_device
+
+
+@pytest.fixture(scope="function")
+def dottuner(tuner_default_input):
+    tuner = DotTuner(**tuner_default_input)
+    try:
+        yield tuner
+    finally:
+        tuner.close()
+
 
