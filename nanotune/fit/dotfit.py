@@ -151,7 +151,7 @@ class DotFit(DataFit):
             if n_x >= orig_shape_x / 10 or n_y >= orig_shape_x / 10:
                 logger.warning(f"Dotfit {self.guid}: Mesh resolution too low.")
 
-            n_mesh = [n_x, n_y]
+            n_mesh = [np.max([1, n_x]), np.max([1, n_y])]
             if not self.segmented_data:
                 empty = [xr.Dataset() for i in range(np.prod(n_mesh))]
                 self.segmented_data = empty
@@ -329,25 +329,22 @@ class DotFit(DataFit):
                 coordinates = []
 
                 for peak_id in range(1, n_features + 1):
-                    indx = np.argwhere(labels == peak_id)[0]
+                    indx = np.argwhere(labels == peak_id)
                     if len(indx) == 0:
                         logger.error("No peak found.")
 
-                    if (
-                        indx[1] > 0
-                        and indx[1] < len(v_x) - 2
-                        and indx[0] > 0
-                        and indx[0] < len(v_y) - 2
-                    ):
-                        x_val = v_x[indx[1]]
-                        y_val = v_y[indx[0]]
-                        coordinates.append([x_val, y_val])
+                    else:
+                        for ind in indx:
+                            x_val = v_x[ind[1]]
+                            y_val = v_y[ind[0]]
+                            coordinates.append([x_val, y_val])
                 coordinates = np.array(coordinates)
 
                 # calculate distances between points, all to all
                 all_combos = combinations(coordinates, 2)
                 distances = [get_point_distances(*combo) for combo in all_combos]
                 distances_arr = np.asarray(distances)
+
                 relevant_indx = np.where(distances_arr[:, 0, 0] <= distance_threshold)[
                     0
                 ]
