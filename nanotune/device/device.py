@@ -296,7 +296,7 @@ class Device(DelegateInstrument):
     def set_initial_valid_ranges(self, new_range) -> None:
         """ """
         self._initial_valid_ranges = self.voltage_range_setter(
-            self._initial_valid_ranges, new_range
+            self._initial_valid_ranges, new_range, 'initial valid range',
         )
 
     def get_current_valid_ranges(self) -> voltage_range_type:
@@ -306,13 +306,14 @@ class Device(DelegateInstrument):
     def set_current_valid_ranges(self, new_range) -> None:
         """ """
         self._current_valid_ranges = self.voltage_range_setter(
-            self._current_valid_ranges, new_range
+            self._current_valid_ranges, new_range, 'current valid range',
         )
 
     def voltage_range_setter(
         self,
         voltage_ranges: voltage_range_type,
         new_sub_dict: voltage_range_type,
+        range_label: str,
     ) -> voltage_range_type:
         new_voltage_ranges = copy.deepcopy(voltage_ranges)
         for gate_identifier, new_range in new_sub_dict.items():
@@ -324,6 +325,10 @@ class Device(DelegateInstrument):
                 new_range, sfty_range
             )
             new_voltage_ranges.update({gate_id: new_range})
+            logger.info(
+                f"{self.gates[gate_id].name}: new {range_label} set \
+                    to {new_range}"
+            )
 
         return new_voltage_ranges
 
