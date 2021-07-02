@@ -1,7 +1,7 @@
-from dataclasses import asdict
+from dataclasses import asdict, dataclass, field
 import logging
 from contextlib import contextmanager
-from typing import Generator, List, Optional, Sequence, Tuple
+from typing import Generator, List, Optional, Sequence, Tuple, Dict, Union
 
 import numpy as np
 import qcodes as qc
@@ -11,7 +11,7 @@ from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 from nanotune.tuningstages.gatecharacterization1d import GateCharacterization1D
 from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
     Classifiers)
-
+from nanotune.tuningstages.chargediagram import ChargeDiagram
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +31,27 @@ def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]
             gate.voltage(initial_voltages[ig])
 
 
+@dataclass
+class TuningHistory:
+    results: Dict[str, MeasurementHistory] = field(default_factory=dict)
+
+    def update(
+        self,
+        device_name: str,
+        new_result: Union[TuningResult, MeasurementHistory],
+    ):
+        """ """
+        if device_name not in self.results.keys():
+            self.results[device_name] = MeasurementHistory(device_name)
+        if isinstance(new_result, MeasurementHistory):
+            self.results[device_name].update(new_result)
+        elif isinstance(new_result, TuningResult):
+            self.results[device_name].add_result(new_result)
+        else:
+            raise NotImplementedError(
+                f"Can not add result of type {type(new_result)}")
+
+
 class Tuner(qc.Instrument):
     """
     """
@@ -48,6 +69,7 @@ class Tuner(qc.Instrument):
 
         self.data_settings = data_settings
         self.setpoint_settings = setpoint_settings
+        self.tuning_history: TuningHistory = TuningHistory()
 
     @property
     def setpoint_settings(self) -> SetpointSettings:
@@ -97,13 +119,14 @@ class Tuner(qc.Instrument):
                 setattr(normalization_constants, read_meth, new_tuple)
         device.normalization_constants = normalization_constants
 
-    def characterize_gates(
+    def characterize_gate(
         self,
         device: Device,
-        gates: List[DeviceChannel],
+        gate: DeviceChannel,
         use_safety_voltage_ranges: bool = False,
-        comment: Optional[str] = None,
         iterate: bool = False,
+        voltage_precision: Optional[float] = None,
+        comment: Optional[str] = None,
     ) -> TuningResult:
         """
         Characterize multiple gates.
@@ -113,32 +136,31 @@ class Tuner(qc.Instrument):
         """
 
         if comment is None:
-            comment = f"Characterizing {gates}."
-        if self.classifiers.pinchoff is None:
+            comment = f"Characterizing {gate}."
+        if not self.classifiers.is_pinchoff_classifier():
             raise KeyError("No pinchoff classifier found.")
 
-        updated_data_settings = self.measurement_data_settings(device)
-        for gate in gates:
-            if use_safety_voltage_ranges:
-                v_range = gate.safety_voltage_range()
-                iterate = False
-            else:
-                v_range = device.current_valid_ranges()[gate.gate_id]
+        if use_safety_voltage_ranges:
+            v_range = gate.safety_voltage_range()
+            iterate = False
+        else:
+            v_range = device.current_valid_ranges()[gate.gate_id]
 
-            setpoint_settings = self.measurement_setpoint_settings(
-                [gate.voltage], [v_range], [gate.safety_voltage_range()]
-            )
+        setpoint_settings = self.measurement_setpoint_settings(
+            [gate.voltage], [v_range], [gate.safety_voltage_range()],
+            voltage_precision,
+        )
+        stage = GateCharacterization1D(
+            data_settings=self.measurement_data_settings(device),
+            setpoint_settings=setpoint_settings,
+            readout=device.readout,
+            classifier=self.classifiers.pinchoff,
+        )
+        tuningresult = stage.run_stage(iterate=iterate)
+        tuningresult.status = device.get_gate_status()
+        tuningresult.comment = comment
 
-            stage = GateCharacterization1D(
-                data_settings=updated_data_settings,
-                setpoint_settings=setpoint_settings,
-                readout=device.readout,
-                classifier=self.classifiers.pinchoff,
-            )
-
-            tuningresult = stage.run_stage(iterate=iterate)
-            tuningresult.status = device.get_gate_status()
-            tuningresult.comment = comment
+        self.tuning_history.update(device.name, tuningresult)
 
         return tuningresult
 
@@ -220,9 +242,9 @@ class Tuner(qc.Instrument):
 
             for gate in gates_to_sweep:
                 if not skip_gates[gate.gate_id]:
-                    sub_tuning_result = self.characterize_gates(
+                    sub_tuning_result = self.characterize_gate(
                         device,
-                        [gate],
+                        gate,
                         use_safety_voltage_ranges=True,
                         comment=f"Measuring initial range of {gate.full_name} \
                             with {gate_to_set.full_name} at {last_voltage}."
@@ -256,6 +278,7 @@ class Tuner(qc.Instrument):
         parameters_to_sweep: Sequence[qc.Parameter],
         ranges_to_sweep: Sequence[Sequence[float]],
         safety_voltage_ranges: Sequence[Sequence[float]],
+        voltage_precision: Optional[float] = None,
     ) -> SetpointSettings:
         """Add device relevant readout settings.
 
@@ -266,7 +289,56 @@ class Tuner(qc.Instrument):
         new_settings.parameters_to_sweep = parameters_to_sweep
         new_settings.ranges_to_sweep = ranges_to_sweep
         new_settings.safety_voltage_ranges = safety_voltage_ranges
+        if voltage_precision is not None:
+            new_settings.voltage_precision = voltage_precision
         return new_settings
+
+
+    def get_charge_diagram(
+        self,
+        device: Device,
+        gates_to_sweep: List[DeviceChannel],
+        use_safety_voltage_ranges: bool = False,
+        iterate: bool = False,
+        voltage_precision: Optional[float] = None,
+        comment: Optional[str] = None,
+    ) -> TuningResult:
+        """
+        stage.segment_info = ((data_id, ranges, category))
+        """
+        if comment is None:
+            comment = f"Taking charge diagram of {gates_to_sweep}."
+        if not self.classifiers.is_dot_classifier():
+            raise ValueError(f"Not the right classifiers found for dots.")
+
+        if use_safety_voltage_ranges:
+            v_ranges = [g.safety_voltage_range() for g in gates_to_sweep]
+            iterate = False
+        else:
+            valid_ranges = device.current_valid_ranges()
+            v_ranges = [valid_ranges[g.gate_id] for g in gates_to_sweep]
+
+        setpoint_settings = self.measurement_setpoint_settings(
+                [g.voltage for g in gates_to_sweep],
+                v_ranges,
+                [g.safety_voltage_range() for g in gates_to_sweep],
+                voltage_precision,
+            )
+
+        stage = ChargeDiagram(
+            data_settings=self.measurement_data_settings(device),
+            setpoint_settings=setpoint_settings,
+            readout=device.readout,
+            classifiers=self.classifiers,
+        )
+
+        tuningresult = stage.run_stage(iterate=iterate)
+        tuningresult.status = device.get_gate_status()
+        tuningresult.comment = comment
+
+        self.tuning_history.update(device.name, tuningresult)
+
+        return tuningresult
 
 
 def linear_voltage_steps(voltage_range, voltage_step):
