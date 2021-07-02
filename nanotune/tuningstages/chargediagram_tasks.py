@@ -9,8 +9,8 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 from typing_extensions import TypedDict
 
 import nanotune as nt
-from nanotune.classification.classifier import Classifier
 from nanotune.fit.dotfit import DotFit
+from nanotune.tuningstages.settings import Classifiers
 
 DotClassifierOutcome = TypedDict(
     "DotClassifierOutcome",
@@ -18,14 +18,6 @@ DotClassifierOutcome = TypedDict(
         "singledot": int,
         "doubledot": int,
         "dotregime": int,
-    },
-)
-DotClassifierDict = TypedDict(
-    "DotClassifierDict",
-    {
-        "singledot": Classifier,
-        "doubledot": Classifier,
-        "dotregime": Classifier,
     },
 )
 logger = logging.getLogger(__name__)
@@ -81,7 +73,7 @@ def segment_dot_data(
 
 
 def classify_dot_segments(
-    classifiers: DotClassifierDict,
+    classifiers: Classifiers,
     run_ids: List[int],
     db_name: str,
     db_folder: Optional[str] = None,
@@ -115,7 +107,8 @@ def classify_dot_segments(
         clf_result: Dict[int, Dict[str, Union[bool, int]]] = {}
         for data_id in run_ids:
             clf_result[data_id] = {}
-            for clf_type, classifier in classifiers.items():
+            for clf_type in ['singledot', 'doubledot', 'dotregime']:
+                classifier = getattr(classifiers, clf_type)
                 clf_result[data_id][clf_type] = any(
                     classifier.predict(  # type: ignore
                         data_id,
