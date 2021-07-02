@@ -40,6 +40,7 @@ def take_data(
     if finish_early_check is None:
         finish_early_check = lambda output: False
 
+
     meas = Measurement()
     output = []
     output_dict: Dict[str, float] = {}
@@ -70,8 +71,7 @@ def take_data(
 
                 for set_point1 in setpoints[1]:
                     parameters_to_sweep[1](set_point1)
-                    m_params = parameters_to_measure
-                    for p, parameter in enumerate(m_params):
+                    for p, parameter in enumerate(parameters_to_measure):
                         value = parameter.get()
                         output[p][1] = value
                         output_dict[parameter.full_name] = value
@@ -87,8 +87,7 @@ def take_data(
                     if done:
                         break
             else:
-                m_params = parameters_to_measure
-                for p, parameter in enumerate(m_params):
+                for p, parameter in enumerate(parameters_to_measure):
                     value = parameter.get()
                     output[p][1] = value
                     output_dict[parameter.full_name] = value
@@ -123,5 +122,5 @@ def ramp_to_setpoint(param_setpoint_input: Tuple[qc.Parameter, float]) -> None:
         qcodes_parameter.instrument.use_ramp(True)  # type: ignore
         qcodes_parameter(voltage)
         qcodes_parameter.instrument.use_ramp(False)  # type: ignore
-    except AttributeError:
-        logger.warning("Unable to ramp to new voltage. It will be set.")
+    except AttributeError as a:
+        logger.info("Unable to ramp to new voltage. It will be set.")
