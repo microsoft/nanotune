@@ -2,11 +2,8 @@ import logging
 from functools import partial
 from typing import Any, Dict, List, Optional, Tuple
 
-import qcodes as qc
 from typing_extensions import TypedDict
 
-import nanotune as nt
-from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.device.device import ReadoutMethods
 from nanotune.fit.dotfit import DotFit
@@ -17,7 +14,7 @@ from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
 from .base_tasks import (  # please update docstrings if import path changes
     conclude_iteration_with_range_update,
     get_extracted_features, get_fit_range_update_directives)
-from .chargediagram_tasks import (DotClassifierDict, classify_dot_segments,
+from .chargediagram_tasks import (classify_dot_segments,
                                   conclude_dot_classification,
                                   determine_dot_regime,
                                   get_dot_segment_regimes,
