@@ -11,7 +11,7 @@ from nanotune.device_tuner.tuner import set_back_voltages
 
 
 def test_characterize_device_default(
-    sim_device_playback,
+    sim_device,
     tuner_default_input,
     pinchoff_classifier,
     sim_scenario_device_characterization,
@@ -19,7 +19,7 @@ def test_characterize_device_default(
     self = Characterizer(**tuner_default_input)
     self.classifiers = Classifiers(pinchoff=pinchoff_classifier)
     gate_configurations = None
-    device = sim_device_playback
+    device = sim_device
     scenario = sim_scenario_device_characterization
     skip_gates = [device.top_barrier]
 
@@ -38,9 +38,9 @@ def test_characterize_device_default(
                         device.gates[other_id].voltage(voltage)
 
                 scenario.run_next_step()
-                sub_result = self.characterize_gates(
+                sub_result = self.characterize_gate(
                     device,
-                    gates=[gate],
+                    gate,
                     use_safety_voltage_ranges=True,
                 )
                 measurement_result.add_result(sub_result)

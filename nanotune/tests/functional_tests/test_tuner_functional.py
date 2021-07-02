@@ -6,13 +6,13 @@ from nanotune.tuningstages.settings import Classifiers
 
 def test_measure_initial_ranges_2D(
     tuner,
-    sim_device_playback,
+    sim_device,
     sim_scenario_init_ranges,
     pinchoff_classifier,
 ):
     self = tuner
     self.classifiers = Classifiers(pinchoff=pinchoff_classifier)
-    device = sim_device_playback
+    device = sim_device
     gate_to_set = device.top_barrier
     voltage_step = 0.2
     scenario = sim_scenario_init_ranges
@@ -39,9 +39,9 @@ def test_measure_initial_ranges_2D(
         for gate in gates_to_sweep:
             if not skip_gates[gate.gate_id]:
                 scenario.run_next_step()
-                sub_tuning_result = self.characterize_gates(
+                sub_tuning_result = self.characterize_gate(
                     device,
-                    [gate],
+                    gate,
                     use_safety_voltage_ranges=True,
                     comment=f"Measuring initial range of {gate.full_name} \
                         with {gate_to_set.full_name} at {last_voltage}."
@@ -79,9 +79,9 @@ def test_measure_initial_ranges_2D(
         for gate in gates_to_sweep:
             if not skip_gates[gate.gate_id]:
                 scenario.run_next_step()
-                sub_tuning_result = self.characterize_gates(
+                sub_tuning_result = self.characterize_gate(
                     device,
-                    [gate],
+                    gate,
                     use_safety_voltage_ranges=True,
                     comment=f"Measuring initial range of {gate.full_name} \
                         with {gate_to_set.full_name} at {last_voltage}."

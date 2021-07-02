@@ -34,6 +34,8 @@ from nanotune.device_tuner.tuner import Tuner
 from sim.data_providers import QcodesDataProvider
 from sim.qcodes_mocks import MockDoubleQuantumDotInstrument
 
+from .sim_scenarios.sim_scenarios import *
+
 ideal_run_labels = {
     0: "pinchoff",
     1: "pinchoff",
@@ -482,6 +484,19 @@ def sim_device(sim_station, chip_config):
 
     sim_station.load_config_file(chip_config)
     _dev = sim_station.load_sim_device(station=sim_station)
+    qd_mock_instrument = sim_station.qd_mock_instrument
+    _dev.top_barrier.voltage = qd_mock_instrument.top_barrier
+    _dev.top_barrier.inter_delay = 0
+    _dev.left_barrier.voltage = qd_mock_instrument.left_barrier
+    _dev.left_barrier.inter_delay = 0
+    _dev.left_plunger.voltage = qd_mock_instrument.left_plunger
+    _dev.left_plunger.inter_delay = 0
+    _dev.central_barrier.voltage = qd_mock_instrument.central_barrier
+    _dev.central_barrier.inter_delay = 0
+    _dev.right_plunger.voltage = qd_mock_instrument.right_plunger
+    _dev.right_plunger.inter_delay = 0
+    _dev.right_barrier.voltage = qd_mock_instrument.right_barrier
+    _dev.right_barrier.inter_delay = 0
     return _dev
 
 
@@ -496,29 +511,6 @@ def tuning_data_path():
         os.path.dirname(os.path.abspath(nt.__file__)), "..", "data", "tuning"
     )
     return path
-
-
-@pytest.fixture(scope="function")
-def sim_device_pinchoff(tuning_data_path, sim_station, sim_device):
-    db_path = os.path.join(tuning_data_path, "device_characterization.db")
-    qd_mock_instrument = sim_station.qd_mock_instrument
-
-    pinchoff_data = QcodesDataProvider(
-        [qd_mock_instrument.mock_device.right_plunger],
-        db_path, "GB_Newtown_Dev_3_2", 1206)
-    # Configure the simulator's drain pin to use the backing data
-    qd_mock_instrument.mock_device.drain.set_data_provider(
-        pinchoff_data)
-
-    sim_device.right_plunger.voltage = qd_mock_instrument.right_plunger
-    sim_device.all_gates_to_highest()
-    ds = nt.Dataset(
-        1206,
-        "device_characterization.db",
-        db_folder=tuning_data_path
-    )
-    sim_device.normalization_constants = ds.normalization_constants
-    return sim_device
 
 
 @pytest.fixture(scope="function")

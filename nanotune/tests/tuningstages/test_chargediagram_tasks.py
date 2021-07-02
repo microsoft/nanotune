@@ -38,11 +38,11 @@ def test_classify_dot_segments(db_dot_tuning, tmp_path):
     )
     dot_segments = df.save_segmented_data_return_info(
         'segmented_dot_tuning_data.db', segment_db_folder=tmp_path)
-    classifiers={
-        'singledot': MockClassifer('singledot'),
-        'doubledot': MockClassifer('doubledot'),
-        'dotregime': MockClassifer('dotregime'),
-    }
+    classifiers=Classifiers(
+        singledot=MockClassifer('singledot'),
+        doubledot=MockClassifer('doubledot'),
+        dotregime=MockClassifer('dotregime'),
+    )
 
     clf_result = classify_dot_segments(
         classifiers,
