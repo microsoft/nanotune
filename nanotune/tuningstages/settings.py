@@ -5,6 +5,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, asdict, is_dataclass
 from typing import Optional, Sequence, Callable, Any, Union, Dict
+from numpy import double
 import qcodes as qc
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
@@ -40,7 +41,7 @@ class DataSettings(Settings):
     segment_db_name: str = f'segmented_{nt.config["db_name"]}'
     segment_db_folder: str = nt.config['db_folder']
     segment_experiment_id: Optional[int] = None
-    segment_size: float = 0.02
+    segment_size: float = 0.05
 
 
 @dataclass
@@ -59,3 +60,16 @@ class Classifiers:
     singledot: Optional[Classifier] = None
     doubledot: Optional[Classifier] = None
     dotregime: Optional[Classifier] = None
+
+    def is_dot_classifier(self) -> bool:
+        if (self.singledot is not None and
+            self.doubledot is not None and self.dotregime is not None):
+            return True
+        else:
+            return False
+
+    def is_pinchoff_classifier(self) -> bool:
+        if self.pinchoff is not None:
+            return True
+        else:
+            return False
