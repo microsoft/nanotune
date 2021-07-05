@@ -325,10 +325,10 @@ class Device(DelegateInstrument):
         for gate_identifier, new_range in new_sub_dict.items():
             gate_id = self.get_gate_id(gate_identifier)
             if gate_id is None:
-                raise ValueError(f'Gate {gate_identifier} has not gate_id.')
+                raise ValueError(f'Gate {gate_identifier}: no gate_id.')
             sfty_range = self._gates_dict[gate_id].safety_voltage_range()
             new_range = self.check_and_update_new_voltage_range(
-                new_range, sfty_range
+                new_range, sfty_range, self._gates_dict[gate_id].voltage(),
             )
             new_voltage_ranges.update({gate_id: new_range})
             logger.info(
@@ -413,11 +413,16 @@ class Device(DelegateInstrument):
         self,
         new_range: Sequence[float],
         safety_voltage_range: Sequence[float],
+        current_voltage: float,
     ) ->Sequence[float]:
         """ """
         if not isinstance(new_range, Sequence) or not len(new_range) == 2:
             raise ValueError('Wrong voltage range type.')
         new_range = sorted(new_range)
+        if current_voltage < new_range[0] or current_voltage > new_range[1]:
+            logger.warning(
+                "Current voltage not within new valid range."
+            )
         if new_range[1] > safety_voltage_range[1]:
             new_range[1] = safety_voltage_range[1]
             logger.warning(
