@@ -10,7 +10,7 @@ from qcodes.tests.instrument_mocks import DummyInstrument
 
 import nanotune as nt
 from nanotune.tuningstages.settings import DataSettings, SetpointSettings
-from nanotune.device.device import NormalizationConstants, ReadoutMethods
+from nanotune.device.device import NormalizationConstants, Readout
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.classification.classifier import Classifier
 from nanotune.tests.data_generator_methods import (
@@ -379,7 +379,7 @@ def gatecharacterization1D_settings(pinchoff_dmm, gate_1, tmp_path):
     pinchoff_dmm.po_current.gate = gate_1
     pinchoff_dmm.po_sensor.gate = gate_1
 
-    readout_methods = ReadoutMethods(
+    readout_methods = Readout(
         transport=pinchoff_dmm.po_current,
         sensing=pinchoff_dmm.po_sensor
     )
@@ -418,7 +418,7 @@ def chargediagram_settings(dot_dmm, tmp_path, gate_1, gate_2):
     dot_dmm.dot_sensor.gate_x = gate_1
     dot_dmm.dot_sensor.gate_y = gate_2
 
-    readout_methods = ReadoutMethods(
+    readout_methods = Readout(
         transport=dot_dmm.dot_current,
         sensing=dot_dmm.dot_sensor
     )

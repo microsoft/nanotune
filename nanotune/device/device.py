@@ -1,12 +1,11 @@
 from __future__ import annotations
 import copy
 import logging
+from enum import Enum
 from typing import (
-    Any, Dict, List, Optional, Sequence, Tuple, Union, Mapping, Sequence,
+    Any, Dict, Optional, Sequence, Tuple, Union, Mapping, Sequence,
 )
 from typing_extensions import Literal
-from collections import namedtuple
-from functools import partial
 import numpy as np
 from dataclasses import asdict, dataclass
 import qcodes as qc
@@ -56,14 +55,14 @@ class NormalizationConstants:
 
 
 @dataclass
-class ReadoutMethods:
+class Readout:
     transport: Optional[Union[GroupedParameter, qc.Parameter]] = None
     sensing: Optional[Union[GroupedParameter, qc.Parameter]] = None
     rf: Optional[Union[GroupedParameter, qc.Parameter]] = None
 
     def available_readout(self):
         param_dict = {}
-        for field in ReadoutMethods.__dataclass_fields__.keys():
+        for field in Readout.__dataclass_fields__.keys():
             readout = getattr(self, field)
             if readout is not None:
                 param_dict[field] = readout
@@ -74,20 +73,27 @@ class ReadoutMethods:
 
     def as_name_dict(self):
         param_dict = {}
-        for field in ReadoutMethods.__dataclass_fields__.keys():
+        for field in Readout.__dataclass_fields__.keys():
             readout = getattr(self, field)
             if readout is not None:
                 param_dict[field] = readout.full_name
         return param_dict
 
 
-ReadoutMethodsLiteral = Literal[ReadoutMethods.__dataclass_fields__.keys()]
+class ReadoutMethods(Enum):
+    transport = 0
+    sensing = 1
+    rf = 2
+
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))
 
 
 class Device(DelegateInstrument):
     """
     device_type: str, e.g 'doubledot'
-    readout: ReadoutMethods
+    readout: Readout
 
     """
 
@@ -132,15 +138,15 @@ class Device(DelegateInstrument):
             self.gates, self.ohmics = [], []
             self._gates_dict, self._ohmics_dict = {}, {}
 
-        self.readout = ReadoutMethods()
+        self.readout = Readout()
         if readout is None:
             self.readout = None
         else:
             param_names, paths = list(zip(*list(readout.items())))
             for param_name, path in zip(param_names, paths):
-                if param_name not in ReadoutMethods.__dataclass_fields__.keys():
+                if param_name not in Readout.__dataclass_fields__.keys():
                     raise KeyError(f"Invalid readout method key. Use one of \
-                        {ReadoutMethods.__dataclass_fields__.keys()}")
+                        {Readout.__dataclass_fields__.keys()}")
                 if not isinstance(path, list):
                     path = [path]
                 super()._create_and_add_parameter(

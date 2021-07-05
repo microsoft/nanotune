@@ -24,7 +24,7 @@ from qcodes.utils.helpers import NumpyJSONEncoder
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.device import NormalizationConstants, ReadoutMethods
+from nanotune.device.device import NormalizationConstants, Readout
 from nanotune.fit.datafit import DataFit
 
 from .take_data import take_data
@@ -276,7 +276,7 @@ def compute_linear_setpoints(
 def prepare_metadata(
     device_name: str,
     normalization_constants: NormalizationConstants,
-    readout_methods: ReadoutMethods,
+    readout_methods: Readout,
 ) -> Dict[str, Any]:
     """Sets up a metadata dictionary with fields known prior to a measurement
     set.

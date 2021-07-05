@@ -9,7 +9,7 @@ import pytest
 from functools import partial
 
 import nanotune as nt
-from nanotune.device.device import ReadoutMethods, NormalizationConstants
+from nanotune.device.device import Readout, NormalizationConstants
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tests.mock_classifier import MockClassifer
 from nanotune.tuningstages.base_tasks import *
@@ -123,7 +123,7 @@ def test_prepare_metadata(dummy_dmm):
     metadata = prepare_metadata(
         "test_device",
         NormalizationConstants(transport=(0, 1.2)),
-        ReadoutMethods(transport=dummy_dmm.dac1),
+        Readout(transport=dummy_dmm.dac1),
     )
 
     assert metadata["normalization_constants"] == {

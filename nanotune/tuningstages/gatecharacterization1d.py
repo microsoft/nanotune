@@ -5,7 +5,7 @@ import qcodes as qc
 
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.device import ReadoutMethods, ReadoutMethodsLiteral
+from nanotune.device.device import Readout, ReadoutMethods
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tuningstages.tuningstage import (TuningStage, DataSettings,
     SetpointSettings)
@@ -55,10 +55,10 @@ class GateCharacterization1D(TuningStage):
         self,
         data_settings: DataSettings,
         setpoint_settings: SetpointSettings,
-        readout: ReadoutMethods,
+        readout: Readout,
         classifier: Classifier,
         noise_level: float = 0.001,  # compares to normalised signal
-        main_readout_method: ReadoutMethodsLiteral = "transport",
+        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
         voltage_interval_to_track=0.3,
     ) -> None:
         """Initializes a gate characterization tuning stage.
@@ -71,7 +71,7 @@ class GateCharacterization1D(TuningStage):
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-            readout: ReadoutMethods instance.
+            readout: Readout instance.
             classifier: Pre-trained nt.Classifier predicting the quality of a
             pinchoff curve.
             noise_level: Relative level above which a measured output is
@@ -273,11 +273,12 @@ class GateCharacterization1D(TuningStage):
             bool: Whether the measurement can be stopped early.
         """
 
-        param = getattr(self.readout, self.main_readout_method)
+        param = getattr(self.readout, self.main_readout_method.name)
         last_measurement_strength = current_output_dict[param.full_name]
 
         norm_consts = self.data_settings.normalization_constants
-        normalization_constant = getattr(norm_consts, self.main_readout_method)
+        normalization_constant = getattr(
+            norm_consts, self.main_readout_method.name)
 
         finish, self._recent_readout_output = finish_early_pinched_off(
             last_measurement_strength,

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from typing_extensions import TypedDict
 
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.device import ReadoutMethods
+from nanotune.device.device import Readout
 from nanotune.fit.dotfit import DotFit
 from nanotune.tuningstages.tuningstage import TuningStage
 from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
@@ -74,7 +74,7 @@ class ChargeDiagram(TuningStage):
         self,
         data_settings: DataSettings,
         setpoint_settings: SetpointSettings,
-        readout: ReadoutMethods,
+        readout: Readout,
         classifiers: Classifiers,
         target_regime: str = "doubledot",
         range_change_settings: Optional[RangeChangeSettingsDict] = None,

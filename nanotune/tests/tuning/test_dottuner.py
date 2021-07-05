@@ -3,7 +3,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
+from numpy import dot
 import pytest
+from nanotune.device.device import ReadoutMethods
 from nanotune.device_tuner.tuner import TuningHistory
 from nanotune.device_tuner.dottuner import (DotTuner, VoltageChangeDirection,
     DeviceState, check_readout_method)
@@ -11,13 +13,13 @@ from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 
 
 def test_check_readout_method(sim_device):
-    check_readout_method(sim_device, 'transport')
+    check_readout_method(sim_device, ReadoutMethods.transport)
 
     with pytest.raises(ValueError):
-        check_readout_method(sim_device, 'trnsport')
+        check_readout_method(sim_device, 'transport')
 
     with pytest.raises(ValueError):
-        check_readout_method(sim_device, 'sensing')
+        check_readout_method(sim_device, ReadoutMethods.sensing)
 
 
 def test_dottuner_init(
@@ -251,56 +253,109 @@ def test_set_new_plunger_ranges(
     sim_scenario_dottuning.run_next_step()
     sim_scenario_dottuning.run_next_step()
     sim_scenario_dottuning.run_next_step()
-    success, barrier_change_directions = dottuner.set_new_plunger_ranges(
+    success, barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.02,
         open_signal = 0.1,
-        plunger_barrier_pairs = ((2, 1), (2, 1)),
+        plunger_barrier_pairs = [(2, 1), (2, 1)],
     )
     assert success
-    assert not barrier_change_directions
-    assert sim_device.current_valid_ranges(
-        {2: [-0.335559265442404, -0.0701168614357262]})
+    assert not barrier_changes
+    assert sim_device.current_valid_ranges()[2] == [
+        -0.331110370123374, -0.0710236745581861]
 
-    success, barrier_change_directions = dottuner.set_new_plunger_ranges(
+    success, barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.6,
         open_signal = 0.1,
-        plunger_barrier_pairs = ((2, 1)),
+        plunger_barrier_pairs = [(2, 1)],
     )
     assert not success
-    assert barrier_change_directions[1] == VoltageChangeDirection.positive
-    assert sim_device.current_valid_ranges(
-        {2: [-0.335559265442404, -0.0701168614357262]})
+    assert barrier_changes[1] == VoltageChangeDirection.positive
+    assert sim_device.current_valid_ranges()[2] == [
+        -0.331110370123374, -0.0710236745581861]
 
-    success, barrier_change_directions = dottuner.set_new_plunger_ranges(
+    success, barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.02,
         open_signal = -0.5,
-        plunger_barrier_pairs = ((2, 1)),
+        plunger_barrier_pairs = [(2, 1)],
     )
     assert not success
-    assert barrier_change_directions[1] == VoltageChangeDirection.negative
+    assert barrier_changes[1] == VoltageChangeDirection.negative
 
     with pytest.raises(ValueError):
         _ = dottuner.set_new_plunger_ranges(
         sim_device, main_readout_method='trnsport',
     )
 
+    with pytest.raises(ValueError):
+        _ = dottuner.set_new_plunger_ranges(
+        sim_device, plunger_barrier_pairs=((2, 1)),
+    )
 
-# def test_update_barriers(
+
+def test_update_barriers(
+    dottuner,
+    sim_device,
+):
+    barrier_changes = {
+        1: VoltageChangeDirection.negative,
+    }
+    sim_device.gates[1].voltage(-0.5)
+    new_direction = dottuner.update_barriers(
+        sim_device,
+        barrier_changes,
+        relative_range_change = 0.1,
+        max_range_change=0.1,
+    )
+    assert new_direction is None
+    assert sim_device.gates[1].voltage() == -0.6
+
+
+    barrier_changes = {
+        1: VoltageChangeDirection.negative,
+    }
+    sim_device.gates[1].safety_voltage_range([-1, 0])
+    sim_device.gates[1].voltage(-0.9)
+    new_direction = dottuner.update_barriers(
+        sim_device,
+        barrier_changes,
+        relative_range_change = 0.1,
+        max_range_change=0.2,
+        min_range_change=0.1,
+    )
+
+    assert new_direction == VoltageChangeDirection.negative
+    assert sim_device.gates[1].voltage() == -0.9
+
+    barrier_changes = {
+        1: VoltageChangeDirection.positive,
+    }
+
+    sim_device.gates[1].safety_voltage_range([-1, 0])
+    sim_device.gates[1].voltage(-0.1)
+    new_direction = dottuner.update_barriers(
+        sim_device,
+        barrier_changes,
+        relative_range_change = 0.1,
+        max_range_change=0.2,
+        min_range_change=0.1,
+    )
+    assert sim_device.gates[1].voltage() == -0.1
+    assert new_direction == VoltageChangeDirection.positive
+
+
+# def test_set_central_barrier(
 #     dottuner,
 #     sim_device,
 # ):
-#     barrier_change_directions = {
-#         1: VoltageChangeDirection.negative,
-#     }
-#     new_direction = dottuner.update_barriers(
+#     dottuner.set_central_barrier(
 #         sim_device,
-#         barrier_change_directions,
-#         range_change = 0.1,
+#         desired_regime = DeviceState.doubledot
 #     )
-#     assert new_direction is not None
+
+
 
 
 

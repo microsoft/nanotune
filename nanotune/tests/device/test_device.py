@@ -3,7 +3,7 @@ import pytest
 
 import nanotune as nt
 from nanotune.drivers.dac_interface import RelayState
-from nanotune.device.device import (ReadoutMethods, _add_station_and_label_to_channel_init,
+from nanotune.device.device import (Readout, _add_station_and_label_to_channel_init,
     NormalizationConstants)
 
 
@@ -41,7 +41,7 @@ def test_device_init(device, station):
     assert norm_constants.transport == (0, 2)
     assert norm_constants.sensing == (-0.3, 0.6)
 
-    assert isinstance(device.readout, ReadoutMethods)
+    assert isinstance(device.readout, Readout)
 
     with pytest.raises(KeyError):
         _ = nt.Device(

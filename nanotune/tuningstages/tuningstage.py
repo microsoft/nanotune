@@ -9,7 +9,7 @@ from qcodes.dataset.experiment_container import (load_last_experiment,
                                                  load_experiment)
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
-from nanotune.device.device import ReadoutMethods
+from nanotune.device.device import Readout
 
 from .base_tasks import (  # please update docstrings if import path changes
     compute_linear_setpoints, get_current_voltages, iterate_stage, plot_fit,
@@ -51,7 +51,7 @@ class TuningStage(metaclass=ABCMeta):
         stage: str,
         data_settings: DataSettings,
         setpoint_settings: SetpointSettings,
-        readout: ReadoutMethods,
+        readout: Readout,
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
         safety voltages are determined from the list of parameters in

@@ -7,11 +7,11 @@ import qcodes as qc
 from qcodes.instrument.delegate.delegate_instrument import DelegateInstrument
 from qcodes.instrument.delegate.grouped_parameter import GroupedParameter
 
-from nanotune.device.device import ReadoutMethods
+from nanotune.device.device import Readout
 
 
 def test_readout_methods_init(station):
-    rm = ReadoutMethods()
+    rm = Readout()
     assert sorted(rm.__dataclass_fields__.keys()) == [
         'rf', 'sensing', 'transport',
     ]
@@ -23,18 +23,18 @@ def test_readout_methods_init(station):
         station,
         parameters={'transport': 'lockin.phase'}
     )
-    rm = ReadoutMethods(transport=instr.transport)
+    rm = Readout(transport=instr.transport)
     assert isinstance(rm.transport, GroupedParameter)
     station.lockin.phase(34)
     assert rm.transport() == station.lockin.phase()
 
-    rm = ReadoutMethods(transport=station.lockin.phase)
+    rm = Readout(transport=station.lockin.phase)
     assert isinstance(rm.transport, qc.Parameter)
     assert rm.transport() == station.lockin.phase()
 
 
 def test_readout_methods_get_parameters(station, delegate_instrument):
-    rm = ReadoutMethods(
+    rm = Readout(
         transport=delegate_instrument.test_param,
         sensing=station.rf.phase
     )
@@ -43,7 +43,7 @@ def test_readout_methods_get_parameters(station, delegate_instrument):
 
 
 def test_readout_methods_as_name_dict(station, delegate_instrument):
-    rm = ReadoutMethods(
+    rm = Readout(
         transport=delegate_instrument.test_param,
         sensing=station.rf.phase
     )
@@ -55,7 +55,7 @@ def test_readout_methods_as_name_dict(station, delegate_instrument):
 
 
 def test_readout_methods_available_readout(station, delegate_instrument):
-    rm = ReadoutMethods(
+    rm = Readout(
         transport=delegate_instrument.test_param,
         sensing=station.rf.phase
     )
