@@ -145,4 +145,4 @@ Werkzeug==2.0.1
 widgetsnbextension==3.5.1
 wrapt==1.12.1
 xarray==0.18.2
-zipp==3.4.1
+zipp==3.5.0
