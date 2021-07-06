@@ -200,6 +200,7 @@ class DotFit(DataFit):
                 readout_method: {'range_x': (),
                                  'range_y': ()
                         }
+                voltage_ranges: [range_x, range_y],
                     }
         }
         """
