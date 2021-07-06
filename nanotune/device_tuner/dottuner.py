@@ -201,11 +201,10 @@ class DotTuner(Tuner):
             else:
                 good_plunger_ranges = True
 
-
     def adjust_helper_and_outer_barriers(
         self,
         device,
-        device_layout,
+        device_layout: DeviceLayout,
         barrier_changes: Dict[int, VoltageChangeDirection],
     ):
         new_v_change_dir = self.update_voltages_based_on_directives(
@@ -221,20 +220,24 @@ class DotTuner(Tuner):
                 device,
                 {device_layout.helper_gate(): new_v_change_dir},
             )
-            new_v_change_dir = self.set_outer_barriers(device)
+            new_v_change_dir = self.set_outer_barriers(
+                device, gate_ids=device_layout.outer_barriers(),
+            )
 
             while new_v_change_dir is not None:
                 _ = self.update_voltages_based_on_directives(
                     device,
                     {device_layout.helper_gate(): new_v_change_dir},
                 )
-                new_v_change_dir = self.set_outer_barriers(device)
+                new_v_change_dir = self.set_outer_barriers(
+                    device, gate_ids=device_layout.outer_barriers(),
+                )
 
     def set_central_and_outer_barriers(
         self,
         device: Device,
-        device_layout: DeviceLayout,
-        target_state: DeviceState,
+        device_layout: DeviceLayout = DoubleDotLayout,
+        target_state: DeviceState = DeviceState.doubledot,
     ):
         self.set_central_barrier(
             device,
