@@ -510,21 +510,21 @@ def test_adjust_barriers_loop(
     assert sim_device.top_barrier.voltage() == -0.75
 
 
-def test_select_barrier_directives(dottuner):
-    barrier_directives = dottuner._select_barrier_directives(
+def test_select_outer_barrier_directives(dottuner):
+    barrier_directives = dottuner._select_outer_barrier_directives(
         termination_reasons= ['x more positive'],
     )
     assert barrier_directives[1] == VoltageChangeDirection.positive
     assert barrier_directives[4] == VoltageChangeDirection.positive
 
-    barrier_directives = dottuner._select_barrier_directives(
+    barrier_directives = dottuner._select_outer_barrier_directives(
         termination_reasons= ['x more positive'], barrier_gate_ids=[1],
     )
     assert barrier_directives[1] == VoltageChangeDirection.positive
     assert len(barrier_directives) == 1
 
     with pytest.raises(ValueError):
-        _ = dottuner._select_barrier_directives(
+        _ = dottuner._select_outer_barrier_directives(
             termination_reasons= ['x more psitive'],
         )
 
@@ -543,31 +543,74 @@ def test_update_dotregime_directive(
         _ = dottuner._update_dotregime_directive(DeviceState.pinchedoff)
 
 
-# def test_update_gate_configuration(
-#     dottuner,
-#     sim_device,
-# ):
-#     last_result = TuningResult(stage='chargediagram', success=True)
-#     last_result.termination_reasons = ['x more positive']
-#     last_result.success = True
+def test_update_gate_configuration(
+    dottuner,
+    sim_device,
+    sim_scenario_dottuning
+):
+    sim_scenario_dottuning.run_next_step()
+    last_result = TuningResult(stage='chargediagram', success=True)
+    last_result.termination_reasons = []
+    last_result.success = True
 
-#     dottuner.update_gate_configuration(
-#         sim_device,
-#         last_result,
-#         DeviceState.doubledot,
-#         helper_gate_id = 0,
-#         central_barrier_id = 3,
-#         outer_barrier_ids =[],
-#     )
-#     assert sim_device.
+    sim_device.left_barrier.voltage(-0.3)
+    sim_device.central_barrier.voltage(-0.4)
+    sim_device.top_barrier.voltage(-0.8)
 
+    dottuner.update_gate_configuration(
+        sim_device,
+        last_result,
+        DeviceState.doubledot,
+        helper_gate_id = 0,
+        central_barrier_id = 3,
+        outer_barrier_ids =[],
+    )
+    assert sim_device.left_barrier.voltage() == -0.3
+    assert sim_device.central_barrier.voltage() == -0.45
+    assert sim_device.top_barrier.voltage() == -0.8
 
-#     last_result.termination_reasons = []
-#     last_result.success = False
-#     with pytest.raises(ValueError):
-#         dottuner.update_gate_configuration(
-#             sim_device,
-#             last_result,
-#             DeviceState.doubledot,
-#         )
+    last_result.termination_reasons = ['x more negative']
+    last_result.success = False
+    sim_device.central_barrier.voltage(-0.4)
+    sim_device.top_barrier.voltage(-0.8)
+
+    dottuner.update_gate_configuration(
+        sim_device,
+        last_result,
+        DeviceState.doubledot,
+        helper_gate_id = 0,
+        central_barrier_id = 3,
+        outer_barrier_ids =[3],
+    )
+    assert sim_device.central_barrier.voltage() == -0.45
+    assert sim_device.top_barrier.voltage() == -0.8
+
+    sim_device.central_barrier.safety_voltage_range([-1, 0])
+    sim_device.central_barrier.voltage(-0.95)
+
+    sim_device.current_valid_ranges({0: [-1, 0]})
+    sim_device.top_barrier.voltage(-0.8)
+
+    dottuner.update_gate_configuration(
+        sim_device,
+        last_result,
+        DeviceState.doubledot,
+        helper_gate_id = 0,
+        central_barrier_id = 3,
+        outer_barrier_ids =[3],
+    )
+    # We sweep the central barrier instead of the outer barriers, so that
+    # the central barrier is set as if it were an outer barrier. Hence
+    # this value. It checks if it correctly launches adjust_all_barriers.
+    assert sim_device.central_barrier.voltage() == -0.8962295628962297
+    assert sim_device.top_barrier.voltage() == -0.8200000000000001
+
+    last_result.termination_reasons = []
+    last_result.success = False
+    with pytest.raises(ValueError):
+        dottuner.update_gate_configuration(
+            sim_device,
+            last_result,
+            DeviceState.doubledot,
+        )
 

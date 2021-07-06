@@ -277,7 +277,7 @@ class DotTuner(Tuner):
             # the charge diagram terminated unsuccessfully: no plunger ranges
             # were found to give a good diagram. The device might be too
             # pinched off or too open.
-            initial_update = self._select_barrier_directives(
+            initial_update = self._select_outer_barrier_directives(
                 termination_reasons, outer_barrier_ids,
             )
         else:
@@ -298,18 +298,15 @@ class DotTuner(Tuner):
         target_regime: DeviceState,
         central_barrier_id: int = 3,
     ):
-        print(target_regime)
         if target_regime == DeviceState.singledot:
             v_direction = VoltageChangeDirection.positive
-            print('single')
         elif target_regime == DeviceState.doubledot:
             v_direction = VoltageChangeDirection.negative
-            print('double')
         else:
             raise ValueError('Invalid target regime.')
         return {central_barrier_id: v_direction}
 
-    def _select_barrier_directives(
+    def _select_outer_barrier_directives(
         self,
         termination_reasons: List[str],
         barrier_gate_ids: Sequence[int] = (1, 4)
@@ -370,7 +367,6 @@ class DotTuner(Tuner):
             {helper_gate_id: voltage_change_direction},
             range_change_setting=range_change_setting,
         )
-
         self.set_central_barrier(
             device,
             target_state=target_state,
@@ -478,6 +474,7 @@ class DotTuner(Tuner):
         returns new direction if touching limits
         In that case some other gate needs to be set more negative.
         """
+        new_direction = None
         for gate_id, direction in voltage_changes.items():
             gate = device.gates[gate_id]
             new_voltage = self.choose_new_gate_voltage(
