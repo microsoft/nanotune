@@ -263,35 +263,32 @@ def test_set_new_plunger_ranges(
     sim_scenario_dottuning.run_next_step()
     sim_scenario_dottuning.run_next_step()
     sim_scenario_dottuning.run_next_step()
-    success, barrier_changes = dottuner.set_new_plunger_ranges(
+    barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.02,
         open_signal = 0.1,
         plunger_barrier_pairs = [(2, 1), (2, 1)],
     )
-    assert success
     assert not barrier_changes
     assert sim_device.current_valid_ranges()[2] == [
         -0.331110370123374, -0.0710236745581861]
 
-    success, barrier_changes = dottuner.set_new_plunger_ranges(
+    barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.6,
         open_signal = 0.1,
         plunger_barrier_pairs = [(2, 1)],
     )
-    assert not success
     assert barrier_changes[1] == VoltageChangeDirection.positive
     assert sim_device.current_valid_ranges()[2] == [
         -0.331110370123374, -0.0710236745581861]
 
-    success, barrier_changes = dottuner.set_new_plunger_ranges(
+    barrier_changes = dottuner.set_new_plunger_ranges(
         sim_device,
         noise_floor = 0.02,
         open_signal = -0.5,
         plunger_barrier_pairs = [(2, 1)],
     )
-    assert not success
     assert barrier_changes[1] == VoltageChangeDirection.negative
 
     with pytest.raises(ValueError):
