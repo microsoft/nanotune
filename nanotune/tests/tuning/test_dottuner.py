@@ -444,7 +444,7 @@ def test_adjust_all_barriers(dottuner, sim_device, sim_scenario_dottuning):
     assert sim_device.central_barrier.voltage() == -1.42947649216405
 
 
-def test_adjust_barriers_loop(
+def test_adjust_all_barriers_loop(
     dottuner,
     sim_device,
     sim_scenario_dottuning,
@@ -455,7 +455,7 @@ def test_adjust_barriers_loop(
     sim_device.central_barrier.safety_voltage_range([-3, 0])
     sim_device.central_barrier.voltage(-0.95)
 
-    dottuner.adjust_barriers_loop(
+    dottuner.adjust_all_barriers_loop(
         sim_device,
         DeviceState.doubledot,
         initial_voltage_update={1: VoltageChangeDirection.negative},
@@ -470,7 +470,7 @@ def test_adjust_barriers_loop(
     sim_device.left_barrier.safety_voltage_range([-1, 0])
     sim_device.left_barrier.voltage(-0.95)
     sim_device.central_barrier.voltage(-0.95)
-    dottuner.adjust_barriers_loop(
+    dottuner.adjust_all_barriers_loop(
         sim_device,
         DeviceState.doubledot,
         initial_voltage_update={2: VoltageChangeDirection.negative},
