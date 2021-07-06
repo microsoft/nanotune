@@ -3,13 +3,10 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-from numpy import dot
-from xarray.core.utils import V
 import pytest
-from nanotune.device.device import ReadoutMethods
 from nanotune.device_tuner.tuner import TuningHistory
 from nanotune.device_tuner.dottuner import (DotTuner, VoltageChangeDirection,
-    DeviceState, check_readout_method, check_new_voltage, RangeChangeSetting)
+    DeviceState, check_new_voltage, RangeChangeSetting)
 from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
 
 def test_check_new_voltage(
@@ -24,15 +21,6 @@ def test_check_new_voltage(
     new_direction = check_new_voltage(
         -0.01, sim_device.right_barrier, tolerance=0.1)
     assert new_direction == VoltageChangeDirection.positive
-
-def test_check_readout_method(sim_device):
-    check_readout_method(sim_device, ReadoutMethods.transport)
-
-    with pytest.raises(ValueError):
-        check_readout_method(sim_device, 'transport')
-
-    with pytest.raises(ValueError):
-        check_readout_method(sim_device, ReadoutMethods.sensing)
 
 
 def test_dottuner_init(
@@ -265,13 +253,6 @@ def test_characterize_plunger(
     )
     assert device_state == DeviceState.pinchedoff
 
-    with pytest.raises(ValueError):
-       _ = dottuner.characterize_plunger(
-            sim_device,
-            sim_device.left_plunger,
-            main_readout_method='trnsport',
-        )
-
 
 def test_set_new_plunger_ranges(
     dottuner,
@@ -312,11 +293,6 @@ def test_set_new_plunger_ranges(
     )
     assert not success
     assert barrier_changes[1] == VoltageChangeDirection.negative
-
-    with pytest.raises(ValueError):
-        _ = dottuner.set_new_plunger_ranges(
-        sim_device, main_readout_method='trnsport',
-    )
 
     with pytest.raises(ValueError):
         _ = dottuner.set_new_plunger_ranges(

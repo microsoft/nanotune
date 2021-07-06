@@ -106,6 +106,7 @@ class Device(DelegateInstrument):
         channels: Optional[
             Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
         readout: Optional[Mapping[str, str]] = None,
+        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
         initial_values: Optional[Mapping[str, Any]] = None,
         set_initial_values_on_load: bool = False,
         device_type: Optional[str] = '',
@@ -156,6 +157,9 @@ class Device(DelegateInstrument):
                 )
                 setattr(self.readout, param_name, getattr(self, param_name))
             self.metadata['readout'] = self.readout.as_name_dict()
+
+        self._main_readout_method = main_readout_method
+        self.metadata['main_readout_method'] = main_readout_method
 
 
         if initial_valid_ranges is None:
@@ -251,6 +255,21 @@ class Device(DelegateInstrument):
         self.metadata.update(
             {'normalization_constants': asdict(self._normalization_constants)}
         )
+
+    @property
+    def main_readout_method(self) -> ReadoutMethods:
+        return self._main_readout_method
+
+    @main_readout_method.setter
+    def main_readout_method(self, readout_method):
+        if not isinstance(readout_method, ReadoutMethods):
+            raise ValueError("Unknown main readout method.")
+        if getattr(self.readout, readout_method.name) is None:
+            raise ValueError(
+                f'Main readout method {readout_method} not found for ' \
+                f'{self.name}'
+            )
+        self._main_readout_method
 
     def ground_gates(self) -> None:
         for gate in self.gates:

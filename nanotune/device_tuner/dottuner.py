@@ -1,12 +1,13 @@
 import copy
+from abc import abstractmethod
 from dataclasses import dataclass
 import logging
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
 import nanotune as nt
-from nanotune.device.device import Device, Readout, ReadoutMethods
+from nanotune.device.device import Device, ReadoutMethods
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.device_tuner.tuner import (Tuner, DataSettings, SetpointSettings,
     Classifiers)
@@ -29,6 +30,60 @@ class DeviceState(Enum):
 
 
 @dataclass
+class DeviceLayout:
+
+    @classmethod
+    @abstractmethod
+    def helper_gate(self) -> int:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def barriers(self) -> Sequence[int]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def plungers(self) -> Sequence[int]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def outer_barriers(self) -> Sequence[int]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def central_barrier(self) -> int:
+        pass
+
+
+@dataclass
+class DoubleDotLayout(DeviceLayout):
+    top_barrier = 0
+    left_barrier = 1
+    left_plunger = 2
+    central_barrier = 3
+    right_plunger = 4
+    right_barrier = 5
+
+    @classmethod
+    def barriers(self):
+        main_barriers = [
+            self.left_barrier, self.central_barrier, self.right_barrier,
+        ]
+        return main_barriers
+
+    @classmethod
+    def plungers(self):
+        return [self.left_plunger, self.right_plunger]
+
+    @classmethod
+    def outer_barriers(self):
+        return [self.left_barrier, self.right_barrier]
+
+
+@dataclass
 class RangeChangeSetting:
     relative_range_change: float = 0.1
     max_range_change: float = 0.05
@@ -38,7 +93,6 @@ class RangeChangeSetting:
 class DotTuner(Tuner):
     """
     """
-
     def __init__(
         self,
         name: str,
@@ -53,13 +107,13 @@ class DotTuner(Tuner):
             setpoint_settings,
         )
 
-
     def tune_2D(
         self,
         device: Device,
-        target_state: str = "doubledot",
+        target_state: DeviceState = DeviceState.doubledot,
         max_iter: int = 100,
         take_high_res: bool = False,
+        device_layout: DeviceLayout = DoubleDotLayout,
     ) -> MeasurementHistory:
         """"""
         if not self.classifiers.is_dot_classifier():
@@ -67,7 +121,11 @@ class DotTuner(Tuner):
 
         device.all_gates_to_highest()
         self.update_normalization_constants(device)
-        self.set_helper_gate(device)  # set top_barrier
+        self.set_helper_gate(
+            device,
+            helper_gate_id=device_layout.helper_gate(),
+            gates_for_init_range_measurement=device_layout.barriers(),
+        )
 
         result = self.tune_1D(
             device,
@@ -75,19 +133,20 @@ class DotTuner(Tuner):
             max_iter=max_iter,
             set_barriers=True,
             take_high_res=take_high_res,
+            device_layout=device_layout,
         )
         return result
 
     def tune_1D(
         self,
         device: Device,
-        target_state: str,
+        device_layout: DeviceLayout = DoubleDotLayout,
+        target_state: DeviceState = DeviceState.doubledot,
         max_iter: int = 100,
         set_barriers: bool = True,
         take_high_res: bool = False,
         reset_gates: bool = False,
         continue_tuning: bool = False,
-        helper_gate_id: int = 0,
     ) -> Dict[Any, Any]:
         """Does not reset any tuning"""
 
@@ -96,18 +155,19 @@ class DotTuner(Tuner):
 
         done = False
         if set_barriers:
-            self.set_central_barrier(device, target_state=target_state)
-            (success,
-             new_voltage_change_directions) = self.set_outer_barriers(device)
-            while not success:
-                _ = self.update_voltages_based_on_directives(
-                    device, {helper_gate_id: new_voltage_change_directions},
-                )
-                # self.update_helper_gate(device, new_voltage_change_directions)
-                (success,
-                 new_voltage_change_directions) = self.set_outer_barriers(
-                     device
-                )
+            self.set_barriers_1D(
+                device, device_layout, target_state)
+            # self.set_central_barrier(device, target_state=target_state)
+            # (success,
+            #  new_vltg_change_directions) = self.set_outer_barriers(device)
+
+            # while not success:
+            #     _ = self.update_voltages_based_on_directives(
+            #         device,
+            #         {device_layout.helper_gate(): new_vltg_change_directions},
+            #     )
+            #     (success,
+            #      new_vltg_change_directions) = self.set_outer_barriers(device)
 
         plungers = [device.left_plunger, device.right_plunger]
         n_iter = 0
@@ -118,32 +178,29 @@ class DotTuner(Tuner):
             while not good_barriers:
                 # Narrow down plunger ranges:
                 (success,
-                 barrier_changes) = self.set_new_plunger_ranges(
-                    device
-                )
+                 barrier_changes) = self.set_new_plunger_ranges(device)
 
                 if not success:
-                    out_br_success, new_v_change_dir = self.update_voltages_based_on_directives(
+                    (out_br_success,
+                     new_v_change_dir) = self.update_voltages_based_on_directives(
                         device, barrier_changes
                     )
 
                     if not out_br_success:
                         logger.info(
-                            (
-                                "Outer barrier reached safety limit. "
-                                "Setting new top barrier.\n"
-                            )
+                            "Outer barrier reached safety limit. " \
+                            "Setting new top barrier.\n"
                         )
                         _ = self.update_voltages_based_on_directives(
                             device,
-                            {helper_gate_id: new_v_change_dir},
+                            {device_layout.helper_gate(): new_v_change_dir},
                         )
                         (success,
                          new_v_change_dir) = self.set_outer_barriers(device)
                         while not success:
                             _ = self.update_voltages_based_on_directives(
                                 device,
-                                {helper_gate_id: new_v_change_dir},
+                                {device_layout.helper_gate(): new_v_change_dir},
                             )
                             (success,
                              new_v_change_dir) = self.set_outer_barriers(device)
@@ -157,10 +214,9 @@ class DotTuner(Tuner):
             )
             self.measurement_result_all = {device.name: tuningresult}
             logger.info(
-                (
-                    f"ChargeDiagram stage finished: {tuningresult.success}\n"
-                    f"termination_reason: {tuningresult.termination_reasons}"
-                )
+                f"ChargeDiagram stage finished: " \
+                f"success: {tuningresult.success}, " \
+                f"termination_reason: {tuningresult.termination_reasons}"
             )
             segment_info = tuningresult.features["segment_info"]
             if target_state in segment_info[:, 2]:
@@ -195,7 +251,8 @@ class DotTuner(Tuner):
                             voltage_precision=0.0001,
                         )
                         self.measurement_result_all[device.name].add_result(
-                            tuningresult, f"chargediagram_{n_iter}_segment_{sid}"
+                            tuningresult,
+                            f"chargediagram_{n_iter}_segment_{sid}"
                         )
 
             if continue_tuning:
@@ -209,22 +266,44 @@ class DotTuner(Tuner):
                     target_state,
                 )
                 logger.info(
-                    (
-                        "Continuing with new configuration: "
-                        f"{device.get_gate_status()}."
-                    )
+                    f"Continuing with new configuration: " \
+                    f"{device.get_gate_status()}."
                 )
 
         if n_iter >= max_iter:
-            logger.info(f"Tuning {device.name}: Max number of iterations reached.")
+            logger.info(
+                f"Tuning {device.name}: Max number of iterations" \
+                f"reached.")
 
         return self.measurement_result_all[device.name]
+
+    def set_barriers_1D(
+        self,
+        device: Device,
+        device_layout: DeviceLayout,
+        target_state: DeviceState,
+    ):
+        self.set_central_barrier(
+            device,
+            target_state=target_state,
+            gate_id=device_layout.central_barrier(),
+        )
+        (success,
+         new_vltg_change_directions) = self.set_outer_barriers(device)
+
+        while not success:
+            _ = self.update_voltages_based_on_directives(
+                device,
+                {device_layout.helper_gate(): new_vltg_change_directions},
+            )
+            (success,
+             new_vltg_change_directions) = self.set_outer_barriers(device)
 
     def set_helper_gate(
         self,
         device: Device,
-        helper_gate_id: int = 0,
-        gates_for_init_range_measurement: Optional[Sequence[int]] = [1, 2, 4],
+        helper_gate_id: int = DoubleDotLayout.helper_gate(),
+        gates_for_init_range_measurement: Sequence[int] = DoubleDotLayout.barriers(),
     ) -> None:
         """ top_barrier in 2D doubledot device"""
         if helper_gate_id  not in device._gates_dict.keys():
@@ -265,8 +344,8 @@ class DotTuner(Tuner):
         """
         termination_reasons = last_result.termination_reasons
         if not termination_reasons and not last_result.success:
-            raise ValueError("Unknown tuning outcome. Expect either a \
-                successful tuning stage or termination reasons")
+            raise ValueError("Unknown tuning outcome. Expect either a " \
+                "successful tuning stage or termination reasons")
 
         if not termination_reasons and last_result.success:
             # A good regime was found, but not the right one.
@@ -382,7 +461,6 @@ class DotTuner(Tuner):
         self,
         device: Device,
         gate_ids: Optional[Sequence[float]] = (1, 4),
-        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
         tolerance: float = 0.1,
     ) -> Tuple[bool, VoltageChangeDirection]:
         """
@@ -393,7 +471,7 @@ class DotTuner(Tuner):
         """
         if isinstance(gate_ids, int):
             gate_ids = [gate_ids]
-
+        main_readout_method = device.main_readout_method.name
         new_direction = None
         for barrier_id in gate_ids:
             barrier = device.gates[barrier_id]
@@ -403,7 +481,7 @@ class DotTuner(Tuner):
                 comment="Characterize outer barriers before setting them.",
                 use_safety_voltage_ranges=True,
             )
-            features = result.ml_result["features"][main_readout_method.name]
+            features = result.ml_result["features"][main_readout_method]
             L, H = features["low_voltage"], features["high_voltage"]
             T = features["transition_voltage"]
             new_voltage = T + 2 / 3 * abs(T - H)
@@ -421,8 +499,7 @@ class DotTuner(Tuner):
         self,
         device: Device,
         target_state: DeviceState = DeviceState.doubledot,
-        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
-        gate_id: int = 3,
+        gate_id: int = DoubleDotLayout.central_barrier(),
     ) -> None:
         """"""
         assert isinstance(target_state, DeviceState)
@@ -432,7 +509,8 @@ class DotTuner(Tuner):
             barrier,
             use_safety_voltage_ranges=True,
         )
-        features = result.ml_result["features"][main_readout_method.name]
+        main_readout_method = device.main_readout_method.name
+        features = result.ml_result["features"][main_readout_method]
 
         if target_state == DeviceState.singledot:
             barrier.voltage(features["high_voltage"])
@@ -443,8 +521,8 @@ class DotTuner(Tuner):
                 self.data_settings.db_name,
                 db_folder=self.data_settings.db_folder,
             )
-            signal = ds.data[main_readout_method.name].values
-            voltage = ds.data[main_readout_method.name]["voltage_x"].values
+            signal = ds.data[main_readout_method].values
+            voltage = ds.data[main_readout_method]["voltage_x"].values
 
             v_sat_idx = np.argwhere(signal < float(2 / 3))
             if len(v_sat_idx) > 0:
@@ -455,13 +533,13 @@ class DotTuner(Tuner):
         elif target_state == DeviceState.pinchedoff:
             barrier.voltage(features["low_voltage"])
         else:
-            raise ValueError("Invalid DeviceState. Use singledot, doubledot \
-                or pinchedoff.")
+            raise ValueError("Invalid DeviceState. Use singledot, doubledot " \
+                "or pinchedoff.")
 
         new_range = [features["low_voltage"], features["high_voltage"]]
         device.current_valid_ranges({barrier.gate_id: new_range})
-        logger.info(f"Central barrier set to {barrier.voltage()} with valid \
-            range ({features['low_voltage']}, {features['high_voltage']}). ")
+        logger.info(f"Central barrier set to {barrier.voltage()} with valid " \
+            "range ({features['low_voltage']}, {features['high_voltage']}). ")
 
     def update_voltages_based_on_directives(
         self,
@@ -497,7 +575,6 @@ class DotTuner(Tuner):
         device: Device,
         noise_floor: float = 0.02,
         open_signal: float = 0.1,
-        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
         plunger_barrier_pairs: Optional[Sequence[Tuple[int, int]]] = None,
     ) -> Tuple[bool, Dict[int, str]]:
         """
@@ -509,14 +586,13 @@ class DotTuner(Tuner):
         if not isinstance(plunger_barrier_pairs, list):
             raise ValueError('Invalid plunger_barrier_pairs input.')
 
-        check_readout_method(device, main_readout_method)
         barrier_changes: Dict[int, VoltageChangeDirection] = {}
         success = True
 
         for plunger_id, barrier_id in plunger_barrier_pairs:
             plunger = device.gates[plunger_id]
             new_range, device_state = self.characterize_plunger(
-                device, plunger, main_readout_method, noise_floor, open_signal
+                device, plunger, noise_floor, open_signal
             )
             device.current_valid_ranges({plunger_id: new_range})
 
@@ -536,19 +612,18 @@ class DotTuner(Tuner):
         self,
         device: Device,
         plunger: DeviceChannel,
-        main_readout_method: ReadoutMethods = ReadoutMethods.transport,
         noise_floor: float = 0.02,
         open_signal: float = 0.1,
     ) -> DeviceState:
         """ """
-        check_readout_method(device, main_readout_method)
         result = self.characterize_gate(
             device,
             plunger,
             use_safety_voltage_ranges=True,
             iterate=False,
         )
-        features = result.ml_result["features"][main_readout_method.name]
+        readout = device.main_readout_method.name
+        features = result.ml_result["features"][readout]
         new_range = (features["low_voltage"], features["high_voltage"])
 
         device_state = DeviceState.undefined
@@ -565,9 +640,6 @@ class DotTuner(Tuner):
         gate_id: int,
         voltage_change_direction: VoltageChangeDirection,
         range_change_setting: RangeChangeSetting = RangeChangeSetting(),
-        # relative_range_change: float = 0.5,
-        # max_range_change: float = 0.1,
-        # min_range_change: float = 0.05,
     ) -> float:
         """
         based on current_valid_range or safety_voltage_range if no
@@ -618,14 +690,4 @@ def check_new_voltage(
     if touching_limits[1]:
         new_direction = VoltageChangeDirection.positive
     return new_direction
-
-
-def check_readout_method(device, readout_method):
-    if not isinstance(readout_method, ReadoutMethods):
-        raise ValueError("Unknown main readout method.")
-    if getattr(device.readout, readout_method.name) is None:
-        raise ValueError(
-            f'Main readout method {readout_method} not found for {device}'
-        )
-
 

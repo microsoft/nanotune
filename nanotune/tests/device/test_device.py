@@ -3,8 +3,9 @@ import pytest
 
 import nanotune as nt
 from nanotune.drivers.dac_interface import RelayState
-from nanotune.device.device import (Readout, _add_station_and_label_to_channel_init,
-    NormalizationConstants)
+from nanotune.device.device import (Readout,
+    _add_station_and_label_to_channel_init, NormalizationConstants,
+    ReadoutMethods)
 
 
 def test_device_init_defaults(station):
@@ -70,6 +71,17 @@ def test_device_normalization_constants_setter(device):
 
     norm_dict = asdict(device.normalization_constants)
     assert device.metadata['normalization_constants'] == norm_dict
+
+
+def test_device_main_readout_method_setter(device):
+    device.main_readout_method = ReadoutMethods.transport
+    assert device.main_readout_method == ReadoutMethods.transport
+
+    with pytest.raises(ValueError):
+        device.main_readout_method = 'transport'
+
+    with pytest.raises(ValueError):
+        device.main_readout_method = ReadoutMethods.rf
 
 
 def test_device_initial_valid_ranges(device):
