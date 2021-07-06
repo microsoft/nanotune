@@ -1,15 +1,13 @@
-import copy
-from abc import abstractmethod
 from dataclasses import dataclass
 import logging
-from os import device_encoding
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
 import nanotune as nt
-from nanotune.device.device import Device, ReadoutMethods
+from nanotune.device.device import Device
 from nanotune.device.device_channel import DeviceChannel
+from nanotune.device.device_layout import DeviceLayout, DoubleDotLayout
 from nanotune.device_tuner.tuner import (Tuner, DataSettings, SetpointSettings,
     Classifiers)
 from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
@@ -28,69 +26,6 @@ class DeviceState(Enum):
     singledot = 2
     doubledot = 3
     undefined = 4
-
-
-@dataclass
-class DeviceLayout:
-
-    @classmethod
-    @abstractmethod
-    def helper_gate(self) -> int:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def barriers(self) -> Sequence[int]:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def plungers(self) -> Sequence[int]:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def outer_barriers(self) -> Sequence[int]:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def central_barrier(self) -> int:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def plunger_barrier_pairs(self) ->List[Tuple[int, int]]:
-        p_b_pairs = [
-            (self.left_plunger, self.left_barrier),
-            (self.right_plunger, self.right_barrier)
-        ]
-        return p_b_pairs
-
-
-@dataclass
-class DoubleDotLayout(DeviceLayout):
-    top_barrier = 0
-    left_barrier = 1
-    left_plunger = 2
-    central_barrier_ = 3
-    right_plunger = 4
-    right_barrier = 5
-
-    @classmethod
-    def barriers(self):
-        main_barriers = [
-            self.left_barrier, self.central_barrier, self.right_barrier,
-        ]
-        return main_barriers
-
-    @classmethod
-    def plungers(self):
-        return [self.left_plunger, self.right_plunger]
-
-    @classmethod
-    def outer_barriers(self):
-        return [self.left_barrier, self.right_barrier]
 
 
 @dataclass
@@ -309,9 +244,8 @@ class DotTuner(Tuner):
         new_vltg_change_directions = self.set_outer_barriers(
             device, gate_ids=device_layout.outer_barriers(),
         )
-        success = True if new_vltg_change_directions is None else False
 
-        while not success:
+        while new_vltg_change_directions is not None:
             _ = self.update_voltages_based_on_directives(
                 device,
                 {device_layout.helper_gate(): new_vltg_change_directions},
@@ -319,7 +253,6 @@ class DotTuner(Tuner):
             new_vltg_change_directions = self.set_outer_barriers(
                 device, gate_ids=device_layout.outer_barriers()
             )
-            success = True if new_vltg_change_directions is None else False
 
     def set_helper_gate(
         self,
@@ -444,8 +377,7 @@ class DotTuner(Tuner):
             initial_voltage_update,
             range_change_setting=range_change_setting,
         )
-        success = True if new_v_direction is None else False
-        while not success:
+        while new_v_direction is not None:
             new_v_direction = self.adjust_all_barriers(
                 device,
                 target_state,
@@ -454,7 +386,6 @@ class DotTuner(Tuner):
                 central_barrier_id,
                 outer_barriers_id,
             )
-            success = True if new_v_direction is None else False
 
     def adjust_all_barriers(
         self,
@@ -524,7 +455,7 @@ class DotTuner(Tuner):
         self,
         device: Device,
         target_state: DeviceState = DeviceState.doubledot,
-        gate_id: int = DeviceLayout.central_barrier,
+        gate_id: int = DoubleDotLayout.central_barrier(),
     ) -> None:
         """"""
         assert isinstance(target_state, DeviceState)
@@ -600,21 +531,20 @@ class DotTuner(Tuner):
         device: Device,
         noise_floor: float = 0.02,
         open_signal: float = 0.1,
-        plunger_barrier_pairs: Optional[Sequence[Tuple[int, int]]] = None,
+        plunger_barrier_pairs: List[Tuple[int, int]] = DoubleDotLayout.plunger_barrier_pairs(),
     ) -> Tuple[bool, Dict[int, str]]:
         """
         noise_floor and open_signal compared to normalized signal
         checks if barriers need to be adjusted, depending on min and max signal
         """
-        if plunger_barrier_pairs is None:
-            plunger_barrier_pairs = [(2, 1), (4, 5)]
-        if not isinstance(plunger_barrier_pairs, list):
+        if not isinstance(plunger_barrier_pairs, List):
             raise ValueError('Invalid plunger_barrier_pairs input.')
 
-        barrier_changes: Optional[Dict[int, VoltageChangeDirection]] = None
+        barrier_changes: Optional[Dict[int, VoltageChangeDirection]] = {}
 
         for plunger_id, barrier_id in plunger_barrier_pairs:
             plunger = device.gates[plunger_id]
+            print(f'characterize {plunger.label}')
             new_range, device_state = self.characterize_plunger(
                 device, plunger, noise_floor, open_signal
             )
@@ -628,6 +558,8 @@ class DotTuner(Tuner):
                 drct = VoltageChangeDirection.negative
                 barrier_changes[barrier_id] = drct
 
+        if not barrier_changes:
+            barrier_changes = None
         return barrier_changes
 
     def characterize_plunger(
