@@ -338,6 +338,12 @@ class Tuner(qc.Instrument):
 
         self.tuning_history.update(device.name, tuningresult)
 
+        logger.info(
+            f"ChargeDiagram stage finished: " \
+            f"success: {tuningresult.success}, " \
+            f"termination_reason: {tuningresult.termination_reasons}"
+        )
+
         return tuningresult
 
 
