@@ -45,10 +45,10 @@ class DotFit(DataFit):
         self,
         qc_run_id: int,
         db_name: str,
-        save_figures: bool = True,
         db_folder: Optional[str] = None,
         segment_size: float = 0.05,
-        signal_thresholds: List[float] = [0.004, 0.1],
+        noise_floor: float = 0.004,
+        dot_signal_threshold: float = 0.1,
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
         **kwargs,
     ) -> None:
@@ -66,7 +66,7 @@ class DotFit(DataFit):
             **kwargs,
         )
 
-        self.signal_thresholds = signal_thresholds
+        self.signal_thresholds = [noise_floor, dot_signal_threshold]
         self.segment_size = segment_size
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
