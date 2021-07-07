@@ -533,8 +533,14 @@ def tuner_default_input(tmp_path):
         "data_settings": DataSettings(
             db_name="temp.db",
             db_folder=str(tmp_path),
+            segment_db_name="dot_segments_temp.db",
+            segment_db_folder=str(tmp_path),
         ),
-        "classifiers": Classifiers(pinchoff=MockClassifer(category="pinchoff")),
+        "classifiers": Classifiers(
+            pinchoff=MockClassifer(category="pinchoff"),
+            singledot=MockClassifer(category="singledot"),
+            doubledot=MockClassifer(category="doubledot"),
+            dotregime=MockClassifer(category="dotregime")),
         "setpoint_settings": SetpointSettings(
             voltage_precision=0.001,
             ranges_to_sweep=[(-1, 0)],
