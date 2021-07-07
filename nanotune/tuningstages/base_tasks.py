@@ -733,6 +733,7 @@ def get_fit_range_update_directives(
     run_id: int,
     db_name: str,
     db_folder: Optional[str],
+    **kwargs,
 ) -> List[str]:
     """Returns voltage range update directives determined from a fit.
 
@@ -751,5 +752,6 @@ def get_fit_range_update_directives(
         run_id,
         db_name,
         db_folder=db_folder,
+        **kwargs,
     )
     return fit.range_update_directives
