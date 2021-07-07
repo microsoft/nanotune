@@ -287,6 +287,8 @@ class ChargeDiagram(TuningStage):
             run_id,
             self.data_settings.db_name,
             db_folder=self.data_settings.db_folder,
+            noise_floor=self.data_settings.noise_floor,
+            dot_signal_threshold=self.data_settings.dot_signal_threshold,
         )
         (range_update_directives, issues) = get_range_directives_chargediagram(
             fit_range_update_directives,
