@@ -4,8 +4,7 @@
 # https://opensource.org/licenses/MIT
 from __future__ import annotations
 from dataclasses import dataclass, asdict, is_dataclass
-from typing import Optional, Sequence, Callable, Any, Union, Dict
-from numpy import double
+from typing import Optional, Sequence, Callable, Any, Union, Dict, Tuple
 import qcodes as qc
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
@@ -42,6 +41,8 @@ class DataSettings(Settings):
     segment_db_folder: str = nt.config['db_folder']
     segment_experiment_id: Optional[int] = None
     segment_size: float = 0.05
+    noise_floor: float = 0.02
+    dot_signal_threshold: float = 0.1
 
 
 @dataclass
