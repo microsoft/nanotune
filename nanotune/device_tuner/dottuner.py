@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple, Any
 
 import numpy as np
 
@@ -57,8 +57,6 @@ class DotTuner(Tuner):
         device: Device,
         device_layout: DeviceLayout = DoubleDotLayout,
         target_state: DeviceState = DeviceState.doubledot,
-        noise_floor: float = 0.002,
-        open_signal: float = 0.1,
         max_iter: int = 15,
         take_high_res: bool = False,
         continue_tuning: bool = False,
@@ -85,8 +83,6 @@ class DotTuner(Tuner):
             device,
             device_layout,
             target_state,
-            noise_floor,
-            open_signal,
             max_iter,
             take_high_res,
             continue_tuning,
@@ -99,8 +95,6 @@ class DotTuner(Tuner):
         device: Device,
         device_layout: DeviceLayout = DoubleDotLayout,
         target_state: DeviceState = DeviceState.doubledot,
-        noise_floor: float = 0.002,
-        open_signal: float = 0.1,
         max_iter: int = 15,
         take_high_res: bool = False,
         continue_tuning: bool = False,
@@ -112,12 +106,11 @@ class DotTuner(Tuner):
         while not done and n_iter <= max_iter:
             n_iter += 1
             self.set_valid_plunger_ranges(
-                device, device_layout, noise_floor, open_signal,
+                device, device_layout,,
             )
             tuningresult = self.get_charge_diagram(
                 device,
                 [device.gates[gid] for gid in device_layout.plungers()],
-                signal_thresholds=[noise_floor, open_signal],
                 iterate=True,
             )
             if tuningresult.success and take_high_res:
@@ -146,50 +139,58 @@ class DotTuner(Tuner):
     def take_high_resolution_diagram(
         self,
         device,
-        device_layout,
+        gate_ids: List[int] = DoubleDotLayout.plungers(),
         target_state: DeviceState = DeviceState.doubledot,
         take_segments: bool = True,
-        voltage_precisions: Tuple[float, float] = (0.0005, 0.0001)
+        voltage_precisions: Tuple[float, float] = (0.0005, 0.0001),
     ):
         logger.info("Take high resolution of entire charge diagram.")
-
-        plungers = [device.gates[gid] for gid in device_layout.plungers()]
         tuningresult = self.get_charge_diagram(
             device,
-            plungers,
+            [device.gates[gid] for gid in gate_ids],
             voltage_precision=voltage_precisions[0],
         )
         if take_segments:
-            logger.info("Take high resolution of good charge diagram segments.")
-            features = tuningresult.ml_result["features"]
-            segment_info = features[device.main_readout_method]["segment_info"]
+            self.take_high_res_dot_segments(
+                device,
+                dot_segments=tuningresult.ml_result['dot_segments'],
+                gate_ids=gate_ids,
+                target_state=target_state,
+                voltage_precision=voltage_precisions[1],
+            )
 
-            for r_id in segment_info.keys():
-                if segment_info[r_id]["predicted_regime"] == target_state.name:
-                    v_rgs = segment_info[r_id]['voltage_ranges']
-                    for pl_id, v_range in zip(device_layout.plungers(), v_rgs):
-                        device.current_valid_ranges({pl_id: v_range})
+    def take_high_res_dot_segments(
+        self,
+        device,
+        dot_segments: Dict[int, Any],
+        gate_ids: List[int] = DoubleDotLayout.plungers(),
+        target_state: DeviceState = DeviceState.doubledot,
+        voltage_precision: float= 0.0001,
+    ):
+        """ """
+        logger.info("Take high resolution of good charge diagram segments.")
 
-                    tuningresult = self.get_charge_diagram(
-                        device,
-                        plungers,
-                        voltage_precision=voltage_precisions[1],
-                    )
+        for r_id in dot_segments.keys():
+            if dot_segments[r_id]["predicted_regime"] == target_state.value:
+                v_rgs = dot_segments[r_id]['voltage_ranges']
+                for g_id, v_range in zip(gate_ids, v_rgs):
+                    device.current_valid_ranges({g_id: v_range})
+                tuningresult = self.get_charge_diagram(
+                    device,
+                    [device.gates[gid] for gid in gate_ids],
+                    voltage_precision=voltage_precision,
+                )
 
     def set_valid_plunger_ranges(
         self,
         device,
         device_layout: DeviceLayout,
-        noise_floor,
-        open_signal,
     ):
+        """ # Narrow down plunger ranges: """
         good_plunger_ranges = False
         while not good_plunger_ranges:
-            # Narrow down plunger ranges:
             barrier_changes = self.set_new_plunger_ranges(
                 device,
-                noise_floor=noise_floor,
-                open_signal=open_signal,
                 plunger_barrier_pairs=device_layout.plunger_barrier_pairs()
             )
             if barrier_changes is not None:
@@ -532,12 +533,10 @@ class DotTuner(Tuner):
     def set_new_plunger_ranges(
         self,
         device: Device,
-        noise_floor: float = 0.02,
-        open_signal: float = 0.1,
         plunger_barrier_pairs: List[Tuple[int, int]] = DoubleDotLayout.plunger_barrier_pairs(),
     ) -> Tuple[bool, Dict[int, str]]:
         """
-        noise_floor and open_signal compared to normalized signal
+        noise_floor and dot_signal_threshold compared to normalized signal
         checks if barriers need to be adjusted, depending on min and max signal
         """
         if not isinstance(plunger_barrier_pairs, List):
@@ -547,9 +546,8 @@ class DotTuner(Tuner):
 
         for plunger_id, barrier_id in plunger_barrier_pairs:
             plunger = device.gates[plunger_id]
-            print(f'characterize {plunger.label}')
             new_range, device_state = self.characterize_plunger(
-                device, plunger, noise_floor, open_signal
+                device, plunger,
             )
             device.current_valid_ranges({plunger_id: new_range})
 
@@ -569,8 +567,6 @@ class DotTuner(Tuner):
         self,
         device: Device,
         plunger: DeviceChannel,
-        noise_floor: float = 0.02,
-        open_signal: float = 0.1,
     ) -> DeviceState:
         """ """
         result = self.characterize_gate(
@@ -584,9 +580,9 @@ class DotTuner(Tuner):
         new_range = (features["low_voltage"], features["high_voltage"])
 
         device_state = DeviceState.undefined
-        if features["min_signal"] > open_signal:
+        if features["min_signal"] > self.data_settings.dot_signal_threshold:
             device_state = DeviceState.opencurrent
-        if features["max_signal"] < noise_floor:
+        if features["max_signal"] < self.data_settings.noise_floor:
             device_state = DeviceState.pinchedoff
 
         return new_range, device_state
