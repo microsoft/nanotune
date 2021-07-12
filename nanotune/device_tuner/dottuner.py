@@ -75,10 +75,6 @@ class DotTuner(Tuner):
             gates_for_init_range_measurement=device_layout.barriers(),
         )
 
-        self.set_central_and_outer_barriers(
-            device, device_layout, target_state
-        )
-
         success = self.tune_dot_regime(
             device=device,
             device_layout=device_layout,
@@ -100,6 +96,9 @@ class DotTuner(Tuner):
         continue_tuning: bool = False,
     ) -> bool:
         """ """
+        self.set_central_and_outer_barriers(
+            device, device_layout, target_state
+        )
         done = False
         n_iter = 0
         success = False
