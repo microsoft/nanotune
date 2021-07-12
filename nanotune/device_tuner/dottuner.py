@@ -80,12 +80,12 @@ class DotTuner(Tuner):
         )
 
         success = self.tune_dot_regime(
-            device,
-            device_layout,
-            target_state,
-            max_iter,
-            take_high_res,
-            continue_tuning,
+            device=device,
+            device_layout=device_layout,
+            target_state=target_state,
+            max_iter=max_iter,
+            take_high_res=take_high_res,
+            continue_tuning=continue_tuning,
         )
 
         return success, self.tuning_history.results[device.name]
@@ -142,7 +142,7 @@ class DotTuner(Tuner):
         take_segments: bool = True,
         voltage_precisions: Tuple[float, float] = (0.0005, 0.0001),
     ):
-        print(gate_ids)
+        """ """
         logger.info("Take high resolution of entire charge diagram.")
         tuningresult = self.get_charge_diagram(
             device,
