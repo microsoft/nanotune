@@ -105,9 +105,7 @@ class DotTuner(Tuner):
         success = False
         while not done and n_iter <= max_iter:
             n_iter += 1
-            self.set_valid_plunger_ranges(
-                device, device_layout,,
-            )
+            self.set_valid_plunger_ranges(device, device_layout)
             tuningresult = self.get_charge_diagram(
                 device,
                 [device.gates[gid] for gid in device_layout.plungers()],
@@ -116,7 +114,7 @@ class DotTuner(Tuner):
             if tuningresult.success and take_high_res:
                 self.take_high_resolution_diagram(
                     device,
-                    device_layout,
+                    device_layout.plungers(),
                     take_segments=True,
                 )
             done = tuningresult.success
@@ -144,6 +142,7 @@ class DotTuner(Tuner):
         take_segments: bool = True,
         voltage_precisions: Tuple[float, float] = (0.0005, 0.0001),
     ):
+        print(gate_ids)
         logger.info("Take high resolution of entire charge diagram.")
         tuningresult = self.get_charge_diagram(
             device,

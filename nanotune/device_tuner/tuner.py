@@ -324,7 +324,6 @@ class Tuner(qc.Instrument):
                 [g.safety_voltage_range() for g in gates_to_sweep],
                 voltage_precision,
             )
-
         stage = ChargeDiagram(
             data_settings=self.measurement_data_settings(device),
             setpoint_settings=setpoint_settings,
