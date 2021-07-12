@@ -861,6 +861,16 @@ def test_tune_dot_regime(dottuner, sim_device):
         curr_val = device.right_barrier.voltage()
         device.right_barrier.voltage(curr_val - 0.1)
 
+    def set_central_and_outer_barriers_dummy(
+        device, device_layout, target_state
+    ):
+        assert target_state == DeviceState.doubledot
+        device.top_barrier.voltage() == -0.6
+
+        device.gates[device_layout.central_barrier()].voltage(-0.44)
+        device.gates[device_layout.outer_barriers()[0]].voltage(-0.43)
+
+    dottuner.set_central_and_outer_barriers = set_central_and_outer_barriers_dummy
     dottuner.set_valid_plunger_ranges = set_valid_plunger_ranges_dummy
     dottuner.get_charge_diagram = get_charge_diagram_dummy
     dottuner.update_gate_configuration = update_gate_configuration_dummy
@@ -878,6 +888,9 @@ def test_tune_dot_regime(dottuner, sim_device):
     assert sim_device.current_valid_ranges()[DoubleDotLayout.plungers()[0]] == [-0.3, -0.171428571428571]
     assert sim_device.current_valid_ranges()[DoubleDotLayout.plungers()[1]] == [-0.15, 0.0]
 
+    assert sim_device.left_barrier.voltage() == -0.43
+    assert sim_device.right_barrier.voltage() == -0.7
+    assert sim_device.central_barrier.voltage() == -0.44
 
     sim_device.right_barrier.voltage(-0.4)
     success = dottuner.tune_dot_regime(
@@ -924,22 +937,9 @@ def test_tune(dottuner, sim_device):
             transport=(0.1, 0.9)
         )
 
-    def set_central_and_outer_barriers_dummy(
-        device, device_layout, target_state
-    ):
-        assert target_state == DeviceState.doubledot
-        device.top_barrier.voltage() == -0.6
-
-        device.gates[device_layout.central_barrier()].voltage(-0.44)
-        device.gates[device_layout.outer_barriers()[0]].voltage(-0.43)
-        device.gates[device_layout.outer_barriers()[1]].voltage(-0.42)
-
     def tune_dot_regime_dummy(
         device, device_layout, target_state, max_iter, take_high_res,
         continue_tuning):
-        assert sim_device.left_barrier.voltage() == -0.43
-        assert sim_device.right_barrier.voltage() == -0.42
-        assert sim_device.central_barrier.voltage() == -0.44
         assert sim_device.top_barrier.voltage() == -0.6
 
         assert target_state == DeviceState.doubledot
@@ -949,7 +949,6 @@ def test_tune(dottuner, sim_device):
         return True
 
     dottuner.tune_dot_regime = tune_dot_regime_dummy
-    dottuner.set_central_and_outer_barriers = set_central_and_outer_barriers_dummy
     dottuner.set_helper_gate = set_helper_gate_dummy
     dottuner.update_normalization_constants = update_normalization_constants_dummy
 
@@ -965,10 +964,6 @@ def test_tune(dottuner, sim_device):
 
     assert success
     assert tuning_history.tuningresults['tuning'] == TuningResult('tuning', success=True)
-    assert sim_device.left_barrier.voltage() == -0.43
-    assert sim_device.right_barrier.voltage() == -0.42
-    assert sim_device.central_barrier.voltage() == -0.44
-    assert sim_device.top_barrier.voltage() == -0.6
 
     dottuner.classifiers = Classifiers()
     with pytest.raises(ValueError):
