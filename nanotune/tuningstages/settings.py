@@ -61,7 +61,7 @@ class DataSettings(Settings):
                     self.normalization_constants = NormalizationConstants(
                         **asdict(constants)
                     )
-        if is_dataclass(new_settings):
+        if isinstance(new_settings, DataSettings):
             self.normalization_constants = NormalizationConstants(
                     **asdict(new_settings.normalization_constants)
                 )
