@@ -110,7 +110,7 @@ def classify_dot_segments(
             for clf_type in ['singledot', 'doubledot', 'dotregime']:
                 classifier = getattr(classifiers, clf_type)
                 clf_result[data_id][clf_type] = any(
-                    classifier.predict(  # type: ignore
+                    classifier.predict(
                         data_id,
                         db_name,
                         db_folder=db_folder,
@@ -291,8 +291,8 @@ def conclude_dot_classification(
 
 def get_range_directives_chargediagram(
     fit_range_update_directives: List[str],
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
 ) -> Tuple[List[str], List[str]]:
     """Determines voltage range directives to update ranges for a subsequent
     tuning stage iteration. It checks if the voltage range update directives
@@ -344,11 +344,11 @@ def get_range_directives_chargediagram(
 
 
 def get_new_chargediagram_ranges(
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     range_update_directives: List[str],
     range_change_settings: Optional[Dict[str, float]] = None,
-) -> List[Tuple[float, float]]:
+) -> Sequence[Sequence[float]]:
     """Determines new voltage ranges for a subsequent tuning stage
     iteration. Ranges are shifted based on ``range_update_directives`` and
     ``range_change_settings``, and using ``get_new_range``.
@@ -361,6 +361,7 @@ def get_new_chargediagram_ranges(
     Returns:
         Tuple: New voltage range.
     """
+    assert len(current_valid_ranges) == 2
 
     if range_change_settings is None:
         range_change_settings = {
@@ -375,16 +376,18 @@ def get_new_chargediagram_ranges(
         "y more negative",
         "y more positive",
     ]
-    new_ranges = copy.deepcopy(current_valid_ranges)
-
+    # new_ranges = copy.deepcopy(current_valid_ranges)
+    new_range_x = current_valid_ranges[0]
+    new_range_y = current_valid_ranges[1]
     for directive in range_update_directives:
         if directive not in all_range_update_directives:
             logger.error(
-                ("ChargeDiagram: Unknown action." "Cannot update measurement setting")
+                "ChargeDiagram: Unknown action." \
+                "Cannot update measurement setting"
             )
 
     if "x more negative" in range_update_directives:
-        new_ranges[0] = get_new_range(
+        new_range_x = get_new_range(
             current_valid_ranges[0],
             safety_voltage_ranges[0],
             "negative",
@@ -392,7 +395,7 @@ def get_new_chargediagram_ranges(
         )
 
     if "x more positive" in range_update_directives:
-        new_ranges[0] = get_new_range(
+        new_range_x = get_new_range(
             current_valid_ranges[0],
             safety_voltage_ranges[0],
             "positive",
@@ -400,7 +403,7 @@ def get_new_chargediagram_ranges(
         )
 
     if "y more negative" in range_update_directives:
-        new_ranges[1] = get_new_range(
+        new_range_y = get_new_range(
             current_valid_ranges[1],
             safety_voltage_ranges[1],
             "negative",
@@ -408,7 +411,7 @@ def get_new_chargediagram_ranges(
         )
 
     if "y more positive" in range_update_directives:
-        new_ranges[1] = get_new_range(
+        new_range_y = get_new_range(
             current_valid_ranges[1],
             safety_voltage_ranges[1],
             "positive",
@@ -416,30 +419,28 @@ def get_new_chargediagram_ranges(
         )
     else:
         logger.error(
-            (
-                "ChargeDiagram: Unknown range update directive."
-                "Cannot update measurement setting"
-            )
+            "ChargeDiagram: Unknown range update directive." \
+            "Cannot update measurement setting"
         )
 
-    return new_ranges
+    return [new_range_x, new_range_y]
 
 
 def get_new_range(
-    current_valid_range: Tuple[float, float],
-    safety_voltage_ranges: Tuple[float, float],
+    current_valid_range: Sequence[float],
+    safety_voltage_range: Sequence[float],
     direction: str,
     relative_range_change: float = 0.3,
     min_change: float = 0.05,
     max_change: float = 0.5,
-) -> Tuple[float, float]:
+) -> Sequence[float]:
     """Determines a new voltage range, to be measured in a subsequent tuning
     stage iteration. The range is shifted to more positive or negative values
     depending on ``direction``.
 
     Args:
-        current_valid_ranges: Current voltage ranges.
-        safety_voltage_ranges: List of safety ranges.
+        current_valid_range: Current voltage ranges.
+        safety_voltage_range: List of safety ranges.
         direction: Range update directive, either 'positive' or 'negative'.
         relative_range_change: Relative voltage shift, in percent of current
             valid ranges.
@@ -454,14 +455,14 @@ def get_new_range(
 
     new_min, new_max = current_valid_range
     if direction == "negative":
-        diff = abs(current_valid_range[0] - safety_voltage_ranges[0])
+        diff = abs(current_valid_range[0] - safety_voltage_range[0])
         diff *= relative_range_change
         diff = min(diff, max_change)
         diff = max(diff, min_change)
         new_min, new_max = new_min - diff, new_max - diff
 
     elif direction == "positive":
-        diff = abs(current_valid_range[1] - safety_voltage_ranges[1])
+        diff = abs(current_valid_range[1] - safety_voltage_range[1])
         diff *= relative_range_change
         diff = min(diff, max_change)
         diff = max(diff, min_change)

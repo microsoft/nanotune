@@ -105,36 +105,6 @@ def test_dottuner_helper_gate(
         dottuner.set_helper_gate(sim_device, 0)
 
 
-def test_set_central_barrier(
-    sim_device,
-    dottuner,
-    sim_scenario_dottuning,
-):
-    sim_scenario_dottuning.run_next_step()
-    dottuner.set_central_barrier(
-        sim_device,
-        target_state=DeviceState.doubledot,
-    )
-    assert sim_device.central_barrier.voltage() == -1.42947649216405
-    gate_id = sim_device.central_barrier.gate_id
-    assert sim_device.current_valid_ranges()[gate_id] == [
-        -1.97565855285095, -0.974324774924975]
-
-    dottuner.set_central_barrier(
-        sim_device,
-        target_state=DeviceState.singledot,
-    )
-    assert sim_device.central_barrier.voltage() == -0.974324774924975
-    assert sim_device.current_valid_ranges()[gate_id] == [
-        -1.97565855285095, -0.974324774924975]
-
-    with pytest.raises(ValueError):
-        dottuner.set_central_barrier(
-        sim_device,
-        target_state="doubledot",
-    )
-
-
 def test_choose_new_gate_voltage(
     sim_device,
     dottuner,
@@ -399,6 +369,9 @@ def test_set_central_barrier(
         target_state = DeviceState.doubledot
     )
     assert sim_device.central_barrier.voltage() == -1.42947649216405
+    gate_id = sim_device.central_barrier.gate_id
+    assert sim_device.current_valid_ranges()[gate_id] == [
+        -1.97565855285095, -0.974324774924975]
 
     sim_device.central_barrier.voltage(0)
     dottuner.set_central_barrier(
@@ -406,6 +379,8 @@ def test_set_central_barrier(
         target_state = DeviceState.singledot
     )
     assert sim_device.central_barrier.voltage() == -0.974324774924975
+    assert sim_device.current_valid_ranges()[gate_id] == [
+        -1.97565855285095, -0.974324774924975]
 
     sim_device.central_barrier.voltage(0)
     dottuner.set_central_barrier(

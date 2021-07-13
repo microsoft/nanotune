@@ -1,3 +1,4 @@
+from nanotune.device.device import NormalizationConstants
 import os
 import pytest
 import nanotune as nt
@@ -25,8 +26,9 @@ def sim_device_gatecharacterization2d(
     sim_device.right_plunger.voltage = qd_mock_instrument.right_plunger
     sim_device.all_gates_to_highest()
 
-    sim_device.normalization_constants = {
-        'transport': [0, 1.1e-09], 'rf': [0, 1], 'sensing': [0, 1]}
+    sim_device.normalization_constants = NormalizationConstants(
+        transport=[0, 1.1e-09], rf=[0, 1], sensing=[0, 1]
+    )
     return sim_device
 
 
@@ -37,9 +39,3 @@ def dottuner(tuner_default_input):
         yield tuner
     finally:
         tuner.close()
-
-
-# @pytest.fixture(scope="function")
-# def sim_device_dot_tuning(tuner_default_input):
-
-

@@ -16,7 +16,7 @@ def test_device_init_defaults(station):
 
     assert not device.gates
     assert not device.ohmics
-    assert not device.readout
+    assert device.readout == Readout()
     assert not device.initial_valid_ranges()
     assert device.quality() == 0
     assert device.normalization_constants == NormalizationConstants()
@@ -135,26 +135,31 @@ def test_device_get_gate_id(device, gate_1):
 def test_device_check_and_update_new_voltage_range(device):
     v_range = [-1, 0]
     safety_voltage_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
+    new_range = device.check_and_update_new_voltage_range(
+        v_range, safety_voltage_range, 0)
     assert new_range == v_range
 
-    new_range = device.check_and_update_new_voltage_range([0, -1], safety_voltage_range)
+    new_range = device.check_and_update_new_voltage_range(
+        [0, -1], safety_voltage_range, 0)
     assert new_range == v_range
 
     v_range = [-2.3, 0.5]
     safety_voltage_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
+    new_range = device.check_and_update_new_voltage_range(
+        v_range, safety_voltage_range, 0)
     assert new_range == [-2, 0]
 
     v_range = [-3, -2.5]
     safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
+        device.check_and_update_new_voltage_range(
+            v_range, safety_voltage_range, 0)
 
     v_range = [1, 2]
     safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_voltage_range)
+        device.check_and_update_new_voltage_range(
+            v_range, safety_voltage_range, 0)
 
 def test_device_methods(device):
 

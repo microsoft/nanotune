@@ -4,19 +4,11 @@
 # https://opensource.org/licenses/MIT
 
 import logging
-from nanotune.tuningstages.settings import Classifiers
 import pytest
-import nanotune as nt
-from nanotune.device_tuner.tuner import TuningHistory
-from nanotune.device_tuner.dottuner import (DotTuner, VoltageChangeDirection,
-    DeviceState, check_new_voltage, RangeChangeSetting)
-from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
+from nanotune.device_tuner.dottuner import DeviceState
 from nanotune.device.device_layout import DoubleDotLayout
-from nanotune.device.device import NormalizationConstants, Device
 from nanotune.tests.functional_tests.sim_tuner import SimDotTuner
-from qcodes.dataset.experiment_container import load_last_experiment
 logger = logging.getLogger(__name__)
-
 
 
 def test_double_dot_tuning_good_example(

@@ -3,8 +3,8 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 from __future__ import annotations
-from dataclasses import dataclass, asdict, is_dataclass
-from typing import Optional, Sequence, Callable, Any, Union, Dict, Tuple
+from dataclasses import dataclass, asdict, is_dataclass, field
+from typing import Optional, Sequence, Callable, Any, Union, Dict, Tuple, List
 import qcodes as qc
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
@@ -35,7 +35,7 @@ class Settings:
 class DataSettings(Settings):
     db_name: str = nt.config['db_name']
     db_folder: str = nt.config['db_folder']
-    normalization_constants: Optional[NormalizationConstants] = None
+    normalization_constants: NormalizationConstants = NormalizationConstants()
     experiment_id: Optional[int] = None
     segment_db_name: str = f'segmented_{nt.config["db_name"]}'
     segment_db_folder: str = nt.config['db_folder']
@@ -44,13 +44,35 @@ class DataSettings(Settings):
     noise_floor: float = 0.02
     dot_signal_threshold: float = 0.1
 
+    def update(
+        self,
+        new_settings: Union[
+            Dict[str, Sequence[Any]], Settings],
+    ) -> None:
+        super().update(new_settings)
+        if isinstance(new_settings, Dict):
+            if 'normalization_constants' in new_settings.keys():
+                constants = new_settings['normalization_constants']
+                if isinstance(constants, Dict):
+                    self.normalization_constants = NormalizationConstants(
+                        **constants
+                    )
+                if is_dataclass(constants):
+                    self.normalization_constants = NormalizationConstants(
+                        **asdict(constants)
+                    )
+        if is_dataclass(new_settings):
+            self.normalization_constants = NormalizationConstants(
+                    **asdict(new_settings.normalization_constants)
+                )
+
 
 @dataclass
 class SetpointSettings(Settings):
     voltage_precision: float
-    parameters_to_sweep: Optional[Sequence[qc.Parameter]] = None
-    ranges_to_sweep: Optional[Sequence[Sequence[float]]] = None
-    safety_voltage_ranges: Optional[Sequence[Sequence[float]]] = None
+    parameters_to_sweep: Sequence[qc.Parameter] = field(default_factory=list)
+    ranges_to_sweep: Sequence[Sequence[float]] = field(default_factory=list)
+    safety_voltage_ranges: Sequence[Sequence[float]] = field(default_factory=list)
     setpoint_method: Optional[
         Callable[[Any], Sequence[Sequence[float]]]] = None
 

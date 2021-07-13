@@ -2,12 +2,13 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-from abc import abstractmethod
+
+from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from typing import List, Sequence, Tuple
 
-@dataclass
-class DeviceLayout:
+# @dataclass
+class IDeviceLayout(ABC):
 
     @classmethod
     @abstractmethod
@@ -16,17 +17,17 @@ class DeviceLayout:
 
     @classmethod
     @abstractmethod
-    def barriers(self) -> Sequence[int]:
+    def barriers(self) -> List[int]:
         pass
 
     @classmethod
     @abstractmethod
-    def plungers(self) -> Sequence[int]:
+    def plungers(self) -> List[int]:
         pass
 
     @classmethod
     @abstractmethod
-    def outer_barriers(self) -> Sequence[int]:
+    def outer_barriers(self) -> List[int]:
         pass
 
     @classmethod
@@ -37,11 +38,16 @@ class DeviceLayout:
     @classmethod
     @abstractmethod
     def plunger_barrier_pairs(self) ->List[Tuple[int, int]]:
-        p_b_pairs = [
-            (self.left_plunger, self.left_barrier),
-            (self.right_plunger, self.right_barrier)
-        ]
-        return p_b_pairs
+        pass
+
+
+@dataclass
+class DataClassMixin:
+    """A dataclass mixin."""
+
+
+class DeviceLayout(DataClassMixin, IDeviceLayout):
+    """An abstract data class."""
 
 
 @dataclass

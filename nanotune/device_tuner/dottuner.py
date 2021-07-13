@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Dict, List, Optional, Sequence, Tuple, Any
+from typing import Dict, List, Optional, Sequence, Tuple, Any, Type
 
 import numpy as np
 
@@ -55,7 +55,7 @@ class DotTuner(Tuner):
     def tune(
         self,
         device: Device,
-        device_layout: DeviceLayout = DoubleDotLayout,
+        device_layout: Type[DeviceLayout] = DoubleDotLayout,
         target_state: DeviceState = DeviceState.doubledot,
         max_iter: int = 15,
         take_high_res: bool = False,
@@ -89,7 +89,7 @@ class DotTuner(Tuner):
     def tune_dot_regime(
         self,
         device: Device,
-        device_layout: DeviceLayout = DoubleDotLayout,
+        device_layout: Type[DeviceLayout] = DoubleDotLayout,
         target_state: DeviceState = DeviceState.doubledot,
         max_iter: int = 15,
         take_high_res: bool = False,
@@ -182,7 +182,7 @@ class DotTuner(Tuner):
     def set_valid_plunger_ranges(
         self,
         device,
-        device_layout: DeviceLayout,
+        device_layout: Type[DeviceLayout],
     ):
         """ # Narrow down plunger ranges: """
         good_plunger_ranges = False
@@ -203,7 +203,7 @@ class DotTuner(Tuner):
     def adjust_helper_and_outer_barriers(
         self,
         device,
-        device_layout: DeviceLayout,
+        device_layout: Type[DeviceLayout],
         barrier_changes: Dict[int, VoltageChangeDirection],
     ):
         new_v_change_dir = self.update_voltages_based_on_directives(
@@ -235,7 +235,7 @@ class DotTuner(Tuner):
     def set_central_and_outer_barriers(
         self,
         device: Device,
-        device_layout: DeviceLayout = DoubleDotLayout,
+        device_layout: Type[DeviceLayout] = DoubleDotLayout,
         target_state: DeviceState = DeviceState.doubledot,
     ):
         self.set_central_barrier(
@@ -398,7 +398,7 @@ class DotTuner(Tuner):
         central_barrier_id: int = 3,
         outer_barriers_id: Sequence[int] = (1, 4),
         range_change_setting: RangeChangeSetting = RangeChangeSetting(),
-    ):
+    ) -> Optional[VoltageChangeDirection]:
         _ = self.update_voltages_based_on_directives(
             device,
             {helper_gate_id: voltage_change_direction},
@@ -409,18 +409,18 @@ class DotTuner(Tuner):
             target_state=target_state,
             gate_id=central_barrier_id,
         )
-        voltage_change_direction = self.set_outer_barriers(
+        new_direction = self.set_outer_barriers(
             device,
             gate_ids=outer_barriers_id,
         )
-        return voltage_change_direction
+        return new_direction
 
     def set_outer_barriers(
         self,
         device: Device,
-        gate_ids: Optional[Sequence[float]] = (1, 4),
+        gate_ids: Sequence[float] = (1, 4),
         tolerance: float = 0.1,
-    ) -> Tuple[bool, VoltageChangeDirection]:
+    ) -> Optional[VoltageChangeDirection]:
         """
         Will not update upper valid range limit. We assume it has been
         determined in the beginning with central_barrier = 0 V and does
@@ -532,7 +532,7 @@ class DotTuner(Tuner):
         self,
         device: Device,
         plunger_barrier_pairs: List[Tuple[int, int]] = DoubleDotLayout.plunger_barrier_pairs(),
-    ) -> Tuple[bool, Dict[int, str]]:
+    ) -> Optional[Dict[int, VoltageChangeDirection]]:
         """
         noise_floor and dot_signal_threshold compared to normalized signal
         checks if barriers need to be adjusted, depending on min and max signal
@@ -540,7 +540,7 @@ class DotTuner(Tuner):
         if not isinstance(plunger_barrier_pairs, List):
             raise ValueError('Invalid plunger_barrier_pairs input.')
 
-        barrier_changes: Optional[Dict[int, VoltageChangeDirection]] = {}
+        barrier_changes_dict: Dict[int, VoltageChangeDirection] = {}
 
         for plunger_id, barrier_id in plunger_barrier_pairs:
             plunger = device.gates[plunger_id]
@@ -551,21 +551,23 @@ class DotTuner(Tuner):
 
             if device_state == DeviceState.pinchedoff:
                 drct = VoltageChangeDirection.positive
-                barrier_changes[barrier_id] = drct
+                barrier_changes_dict[barrier_id] = drct
 
             if device_state == DeviceState.opencurrent:
                 drct = VoltageChangeDirection.negative
-                barrier_changes[barrier_id] = drct
+                barrier_changes_dict[barrier_id] = drct
 
-        if not barrier_changes:
+        if not barrier_changes_dict:
             barrier_changes = None
+        else:
+            barrier_changes = barrier_changes_dict
         return barrier_changes
 
     def characterize_plunger(
         self,
         device: Device,
         plunger: DeviceChannel,
-    ) -> DeviceState:
+    ) -> Tuple[Tuple[float, float], DeviceState]:
         """ """
         result = self.characterize_gate(
             device,

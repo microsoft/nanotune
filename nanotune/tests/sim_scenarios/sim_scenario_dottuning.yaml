@@ -72,137 +72,137 @@
             exp_name : "GB_Newtown_Dev_3_2"
             run_id : 991
 
-  - "Sweep left plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 992
+  # - "Sweep left plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 992
 
-  - "Sweep right plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 993
+  # - "Sweep right plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 993
 
-  - "Take 2D charge diagram":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 994
+  # - "Take 2D charge diagram":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 994
 
-  - "Take 2D charge diagram":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 995
+  # - "Take 2D charge diagram":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 995
 
-  - "Sweep left plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 996
+  # - "Sweep left plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 996
 
-  - "Sweep right plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 997
+  # - "Sweep right plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 997
 
-  - "Take 2D charge diagram":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 998
+  # - "Take 2D charge diagram":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 998
 
-  - "Sweep left plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 999
+  # - "Sweep left plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 999
 
-  - "Sweep right plunger":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 1000
+  # - "Sweep right plunger":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 1000
 
-  - "Take 2D charge diagram":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 1001
+  # - "Take 2D charge diagram":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 1001
 
-  - "Take 2D charge diagram":
-      type : "sim.simulation_scenario.SetDataProviderAction"
-      init :
-        pin : "qd_mock_instrument.drain"
-        data_provider :
-          type: "sim.data_providers.QcodesDataProvider"
-          init:
-            input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
-            db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
-            exp_name : "GB_Newtown_Dev_3_2"
-            run_id : 1002
+  # - "Take 2D charge diagram":
+  #     type : "sim.simulation_scenario.SetDataProviderAction"
+  #     init :
+  #       pin : "qd_mock_instrument.drain"
+  #       data_provider :
+  #         type: "sim.data_providers.QcodesDataProvider"
+  #         init:
+  #           input_providers: ["qd_mock_instrument.left_plunger", "qd_mock_instrument.right_plunger"]
+  #           db_path : "${db_path}/data/tuning/dot_tuning_sequences.db"
+  #           exp_name : "GB_Newtown_Dev_3_2"
+  #           run_id : 1002
 
 
 

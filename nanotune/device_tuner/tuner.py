@@ -154,7 +154,7 @@ class Tuner(qc.Instrument):
             data_settings=self.measurement_data_settings(device),
             setpoint_settings=setpoint_settings,
             readout=device.readout,
-            classifier=self.classifiers.pinchoff,
+            classifier=self.classifiers.pinchoff,  # type: ignore
         )
         tuningresult = stage.run_stage(iterate=iterate)
         tuningresult.status = device.get_gate_status()
@@ -231,7 +231,7 @@ class Tuner(qc.Instrument):
         gate_to_set,
         gates_to_sweep,
         voltages_to_set,
-    ) -> Tuple[TuningResult, DeviceChannel]:
+    ) -> Tuple[MeasurementHistory, DeviceChannel, float]:
         """ """
         measurement_result = MeasurementHistory(device.name)
         layout_ids = [g.gate_id for g in gates_to_sweep]
@@ -275,9 +275,9 @@ class Tuner(qc.Instrument):
 
     def measurement_setpoint_settings(
         self,
-        parameters_to_sweep: Sequence[qc.Parameter],
-        ranges_to_sweep: Sequence[Sequence[float]],
-        safety_voltage_ranges: Sequence[Sequence[float]],
+        parameters_to_sweep: List[qc.Parameter],
+        ranges_to_sweep: List[List[float]],
+        safety_voltage_ranges: List[List[float]],
         voltage_precision: Optional[float] = None,
     ) -> SetpointSettings:
         """Add device relevant readout settings.

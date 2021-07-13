@@ -50,7 +50,7 @@ class NormalizationConstants:
                     expect list or tuple.')
             if not hasattr(self, read_type):
                 raise KeyError(f'Invalid normalization constant identifyer, \
-                    use one of {self.__dataclass_fields__.keys()}')
+                    use one of {self.__dataclass_fields__.keys()}')  # type: ignore
             setattr(self, read_type, tuple(constant))
 
 
@@ -88,6 +88,10 @@ class ReadoutMethods(Enum):
     @classmethod
     def list(cls):
         return list(map(lambda c: c.value, cls))
+
+    @classmethod
+    def names(cls):
+        return list(map(lambda c: c.name, cls))
 
 
 class Device(DelegateInstrument):
@@ -140,14 +144,14 @@ class Device(DelegateInstrument):
             self._gates_dict, self._ohmics_dict = {}, {}
 
         self.readout = Readout()
-        if readout is None:
-            self.readout = None
-        else:
+        # if readout is None:
+        #     self.readout = None
+        if readout is not None:
             param_names, paths = list(zip(*list(readout.items())))
             for param_name, path in zip(param_names, paths):
-                if param_name not in Readout.__dataclass_fields__.keys():
+                if param_name not in ReadoutMethods.names():
                     raise KeyError(f"Invalid readout method key. Use one of \
-                        {Readout.__dataclass_fields__.keys()}")
+                        {ReadoutMethods.names()}")
                 if not isinstance(path, list):
                     path = [path]
                 super()._create_and_add_parameter(
@@ -338,7 +342,7 @@ class Device(DelegateInstrument):
         self,
         voltage_ranges: voltage_range_type,
         new_sub_dict: voltage_range_type,
-        range_label: str,
+        range_label: str = 'voltage range',
     ) -> voltage_range_type:
         new_voltage_ranges = copy.deepcopy(voltage_ranges)
         for gate_identifier, new_range in new_sub_dict.items():

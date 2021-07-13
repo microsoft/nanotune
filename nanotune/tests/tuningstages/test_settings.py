@@ -13,20 +13,33 @@ from nanotune.device.device import NormalizationConstants
 
 def test_data_settings_attributes(tmp_path):
 
-    assert sorted(DataSettings.__dataclass_fields__.keys()) == sorted([
-        'db_name', 'db_folder', 'normalization_constants', 'experiment_id',
-        'segment_db_name', 'segment_db_folder', 'segment_experiment_id',
-        'segment_size'])
+    assert sorted(DataSettings.__dataclass_fields__.keys()) == sorted(
+        ['db_folder',
+        'db_name',
+        'dot_signal_threshold',
+        'experiment_id',
+        'noise_floor',
+        'normalization_constants',
+        'segment_db_folder',
+        'segment_db_name',
+        'segment_experiment_id',
+        'segment_size']
+    )
     settings = DataSettings()
     assert isinstance(settings.db_name, str)
     assert isinstance(settings.db_folder, str)
-    assert settings.normalization_constants is None
+    assert settings.normalization_constants == NormalizationConstants()
     assert settings.experiment_id is None
     assert settings.segment_db_name == f'segmented_{settings.db_name}'
     assert settings.segment_db_folder == settings.db_folder
     assert settings.segment_experiment_id is None
-    assert settings.segment_size == 0.02
+    assert settings.segment_size == 0.05
 
+    settings.update({'normalization_constants':
+        {'transport': (0.1, 1.1), 'sensing': (0, 1), 'rf': (0, 1 )}
+        })
+    assert settings.normalization_constants == NormalizationConstants(
+        transport=(0.1, 1.1))
 
 
 def test_setpoint_settings_attributes():
@@ -57,16 +70,16 @@ def test_setpoint_settings_update():
     )
     assert setpoint_settings.voltage_precision == 0.2
     assert setpoint_settings.safety_voltage_ranges == [(-2, 0)]
-    assert setpoint_settings.ranges_to_sweep is None
-    assert setpoint_settings.parameters_to_sweep is None
-    assert setpoint_settings.setpoint_method is None
+    assert not setpoint_settings.ranges_to_sweep
+    assert not setpoint_settings.parameters_to_sweep
+    assert not setpoint_settings.setpoint_method
 
     setpoint_settings.update(SetpointSettings(voltage_precision=0.01))
     assert setpoint_settings.voltage_precision == 0.01
-    assert setpoint_settings.safety_voltage_ranges == None
-    assert setpoint_settings.ranges_to_sweep is None
-    assert setpoint_settings.parameters_to_sweep is None
-    assert setpoint_settings.setpoint_method is None
+    assert not setpoint_settings.safety_voltage_ranges
+    assert not setpoint_settings.ranges_to_sweep
+    assert not setpoint_settings.parameters_to_sweep
+    assert not setpoint_settings.setpoint_method
 
     with pytest.raises(KeyError):
         setpoint_settings.update({'params_to_sweep': 'dac.ch02'})

@@ -97,7 +97,7 @@ class MeasurementHistory:
 
         self.device_name = device_name
         self._tuningresults: Dict[str, TuningResult] = {}
-        self.last_added = None
+        self.last_added: Optional[TuningResult] = None
 
     @property
     def tuningresults(self):

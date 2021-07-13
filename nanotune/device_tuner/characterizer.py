@@ -30,7 +30,7 @@ class Characterizer(Tuner):
     def characterize(
         self,
         device: Device,
-        skip_gates: Optional[Sequence[DeviceChannel]],
+        skip_gates: Optional[Sequence[DeviceChannel]] = None,
         gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
     ) -> MeasurementHistory:
         """
@@ -40,6 +40,8 @@ class Characterizer(Tuner):
         """
         if gate_configurations is None:
             gate_configurations = {}
+        if skip_gates is None:
+            skip_gates = []
 
         measurement_result = MeasurementHistory(device.name)
 

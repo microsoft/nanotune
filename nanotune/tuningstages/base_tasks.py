@@ -220,9 +220,9 @@ def set_post_delay(
 
 
 def swap_range_limits_if_needed(
-    current_voltages: List[float],
-    current_valid_ranges: List[Tuple[float, float]],
-) -> List[Tuple[float, float]]:
+    current_voltages: Sequence[float],
+    current_valid_ranges: Sequence[Sequence[float]],
+) -> Sequence[Sequence[float]]:
     """Saw start and end points of a sweep depending on the current voltages set
     on gates. To save time and avoid unnecessary ramping.
     Order of current_voltages and current_valid_ranges has to match, i.e. the
@@ -238,21 +238,23 @@ def swap_range_limits_if_needed(
         list: Voltage ranges to sweep.
     """
 
-    new_ranges = copy.deepcopy(current_valid_ranges)
+    new_ranges = []
     for idx, c_range in enumerate(current_valid_ranges):
         diff1 = abs(c_range[1] - current_voltages[idx])
         diff2 = abs(c_range[0] - current_voltages[idx])
 
         if diff1 < diff2:
-            new_ranges[idx] = (c_range[1], c_range[0])
+            new_ranges.append((c_range[1], c_range[0]))
+        else:
+            new_ranges.append((c_range[0], c_range[1]))
 
     return new_ranges
 
 
 def compute_linear_setpoints(
-    ranges: List[Tuple[float, float]],
+    ranges: Sequence[Sequence[float]],
     voltage_precision: float,
-) -> List[List[float]]:
+) -> Sequence[Sequence[float]]:
     """Computes linear setpoints the number of points we based on a
     voltage_precision as opposed to a fixed number of points. Useful to ensure
     a minimum resolution required for ML purposes.
@@ -292,7 +294,7 @@ def prepare_metadata(
     nt_meta["normalization_constants"] = asdict(normalization_constants)
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
-    readout_dict = readout_methods.as_name_dict()  # type: ignore
+    readout_dict = readout_methods.as_name_dict()
     nt_meta["readout_methods"] = readout_dict
     nt_meta["features"] = {}
 
@@ -475,14 +477,14 @@ def take_data_add_metadata(
 
 def run_stage(
     stage: str,
-    parameters_to_sweep: List[qc.Parameter],
-    parameters_to_measure: List[qc.Parameter],
-    voltage_ranges: List[Tuple[float, float]],
+    parameters_to_sweep: Sequence[qc.Parameter],
+    parameters_to_measure: Sequence[qc.Parameter],
+    voltage_ranges: Sequence[Sequence[float]],
     compute_setpoint_task: Callable[
-        [List[Tuple[float, float]]], Sequence[Sequence[float]]
+        [Sequence[Sequence[float]]], Sequence[Sequence[float]]
     ],
     measure_task: Callable[
-        [List[qc.Parameter], List[qc.Parameter], Sequence[Sequence[float]]],
+        [Sequence[qc.Parameter], Sequence[qc.Parameter], Sequence[Sequence[float]]],
         int
     ],
     machine_learning_task: Callable[[int], Any],
@@ -500,7 +502,7 @@ def run_stage(
     It does not set back voltages to initial values.
 
     Args:
-        stage: Name/indentifier of the tuning stage.
+        stage: Name/identifier of the tuning stage.
         voltage_ranges: List of voltages ranges to sweep.
         compute_setpoint_task: Function computing setpoints.
         measure_task: Functions taking data.
@@ -538,18 +540,18 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
-    parameters_to_sweep: List[qc.Parameter],
-    parameters_to_measure: List[qc.Parameter],
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    parameters_to_sweep: Sequence[qc.Parameter],
+    parameters_to_measure: Sequence[qc.Parameter],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     run_stage: Callable[
         [
             str,
-            List[qc.Parameter],
-            List[qc.Parameter],
-            List[Tuple[float, float]],
-            Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-            Callable[[List[qc.Parameter], List[qc.Parameter],
+            Sequence[qc.Parameter],
+            Sequence[qc.Parameter],
+            Sequence[Sequence[float]],
+            Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
+            Callable[[Sequence[qc.Parameter], Sequence[qc.Parameter],
                        Sequence[Sequence[float]]], int],
             Callable[[int], Any],
             Callable[[int, Any], None],
@@ -558,8 +560,8 @@ def iterate_stage(
         TuningResult,
     ],
     run_stage_tasks: Tuple[
-        Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-        Callable[[List[qc.Parameter], List[qc.Parameter],
+        Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
+        Callable[[Sequence[qc.Parameter], Sequence[qc.Parameter],
                   Sequence[Sequence[float]]], int],
         Callable[[int], Any],
         Callable[[int, Any], None],
@@ -568,12 +570,12 @@ def iterate_stage(
     conclude_iteration: Callable[
         [
             TuningResult,
-            List[Tuple[float, float]],
-            List[Tuple[float, float]],
+            Sequence[Sequence[float]],
+            Sequence[Sequence[float]],
             int,
             int,
         ],
-        Tuple[bool, List[Tuple[float, float]], List[str]],
+        Tuple[bool, Sequence[Sequence[float]], List[str]],
     ],
     display_result: Callable[[int, TuningResult], None],
     max_n_iterations: int = 10,
@@ -637,19 +639,19 @@ def iterate_stage(
 
 def conclude_iteration_with_range_update(
     tuning_result: TuningResult,
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     get_range_update_directives: Callable[
-        [int, List[Tuple[float, float]], List[Tuple[float, float]]],
+        [int, Sequence[Sequence[float]], Sequence[Sequence[float]]],
         Tuple[List[str], List[str]],
     ],
     get_new_current_ranges: Callable[
-        [List[Tuple[float, float]], List[Tuple[float, float]], List[str]],
-        List[Tuple[float, float]],
+        [Sequence[Sequence[float]], Sequence[Sequence[float]], List[str]],
+        Sequence[Sequence[float]],
     ],
     current_iteration: int,
     max_n_iterations: int,
-) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
     """Implements a conclude_iteration function for iterate_stage, which
     determines new voltage ranges if the last measurement was not successful.
 
@@ -667,7 +669,7 @@ def conclude_iteration_with_range_update(
 
     """
 
-    new_voltage_ranges: List[Tuple[float, float]] = []
+    new_voltage_ranges: Sequence[Sequence[float]] = []
     success = tuning_result.success
     if success:
         done = True
@@ -696,7 +698,7 @@ def conclude_iteration_with_range_update(
 
 
 def get_current_voltages(
-    parameters: List[qc.Parameter],
+    parameters: Sequence[qc.Parameter],
 ) -> List[float]:
     """Returns the values set to parameters in ``parameters``.
 
@@ -713,8 +715,8 @@ def get_current_voltages(
 
 
 def set_voltages(
-    parameters: List[qc.Parameter],
-    voltages_to_set: List[float],
+    parameters: Sequence[qc.Parameter],
+    voltages_to_set: Sequence[float],
 ) -> None:
     """Set voltages in ``voltages_to_set`` to voltage parameters in
     ``parameters``.

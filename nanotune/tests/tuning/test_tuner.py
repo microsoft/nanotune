@@ -41,6 +41,7 @@ def test_tuner_init_and_attributes(tuner, tmp_path):
 
     new_data_settings = DataSettings(db_name="other_temp.db")
     data_settings = DataSettings(**asdict(tuner.data_settings))
+    data_settings.normalization_constants = NormalizationConstants()
 
     tuner.data_settings = new_data_settings
     data_settings.update(new_data_settings)

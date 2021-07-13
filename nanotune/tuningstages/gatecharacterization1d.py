@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Sequence
 
 import qcodes as qc
 
@@ -99,10 +99,8 @@ class GateCharacterization1D(TuningStage):
         params = self.setpoint_settings.parameters_to_sweep
         if isinstance(params, qc.Parameter):
             self.setpoint_settings.parameters_to_sweep = [params]
-
-        assert len(self.setpoint_settings.parameters_to_sweep) == 1
-
-        # self.allow_range_swap = True
+        if self.setpoint_settings.parameters_to_sweep is not None:
+            assert len(self.setpoint_settings.parameters_to_sweep) == 1
 
     @property
     def fit_class(self):
@@ -164,11 +162,11 @@ class GateCharacterization1D(TuningStage):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         current_iteration: int,
         max_n_iterations: int,
-    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
         been successful. An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
@@ -214,8 +212,8 @@ class GateCharacterization1D(TuningStage):
     def get_range_update_directives(
         self,
         run_id: int,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
     ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data

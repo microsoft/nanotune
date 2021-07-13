@@ -1,8 +1,7 @@
 import logging
 from abc import ABCMeta, abstractmethod
 from functools import partial
-from typing import Any, Dict, List, Tuple
-from dataclasses import asdict
+from typing import Any, Dict, List, Tuple, Sequence
 import qcodes as qc
 from qcodes.dataset.experiment_container import (load_last_experiment,
                                                  new_experiment,
@@ -15,7 +14,7 @@ from .base_tasks import (  # please update docstrings if import path changes
     compute_linear_setpoints, get_current_voltages, iterate_stage, plot_fit,
     prepare_metadata, print_tuningstage_status, run_stage,
     save_extracted_features, save_machine_learning_result, set_voltages,
-    swap_range_limits_if_needed, take_data_add_metadata)
+    take_data_add_metadata)
 from .take_data import ramp_to_setpoint
 from nanotune.tuningstages.settings import DataSettings, SetpointSettings
 
@@ -90,11 +89,11 @@ class TuningStage(metaclass=ABCMeta):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         current_iteration: int,
         max_n_iterations: int,
-    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
         been successful. An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
@@ -187,8 +186,8 @@ class TuningStage(metaclass=ABCMeta):
 
     def compute_setpoints(
         self,
-        current_valid_ranges: List[Tuple[float, float]],
-    ) -> List[List[float]]:
+        current_valid_ranges: Sequence[Sequence[float]],
+    ) -> Sequence[Sequence[float]]:
         """Computes setpoints for the next measurement. Unless this method is
         overwritten in a child class, linearly spaced setpoints are computed.
 
@@ -340,7 +339,7 @@ class TuningStage(metaclass=ABCMeta):
         tuning_result = iterate_stage(
             self.stage,
             self.setpoint_settings.parameters_to_sweep,
-            self.readout.get_parameters(),  # type: ignore
+            self.readout.get_parameters(),
             self.current_valid_ranges,
             self.setpoint_settings.safety_voltage_ranges,
             run_stage,

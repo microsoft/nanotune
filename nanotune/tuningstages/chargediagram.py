@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Sequence
 
 from typing_extensions import TypedDict
 
@@ -129,11 +129,11 @@ class ChargeDiagram(TuningStage):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         current_iteration: int,
         max_n_iterations: int,
-    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
         been successful. An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
@@ -260,8 +260,8 @@ class ChargeDiagram(TuningStage):
     def get_range_update_directives(
         self,
         run_id: int,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
     ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data

@@ -1,3 +1,4 @@
+from nanotune.tuningstages.settings import Classifiers
 import numpy as np
 import pytest
 
@@ -13,11 +14,11 @@ def test_chargediagram_run_stage(chargediagram_settings, experiment):
 
     chdiag = ChargeDiagram(
         **chargediagram_settings,  # readout_s., setpoint_s, data_s.
-        classifiers={
-            "singledot": MockClassifer("singledot"),
-            "doubledot": MockClassifer("doubledot"),
-            "dotregime": MockClassifer("dotregime"),
-        },
+        classifiers=Classifiers(
+            singledot=MockClassifer("singledot"),
+            doubledot=MockClassifer("doubledot"),
+            dotregime=MockClassifer("dotregime"),
+        ),
     )
     tuning_result = chdiag.run_stage(plot_result=False)
     assert tuning_result.success
