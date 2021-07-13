@@ -59,6 +59,3 @@
             db_path : "${db_path}/data/tuning/device_characterization.db"
             exp_name : "GB_Newtown_Dev_3_2"
             run_id : 1207
-
-
-

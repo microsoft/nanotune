@@ -643,4 +643,3 @@ def check_new_voltage(
     if touching_limits[1]:
         new_direction = VoltageChangeDirection.positive
     return new_direction
-

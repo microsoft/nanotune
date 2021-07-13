@@ -88,4 +88,3 @@ def test_setpoint_settings_update():
 def test_classifiers_attributes():
     assert sorted(Classifiers.__dataclass_fields__.keys()) == sorted([
         'pinchoff', 'singledot', 'doubledot', 'dotregime'])
-

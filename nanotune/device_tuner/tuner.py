@@ -349,4 +349,3 @@ class Tuner(qc.Instrument):
 def linear_voltage_steps(voltage_range, voltage_step):
     n_steps = int(abs(voltage_range[0] - voltage_range[1]) / voltage_step)
     return np.linspace(voltage_range[1], voltage_range[0], n_steps)
-
