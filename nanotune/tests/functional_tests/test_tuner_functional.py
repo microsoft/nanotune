@@ -30,3 +30,4 @@ def test_measure_initial_ranges_2D(
     assert min_voltage == -0.6428571428571428
     assert len(measurement_result.to_dict()) == 14
     assert max_voltage == -2.918972990997
+    tuner.close()

@@ -69,3 +69,4 @@ def test_double_dot_tuning_good_example(
 
     assert success
     assert n_iter == 1
+    self.close()

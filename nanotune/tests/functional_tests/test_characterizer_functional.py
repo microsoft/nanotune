@@ -22,6 +22,7 @@ def test_characterize_device_default(
     device = sim_device
     scenario = sim_scenario_device_characterization
     skip_gates = [device.top_barrier]
+    print(sim_device.normalization_constants)
 
     if gate_configurations is None:
         gate_configurations = {}
@@ -42,6 +43,7 @@ def test_characterize_device_default(
                     device,
                     gate,
                     use_safety_voltage_ranges=True,
+                    voltage_precision=0.05,
                 )
                 measurement_result.add_result(sub_result)
                 assert sub_result.success
