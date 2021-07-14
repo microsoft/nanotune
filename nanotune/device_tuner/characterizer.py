@@ -1,3 +1,7 @@
+# Copyright (c) 2021 Jana Darulova
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 import logging
 from nanotune.device.device_channel import DeviceChannel
 from typing import Dict, Optional, Sequence
@@ -10,9 +14,20 @@ logger = logging.getLogger(__name__)
 
 
 class Characterizer(Tuner):
-    """
-    """
+    """Tuner sub-class specializing on device characterization.
 
+    Attributes:
+        classifiers (Classifiers): a setting.Classifiers instance
+            holding all required classifiers. Eg. pinchoff.
+        data_settings (DataSettings): A settings.DataSettings instance with
+            data related information such as `db_name` and
+            `normalization_constants'.
+        setpoint_settings (SetpointSettings): A settings.SetpointSettings
+            instance with setpoint related information such as
+            `voltage_precision`.
+        tuning_history (TuningHistory): A TuningHistory instance holding all
+            tuning results.
+    """
     def __init__(
         self,
         name: str,
@@ -20,6 +35,19 @@ class Characterizer(Tuner):
         classifiers: Classifiers,
         setpoint_settings: SetpointSettings,
     ) -> None:
+        """Characterizer init. Calling Tuner init function without any other
+        instantiation.
+
+        Args:
+            classifiers (Classifiers): a setting.Classifiers instance
+                holding all required classifiers. Eg. pinchoff.
+            data_settings (DataSettings): A settings.DataSettings instance with
+                data related information such as `db_name` and
+                `normalization_constants'.
+            setpoint_settings (SetpointSettings): A settings.SetpointSettings
+                instance with setpoint related information such as
+                `voltage_precision`.
+        """
         super().__init__(
             name,
             data_settings,
@@ -33,10 +61,21 @@ class Characterizer(Tuner):
         skip_gates: Optional[Sequence[DeviceChannel]] = None,
         gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
     ) -> MeasurementHistory:
-        """
-        gate_configurations: Dict[int, Dict[int, float]]; with gate
-        configuration to be applied for individual gate characterizations.
-        Example: Set top barrier of a 2DEG device.
+        """Characterizes a device by characterizing each gate individually.
+        Specific gates can be skipped, eg. the top barrier of a 2DEG device.
+
+        Args:
+            device (nt.Device): device to tune.
+            skip_gates (Sequence[DeviceChannel]): optional list of gates which
+                should not be characterized.
+            gate_configurations (Dict[int, Dict[int, float]]): optional gate
+                voltage combinations at which gates should be characterized.
+                Maps gate IDs of gates to characteris onto dictionaries, which
+                in turn map gate IDs of gates to set to their respective
+                voltages.
+
+        Returns:
+            MeasurementHistory: Collection of all tuning results.
         """
         if gate_configurations is None:
             gate_configurations = {}

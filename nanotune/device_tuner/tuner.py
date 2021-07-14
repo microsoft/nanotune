@@ -1,7 +1,11 @@
+# Copyright (c) 2021 Jana Darulova
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 from dataclasses import asdict, dataclass, field
 import logging
 from contextlib import contextmanager
-from typing import Generator, List, Optional, Sequence, Tuple, Dict, Union
+from typing import Generator, Iterable, List, Optional, Sequence, Tuple, Dict, Union
 
 import numpy as np
 import qcodes as qc
@@ -17,9 +21,15 @@ logger = logging.getLogger(__name__)
 
 @contextmanager
 def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]:
-    """Sets gates back to their respective voltage they are at before
-    the contextmanager was called. If gates need to be set in a specific
+    """Context manager setting back gate voltages to their initial values. If
+    gates need to be set in a specific
     order, then this order needs to be respected on the list 'gates'.
+
+    Args:
+        gates: List of DeviceChannels, i.e. gates of a Device.
+
+    Returns:
+        generator returning None
     """
     initial_voltages = []
     for gate in gates:
@@ -33,6 +43,12 @@ def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]
 
 @dataclass
 class TuningHistory:
+    """Container holding tunign results of several devices.
+
+    Attributes:
+        results (dict): Mapping device name to an instance of
+            MeasurementHistory.
+    """
     results: Dict[str, MeasurementHistory] = field(default_factory=dict)
 
     def update(
@@ -40,7 +56,14 @@ class TuningHistory:
         device_name: str,
         new_result: Union[TuningResult, MeasurementHistory],
     ):
-        """ """
+        """Adds a tuning result - either an instance of TuningResult or
+        MeasurementHistory.
+
+        Args:
+            device_name (str): name of Device instance.
+            new_result (TuningResult or MeasurementHistory): Either instance of
+                TuningResult or MeasurementHistory.
+        """
         if device_name not in self.results.keys():
             self.results[device_name] = MeasurementHistory(device_name)
         if isinstance(new_result, MeasurementHistory):
@@ -53,7 +76,20 @@ class TuningHistory:
 
 
 class Tuner(qc.Instrument):
-    """
+    """Tuner base class. It implements common methods used in both device
+    characterization and dot tuning.
+
+    Attributes:
+        classifiers (Classifiers): a setting.Classifiers instance
+            holding all required classifiers. Eg. pinchoff.
+        data_settings (DataSettings): A settings.DataSettings instance with
+            data related information such as `db_name` and
+            `normalization_constants'.
+        setpoint_settings (SetpointSettings): A settings.SetpointSettings
+            instance with setpoint related information such as
+            `voltage_precision`.
+        tuning_history (TuningHistory): A TuningHistory instance holding all
+            tuning results.
     """
 
     def __init__(
@@ -63,6 +99,18 @@ class Tuner(qc.Instrument):
         classifiers: Classifiers,
         setpoint_settings: SetpointSettings,
     ) -> None:
+        """Tuner init.
+
+        Args:
+            classifiers (Classifiers): a setting.Classifiers instance
+                holding all required classifiers. Eg. pinchoff.
+            data_settings (DataSettings): A settings.DataSettings instance with
+                data related information such as `db_name` and
+                `normalization_constants'.
+            setpoint_settings (SetpointSettings): A settings.SetpointSettings
+                instance with setpoint related information such as
+                `voltage_precision`.
+        """
         super().__init__(name)
 
         self.classifiers = classifiers
@@ -73,31 +121,50 @@ class Tuner(qc.Instrument):
 
     @property
     def setpoint_settings(self) -> SetpointSettings:
+        """Setpoint settings property."""
         return self._setpoint_settings
 
     @setpoint_settings.setter
     def setpoint_settings(self, new_settings: SetpointSettings) -> None:
+        """Setpoint settings property setter. Overwrites all previous settings
+        and adds new ones to static metadata.
+
+        Args:
+            new_settings (SetpointSettings): an SetpointSettings instance with
+                new settings.
+        """
         self._setpoint_settings = new_settings
         self.metadata.update({'setpoint_settings': asdict(new_settings)})
 
     @property
     def data_settings(self) -> DataSettings:
+        """Data settings property."""
         return self._data_settings
 
     @data_settings.setter
     def data_settings(self, new_settings: DataSettings) -> None:
+        """Data settings property setter. Overwrites all previous settings
+        and adds new ones to static metadata.
+
+        Args:
+            new_settings (DataSettings): an DataSettings instance with
+                new settings.
+        """
         self._data_settings = new_settings
         self.metadata.update({'data_settings': asdict(new_settings)})
 
     def update_normalization_constants(self, device: Device):
-        """
-        Get the maximum and minimum signal measured of a device, for all
-        readout methods specified in device.readout. It will first
-        set all gate voltages to their respective most negative allowed values
-        and then to their most positive allowed ones.
+        """Measures and sets normalization constants of a given device
+        It gets the maximum and minimum signal for all
+        readout methods in device.readout. It will first
+        set all gate voltages to their most negative allowed values to record
+        the minimal signal and then to their most positive allowed ones,
+        measuring the maximum signal.
+        The device is put back into state where it was before, with gates being
+        set in the order they are listed in device.gates.
 
-        Puts device back into state where it was before, gates are set in the
-        order as they are set in device.gates.
+        Args:
+            device: the device to measure, an instance of nt.Device
         """
         available_readout = device.readout.available_readout()
 
@@ -125,16 +192,31 @@ class Tuner(qc.Instrument):
         gate: DeviceChannel,
         use_safety_voltage_ranges: bool = False,
         iterate: bool = False,
-        voltage_precision: Optional[float] = None,
+        voltage_precision: float = 0.02,
         comment: Optional[str] = None,
     ) -> TuningResult:
-        """
-        Characterize multiple gates.
-        It does not set any voltages.
+        """Characterizes a single DeviceChannel/gate of a device. Other than
+        the gate swept, it does not set any voltages.
 
-        returns instance of MeasurementHistory
-        """
+        Args:
+            device (nt.Device): device to tune.
+            gate (nt.DeviceChannel): DeviceChannel instance/the gate to
+                characterize.
+            use_safety_voltage_ranges (bool): whether or not the entire safe
+                voltage range should be swept. If `False`, the gate's
+                `current_valid_range` will be used.
+            iterate (bool): whether the gate should be characterized again over
+                an extended voltage if a poor result is measured. Only makes
+                sense if `use_safety_voltage_ranges=False`. The new ranges are
+                determined based on the range update directives returned by
+                PinchoffFit.
+            voltage_precision (float): optional voltage precision, i.e. the
+                voltage difference between subsequent setpoints. Default is 2mV.
+            comment (str): optional string added to the tuning result.
 
+        Return:
+            TuningResult
+        """
         if comment is None:
             comment = f"Characterizing {gate}."
         if not self.classifiers.is_pinchoff_classifier():
@@ -171,18 +253,35 @@ class Tuner(qc.Instrument):
         gates_to_sweep: Sequence[DeviceChannel],
         voltage_step: float = 0.2,
     ) -> Tuple[Tuple[float, float], MeasurementHistory]:
-        """
-        Estimate the default voltage range to consider
+        """Estimates the initial valid voltage range of capacitively coupled
+        gates - the range in which `gate_to_set` in combination with
+        `gates_to_sweep` is able to deplete the electron gas nearby.
+        Example: a 2DEG device with a top barrier, for which we wish to
+        determine the range within which all relevant gates, here left, central
+        and right barrier, pinch off. It can also be used to determine the
+        range of a bottom gate beneath a 1D system.
+        It executes `get_pairwise_pinchoff` twice: First it determines the least
+        negative voltage of `gate_to_set` for which all `gates_to_sweep` pinch
+        off by decreasing `gate_to_set` by `voltage_step` and characterizing
+        all `gates_to_sweep`. It retains the gate which pinched off last and
+        gets a pairwise pinchoff by setting this last gate to
+        descresing voltages, characterizing `gate_to_set` at each value. The
+        first time `gate_to_set` pinches off the `low_voltage`, or `L`, is
+        retained as the upper range limit.
 
-        # Swap top_barrier and last barrier to pinch off agains it to
-        # determine opposite corner of valid voltage space.
         Args:
-            gate_to_set (nt.DeviceChannel):
-            gates_to_sweep (list)
-            voltage_step (float)
+            device (nt.Device): device to tune.
+            gate_to_set (nt.DeviceChannel): DeviceChannel instance of the gate
+                for which an initial valid range should be determined.
+            gates_to_sweep (Sequence[DeviceChannel]): DeviceChannel instances of the gates which
+                couple to `gate_to_set` and thus affect its valid range.
+            voltage_step (float): Voltage difference between consecutive gate
+                voltage sets, i.e. by how much e.g. `gate_to_set` will be
+                decreased at each iteration.
+
         Returns:
-            tuple(float, float):
-            MeasurementHistory:
+            Tuple[float, float]: Valid range of `gate_to_set`.
+            MeasurementHistory: Collection of tuning results.
         """
         if self.classifiers.pinchoff is None:
             raise KeyError("No pinchoff classifier.")
@@ -227,12 +326,32 @@ class Tuner(qc.Instrument):
 
     def get_pairwise_pinchoff(
         self,
-        device,
-        gate_to_set,
-        gates_to_sweep,
-        voltages_to_set,
+        device: Device,
+        gate_to_set: DeviceChannel,
+        gates_to_sweep: Sequence[DeviceChannel],
+        voltages_to_set: Iterable[float],
     ) -> Tuple[MeasurementHistory, DeviceChannel, float]:
-        """ """
+        """Determines voltage of `gate_to_set` at which all `gates_to_sweep`
+        pinch off. Decreased `gate_to_set`'s voltage and characterizes those
+        `gates_to_sweep` which have not pinched off at previous iterations.
+
+        Args:
+            device (nt.Device): device to tune.
+            gate_to_set (nt.DeviceChannel): DeviceChannel instance of the gate
+                for which an initial valid range should be determined.
+            gates_to_sweep (list): DeviceChannel instances of the gates which
+                couple to `gate_to_set` and thus affect its valid range.
+            voltage_step (float): Voltage difference between consecutive gate
+                voltage sets, i.e. by how much `gate_to_set` will be
+                decreased at each iteration.
+
+        Returns:
+            MeasurementHistory:
+            DeviceChannel: Gate to pinch off last (as voltage of `gate_to_set`
+                is decreased).
+            float: voltage `gate_to_set` at which all `gates_to_sweep` pinched
+                off.
+        """
         measurement_result = MeasurementHistory(device.name)
         layout_ids = [g.gate_id for g in gates_to_sweep]
         skip_gates = dict.fromkeys(layout_ids, False)
@@ -263,10 +382,14 @@ class Tuner(qc.Instrument):
         self,
         device: Device,
     ) -> DataSettings:
-        """Add device relevant readout settings.
+        """Returns data settings with device specific information, e.g.
+        normalization constants added.
+
+        Args:
+            device (nt.Device): device to tune.
 
         Returns:
-            New data settings
+            DataSettings: new data settings including normalization constants.
         """
         new_datasettings = DataSettings(**asdict(self.data_settings))
         norm_csts = device.normalization_constants
@@ -275,15 +398,26 @@ class Tuner(qc.Instrument):
 
     def measurement_setpoint_settings(
         self,
-        parameters_to_sweep: List[qc.Parameter],
-        ranges_to_sweep: List[List[float]],
-        safety_voltage_ranges: List[List[float]],
+        parameters_to_sweep: Sequence[qc.Parameter],
+        ranges_to_sweep: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         voltage_precision: Optional[float] = None,
     ) -> SetpointSettings:
-        """Add device relevant readout settings.
+        """Returns setpoint settings with updated `parameters_to_sweep`,
+        `ranges_to_sweep`, `safety_voltage_ranges` and `voltage_precision`.
+
+        Args:
+            parameters_to_sweep (Sequence[qc.Parameter]): List of QCoDeS
+                parameters which will be swept.
+            ranges_to_sweep (Sequence[Sequence[float]]): List of voltage
+                ranges, in the same order as `parameters_to_sweep`.
+            safety_voltage_ranges: (Sequence[Sequence[float]]): List of safe
+                voltage ranges, in the same order as `parameters_to_sweep`.
+            voltage_precision float: optional float, voltage difference between
+                setpoints.
 
         Returns:
-            New data settings
+            SetpointSettings: updated setpoint settings.
         """
         new_settings = SetpointSettings(**asdict(self.setpoint_settings))
         new_settings.parameters_to_sweep = parameters_to_sweep
@@ -297,14 +431,35 @@ class Tuner(qc.Instrument):
     def get_charge_diagram(
         self,
         device: Device,
-        gates_to_sweep: List[DeviceChannel],
+        gates_to_sweep: Sequence[DeviceChannel],
         use_safety_voltage_ranges: bool = False,
         iterate: bool = False,
-        voltage_precision: Optional[float] = None,
+        voltage_precision: Optional[float] = 0.02,
         comment: Optional[str] = None,
     ) -> TuningResult:
-        """
-        stage.segment_info = ((data_id, ranges, category))
+        """Measures a charge diagram by sweeping `gates_to_sweep`. The returned
+        TuningResult instance also contains information about dot segments,
+        such as their voltage sub-ranges and classification outcome
+        (`tuningresult.ml_result['dot_segments']`).
+        The tuning results is added to tuner's `tuning_history`.
+
+        Args:
+            device (nt.Device): device to tune.
+            gates_to_sweep (Sequence[DeviceChannel]): DeviceChannel instances
+                of gates to sweep.
+            use_safety_voltage_ranges (bool): whether entire safety voltage
+                range should be swept. Current valid range is taken if not.
+                Default is False.
+            iterate (bool): whether subsequent diagrams with over extended
+                ranges should be taken if the measurement is classified as poor/
+                not the desired regime.
+            voltage_precision float: optional float, voltage difference between
+                setpoints. Default is 2mV.
+            comment (str): optional comment added to the tuning result.
+
+        Returns:
+            TuningResult: tuning result including classification result and
+                dot segment info (`tuningresult.ml_result['dot_segments']`).
         """
         if comment is None:
             comment = f"Taking charge diagram of {gates_to_sweep}."
@@ -342,10 +497,22 @@ class Tuner(qc.Instrument):
             f"success: {tuningresult.success}, " \
             f"termination_reason: {tuningresult.termination_reasons}"
         )
-
         return tuningresult
 
 
-def linear_voltage_steps(voltage_range, voltage_step):
+def linear_voltage_steps(
+    voltage_range: Sequence[float],
+    voltage_step: float,
+) -> Sequence[float]:
+    """Returns linearly spaced setpoints.
+
+    Args:
+        voltage_range: (Sequence[float]): interval within which setpoints
+            should be computed.
+        voltage_step: (float): voltage difference between setpoints.
+
+    Returns:
+        Sequence[float]: linearly spaced setpoints.
+    """
     n_steps = int(abs(voltage_range[0] - voltage_range[1]) / voltage_step)
     return np.linspace(voltage_range[1], voltage_range[0], n_steps)
