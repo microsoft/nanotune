@@ -5,3 +5,4 @@ from .qcodes_data_provider import QcodesDataProvider
 from .synthetic_pinchoff_data_provider import SyntheticPinchoffDataProvider
 from .delayed_data_provider import DelayedDataProvider
 from .ramped_value_data_provider import RampedValueDataProvider
+from .dependent_2d_data_provider import Dependent2dDataProvider
