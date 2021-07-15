@@ -501,7 +501,7 @@ def test_select_outer_barrier_directives(dottuner):
         termination_reasons= ['x more positive'],
     )
     assert barrier_directives[1] == VoltageChangeDirection.positive
-    assert barrier_directives[4] == VoltageChangeDirection.positive
+    assert barrier_directives[5] == VoltageChangeDirection.positive
 
     barrier_directives = dottuner._select_outer_barrier_directives(
         termination_reasons= ['x more positive'], barrier_gate_ids=[1],
@@ -633,7 +633,7 @@ def set_central_and_outer_barriers(dottuner, sim_device):
     assert round(sim_device.central_barrier.voltage(), 2) == -0.57
 
 
-def test_adjust_helper_and_outer_barriers(dottuner, sim_device):
+def test_adjust_outer_barriers_possibly_helper_gate(dottuner, sim_device):
 
     sim_device.current_valid_ranges({0: [-1, 0]})
     sim_device.gates[1].voltage(-0.95)
@@ -655,7 +655,7 @@ def test_adjust_helper_and_outer_barriers(dottuner, sim_device):
     barrier_changes = {1: VoltageChangeDirection.negative}
     dottuner.set_outer_barriers = set_outer_barriers_dummy
 
-    dottuner.adjust_helper_and_outer_barriers(
+    dottuner.adjust_outer_barriers_possibly_helper_gate(
         sim_device,
         DoubleDotLayout,
         barrier_changes,
@@ -685,7 +685,7 @@ def test_set_valid_plunger_ranges(dottuner, sim_device):
             }
         return barrier_changes
 
-    def adjust_helper_and_outer_barriers_dummy(
+    def adjust_outer_barriers_possibly_helper_gate_dummy(
         device, device_layout, barrier_changes,
     ):
         curr_val = device.top_barrier.voltage()
@@ -702,7 +702,7 @@ def test_set_valid_plunger_ranges(dottuner, sim_device):
     sim_device.right_barrier.voltage(-0.45)
 
     dottuner.set_new_plunger_ranges = set_new_plunger_ranges_dummy
-    dottuner.adjust_helper_and_outer_barriers = adjust_helper_and_outer_barriers_dummy
+    dottuner.adjust_outer_barriers_possibly_helper_gate = adjust_outer_barriers_possibly_helper_gate_dummy
     dottuner.data_settings.noise_floor = 0.02
     dottuner.data_settings.dot_signal_threshold = 0.1
 
