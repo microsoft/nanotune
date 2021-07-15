@@ -782,12 +782,12 @@ def test_take_high_resolution_diagram(
 
     dottuner.data_settings.segment_size = 0.1
     voltage_precisions = (0.02, 0.01)
+    dottuner.setpoint_settings.high_res_precisions = voltage_precisions
     dottuner.take_high_resolution_diagram(
         sim_device,
         gate_ids=DoubleDotLayout.plungers(),
         target_state=DeviceState.doubledot,
         take_segments=True,
-        voltage_precisions=voltage_precisions,
     )
 
     nt.set_database(
