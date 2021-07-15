@@ -504,7 +504,7 @@ def test_select_outer_barrier_directives(dottuner):
     assert barrier_directives[5] == VoltageChangeDirection.positive
 
     barrier_directives = dottuner._select_outer_barrier_directives(
-        termination_reasons= ['x more positive'], barrier_gate_ids=[1],
+        termination_reasons= ['x more positive'], outer_barriers_id=[1],
     )
     assert barrier_directives[1] == VoltageChangeDirection.positive
     assert len(barrier_directives) == 1
