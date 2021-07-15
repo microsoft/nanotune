@@ -65,3 +65,4 @@ instruments:
       readout:
         transport:
           qd_mock_instrument.drain
+      main_readout_method: transport
