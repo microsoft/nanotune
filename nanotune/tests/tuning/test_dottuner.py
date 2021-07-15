@@ -233,7 +233,8 @@ def test_characterize_plunger(
         sim_device,
         sim_device.left_plunger,
     )
-    assert new_range == (-0.331110370123374, -0.0710236745581861)
+    assert round(new_range[0], 2) == -0.33
+    assert round(new_range[1], 2) == -0.07
     assert device_state == DeviceState.undefined
     dottuner.data_settings.noise_floor = 0.0002 # min_signal = -0.11914071339135232
     # negative value below due to sim data interpolation
@@ -270,8 +271,9 @@ def test_set_new_plunger_ranges(
         plunger_barrier_pairs = [(2, 1), (2, 1)],
     )
     assert not barrier_changes
-    assert sim_device.current_valid_ranges()[2] == [
-        -0.331110370123374, -0.0710236745581861]
+    valid_range = sim_device.current_valid_ranges()[2]
+    assert round(valid_range[0], 2) == -0.33
+    assert round(valid_range[1], 2) == -0.07
 
     dottuner.data_settings.noise_floor = 0.6
     dottuner.data_settings.dot_signal_threshold = 0.1
@@ -280,8 +282,9 @@ def test_set_new_plunger_ranges(
         plunger_barrier_pairs = [(2, 1)],
     )
     assert barrier_changes[1] == VoltageChangeDirection.positive
-    assert sim_device.current_valid_ranges()[2] == [
-        -0.331110370123374, -0.0710236745581861]
+    valid_range = sim_device.current_valid_ranges()[2]
+    assert round(valid_range[0], 2) == -0.33
+    assert round(valid_range[1], 2) == -0.07
 
     dottuner.data_settings.noise_floor = 0.02
     dottuner.data_settings.dot_signal_threshold =-0.5
@@ -368,26 +371,29 @@ def test_set_central_barrier(
         sim_device,
         target_state = DeviceState.doubledot
     )
-    assert sim_device.central_barrier.voltage() == -1.42947649216405
+    assert round(sim_device.central_barrier.voltage(), 2) == -1.43
     gate_id = sim_device.central_barrier.gate_id
-    assert sim_device.current_valid_ranges()[gate_id] == [
-        -1.97565855285095, -0.974324774924975]
+
+    valid_range = sim_device.current_valid_ranges()[gate_id]
+    assert round(valid_range[0], 2) == -1.98
+    assert round(valid_range[1], 2) == -0.97
 
     sim_device.central_barrier.voltage(0)
     dottuner.set_central_barrier(
         sim_device,
         target_state = DeviceState.singledot
     )
-    assert sim_device.central_barrier.voltage() == -0.974324774924975
-    assert sim_device.current_valid_ranges()[gate_id] == [
-        -1.97565855285095, -0.974324774924975]
+    assert round(sim_device.central_barrier.voltage(), 2) == -0.97
+    valid_range = sim_device.current_valid_ranges()[gate_id]
+    assert round(valid_range[0], 2) == -1.98
+    assert round(valid_range[1], 2) == -0.97
 
     sim_device.central_barrier.voltage(0)
     dottuner.set_central_barrier(
         sim_device,
         target_state = DeviceState.pinchedoff
     )
-    assert sim_device.central_barrier.voltage() == -1.97565855285095
+    assert round(sim_device.central_barrier.voltage(), 2) == -1.98
 
     with pytest.raises(AssertionError):
         dottuner.set_central_barrier(
@@ -413,14 +419,16 @@ def test_set_outer_barriers(
     # sim_scenario_dottuning.run_next_step() into measurement code
     new_direction = dottuner.set_outer_barriers(sim_device, gate_ids=[1, 1])
 
-    assert sim_device.left_barrier.voltage() == -0.5141713904634877
-    assert sim_device.current_valid_ranges()[1] == [
-        -0.679226408802934, -0.44214738246082]
-    assert sim_device.transition_voltages()[1] == -0.658219406468823
+    assert round(sim_device.left_barrier.voltage(), 2) == -0.51
+    valid_range = sim_device.current_valid_ranges()[1]
+    assert round(valid_range[0], 2) == -0.68
+    assert round(valid_range[1], 2) == -0.44
+
+    assert round(sim_device.transition_voltages()[1], 2) == -0.66
     assert new_direction is None
 
     new_direction = dottuner.set_outer_barriers(sim_device, gate_ids=1)
-    assert sim_device.left_barrier.voltage() == -0.5141713904634877
+    assert round(sim_device.left_barrier.voltage(), 2) == -0.51
 
     sim_device.left_barrier.voltage(0)
     new_direction = dottuner.set_outer_barriers(
@@ -442,8 +450,8 @@ def test_adjust_all_barriers(dottuner, sim_device, sim_scenario_dottuning):
         outer_barriers_id= [],
     )
     assert voltage_change_direction is None
-    assert sim_device.top_barrier.voltage() == -0.8500000000000001
-    assert sim_device.central_barrier.voltage() == -1.42947649216405
+    assert round(sim_device.top_barrier.voltage(), 2) == -0.85
+    assert round(sim_device.central_barrier.voltage(), 2) == -1.43
 
 
 def test_adjust_all_barriers_loop(
@@ -483,9 +491,9 @@ def test_adjust_all_barriers_loop(
     # central_barrier is set by set_central_barrier based on a partial
     # measurement, which chooses -1 as it doesn't find a voltage at which
     # the signal is less than three quarter the max amplitude
-    assert sim_device.central_barrier.voltage() == -1.42947649216405
-    assert sim_device.left_barrier.voltage() == -0.95
-    assert sim_device.top_barrier.voltage() == -0.75
+    assert round(sim_device.central_barrier.voltage(), 2) == -1.43
+    assert round(sim_device.left_barrier.voltage(), 2) == -0.95
+    assert round(sim_device.top_barrier.voltage(), 2) == -0.75
 
 
 def test_select_outer_barrier_directives(dottuner):
@@ -580,8 +588,8 @@ def test_update_gate_configuration(
     # We sweep the central barrier instead of the outer barriers, so that
     # the central barrier is set as if it were an outer barrier. Hence
     # this value. It checks if it correctly launches adjust_all_barriers.
-    assert sim_device.central_barrier.voltage() == -0.8962295628962297
-    assert sim_device.top_barrier.voltage() == -0.8200000000000001
+    assert round(sim_device.central_barrier.voltage(), 2) == -0.9
+    assert round(sim_device.top_barrier.voltage(), 2) == -0.82
 
     last_result.termination_reasons = []
     last_result.success = False
@@ -619,10 +627,10 @@ def set_central_and_outer_barriers(dottuner, sim_device):
         target_state=DeviceState.doubledot,
     )
 
-    assert sim_device.top_barrier.voltage() == -0.8819020000000001
-    assert sim_device.left_barrier.voltage() == -1.2
-    assert sim_device.right_barrier.voltage() == -1.0999999999999999
-    assert sim_device.central_barrier.voltage() == -0.57
+    assert round(sim_device.top_barrier.voltage(), 2) == -0.88
+    assert round(sim_device.left_barrier.voltage(), 2) == -1.2
+    assert round(sim_device.right_barrier.voltage(), 2) == -1.1
+    assert round(sim_device.central_barrier.voltage(), 2) == -0.57
 
 
 def test_adjust_helper_and_outer_barriers(dottuner, sim_device):
@@ -653,9 +661,9 @@ def test_adjust_helper_and_outer_barriers(dottuner, sim_device):
         barrier_changes,
     )
 
-    assert sim_device.top_barrier.voltage() == -0.8819020000000001
-    assert sim_device.left_barrier.voltage() == -0.45000000000000007
-    assert sim_device.right_barrier.voltage() == -0.10000000000000003
+    assert round(sim_device.top_barrier.voltage(), 2) == -0.88
+    assert round(sim_device.left_barrier.voltage(), 2)  == -0.45
+    assert round(sim_device.right_barrier.voltage(), 2)  == -0.1
 
 
 def test_set_valid_plunger_ranges(dottuner, sim_device):
@@ -704,9 +712,9 @@ def test_set_valid_plunger_ranges(dottuner, sim_device):
         # noise_floor= 0.02,
         # dot_signal_threshold=0.1,
     )
-    assert sim_device.top_barrier.voltage() == -0.6200000000000001
-    assert sim_device.left_barrier.voltage() == -0.6000000000000001
-    assert sim_device.right_barrier.voltage() == -0.6500000000000001
+    assert round(sim_device.top_barrier.voltage(), 2)  == -0.62
+    assert round(sim_device.left_barrier.voltage(), 2)  == -0.6
+    assert round(sim_device.right_barrier.voltage(), 2)  == -0.65
 
 
 def test_take_high_res_dot_segments(
