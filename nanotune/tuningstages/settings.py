@@ -124,6 +124,9 @@ class SetpointSettings(Settings):
             of `parameters_to_sweep`, in the same order.
         setpoint_method (optional Callable): optional callable, to be used to
             calculate setpoints. Default are linearly spaced setpoints.
+        high_res_precisions (Sequence[float]): voltage precisions for high
+            resolution data. The first is used for entire/larger diagrams while
+            the second for data segments/smaller ranges.
     """
     voltage_precision: float
     parameters_to_sweep: Sequence[qc.Parameter] = field(default_factory=list)
@@ -131,6 +134,7 @@ class SetpointSettings(Settings):
     safety_voltage_ranges: Sequence[Sequence[float]] = field(default_factory=list)
     setpoint_method: Optional[
         Callable[[Any], Sequence[Sequence[float]]]] = None
+    high_res_precisions: Sequence[float] = (0.0005, 0.0001)
 
 
 @dataclass
