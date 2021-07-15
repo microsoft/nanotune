@@ -941,7 +941,7 @@ def check_new_voltage(
     new_voltage: float,
     gate: DeviceChannel,
     tolerance: float=0.1,
-) -> VoltageChangeDirection:
+) -> Optional[VoltageChangeDirection]:
     """Checks whether a voltage can be set on a gate. If not, a
     VoltageChangeDirection indicating how other gates need to be updated
     is returned.
