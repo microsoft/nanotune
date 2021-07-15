@@ -33,11 +33,13 @@ def test_range_change_setting():
     assert setting.relative_range_change == 0.1
     assert setting.max_range_change == 0.05
     assert setting.min_range_change == 0.01
+    assert setting.tolerance == 0.1
 
-    setting = RangeChangeSetting(0.2, 0.3, 0.4)
+    setting = RangeChangeSetting(0.2, 0.3, 0.4, 0.3)
     assert setting.relative_range_change == 0.2
     assert setting.max_range_change == 0.3
     assert setting.min_range_change == 0.4
+    assert setting.tolerance == 0.3
 
 
 def test_check_new_voltage(
