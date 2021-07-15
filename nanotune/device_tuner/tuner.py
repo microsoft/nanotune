@@ -192,7 +192,7 @@ class Tuner(qc.Instrument):
         gate: DeviceChannel,
         use_safety_voltage_ranges: bool = False,
         iterate: bool = False,
-        voltage_precision: float = 0.02,
+        voltage_precision: Optional[float] = None,
         comment: Optional[str] = None,
     ) -> TuningResult:
         """Characterizes a single DeviceChannel/gate of a device. Other than
@@ -211,7 +211,9 @@ class Tuner(qc.Instrument):
                 determined based on the range update directives returned by
                 PinchoffFit.
             voltage_precision (float): optional voltage precision, i.e. the
-                voltage difference between subsequent setpoints. Default is 2mV.
+                voltage difference between subsequent setpoints. If none given,
+                the value in self.data_settings is taken. The optional input
+                here can be used to temporarily overwrite the default value.
             comment (str): optional string added to the tuning result.
 
         Return:
@@ -434,7 +436,7 @@ class Tuner(qc.Instrument):
         gates_to_sweep: Sequence[DeviceChannel],
         use_safety_voltage_ranges: bool = False,
         iterate: bool = False,
-        voltage_precision: Optional[float] = 0.02,
+        voltage_precision: Optional[float] = None, #0.02,
         comment: Optional[str] = None,
     ) -> TuningResult:
         """Measures a charge diagram by sweeping `gates_to_sweep`. The returned
@@ -454,7 +456,9 @@ class Tuner(qc.Instrument):
                 ranges should be taken if the measurement is classified as poor/
                 not the desired regime.
             voltage_precision float: optional float, voltage difference between
-                setpoints. Default is 2mV.
+                setpoints. If none given,
+                the value in self.data_settings is taken. The optional input
+                here can be used to temporarily overwrite the default value.
             comment (str): optional comment added to the tuning result.
 
         Returns:
