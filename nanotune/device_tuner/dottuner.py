@@ -115,10 +115,37 @@ class DotTuner(Tuner):
         take_high_res: bool = False,
         continue_tuning: bool = False,
     ) -> Tuple[bool, MeasurementHistory]:
-        """
+        """Tunes a device into a target dot regime. It expects the device to
+        have a helper gate such as a top barrier in a 2DEG device or a bottom
+        gate below a 1D system. Any previous tuning is reset by ramping all
+        gates to their heighest allowed values and the device's normalization
+        constants are updated. Then the helper gate is set before the regime
+        its tuning using `tune_dot_regime`.
+
+        It appears that the first regime can often be improved by a few
+        subsequent iterations of the algorithm, which can be achieved by
+        setting `continue_tuning` to True.
+        All measurements are saved in self.tuning_history under the device.name
+        key.
 
         Args:
             device (nt.Device): device to tune.
+            device_layout (DeviceLayout): device layout, default is
+                DoubleDotLayout.
+            target_state (DeviceState): target regime. Default is
+                DeviceState.doubledot.
+            max_iter (int): maximum number of iterations. Each iteration
+                chooses new barrier gate voltage combinations based on previous
+                measurement outcomes and takes a charge diagram.
+            take_high_res (bool): whether high resolution diagram should be
+                taken when the target regime is found.
+            continue_tuning (bool): whether to continue tuning even if the
+                target regime was found. Used when either classifiers are not
+                reliable enough or when aiming for an even better regime.
+
+        Returns:
+            bool: success of tuning.
+            MeasurementHistory: all tuning results of the device tuned.
         """
 
         if not self.classifiers.is_dot_classifier():
@@ -153,11 +180,36 @@ class DotTuner(Tuner):
         take_high_res: bool = False,
         continue_tuning: bool = False,
     ) -> bool:
-        """
+        """Tunes a device into a target dot regime, either single or double. If
+        tuning a device with a helper gate, it expects this gate to be set
+        already. After setting the remaining barriers (central and outer), a
+        tuning loop determines suitable plungers ranges for a charge diagram and
+        takes this diagram. If the result is classified as the the target
+        regime, new barrier voltages are chosen. The loop then resumes.
+
+        It appears that the first regime can often be improved by a few
+        subsequent iterations of the algorithm, which can be achieved by
+        setting `continue_tuning` to True.
+        All measurements are saved in self.tuning_history under the device.name
+        key.
 
         Args:
             device (nt.Device): device to tune.
+            device_layout (DeviceLayout): device layout, default is
+                DoubleDotLayout.
+            target_state (DeviceState): target regime. Default is
+                DeviceState.doubledot.
+            max_iter (int): maximum number of iterations. Each iteration
+                chooses new barrier gate voltage combinations based on previous
+                measurement outcomes and takes a charge diagram.
+            take_high_res (bool): whether high resolution diagram should be
+                taken when the target regime is found.
+            continue_tuning (bool): whether to continue tuning even if the
+                target regime was found. Used when either classifiers are not
+                reliable enough or when aiming for an even better regime.
 
+        Returns:
+            bool: success of tuning.
         """
         self.set_central_and_outer_barriers(
             device, device_layout, target_state
@@ -199,22 +251,27 @@ class DotTuner(Tuner):
     def take_high_resolution_diagram(
         self,
         device,
-        gate_ids: List[int] = DoubleDotLayout.plungers(),
+        gate_ids: Sequence[int] = DoubleDotLayout.plungers(),
         target_state: DeviceState = DeviceState.doubledot,
         take_segments: bool = True,
-        voltage_precisions: Tuple[float, float] = (0.0005, 0.0001),
-    ):
-        """
+    ) -> None:
+        """Takes high resolution diagram with optionally re-taking good segments
+        at a different voltage precision.
 
         Args:
             device (nt.Device): device to tune.
-
+            gate_ids (Sequence[int]): IDs of gates to sweep, default is
+                DoubleDotLayout.plungers()
+            target_state (DeviceState): target state, default is
+                DeviceState.doubledot.
+            take_segments (bool): whether or not to take individual segments at
+                a potentially different resolution.
         """
         logger.info("Take high resolution of entire charge diagram.")
         tuningresult = self.get_charge_diagram(
             device,
             [device.gates[gid] for gid in gate_ids],
-            voltage_precision=voltage_precisions[0],
+            voltage_precision=self.setpoint_settings.high_res_precisions[0],
         )
         if take_segments:
             self.take_high_res_dot_segments(
@@ -222,31 +279,41 @@ class DotTuner(Tuner):
                 dot_segments=tuningresult.ml_result['dot_segments'],
                 gate_ids=gate_ids,
                 target_state=target_state,
-                voltage_precision=voltage_precisions[1],
+                voltage_precision=self.setpoint_settings.high_res_precisions[1],
             )
 
     def take_high_res_dot_segments(
         self,
         device,
         dot_segments: Dict[int, Any],
-        gate_ids: List[int] = DoubleDotLayout.plungers(),
+        gate_ids: Sequence[int] = DoubleDotLayout.plungers(),
         target_state: DeviceState = DeviceState.doubledot,
         voltage_precision: float= 0.0001,
-    ):
-        """
+    ) -> None:
+        """Takes high resolution charge diagrams of dot segments which have
+        been classified to show the desired regime.
 
         Args:
             device (nt.Device): device to tune.
-
+            dot_segments (Dict[int, Any]): dot segment information, e.g.
+                compiled by DotFit and stored in
+                `tuningresult.ml_result['dot_segments']`. Maps run ids of
+                segmented data onto a dict with "predicted_regime" and
+                "voltage_ranges" keys.
+            gate_ids (Sequence[int]): IDs of gates to sweep, default is
+                DoubleDotLayout.plungers()
+            target_state (DeviceState): target state, default is
+                DeviceState.doubledot.
+            voltage_precision (float): optional voltage precision, usually a
+                smaller number than for other measurements.
         """
         logger.info("Take high resolution of good charge diagram segments.")
-
         for r_id in dot_segments.keys():
             if dot_segments[r_id]["predicted_regime"] == target_state.value:
-                v_rgs = dot_segments[r_id]['voltage_ranges']
+                v_rgs = dot_segments[r_id]["voltage_ranges"]
                 for g_id, v_range in zip(gate_ids, v_rgs):
                     device.current_valid_ranges({g_id: v_range})
-                tuningresult = self.get_charge_diagram(
+                _ = self.get_charge_diagram(
                     device,
                     [device.gates[gid] for gid in gate_ids],
                     voltage_precision=voltage_precision,
@@ -256,11 +323,16 @@ class DotTuner(Tuner):
         self,
         device,
         device_layout: Type[DeviceLayout],
-    ):
-        """
+    ) -> None:
+        """Determines and set current valid ranges for plungers. It
+        characterizes each plunger to determine the ranges. If these reach
+        their respective safety limits,
+        `adjust_outer_barriers_possibly_helper_gate` is called in a loop until
+        all barriers and plunger ranges can be set.
 
         Args:
             device (nt.Device): device to tune.
+            device_layout (DeviceLayout): device layout, e.g. DoubleDotLayout.
 
         """
         good_plunger_ranges = False
@@ -292,18 +364,18 @@ class DotTuner(Tuner):
 
         Args:
             device (nt.Device): device to tune.
-            device_layout (DeviceLayout):
-            barrier_changes (Dict[int, VoltageChangeDirection]):
+            device_layout (DeviceLayout): device layout, e.g. DoubleDotLayout.
+            barrier_changes (Dict[int, VoltageChangeDirection]): voltage change
+                directions for barriers. Maps gate IDs into
+                `VoltageChangeDirection`s.
         """
         new_v_change_dir = self.update_voltages_based_on_directives(
             device, barrier_changes,
         )
 
         if new_v_change_dir is not None:
-            logger.info(
-                "Outer barrier reached safety limit. " \
-                "Setting new top barrier.\n"
-            )
+            logger.info("Outer barrier reached safety limit. " \
+                "Setting new top barrier.\n")
             _ = self.update_voltages_based_on_directives(
                 device,
                 {device_layout.helper_gate(): new_v_change_dir},
