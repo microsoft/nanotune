@@ -2,9 +2,8 @@ from __future__ import annotations
 import copy
 import logging
 from enum import Enum
-from typing import (
-    Any, Dict, Optional, Sequence, Tuple, Union, Mapping, Sequence, List
-)
+from typing import (Any, Dict, Optional, Sequence, Tuple, Union, Mapping,
+    Sequence, List)
 
 import numpy as np
 from dataclasses import asdict, dataclass
@@ -157,18 +156,27 @@ class Device(DelegateInstrument):
             device.left_ohmic.
         parameters (dict): mapping parameter names onto parameters, of all
             parameters.
-        initial_valid_ranges (dict): dict mapping gate IDs into their initial
-            valid ranges.
-        transition_voltages (dict): dict mapping gate IDs into their transition
-            voltages.
-        current_valid_ranges (dict): dict mapping gate IDs into their current
-            valid ranges.
+        initial_valid_ranges (dict): dict mapping gate IDs onto the gate's
+            initial valid ranges. This is a valid range known in advance,
+            before any tuning happens. Defaults to the gate's safety range if
+            not specified.
+        transition_voltages (dict): dict mapping gate IDs onto the gate's
+            transition voltage. This voltage is typically determined through a
+            fit and can depend on the voltages of other gates.
+        current_valid_ranges (dict): dict mapping gate IDs onto the gate's
+            current valid range. These ranges will most probably depend on
+            voltaged of other gates and will be updated during tuning. These
+            are the ranges which will be swept during measurements. They
+            represent the voltage range in which interesting/desired features
+            are expected.
         main_readout_method (ReadoutMethods): a ReadoutMethods item indicating
             which readout signal should be used for tuning decisions.
-            Added to static metadata.
+            It is added to static metadata.
         normalization_constants (NormalizationConstants): normalization
             constants keeping track of highest and lowest signals recorded for
-            all specified readout methods.
+            all specified readout methods. Required for correct classification
+            and thus need to be updated when settings on measurement
+            instruments change. They are saved to static metadata.
         quality (bool): quality of device, typically determined during
             characterization. Only good devices will be tuned.
 
@@ -204,28 +212,44 @@ class Device(DelegateInstrument):
         """Device init method.
 
         Args:
-            name (str): instrument/device name.
-            station (qc.Station): station containing the real instrument that is used to get
-                the endpoint parameters.
+            name: instrument/device name.
+            station: station containing the real instrument that
+                is used to get the endpoint parameters.
             parameters: mapping from the name of a parameter to the sequence
                 of source parameters that it points to.
-            channels:
-            readout:
-            main_readout_method (str or ReadoutMethods):
+            channels: mapping from channel name to inputs to `DeviceChannel`,
+                such as the instrument channel, e.g. DAC channel, and `gate_id`.
+            readout: mapping from readout type, e.g. `transport` to the
+                respective parameters. The type has to be one of
+                the `ReadoutMethods` items.
+            main_readout_method: the readout method to
+                use for decision making. If more than one is being recorded,
+                fitting and classification result of only one will be taken
+                into account when making decisions during tuning.
+            initial_values: Default values to set on the
+                delegate instrument's parameters. Defaults to None (no initial
+                values are specified or set).
             set_initial_values_on_load: Flag to set initial values when the
                 instrument is loaded. Defaults to False.
-            device_type (str): type of device, e.g. 'doubledot_2D'.
-            initial_valid_ranges (dict): if known, the valid ranges within
-                which we need to tune.
-            current_valid_ranges (dict): if known, the current ranges within
-                which we need to tune. Can be used if the device needs to be
-                (re-)loaded in the middle of a tune-up.
-            normalization_constants (NormalizationConstants):
-            transition_voltages
-            initial_values: part kwargs. Default values to set on the delegate
-                instrument's parameters. Defaults to None (no initial values are
-                specified or
-                set).
+            device_type: type of device, e.g. 'doubledot_2D'.
+            initial_valid_ranges: mapping from gate IDs (int) to tuples
+                of voltages. If known, these valid ranges within
+                which to tune. Will be set to each gate's safety range if not
+                specified.
+            current_valid_ranges: mapping from gate IDs (int) to tuples
+                of voltages. If known, these are the current ranges within
+                which to tune. Can be used if the device needs to be
+                (re-)loaded in the middle of a tune-up. Will be set to each
+                gate's safety range if not specified.
+            normalization_constants: normalization
+                constants keeping track of highest and lowest signals recorded
+                for all specified readout methods. Required for correct
+                classification and thus need to be updated when settings on
+                measurement instruments change. They are saved to static
+                metadata.
+            transition_voltages: mapping from gate IDs onto their
+                current transition voltage. Can be used if the device needs to
+                be (re-)loaded in the middle of a tune-up.
         """
         channels = _add_station_and_label_to_channel_init(station, channels)
 
@@ -272,7 +296,6 @@ class Device(DelegateInstrument):
         else:
             self._main_readout_method = main_readout_method
         self.metadata['main_readout_method'] = self._main_readout_method.name
-
 
         if initial_valid_ranges is None:
             init_valid_ranges_renamed: Dict[int, Any] = {}
@@ -384,20 +407,34 @@ class Device(DelegateInstrument):
         self._main_readout_method
 
     def ground_gates(self) -> None:
+        """Sets all gate relays to ground."""
         for gate in self.gates:
             gate.ground()
             logger.info("DeviceChannel {} grounded.".format(gate.name))
 
     def float_ohmics(self) -> None:
+        """Sets all ohmic relays to float."""
         for ohmic in self.ohmics:
             ohmic.float_relay()
             logger.info("Ohmic {} floating.".format(ohmic.name))
 
-
     def get_gate_status(
         self,
     ) -> Dict[str, Dict[str, Union[Tuple[float, float], float]]]:
-        """"""
+        """Gets current voltages and valid ranges of all gates in a readable
+        form.
+
+        Returns:
+            dict: mapping from gate labels to mapping with current valid ranges
+            and voltages. Example:
+            ```
+            {top_barrier: {
+                current_valid_range: (-0.9, -0.7),
+                voltage: -0.81,
+                }
+            }
+            ```
+        """
         current_gate_status: Dict[
             str, Dict[str, Union[Tuple[float, float], float]]
         ] = {}
@@ -411,17 +448,15 @@ class Device(DelegateInstrument):
         return current_gate_status
 
     def all_gates_to_highest(self) -> None:
-        """
-        Set all gate voltages to most positive voltage allowed.
-        Will use ramp if gate.use_ramp is set to True
+        """Sets all gates to their upper safety limit, the heighest allowed
+        voltage. Voltages are ramped if `gate.use_ramp` is set to True
         """
         for gate in self.gates:
             gate.voltage(gate.safety_voltage_range()[1])
 
     def all_gates_to_lowest(self) -> None:
-        """
-        Set all gate voltages to most negative voltage allowed.
-        Will use ramp if gate.use_ramp is set to True
+        """Sets all gates to their lower safety limit, the lowest allowed
+        voltage. Voltages are ramped if `gate.use_ramp` is set to True
         """
         for gate in self.gates:
             gate.voltage(gate.safety_voltage_range()[0])
@@ -510,7 +545,17 @@ class Device(DelegateInstrument):
             Mapping[int, Any]
         ],
     ) -> Dict[int, Any]:
-        """ """
+        """Renames keys of mappings which are some gate identifier to gate
+        IDs. Example: `{'top_barrier': (-0.9, -0.7)}` -> `{0: (-0.9, -0.7)}`,
+        where 0 is the top barrier's gate ID.
+
+        Args:
+            mapping: mapping from either gate ID, gate label or DeviceChannel
+                instance onto some data.
+
+        Returns:
+            mapping: mapping from gate ID onto the unchanged data.
+        """
         new_dict = {}
         for gate_ref, param in mapping_to_rename.items():
             gate_id = self.get_gate_id(gate_ref)
@@ -519,7 +564,12 @@ class Device(DelegateInstrument):
             new_dict[gate_id] = param
         return new_dict
 
-    def initialize_channel_lists(self, channels_input_mapping):
+    def initialize_channel_lists(self,
+        channels_input_mapping,
+    ) -> Tuple[List[DeviceChannel], List[DeviceChannel], ]:
+        """Compiled gate and ohmics list as well as mapping between gate IDs
+        and the respective DeviceChannel instances.
+        """
         gate_dict = {}
         ohmic_dict = {}
         gate_labels = {}
