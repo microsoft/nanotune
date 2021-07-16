@@ -45,7 +45,7 @@ def test_data_settings_attributes(tmp_path):
 def test_setpoint_settings_attributes():
     assert sorted(SetpointSettings.__dataclass_fields__.keys()) == sorted([
         'voltage_precision', 'parameters_to_sweep', 'safety_voltage_ranges',
-        'ranges_to_sweep', 'setpoint_method'])
+        'ranges_to_sweep', 'setpoint_method', 'high_res_precisions'])
 
 
 def test_data_settings_update():
