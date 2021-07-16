@@ -31,10 +31,10 @@ class NormalizationConstants:
     all gates set to their highest allowed voltages.
 
     Attributes:
-        transport (Tuple[float, float]): constants for DC transport.
-        sensing (Tuple[float, float]): constants for charge sensing (transport
+        transport: constants for DC transport.
+        sensing: constants for charge sensing (transport
             or other).
-        rf (Tuple[float, float]): constants for reflectometry measurements.
+        rf: constants for reflectometry measurements.
     """
     transport: Tuple[float, float] = (0., 1.)
     sensing: Tuple[float, float] = (0., 1.)
@@ -49,7 +49,7 @@ class NormalizationConstants:
         dict or NormalizationConstants instance.
 
         Args:
-            new_constants (Dict or NormalizationConstants): new normalization
+            new_constants: new normalization
                 constants. If they don't contain all constants, only those
                 specified are updated with all other keeping their previous
                 values.
@@ -77,10 +77,10 @@ class Readout:
     """Container grouping readout of a device.
 
     Attributes:
-        transport (Tuple[float, float]): parameter to read out for DC transport.
-        sensing (Tuple[float, float]): parameter to read out for charge sensing
+        transport: parameter to read out for DC transport.
+        sensing: parameter to read out for charge sensing
             (transport or other).
-        rf (Tuple[float, float]): parameter to read out for reflectometry
+        rf: parameter to read out for reflectometry
             measurements.
     """
     transport: Optional[Union[GroupedParameter, qc.Parameter]] = None
@@ -145,39 +145,39 @@ class Device(DelegateInstrument):
     """Device abstraction with attributes and methods for (dot) tuning.
 
     Attributes:
-        name (str): string identifier, used e.g. when saving tuning results.
-        readout (Readout): readout parameters. One QCoDeS GroupedParameter for
+        name: string identifier, used e.g. when saving tuning results.
+        readout: readout parameters. One QCoDeS GroupedParameter for
             each readout method (transport, sensing, rf).
-        gates (list[DeviceChannel]): list of gates; instances of DeviceChannel
-        ohmics (list[DeviceChannel]): list of ohmics; instances of DeviceChannel
+        gates: list of gates; instances of DeviceChannel
+        ohmics: list of ohmics; instances of DeviceChannel
         <each gate>: each gate is added as an attribute with its name, eg.
             device.top_barrier.
         <each ohmic>: each ohmic is added as an attribute with its name, eg.
             device.left_ohmic.
-        parameters (dict): mapping parameter names onto parameters, of all
+        parameters: mapping parameter names onto parameters, of all
             parameters.
-        initial_valid_ranges (dict): dict mapping gate IDs onto the gate's
+        initial_valid_ranges: dict mapping gate IDs onto the gate's
             initial valid ranges. This is a valid range known in advance,
             before any tuning happens. Defaults to the gate's safety range if
             not specified.
-        transition_voltages (dict): dict mapping gate IDs onto the gate's
+        transition_voltages: dict mapping gate IDs onto the gate's
             transition voltage. This voltage is typically determined through a
             fit and can depend on the voltages of other gates.
-        current_valid_ranges (dict): dict mapping gate IDs onto the gate's
+        current_valid_ranges: dict mapping gate IDs onto the gate's
             current valid range. These ranges will most probably depend on
             voltaged of other gates and will be updated during tuning. These
             are the ranges which will be swept during measurements. They
             represent the voltage range in which interesting/desired features
             are expected.
-        main_readout_method (ReadoutMethods): a ReadoutMethods item indicating
+        main_readout_method: a ReadoutMethods item indicating
             which readout signal should be used for tuning decisions.
             It is added to static metadata.
-        normalization_constants (NormalizationConstants): normalization
+        normalization_constants: normalization
             constants keeping track of highest and lowest signals recorded for
             all specified readout methods. Required for correct classification
             and thus need to be updated when settings on measurement
             instruments change. They are saved to static metadata.
-        quality (bool): quality of device, typically determined during
+        quality: quality of device, typically determined during
             characterization. Only good devices will be tuned.
 
     Main methods:
