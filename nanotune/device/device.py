@@ -13,10 +13,12 @@ from qcodes import validators as vals
 from qcodes.station import Station
 
 from nanotune.device.device_channel import DeviceChannel
-if not qc.__version__.startswith('0.27'):
-    from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
-else:
-    from qcodes.instrument.delegate import DelegateInstrument  # type: ignore
+# if not qc.__version__.startswith('0.27'):
+#     from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
+# else:
+#     from qcodes.instrument.delegate import DelegateInstrument  # type: ignore
+from qcodes.instrument.delegate import DelegateInstrument
+
 from qcodes.instrument.delegate.grouped_parameter import GroupedParameter
 
 logger = logging.getLogger(__name__)
@@ -98,7 +100,7 @@ class Readout:
                 GroupedParameter.
         """
         param_dict = {}
-        for field in Readout.__dataclass_fields__.keys():
+        for field in ReadoutMethods.names():
             readout = getattr(self, field)
             if readout is not None:
                 param_dict[field] = readout
@@ -120,7 +122,7 @@ class Readout:
                 GroupParameter's full name (also string).
         """
         param_dict = {}
-        for field in Readout.__dataclass_fields__.keys():
+        for field in ReadoutMethods.names():
             readout = getattr(self, field)
             if readout is not None:
                 param_dict[field] = readout.full_name
@@ -129,14 +131,14 @@ class Readout:
 
 class ReadoutMethods(Enum):
     """Enumerates readout methods used in nanotune."""
-    transport = 0
-    sensing = 1
-    rf = 2
+    transport: int = 0
+    sensing: int = 1
+    rf: int = 2
 
     @classmethod
     def list(cls) -> List[int]:
         """Gets attribute values as a list."""
-        return list(map(lambda c: c.value, cls))
+        return list(map(lambda c: c.value, cls))  # type: ignore
 
     @classmethod
     def names(cls):

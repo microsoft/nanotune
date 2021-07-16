@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict, is_dataclass, field
 from typing import Optional, Sequence, Callable, Any, Union, Dict
 import qcodes as qc
+from qcodes.instrument.parameter import _BaseParameter
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device.device import NormalizationConstants
@@ -116,7 +117,7 @@ class SetpointSettings(Settings):
 
     Attributes:
         voltage_precision (float): voltage difference between setpoints.
-        parameters_to_sweep (Sequence[qc.Parameter]): list of QCoDeS parameters
+        parameters_to_sweep (Sequence[_BaseParameter]): list of QCoDeS parameters
             to sweep.
         ranges_to_sweep (Sequence[Sequence[float]]): voltage ranges to sweep,
             in same order as `parameters_to_sweep`.
@@ -129,7 +130,7 @@ class SetpointSettings(Settings):
             the second for data segments/smaller ranges.
     """
     voltage_precision: float
-    parameters_to_sweep: Sequence[qc.Parameter] = field(default_factory=list)
+    parameters_to_sweep: Sequence[_BaseParameter] = field(default_factory=list)
     ranges_to_sweep: Sequence[Sequence[float]] = field(default_factory=list)
     safety_voltage_ranges: Sequence[Sequence[float]] = field(default_factory=list)
     setpoint_method: Optional[

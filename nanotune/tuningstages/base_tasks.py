@@ -20,6 +20,7 @@ import numpy as np
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.utils.helpers import NumpyJSONEncoder
+from qcodes.instrument.parameter import _BaseParameter
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
@@ -477,14 +478,14 @@ def take_data_add_metadata(
 
 def run_stage(
     stage: str,
-    parameters_to_sweep: Sequence[qc.Parameter],
-    parameters_to_measure: Sequence[qc.Parameter],
+    parameters_to_sweep: Sequence[_BaseParameter],
+    parameters_to_measure: Sequence[_BaseParameter],
     voltage_ranges: Sequence[Sequence[float]],
     compute_setpoint_task: Callable[
         [Sequence[Sequence[float]]], Sequence[Sequence[float]]
     ],
     measure_task: Callable[
-        [Sequence[qc.Parameter], Sequence[qc.Parameter], Sequence[Sequence[float]]],
+        [Sequence[_BaseParameter], Sequence[_BaseParameter], Sequence[Sequence[float]]],
         int
     ],
     machine_learning_task: Callable[[int], Any],
@@ -540,18 +541,18 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
-    parameters_to_sweep: Sequence[qc.Parameter],
-    parameters_to_measure: Sequence[qc.Parameter],
+    parameters_to_sweep: Sequence[_BaseParameter],
+    parameters_to_measure: Sequence[_BaseParameter],
     current_valid_ranges: Sequence[Sequence[float]],
     safety_voltage_ranges: Sequence[Sequence[float]],
     run_stage: Callable[
         [
             str,
-            Sequence[qc.Parameter],
-            Sequence[qc.Parameter],
+            Sequence[_BaseParameter],
+            Sequence[_BaseParameter],
             Sequence[Sequence[float]],
             Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
-            Callable[[Sequence[qc.Parameter], Sequence[qc.Parameter],
+            Callable[[Sequence[_BaseParameter], Sequence[_BaseParameter],
                        Sequence[Sequence[float]]], int],
             Callable[[int], Any],
             Callable[[int, Any], None],
@@ -561,7 +562,7 @@ def iterate_stage(
     ],
     run_stage_tasks: Tuple[
         Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
-        Callable[[Sequence[qc.Parameter], Sequence[qc.Parameter],
+        Callable[[Sequence[_BaseParameter], Sequence[_BaseParameter],
                   Sequence[Sequence[float]]], int],
         Callable[[int], Any],
         Callable[[int, Any], None],
@@ -698,7 +699,7 @@ def conclude_iteration_with_range_update(
 
 
 def get_current_voltages(
-    parameters: Sequence[qc.Parameter],
+    parameters: Sequence[_BaseParameter],
 ) -> List[float]:
     """Returns the values set to parameters in ``parameters``.
 
@@ -715,7 +716,7 @@ def get_current_voltages(
 
 
 def set_voltages(
-    parameters: Sequence[qc.Parameter],
+    parameters: Sequence[_BaseParameter],
     voltages_to_set: Sequence[float],
 ) -> None:
     """Set voltages in ``voltages_to_set`` to voltage parameters in
