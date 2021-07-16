@@ -38,21 +38,21 @@ def test_measurement_history_attributes():
     ts = TuningResult(
         "gatecharacterization", True, ["aaaaaaaa-0000-0000-0000-000000000000"]
     )
-    ms.tuningresults = ts
+    ms.add_result(ts)
     assert ms.tuningresults[ts.stage] == ts
-    ms.tuningresults = ts
+    ms.add_result(ts)
     assert len(ms.tuningresults) == 1
     ts2 = TuningResult(
         "gatecharacterization", True, ["aaaaaaaa-0000-0000-0000-000000000001"]
     )
 
-    ms.tuningresults = ts2
+    ms.add_result(ts2)
     assert len(ms.tuningresults) == 2
     new_key = "gatecharacterization" + "_" + "aaaaaaaa-0000-0000-0000-000000000001"
     assert ms.tuningresults[new_key] == ts2
 
     ts3 = TuningResult("chargediagram", True, ["aaaaaaaa-0000-0000-0000-000000000002"])
-    ms.tuningresults = {"test_diagram": ts3}
+    ms.add_result({"test_diagram": ts3})
     assert ms.tuningresults["test_diagram"] == ts3
 
     ts4 = TuningResult("chargediagram", True, ["aaaaaaaa-0000-0000-0000-000000000003"])

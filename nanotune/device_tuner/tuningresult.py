@@ -104,39 +104,6 @@ class MeasurementHistory:
         """tuningresults property getter """
         return self._tuningresults
 
-    @tuningresults.setter
-    def tuningresults(
-        self,
-        new_tuningresult: Union[TuningResult, Dict[str, TuningResult]],
-    ) -> None:
-        """tuningresults property setter. Checks if keys in new_tuningresult
-        already exist in self.tuningresults.
-        If a bare TuningResult instance is given, the TuningResult.stage serves
-        as identifier.
-
-        Args:
-            new_tuningresult (Union[TuningResult, Dict[str, TuningResult]]):
-
-        Returns:
-        """
-        if isinstance(new_tuningresult, TuningResult):
-            new_tuningresult = {new_tuningresult.stage: new_tuningresult}
-
-        common_keys = list(
-            set(new_tuningresult.keys()) & set(self._tuningresults.keys())
-        )
-        for key in common_keys:
-            if new_tuningresult[key] != self._tuningresults[key]:
-                try:
-                    append_idx = new_tuningresult[key].guids[-1]
-                except IndexError:
-                    append_idx = new_tuningresult[key].data_ids[-1]
-                new_key = key + f"_{append_idx}"
-                new_tuningresult[new_key] = new_tuningresult[key]
-                del new_tuningresult[key]
-
-        self._tuningresults.update(new_tuningresult)
-
     def to_dict(self) -> Dict[str, Any]:
         """Merges all MeasurementHistory attributed into a dict
 
@@ -171,8 +138,9 @@ class MeasurementHistory:
         """
 
         if identifier is None:
-            identifier = tuningresult.stage
-        self.tuningresults = {identifier: tuningresult}
+            self._add_tuningresult(tuningresult)
+        else:
+            self._add_tuningresult({identifier: tuningresult})
         self.last_added = tuningresult
 
     def update(self, other_measurement_history: MeasurementHistory) -> None:
@@ -183,3 +151,35 @@ class MeasurementHistory:
         # care of in add_result
         for key, result in other_measurement_history.tuningresults.items():
             self.add_result(result, key)
+
+    def _add_tuningresult(
+        self,
+        new_tuningresult: Union[TuningResult, Dict[str, TuningResult]],
+    ) -> None:
+        """tuningresults property setter. Checks if keys in new_tuningresult
+        already exist in self.tuningresults.
+        If a bare TuningResult instance is given, the TuningResult.stage serves
+        as identifier.
+
+        Args:
+            new_tuningresult (Union[TuningResult, Dict[str, TuningResult]]):
+
+        Returns:
+        """
+        if isinstance(new_tuningresult, TuningResult):
+            new_tuningresult = {new_tuningresult.stage: new_tuningresult}
+
+        common_keys = list(
+            set(new_tuningresult.keys()) & set(self._tuningresults.keys())
+        )
+        for key in common_keys:
+            if new_tuningresult[key] != self._tuningresults[key]:
+                try:
+                    append_idx = new_tuningresult[key].guids[-1]
+                except IndexError:
+                    append_idx = new_tuningresult[key].data_ids[-1]
+                new_key = key + f"_{append_idx}"
+                new_tuningresult[new_key] = new_tuningresult[key]
+                del new_tuningresult[key]
+
+        self._tuningresults.update(new_tuningresult)
