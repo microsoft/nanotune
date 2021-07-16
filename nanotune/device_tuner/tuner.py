@@ -43,7 +43,7 @@ def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]
 
 @dataclass
 class TuningHistory:
-    """Container holding tunign results of several devices.
+    """Container holding tuning results of several devices.
 
     Attributes:
         results (dict): Mapping device name to an instance of
