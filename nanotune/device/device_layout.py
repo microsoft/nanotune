@@ -5,9 +5,8 @@
 
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-from typing import List, Sequence, Tuple
+from typing import List, Tuple
 
-# @dataclass
 class IDeviceLayout(ABC):
 
     @classmethod
