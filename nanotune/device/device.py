@@ -13,10 +13,6 @@ from qcodes import validators as vals
 from qcodes.station import Station
 
 from nanotune.device.device_channel import DeviceChannel
-# if not qc.__version__.startswith('0.27'):
-#     from nanotune.device.delegate_channel_instrument import DelegateChannelInstrument as DelegateInstrument
-# else:
-#     from qcodes.instrument.delegate import DelegateInstrument  # type: ignore
 from qcodes.instrument.delegate import DelegateInstrument
 
 from qcodes.instrument.delegate.grouped_parameter import GroupedParameter
