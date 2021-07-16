@@ -4,6 +4,7 @@ import os
 from typing import Any, Optional, Sequence, Union
 
 import qcodes as qc
+from qcodes.dataset.plotting import plot_dataset
 import xarray as xr
 from scipy import interpolate
 
@@ -129,8 +130,12 @@ class QcodesDataProvider(DataProvider):
                 for name in param_names
             ]
             rename_dict = dict(zip(param_names, param_labels))
-            renamed_dataset = dataset.to_xarray_dataset().rename(rename_dict)  # type: ignore
+            renamed_dataset = dataset.to_xarray_dataset(param_names[-1]).rename(rename_dict)  # type: ignore
             self._xarray_dataset = renamed_dataset
+
+            # For some reason 2D xarray dataset axes are transposed from the original measurement. Transpose it back
+            if input_dimensions == 2:
+                self._xarray_dataset = self._xarray_dataset.transpose()
 
             # set up the interpolation
             inputs = [self._xarray_dataset[param] for param in param_labels]
