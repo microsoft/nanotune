@@ -86,19 +86,6 @@ class DotTuner(Tuner):
         classifiers: Classifiers,
         setpoint_settings: SetpointSettings,
     ) -> None:
-        """DotTuner init. Calling Tuner init function without any other
-        instantiation.
-
-        Args:
-            classifiers (Classifiers): a setting.Classifiers instance
-                holding all required classifiers. Eg. pinchoff.
-            data_settings (DataSettings): A settings.DataSettings instance with
-                data related information such as `db_name` and
-                `normalization_constants'.
-            setpoint_settings (SetpointSettings): A settings.SetpointSettings
-                instance with setpoint related information such as
-                `voltage_precision`.
-        """
         super().__init__(
             name,
             data_settings,
