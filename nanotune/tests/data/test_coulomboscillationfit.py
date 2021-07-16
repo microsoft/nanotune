@@ -89,13 +89,6 @@ def test_coulomboscillationfit_fit_result(nt_dataset_coulomboscillation, tmp_pat
         )
 
 
-# def test_coulomboscillationfit_peak_distances(nt_dataset_coulomboscillation,
-#                                               tmp_path):
-#     co = CoulombOscillationFit(1, 'temp.db', db_folder=str(tmp_path))
-
-#     peak_distances = co.calculate_peak_distances()
-
-
 def test_coulomboscillationfit_plot(nt_dataset_coulomboscillation, tmp_path):
     co = CoulombOscillationFit(1, "temp.db", db_folder=str(tmp_path))
 

@@ -16,8 +16,8 @@ def test_characterize_device_default(
     pinchoff_classifier,
     sim_scenario_device_characterization,
 ):
-    self = Characterizer(**tuner_default_input)
-    self.classifiers = Classifiers(pinchoff=pinchoff_classifier)
+    characterizer = Characterizer(**tuner_default_input)
+    characterizer.classifiers = Classifiers(pinchoff=pinchoff_classifier)
     gate_configurations = None
     device = sim_device
     scenario = sim_scenario_device_characterization
@@ -39,7 +39,7 @@ def test_characterize_device_default(
                         device.gates[other_id].voltage(voltage)
 
                 scenario.run_next_step()
-                sub_result = self.characterize_gate(
+                sub_result = characterizer.characterize_gate(
                     device,
                     gate,
                     use_safety_voltage_ranges=True,
@@ -50,4 +50,4 @@ def test_characterize_device_default(
 
     assert len(measurement_result.to_dict()) == 6
 
-    self.close()
+    characterizer.close()

@@ -1,6 +1,5 @@
 import pytest
-from nanotune.device_tuner.tuner import linear_voltage_steps
-from nanotune.device_tuner.tuningresult import MeasurementHistory
+from numpy.testing import assert_almost_equal
 from nanotune.tuningstages.settings import Classifiers
 from nanotune.tests.functional_tests.sim_tuner import SimDotTuner
 
@@ -27,7 +26,7 @@ def test_measure_initial_ranges_2D(
         voltage_step = 0.2,
     )
 
-    assert min_voltage == -0.6428571428571428
+    assert_almost_equal(min_voltage, -0.6428571428571428)
     assert len(measurement_result.to_dict()) == 14
-    assert max_voltage == -2.918972990997
+    assert_almost_equal(max_voltage, -2.918972990997)
     tuner.close()

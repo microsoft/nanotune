@@ -41,9 +41,6 @@ class SimDotTuner(DotTuner):
     ) -> TuningResult:
         """ """
         self.sim_scenario.run_next_step()
-        print('next sim scenario charge diagram')
-        print(f'sweep {[g.label for g in gates_to_sweep]}')
-        print(f'gate status {device.get_gate_status()}')
         tuningresult = super().get_charge_diagram(
             device, gates_to_sweep, use_safety_voltage_ranges, iterate,
             voltage_precision, comment,
@@ -61,9 +58,6 @@ class SimDotTuner(DotTuner):
     ) -> TuningResult:
         """ """
         self.sim_scenario.run_next_step()
-        print('next sim scenario gate characterization')
-        print(f'characterize {gate.label}')
-        print(f'gate status {device.get_gate_status()}')
         tuningresult = super().characterize_gate(
             device, gate, use_safety_voltage_ranges, iterate,
             voltage_precision, comment,

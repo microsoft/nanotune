@@ -5,6 +5,7 @@
 
 import logging
 import pytest
+from numpy.testing import assert_almost_equal, assert_array_almost_equal
 from nanotune.device_tuner.dottuner import DeviceState
 from nanotune.device.device_layout import DoubleDotLayout
 from nanotune.tests.functional_tests.sim_tuner import SimDotTuner
@@ -27,9 +28,9 @@ def test_double_dot_tuning_good_example(
     self.set_central_and_outer_barriers(
         device, device_layout, target_state
     )
-    assert device.central_barrier.voltage() == -1.42947649216405
-    assert device.left_barrier.voltage() == -0.5141713904634877
-    assert device.right_barrier.voltage() == -0.5478492830943646
+    assert_almost_equal(device.central_barrier.voltage(), -1.42947649216405)
+    assert_almost_equal(device.left_barrier.voltage(), -0.5141713904634877)
+    assert_almost_equal(device.right_barrier.voltage(), -0.5478492830943646)
 
     done = False
     n_iter = 0
@@ -37,8 +38,10 @@ def test_double_dot_tuning_good_example(
     while not done and n_iter <= max_iter:
         n_iter += 1
         self.set_valid_plunger_ranges(device, device_layout)
-        assert device.current_valid_ranges()[2] == [-0.331110370123374, -0.0710236745581861]
-        assert device.current_valid_ranges()[4] == [-0.312104034678226, -0.0130043347782594]
+        assert_array_almost_equal(
+            device.current_valid_ranges()[2], [-0.331110370123374, -0.0710236745581861])
+        assert_array_almost_equal(
+            device.current_valid_ranges()[4], [-0.312104034678226, -0.0130043347782594])
 
         tuningresult = self.get_charge_diagram(
             device,
