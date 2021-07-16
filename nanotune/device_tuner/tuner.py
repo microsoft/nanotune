@@ -46,7 +46,7 @@ class TuningHistory:
     """Container holding tunign results of several devices.
 
     Attributes:
-        results (dict): Mapping device name to an instance of
+        results: Mapping device name to an instance of
             MeasurementHistory.
     """
     results: Dict[str, MeasurementHistory] = field(default_factory=dict)
@@ -60,8 +60,8 @@ class TuningHistory:
         MeasurementHistory.
 
         Args:
-            device_name (str): name of Device instance.
-            new_result (TuningResult or MeasurementHistory): Either instance of
+            device_name: name of Device instance.
+            new_result: Either instance of
                 TuningResult or MeasurementHistory.
         """
         if device_name not in self.results.keys():
@@ -80,15 +80,15 @@ class Tuner(qc.Instrument):
     characterization and dot tuning.
 
     Attributes:
-        classifiers (Classifiers): a setting.Classifiers instance
+        classifiers: a setting.Classifiers instance
             holding all required classifiers. Eg. pinchoff.
-        data_settings (DataSettings): A settings.DataSettings instance with
+        data_settings: A settings.DataSettings instance with
             data related information such as `db_name` and
             `normalization_constants'.
-        setpoint_settings (SetpointSettings): A settings.SetpointSettings
+        setpoint_settings: A settings.SetpointSettings
             instance with setpoint related information such as
             `voltage_precision`.
-        tuning_history (TuningHistory): A TuningHistory instance holding all
+        tuning_history: A TuningHistory instance holding all
             tuning results.
     """
 
@@ -102,12 +102,12 @@ class Tuner(qc.Instrument):
         """Tuner init.
 
         Args:
-            classifiers (Classifiers): a setting.Classifiers instance
+            classifiers: a setting.Classifiers instance
                 holding all required classifiers. Eg. pinchoff.
-            data_settings (DataSettings): A settings.DataSettings instance with
+            data_settings: A settings.DataSettings instance with
                 data related information such as `db_name` and
                 `normalization_constants'.
-            setpoint_settings (SetpointSettings): A settings.SetpointSettings
+            setpoint_settings: A settings.SetpointSettings
                 instance with setpoint related information such as
                 `voltage_precision`.
         """
@@ -147,7 +147,7 @@ class Tuner(qc.Instrument):
         and adds new ones to static metadata.
 
         Args:
-            new_settings (DataSettings): an DataSettings instance with
+            new_settings: an DataSettings instance with
                 new settings.
         """
         self._data_settings = new_settings
@@ -199,22 +199,22 @@ class Tuner(qc.Instrument):
         the gate swept, it does not set any voltages.
 
         Args:
-            device (nt.Device): device to tune.
-            gate (nt.DeviceChannel): DeviceChannel instance/the gate to
+            device: device to tune.
+            gate: DeviceChannel instance/the gate to
                 characterize.
-            use_safety_voltage_ranges (bool): whether or not the entire safe
+            use_safety_voltage_ranges: whether or not the entire safe
                 voltage range should be swept. If `False`, the gate's
                 `current_valid_range` will be used.
-            iterate (bool): whether the gate should be characterized again over
+            iterate: whether the gate should be characterized again over
                 an extended voltage if a poor result is measured. Only makes
                 sense if `use_safety_voltage_ranges=False`. The new ranges are
                 determined based on the range update directives returned by
                 PinchoffFit.
-            voltage_precision (float): optional voltage precision, i.e. the
+            voltage_precision: optional voltage precision, i.e. the
                 voltage difference between subsequent setpoints. If none given,
                 the value in self.data_settings is taken. The optional input
                 here can be used to temporarily overwrite the default value.
-            comment (str): optional string added to the tuning result.
+            comment: optional string added to the tuning result.
 
         Return:
             TuningResult
@@ -272,12 +272,12 @@ class Tuner(qc.Instrument):
         retained as the upper range limit.
 
         Args:
-            device (nt.Device): device to tune.
-            gate_to_set (nt.DeviceChannel): DeviceChannel instance of the gate
+            device: device to tune.
+            gate_to_set: DeviceChannel instance of the gate
                 for which an initial valid range should be determined.
-            gates_to_sweep (Sequence[DeviceChannel]): DeviceChannel instances of the gates which
+            gates_to_sweep: DeviceChannel instances of the gates which
                 couple to `gate_to_set` and thus affect its valid range.
-            voltage_step (float): Voltage difference between consecutive gate
+            voltage_step: Voltage difference between consecutive gate
                 voltage sets, i.e. by how much e.g. `gate_to_set` will be
                 decreased at each iteration.
 
@@ -338,14 +338,13 @@ class Tuner(qc.Instrument):
         `gates_to_sweep` which have not pinched off at previous iterations.
 
         Args:
-            device (nt.Device): device to tune.
-            gate_to_set (nt.DeviceChannel): DeviceChannel instance of the gate
+            device: device to tune.
+            gate_to_set: DeviceChannel instance of the gate
                 for which an initial valid range should be determined.
-            gates_to_sweep (list): DeviceChannel instances of the gates which
+            gates_to_sweep: DeviceChannel instances of the gates which
                 couple to `gate_to_set` and thus affect its valid range.
-            voltage_step (float): Voltage difference between consecutive gate
-                voltage sets, i.e. by how much `gate_to_set` will be
-                decreased at each iteration.
+            voltages_to_set: sequence of voltages which `gate_to_set` is set
+                and for which `gates_to_sweep` are characterized.
 
         Returns:
             MeasurementHistory:
@@ -388,7 +387,7 @@ class Tuner(qc.Instrument):
         normalization constants added.
 
         Args:
-            device (nt.Device): device to tune.
+            device: device to tune.
 
         Returns:
             DataSettings: new data settings including normalization constants.
@@ -409,13 +408,13 @@ class Tuner(qc.Instrument):
         `ranges_to_sweep`, `safety_voltage_ranges` and `voltage_precision`.
 
         Args:
-            parameters_to_sweep (Sequence[qc.Parameter]): List of QCoDeS
+            parameters_to_sweep: List of QCoDeS
                 parameters which will be swept.
-            ranges_to_sweep (Sequence[Sequence[float]]): List of voltage
+            ranges_to_sweep: List of voltage
                 ranges, in the same order as `parameters_to_sweep`.
-            safety_voltage_ranges: (Sequence[Sequence[float]]): List of safe
+            safety_voltage_ranges: List of safe
                 voltage ranges, in the same order as `parameters_to_sweep`.
-            voltage_precision float: optional float, voltage difference between
+            voltage_precision: optional float, voltage difference between
                 setpoints.
 
         Returns:
@@ -446,20 +445,20 @@ class Tuner(qc.Instrument):
         The tuning results is added to tuner's `tuning_history`.
 
         Args:
-            device (nt.Device): device to tune.
-            gates_to_sweep (Sequence[DeviceChannel]): DeviceChannel instances
+            device: device to tune.
+            gates_to_sweep: DeviceChannel instances
                 of gates to sweep.
-            use_safety_voltage_ranges (bool): whether entire safety voltage
+            use_safety_voltage_ranges: whether entire safety voltage
                 range should be swept. Current valid range is taken if not.
                 Default is False.
-            iterate (bool): whether subsequent diagrams with over extended
+            iterate: whether subsequent diagrams with over extended
                 ranges should be taken if the measurement is classified as poor/
                 not the desired regime.
-            voltage_precision float: optional float, voltage difference between
+            voltage_precision: optional float, voltage difference between
                 setpoints. If none given,
                 the value in self.data_settings is taken. The optional input
                 here can be used to temporarily overwrite the default value.
-            comment (str): optional comment added to the tuning result.
+            comment: optional comment added to the tuning result.
 
         Returns:
             TuningResult: tuning result including classification result and
@@ -511,9 +510,9 @@ def linear_voltage_steps(
     """Returns linearly spaced setpoints.
 
     Args:
-        voltage_range: (Sequence[float]): interval within which setpoints
+        voltage_range: interval within which setpoints
             should be computed.
-        voltage_step: (float): voltage difference between setpoints.
+        voltage_step: voltage difference between setpoints.
 
     Returns:
         Sequence[float]: linearly spaced setpoints.
