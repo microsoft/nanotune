@@ -7,7 +7,6 @@ from dataclasses import asdict
 import datetime
 import json
 import logging
-from os import initgroups
 import time
 from contextlib import contextmanager
 from sqlite3 import OperationalError
