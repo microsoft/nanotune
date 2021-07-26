@@ -2,8 +2,9 @@ from __future__ import annotations
 import copy
 import logging
 from enum import Enum
-from typing import (Any, Dict, Optional, Sequence, Tuple, Union, Mapping,
-    Sequence, List)
+from typing import (
+    Any, Dict, Optional, Sequence, Tuple, Union, Mapping, Sequence, List, MutableMapping
+)
 
 import numpy as np
 from dataclasses import asdict, dataclass
@@ -21,6 +22,9 @@ logger = logging.getLogger(__name__)
 nrm_cnst_tp = Mapping[str, Tuple[float, float]]
 voltage_range_type = Dict[int, Sequence[float]]
 
+
+ChannelsType = Optional[
+            Union[MutableMapping[str, MutableMapping[str, Any]], MutableMapping[str, str]]]
 
 @dataclass
 class NormalizationConstants:
@@ -196,7 +200,7 @@ class Device(DelegateInstrument):
         parameters: Optional[
             Union[Mapping[str, Sequence[str]], Mapping[str, str]]] = None,
         channels: Optional[
-            Union[Mapping[str, Mapping[str, Any]], Mapping[str, str]]] = None,
+            Union[MutableMapping[str, MutableMapping[str, Any]], MutableMapping[str, str]]] = None,
         readout: Optional[Mapping[str, str]] = None,
         main_readout_method: Union[ReadoutMethods, str] = ReadoutMethods.transport,
         initial_values: Optional[Mapping[str, Any]] = None,
@@ -659,15 +663,15 @@ class Device(DelegateInstrument):
 
 def _add_station_and_label_to_channel_init(
     station: qc.Station,
-    channels: Optional[Mapping[str, Union[str, Mapping[str, Any]]]] = None,
-) -> Optional[Mapping[str, Union[str, Any]]]:
+    channels: ChannelsType = None,
+) -> ChannelsType:
     if channels is None:
         return None
     for name, channel_value in channels.items():
-        if isinstance(channel_value, Mapping):
+        if isinstance(channel_value, MutableMapping):
             if 'station' not in channel_value.keys():
-                channel_value['station'] = station  # type: ignore
+                channel_value['station'] = station
             if 'label' not in channel_value.keys():
-                channel_value['label'] = name  # type: ignore
+                channel_value['label'] = name
 
     return channels
