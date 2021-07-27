@@ -75,6 +75,7 @@ class Characterizer(Tuner):
             if gate not in skip_gates:
                 with set_back_voltages(device.gates):
                     gate_id = gate.gate_id
+                    assert gate_id is not None
                     if gate_id in gate_configurations.keys():
                         gate_conf = gate_configurations[gate_id]
                         for other_id, voltage in gate_conf.items():

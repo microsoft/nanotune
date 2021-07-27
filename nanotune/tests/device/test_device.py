@@ -1,6 +1,6 @@
 from dataclasses import asdict
 import pytest
-
+import numpy as np
 import nanotune as nt
 from nanotune.drivers.dac_interface import RelayState
 from nanotune.device.device import (Readout,
@@ -36,7 +36,7 @@ def test_device_init(device, station):
 
     assert device.current_valid_ranges() == {0: [-0.5, 0], 1: [-3, 0]}
     assert device.initial_valid_ranges() == {0: [-3, 0], 1: [-3, 0]}
-    assert device.transition_voltages() == {0: -0.4, 1: None}
+    assert device.transition_voltages() == {0: -0.4, 1: np.nan}
 
     assert device.main_readout_method == ReadoutMethods.transport
 
