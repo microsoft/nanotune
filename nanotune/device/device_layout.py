@@ -52,7 +52,7 @@ class IDeviceLayout(ABC):
     @classmethod
     @abstractmethod
     def plunger_barrier_pairs(self) ->List[Tuple[int, int]]:
-        """Returns a list of tuples, where each the first
+        """Returns a list of tuples, where the first
         item of each tuple is a plunger and the second a barrier ID. These
         pairs belong to capacitiveley coupled plungers and barriers and
         indicated which barrier needs to be changed if a plunger reached
@@ -71,7 +71,9 @@ class DeviceLayout(DataClassMixin, IDeviceLayout):
 
 @dataclass
 class DoubleDotLayout(DeviceLayout):
-    """DeviceLayout subclass defining a 2D double dot layout."""
+    """DeviceLayout subclass defining a 2D double dot layout. The attributes'
+    values are the gates' IDs.
+    """
     top_barrier = 0
     left_barrier = 1
     left_plunger = 2
@@ -80,22 +82,33 @@ class DoubleDotLayout(DeviceLayout):
     right_barrier = 5
 
     @classmethod
-    def barriers(self):
+    def barriers(self) -> List[int]:
+        """Returns list with left, central and right barrier IDs."""
         main_barriers = [
             self.left_barrier, self.central_barrier_, self.right_barrier,
         ]
         return main_barriers
 
     @classmethod
-    def plungers(self):
+    def plungers(self) -> List[int]:
+        """Returns list with left and right plunger IDs."""
         return [self.left_plunger, self.right_plunger]
 
     @classmethod
-    def outer_barriers(self):
+    def outer_barriers(self) -> List[int]:
+        """Returns list with left and right barrier IDs."""
         return [self.left_barrier, self.right_barrier]
 
     @classmethod
     def plunger_barrier_pairs(self) ->List[Tuple[int, int]]:
+        """Returns a list of tuples, where the left plunger forms a tuple with
+        the left barrier and the right plunger with the right barrier. It
+        indicates which barrier needs to be adjusted when a plunger reaches its
+        safety range when swept.
+
+        Returns:
+            list: [(plunger ID, barrier ID)]
+        """
         p_b_pairs = [
             (self.left_plunger, self.left_barrier),
             (self.right_plunger, self.right_barrier)
@@ -104,8 +117,10 @@ class DoubleDotLayout(DeviceLayout):
 
     @classmethod
     def central_barrier(self) -> int:
+        """Returns the central barrier's gate ID."""
         return self.central_barrier_
 
     @classmethod
     def helper_gate(self) -> int:
+        """Returns the top barrier's gate ID."""
         return self.top_barrier
