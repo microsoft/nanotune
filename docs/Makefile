@@ -5,7 +5,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = .
 
 # this is to to autmagic gh-pages
 GH_PAGES_SOURCES = docs nanotune CONTRIBUTING.rst LICENSE

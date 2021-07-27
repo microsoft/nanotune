@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.fit.pinchofffit &mdash; nanotune 0+untagged.489.g345eadc.dirty documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.489.g345eadc.dirty
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.fit.pinchofffit</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.fit.pinchofffit</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">tick</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="kn">import</span> <span class="n">make_axes_locatable</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">lg</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">least_squares</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">argrelextrema</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.data.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">colors_dict</span><span class="p">,</span> <span class="n">default_plot_params</span><span class="p">,</span>
+                                    <span class="n">plot_params_type</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">nanotune.fit.datafit</span> <span class="kn">import</span> <span class="n">DataFit</span>
+<span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">format_axes</span>
+
+<span class="c1"># from matplotlib2tikz import save as tikz_save</span>
+
+
+<span class="c1"># from qcodes.self.experiment_container import load_by_id</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">AxesTuple</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="PinchoffFit"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit">[docs]</a><span class="k">class</span> <span class="nc">PinchoffFit</span><span class="p">(</span><span class="n">DataFit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        run_id (int): QCoDeS run id of the dataset to fit.</span>
+<span class="sd">        db_name (str): Name of database where the dataset to fit is saved.</span>
+<span class="sd">        db_folder (optional str): Folder there database db_name is saved.</span>
+<span class="sd">        gradient_percentile (optional float):</span>
+<span class="sd">        get_transition_from_fit (optional bool):</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        features (dict):</span>
+<span class="sd">        range_update_directives (list):</span>
+
+<span class="sd">        gradient_percentile</span>
+<span class="sd">        get_transition_from_fit</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gradient_percentile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="n">get_transition_from_fit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+        <span class="n">DataFit</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">run_id</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="p">,</span>
+            <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_percentile</span> <span class="o">=</span> <span class="n">gradient_percentile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_transition_from_fit</span> <span class="o">=</span> <span class="n">get_transition_from_fit</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltage</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">n_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;transport&quot;</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_transition_interval</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.8</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more positive&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more negative&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span>
+
+<div class="viewcode-block" id="PinchoffFit.find_fit"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.find_fit">[docs]</a>    <span class="k">def</span> <span class="nf">find_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">r_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">bounds</span><span class="p">,</span>
+             <span class="n">initial_guess</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_initial_guess</span><span class="p">(</span><span class="n">readout_method</span><span class="o">=</span><span class="n">r_meth</span><span class="p">)</span>
+            <span class="n">smooth_signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">r_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="k">def</span> <span class="nf">err_func</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="n">err</span> <span class="o">-</span> <span class="n">smooth_signal</span><span class="p">)</span> <span class="o">/</span> <span class="n">lg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">smooth_signal</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">err</span>
+
+            <span class="n">sub_res</span> <span class="o">=</span> <span class="n">least_squares</span><span class="p">(</span>
+                <span class="n">err_func</span><span class="p">,</span>
+                <span class="n">initial_guess</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;trf&quot;</span><span class="p">,</span>
+                <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cauchy&quot;</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+                <span class="n">ftol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+                <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_retain_fit_result</span><span class="p">(</span><span class="n">sub_res</span><span class="p">,</span> <span class="n">r_meth</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_transition_interval</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_transition_voltage</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retain_transition_features</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_features</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PinchoffFit.compute_transition_interval"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.compute_transition_interval">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transition_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Using the signal gradient to determine where the transition from high</span>
+<span class="sd">         to low voltage occurs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition_from_fit</span><span class="p">:</span>
+                <span class="n">temp_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">temp_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fit_feat</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;amplitude&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;slope&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;offset&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;tanh_sign&quot;</span><span class="p">],</span>
+                <span class="p">]</span>
+                <span class="n">temp_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">fit_feat</span><span class="p">)</span>
+                <span class="n">temp_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span>
+
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">,</span> <span class="n">temp_v</span><span class="p">)</span>
+            <span class="n">max_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+            <span class="n">max_gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_percentile</span> <span class="o">*</span> <span class="n">max_gradient</span> <span class="o">/</span> <span class="mi">100</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max_gradient = </span><span class="si">{</span><span class="n">max_gradient</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">range_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">gradient</span> <span class="o">&gt;=</span> <span class="n">max_gradient</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valid range indexes: </span><span class="si">{</span><span class="n">range_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">range_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">low_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp_sig</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">[</span><span class="n">range_idx</span><span class="p">]))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">high_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp_sig</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">[</span><span class="n">range_idx</span><span class="p">]))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">low_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp_sig</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">high_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp_sig</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No good valid range found.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_sig</span><span class="p">[</span><span class="n">low_idx</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_sig</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">low_idx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">high_idx</span></div>
+
+<div class="viewcode-block" id="PinchoffFit.compute_transition_voltage"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.compute_transition_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transition_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition_from_fit</span><span class="p">:</span>
+                <span class="n">temp_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">temp_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fit_feat</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;amplitude&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;slope&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;offset&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;tanh_sign&quot;</span><span class="p">],</span>
+                <span class="p">]</span>
+                <span class="n">temp_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">fit_feat</span><span class="p">)</span>
+                <span class="n">temp_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span>
+
+            <span class="n">fit_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">,</span> <span class="n">temp_v</span><span class="p">)</span>
+            <span class="n">relevant_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">fit_gradient</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevant_idx</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_sig</span><span class="p">[</span><span class="n">relevant_idx</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltage</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_v</span><span class="p">[</span><span class="n">relevant_idx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PinchoffFit.compute_initial_guess"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.compute_initial_guess">[docs]</a>    <span class="k">def</span> <span class="nf">compute_initial_guess</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;transport&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">amplitude_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">amplitude_min</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">amplitude_max</span> <span class="o">=</span> <span class="n">amplitude_init</span>
+
+        <span class="n">slope_init</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">amplitude_init</span>
+        <span class="n">slope_min</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">slope_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="c1"># voltage_offset is the horizontal offset: not important</span>
+        <span class="c1"># We do not care where in voltage space the transition happens</span>
+        <span class="c1"># but we need to shift the fit horizontally to make it overlap</span>
+        <span class="c1"># with the data</span>
+        <span class="n">voltage_offset_init</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">voltage_offset_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">voltage_offset_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="n">tanh_sign_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="n">tanh_sign_max</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="n">tanh_sign_init</span> <span class="o">=</span> <span class="mf">1.</span>
+
+        <span class="n">min_bounds</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">amplitude_min</span><span class="p">,</span> <span class="n">slope_min</span><span class="p">,</span> <span class="n">voltage_offset_min</span><span class="p">,</span> <span class="n">tanh_sign_min</span>
+        <span class="p">]</span>
+        <span class="n">max_bounds</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">amplitude_max</span><span class="p">,</span> <span class="n">slope_max</span><span class="p">,</span> <span class="n">voltage_offset_max</span><span class="p">,</span> <span class="n">tanh_sign_max</span>
+        <span class="p">]</span>
+
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_bounds</span><span class="p">,</span> <span class="n">max_bounds</span><span class="p">)</span>
+        <span class="n">initial_guess</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">amplitude_init</span><span class="p">,</span> <span class="n">slope_init</span><span class="p">,</span> <span class="n">voltage_offset_init</span><span class="p">,</span> <span class="n">tanh_sign_init</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">initial_guess</span></div>
+
+<div class="viewcode-block" id="PinchoffFit.fit_function"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.fit_function">[docs]</a>    <span class="k">def</span> <span class="nf">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function we use to fit pinch off curves.</span>
+
+<span class="sd">        x: input vector, usually gate voltage in V</span>
+<span class="sd">        a: parameter referred to as &#39;amplitude&#39;</span>
+<span class="sd">        b: parameter referred to as &#39;slope&#39;</span>
+<span class="sd">        c: a shift</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span></div>
+
+    <span class="k">def</span> <span class="nf">_retain_fit_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subres</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subres</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;slope&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subres</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subres</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;tanh_sign&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subres</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;residuals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">subres</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_retain_transition_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="n">v_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">low_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+            <span class="n">high_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+            <span class="n">trans_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltage</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+            <span class="n">trans_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span><span class="p">[</span><span class="n">low_idx</span><span class="p">]</span>
+            <span class="c1"># self._features[read_meth][&quot;low_signal&quot;] = self._low_signal[read_meth]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;low_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="n">low_idx</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
+            <span class="c1"># self._features[read_meth][&quot;high_signal&quot;] = self._high_signal[read_meth]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;high_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;transition_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_v</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;transition_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_s</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;max_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;min_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PinchoffFit.plot_fit"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.plot_fit">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">save_figures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">plot_gradient</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">plot_smooth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">file_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plot_params_type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">plot_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plot_params</span> <span class="o">=</span> <span class="n">default_plot_params</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">find_fit</span><span class="p">()</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">plot_params</span><span class="p">)</span>
+        <span class="n">fig_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Pinchoff fit </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">arrowprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;arrowstyle&quot;</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;axes.edgecolor&quot;</span><span class="p">]),</span>
+                <span class="p">(</span><span class="s2">&quot;shrinkA&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;shrinkB&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;patchA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;patchB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;connectionstyle&quot;</span><span class="p">,</span> <span class="s2">&quot;arc3,rad=0&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;boxstyle&quot;</span><span class="p">,</span> <span class="s2">&quot;round,pad=0.4&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;fc&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;ec&quot;</span><span class="p">,</span> <span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;axes.edgecolor&quot;</span><span class="p">]),</span>
+                <span class="p">(</span><span class="s2">&quot;lw&quot;</span><span class="p">,</span> <span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;axes.linewidth&quot;</span><span class="p">]),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig_size</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">])</span>
+            <span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.8</span>  <span class="c1"># type: ignore</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">fig_size</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">):</span>
+            <span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">voltage</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fig_title</span><span class="p">))</span>
+
+            <span class="n">H_v</span> <span class="o">=</span> <span class="n">voltage</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">H_s</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                <span class="s2">&quot;H&quot;</span><span class="p">,</span>
+                <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">H_v</span><span class="p">,</span> <span class="n">H_s</span><span class="p">),</span>
+                <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">),</span>
+                <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+                <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">L_v</span> <span class="o">=</span> <span class="n">voltage</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">L_s</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+                <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">L_v</span><span class="p">,</span> <span class="n">L_s</span><span class="p">),</span>
+                <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+                <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+                <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">T_v</span> <span class="o">=</span> <span class="n">voltage</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">T_s</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]]</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                <span class="s2">&quot;T&quot;</span><span class="p">,</span>
+                <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">T_v</span><span class="p">,</span> <span class="n">T_s</span><span class="p">),</span>
+                <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+                <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+                <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">plot_smooth</span><span class="p">:</span>
+                <span class="n">smooth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">voltage</span><span class="p">,</span> <span class="n">smooth</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;smooth&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">plot_gradient</span><span class="p">:</span>
+                <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">voltage</span><span class="p">)</span>
+                <span class="n">gradient</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">voltage</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">fit_feat</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;amplitude&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;slope&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;offset&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;tanh_sign&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">fit_feat</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">voltage</span><span class="p">,</span> <span class="n">fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
+
+            <span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.06</span><span class="p">)</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">caxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]:</span>
+                <span class="n">cbar_ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">caxis</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">save_figures</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">file_location</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;tuning_results&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_location</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pinchofffit_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_location</span><span class="p">,</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PinchoffFit.plot_features"><a class="viewcode-back" href="../../../fit/pinchofffit/index.html#nanotune.fit.pinchofffit.PinchoffFit.plot_features">[docs]</a>    <span class="k">def</span> <span class="nf">plot_features</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">save_figures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">highlight_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;indianred&quot;</span><span class="p">,</span>
+        <span class="n">fill_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;indianred&quot;</span><span class="p">,</span>
+        <span class="n">fill_hatch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">file_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plot_params_type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">plot_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plot_params</span> <span class="o">=</span> <span class="n">default_plot_params</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">plot_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">find_fit</span><span class="p">()</span>
+
+        <span class="n">fig_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Pinchoff features </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig_size</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">])</span>
+            <span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.8</span>  <span class="c1"># type: ignore</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">fig_size</span>
+            <span class="p">)</span>
+
+        <span class="n">color</span> <span class="o">=</span> <span class="n">highlight_color</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+        <span class="k">for</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">voltage</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">fig_title</span><span class="p">)</span>
+
+            <span class="n">fit_feat</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;amplitude&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;slope&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;offset&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;tanh_sign&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">voltage</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">fit_feat</span><span class="p">),</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                <span class="n">voltage</span><span class="p">,</span>
+                <span class="n">signal</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">fit_feat</span><span class="p">),</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;residuals&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">fill_color</span><span class="p">,</span>
+                <span class="n">hatch</span><span class="o">=</span><span class="n">fill_hatch</span><span class="p">,</span>
+            <span class="p">)</span>  <span class="c1"># &#39;0.75&#39;)</span>
+
+            <span class="n">pad_n</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">T_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+            <span class="n">H_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+            <span class="n">L_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">pad</span><span class="p">,</span>
+                <span class="n">ymin</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">-</span> <span class="n">pad_n</span><span class="p">],</span>
+                <span class="n">ymax</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">],</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">-</span> <span class="n">pad_n</span><span class="p">],</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">-</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">pad</span><span class="p">,</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">pad</span><span class="p">,</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">-</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">pad</span><span class="p">,</span> <span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">pad</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">-</span> <span class="n">pad_n</span><span class="p">],</span> <span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">]),</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span> <span class="o">+</span> <span class="n">pad_n</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pad</span><span class="p">,</span> <span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">pad</span><span class="p">,</span> <span class="s2">&quot;slope&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span><span class="p">],</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">T_idx</span><span class="p">],</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span>
+                <span class="n">signal</span><span class="p">[</span><span class="n">T_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span><span class="p">,</span>
+                <span class="s2">&quot;transition&quot;</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="n">plot_params</span><span class="p">[</span><span class="s2">&quot;font.size&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">H_idx</span><span class="p">],</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">H_idx</span><span class="p">],</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span> <span class="n">signal</span><span class="p">[</span><span class="n">H_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">signal</span><span class="p">[</span><span class="n">L_idx</span><span class="p">],</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">voltage</span><span class="p">[</span><span class="n">L_idx</span><span class="p">],</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage</span><span class="p">),</span> <span class="n">signal</span><span class="p">[</span><span class="n">L_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.06</span><span class="p">)</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">caxis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]:</span>
+                <span class="n">cbar_ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">caxis</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+            <span class="n">cbar_ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">save_figures</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">file_location</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;tuning_results&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_location</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_location</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pinchoff_features_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_location</span><span class="p">,</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="kc">None</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
