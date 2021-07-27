@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Tuning &mdash; nanotune 0+untagged.489.g345eadc.dirty documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.489.g345eadc.dirty
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/index.html">What it does</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Tuning</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/tuning/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="tuning">
+<h1>Tuning<a class="headerlink" href="#tuning" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="figure align-default" id="id1">
+<a class="reference internal image-reference" href="overview/workflow_small.png"><img alt="dot tuning algorithm" src="overview/workflow_small.png" /></a>
+<p class="caption"><span class="caption-text">Dot tuning algorithm implemented by the DotTuner class.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="tuner">
+<h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="characterizer">
+<h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="dottuner">
+<h2>DotTuner<a class="headerlink" href="#dottuner" title="Permalink to this headline">¶</a></h2>
+<p>entire tuning of 2D device: dottuner.tune</p>
+<div class="figure align-default" id="id2">
+<a class="reference internal image-reference" href="overview/algorithm_dot_tuning_1.svg"><img alt="dot tuning algorithm" src="overview/algorithm_dot_tuning_1.svg" /></a>
+<p class="caption"><span class="caption-text">Dot tuning algorithm implemented by the DotTuner class.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>“Set top barrier”: <cite>set_helper_gate</cite></p>
+<p>“Characterize central barrier” and “Set central barrier”: <cite>set_central_barrier</cite></p>
+<p>“Characterize outer barriers” and “Set outer barriers”: <cite>set_outer_barriers</cite></p>
+<p>“Characterize plungers”: <cite>characterize_plunger</cite>, used in <cite>set_valid_plunger_ranges</cite></p>
+<p>“Characterize charge stability diagram” and “Classify charge state”: <cite>get_charge_diagram</cite>, classification result in returned TuningResult instance.
+<cite>get_charge_diagram</cite> changes plunger ranges if needed, executing the small inner lop on the left.</p>
+<p>“Change central barrier”: <cite>update_gate_configuration</cite></p>
+<p>The loop going left and right from “Classify state” are in <cite>update_gate_configuration</cite> (calls <cite>adjust_all_barriers_loop</cite>, which in turn calls <cite>adjust_all_barriers</cite>, which sets the top barrier, central barrier)</p>
+<dl class="simple">
+<dt>left loop:</dt><dd><ul class="simple">
+<li><p>uses termination reasons to update outer barriers first (if device was too pinched off or open)</p></li>
+<li><p>update top barrier/helper gate in <cite>adjust_all_barriers</cite>, called in <cite>adjust_all_barriers_loop</cite></p></li>
+<li><p>update top barrier</p></li>
+</ul>
+</dd>
+</dl>
+<p>right loop:
+- change central barrier with <cite>initial_voltage_update</cite> in <cite>adjust_all_barriers_loop</cite>.
+- if central barrier is set successfully, the loop in <cite>adjust_all_barriers_loop</cite> is not executed and thus tuning resumes with plunger range characterization.
+- if after setting the central barrier other changes are needed, the loop in <cite>adjust_all_barriers_loop</cite> will set the top barrier, then central and also outer barriers.</p>
+<p>In both loops: of outer barrier can not be set, the top barrier is changed again.</p>
+<p><cite>set_central_and_outer_barriers</cite>: loop set central barrier - set outer barriers - update helper gate - set outer barriers</p>
+<p><cite>adjust_all_barriers_loop</cite>: update voltages based on input directives and run <cite>adjust_all_barriers</cite> in a loop.</p>
+<p><cite>choose_new_gate_voltage</cite>:</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

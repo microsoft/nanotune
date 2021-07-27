@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>What it does &mdash; nanotune 0+untagged.489.g345eadc.dirty documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.489.g345eadc.dirty
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What it does</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-flow">Data flow</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>What it does</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/overview/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="what-it-does">
+<h1>What it does<a class="headerlink" href="#what-it-does" title="Permalink to this headline">¶</a></h1>
+<p>Nanotune was implemented as part of a PhD project initializing gate-defined quantum dots without human interaction and no pre-measured input. It automates typical manual measurements and replaces the experimenter’s quality and charge state assessment by supervised machine learning.
+Hard-coding the tuning logic, the implemented dot-tuning sequence can be thought of, in a very simplified way, as a for-loop with a couple of if-statements.
+It only requires
+Bonding scheme/routing (i.e. which DAC channel corresponds to which gate),
+device layout (i.e. number and arrangement of gates),
+safety voltage ranges (i.e. which voltages can be applied without damaging the device) ,
+setup specific noise floor (to ensure noise is not mistaken for an open regime in pre-calibration steps).</p>
+<div class="figure align-center" id="fig-gen">
+<a class="reference internal image-reference" href="overview/workflow_small.png"><img alt="nanotune" src="overview/workflow_small.png" style="width: 60.0%;" /></a>
+</div>
+<p>The dot-tuning sequence was demonstrated on double quantum dots formed in a GaAs two-dimensional electron gas, however no assumptions about the material were made. The gate layout of the devices used, shown on the right, consist of six gates: four so-called barriers and two plungers.
+Barrier gates typically create potential wells, defining tunnel resistances between dots and reservoirs, while plungers are used to adjust the electrochemical potential of a dot, changing the number of electrons if desired.
+Except for the top barrier, the tuning is identical to the tuning of quantum dots formed in nanowires. All measurements were taken in DC transport, i.e. measuring current through the device, but can be replaced by sensing techniques without difficulties.</p>
+<p>The dot-initialization workflow consists of two pre-calibration, one characterization and one tuning step, as outlined in the flowchart on the right. A gate leakage test and initial quality assessment ensure that devices are ‘alive’, meaning that voltages can be set and the current through the device is above the specified noise floor. The characterization step identifies devices that are fully functional, which is defined as all gates being able to deplete the electron gas nearby, also referred to as pinching off.
+Similar to a manual approach, each gate is characterized individually by stepping over its safety range while measuring the current through the device. The desired feature, a sharp current dip reaching zero, is confirmed by a binary classifier trained with experimental data. Only if traces of all gates show a good pinch-off, a device is tuned.</p>
+<p>The subsequent dot-tuning sequence is able to tune into either the single and double dot regime, with the only difference being the voltage value set to the central barrier. To form a double dot, a more negative value is required than for the single dot regime.
+Specifically, the dot-tuning process consists of a sequence of one- and two-dimensional measurements, referred to as gate characterizations and charge diagrams respectively. Each measurement is assessed by a binary classifier to determine quality and, in the case of a charge diagram, the charge state (i.e. single vs double dot).
+Gate characterizations are used to determine each gate’s ‘active’ voltage range. An active voltage range, also called current_valid_range, is the range within which we expect the desired charge state to occur. A sequence of faster, one-dimensional measurements is an efficient way to narrow down the large parameter space before proceeding with more time consuming, two-dimensional measurements. Due to capacitive coupling, active ranges need to be updated each time the voltage of a nearby gate is changed.
+Once all gates are characterized and barriers set to a value within their active range, the plungers are swept to measure a charge diagram. Note that the top barrier is set first and that the remaining tuning sequence is the same as for nanowires.
+Depending on the classification outcome of the charge diagram as well as additional checks assessing whether the device is in an open, closed or intermediate transport regime, gate voltages are adjusted. The precise sequence of measurements is shown in the second flow diagram on the right.</p>
+<p>The main modules implementing the dot-tuning are the Device, DeviceTuner, TuningStage, DataFit and Classifier classes. As illustrated in the diagram below, these classes work together as follows:
+A subclass of a TuningStage, currently either GateCharacterization1D or ChargeDiagram, is responsible for taking data and verifying whether the result is satisfying. To do the latter, a fit is performed via one of the DataFit subclasses and either the extracted feature vector or the entire measurement is classified. GateCharacterization1D uses a PinchoffFit, while ChargeDiagram relies on DotFit for fitting.
+The DeviceTuner class implements the tuning sequence itself by combining instances of TuningStages with a hard-coded decision logic leading to a dot being formed. There are two DeviceTuner subclasses, a Characterizer performing the a device characterization and a DotTuner.
+The DeviceTuner acts on an instance of a Device class, which represents the physical device including a list of gates, ohmics, gate layout and readout methods.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/algorithm_dot_tuning.png"><img alt="A 2DEG heterostructure" src="../_images/algorithm_dot_tuning.png" style="width: 60.0%;" /></a>
+</div>
+<div class="section" id="data-flow">
+<h2>Data flow<a class="headerlink" href="#data-flow" title="Permalink to this headline">¶</a></h2>
+<p>Nanotune extends QCoDeS functionalities of a data acquisition software by adding  automated tuning procedures which use machine learning models implemented in scikit-learn or tensorflow.</p>
+<p>The diagram illustrates the data and instruction flow of quantum measurements.
+The dotted ellipses indicates which stages are covered by QCoDeS or nanotune. QCoDeS provides an interface to room-temperature instruments (i.e. drivers) and tools to take and save measurements. Nanotune extends this functionality by automating common procedures encountered during quantum dot initialization. Supervised machine learning models replace the experimenter’s assessment of a measurement outcome.</p>
+<p>Nanotune’s TuningStage subclasses, which are responsible for data acquisition and part of a tuning sequence of DeviceTuner class, use QCoDeS’  measurement context manager to take measurements. The data and metadata is saved via qc.Dataset to a SQLite database. In the current case, measurements are linearly spaced one- and two-dimensional traces, called GateCharacterization1D and ChargeDiagram respectively.
+Once measured, the data is loaded into nanotune’s dataset, where it is postprocessed, e.g. normalized with constants which were previously measured and saved to metadata. If required, Fourier frequencies or filtered data is computed as well. Next, the DataFit classes fit the data to extract features (example: slope and amplitude of a pinchoff-curve) or determine the device’s transport regime (i.e. open, intermediate or closed, depending on current strength). Either the extracted feature vector or entire measurement is passed to the classifier for quality or charge state prediction. Based on the outcome, a decision about subsequent tuning is made.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
