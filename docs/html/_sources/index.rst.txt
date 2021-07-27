@@ -1,7 +1,4 @@
 
-.. automodule:: nanotune
-    :members:
-
 .. title:: Home
 
 
@@ -12,7 +9,16 @@ Documentation
    :maxdepth: 4
 
    overview/index.rst
-   overview/quantum_dots/index.rst
+   quantum_dots/index.rst
+   start/index.rst
+   examples/index.rst
+   tuning/index.rst
+   device/index.rst
+   device_tuner/index.rst
+   data/index.rst
+   classification/index.rst
+   labelling/index.rst
+
 
 ==================
 Indices and tables

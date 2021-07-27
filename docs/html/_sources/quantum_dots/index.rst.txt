@@ -15,7 +15,7 @@ Dots in a two-dimensional heterostructure (2DEG)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _fig_gen:
-.. figure:: quantum_dots-18.svg
+.. figure:: ./quantum_dots-18.svg
    :alt: A 2DEG heterostructure
    :align: center
    :width: 50.0%
@@ -28,7 +28,7 @@ By applying voltages to electrostatic gates at the surface (black picture on top
 
 
 .. _fig_gen:
-.. figure:: quantum_dots-22.svg
+.. figure:: ./quantum_dots-22.svg
    :alt: A 2DEG heterostructure
    :align: center
    :width: 50.0%
@@ -42,7 +42,7 @@ One way to determine a quantum dot's properties is to measure current through it
 If the levels don't align, as pictured on the right, the dot is in the Coulomb blockade regime: Coulomb repulsion between electrons prevents multiple electrons to occupy the same energy level and transport is suppressed.
 
 .. _fig_gen:
-.. figure:: quantum_dots-19.svg
+.. figure:: ./quantum_dots-19.svg
    :alt: A 2DEG heterostructure
    :align: center
    :width: 50.0%
@@ -50,7 +50,7 @@ If the levels don't align, as pictured on the right, the dot is in the Coulomb b
    A 2DEG heterostructure.
 
 .. _fig_gen:
-.. figure:: quantum_dots-20.svg
+.. figure:: ./quantum_dots-20.svg
    :alt: A 2DEG heterostructure
    :align: center
    :width: 50.0%
@@ -59,7 +59,7 @@ If the levels don't align, as pictured on the right, the dot is in the Coulomb b
 
 
 .. _fig_gen:
-.. figure:: quantum_dots-07.svg
+.. figure:: ./quantum_dots-07.svg
     :alt: A 2DEG heterostructure
     :align: center
     :width: 50.0%
@@ -68,7 +68,7 @@ If the levels don't align, as pictured on the right, the dot is in the Coulomb b
 
 
 .. _fig_gen:
-.. figure:: quantum_dots-06.svg
+.. figure:: ./quantum_dots-06.svg
     :alt: A 2DEG heterostructure
     :align: center
     :width: 50.0%
@@ -80,7 +80,7 @@ If one energy level is within the bias window, a measurable current arises due t
 Transport features of dots with well-localized and weakly coupled charges can be explained and qualitatively reproduced by the classical capacitance model, which represents gates, dots and reservoirs as conductors connected through resistors and capacitors. It also allows to capture the so-called gate cross-talk, i.e. the effect of capacitive couplings of all gates to each dot.
 
 .. _fig_gen:
-.. figure:: quantum_dots-08.svg
+.. figure:: ./quantum_dots-08.svg
     :alt: A 2DEG heterostructure
     :align: center
     :width: 50.0%
@@ -89,7 +89,7 @@ Transport features of dots with well-localized and weakly coupled charges can be
 
 
 .. _fig_gen:
-.. figure:: quantum_dots-09.svg
+.. figure:: ./quantum_dots-09.svg
     :alt: A 2DEG heterostructure
     :align: center
     :width: 50.0%
