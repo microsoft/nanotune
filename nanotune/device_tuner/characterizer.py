@@ -4,7 +4,7 @@
 # https://opensource.org/licenses/MIT
 import logging
 from nanotune.device.device_channel import DeviceChannel
-from typing import Dict, Optional, Sequence
+from typing import Mapping, Optional, Sequence
 
 from nanotune.device.device import Device
 from nanotune.device_tuner.tuner import (Tuner, set_back_voltages,
@@ -46,7 +46,8 @@ class Characterizer(Tuner):
         self,
         device: Device,
         skip_gates: Optional[Sequence[DeviceChannel]] = None,
-        gate_configurations: Optional[Dict[int, Dict[int, float]]] = None,
+        gate_configurations: Optional[
+            Mapping[int, Mapping[int, float]]] = None,
     ) -> MeasurementHistory:
         """Characterizes a device by characterizing each gate individually.
         Specific gates can be skipped, eg. the top barrier of a 2DEG device.
