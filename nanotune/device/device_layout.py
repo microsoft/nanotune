@@ -8,7 +8,27 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 class IDeviceLayout(ABC):
+    """Interface for device layout defining classes. Abstract class methods
+    should return gates fulfilling the function the method's name suggests.
 
+    Class methods:
+        helper_gate: Returns the `gate_id` of the additional gate such as a
+            top barrier of a 2D layout or bottom gate below a 1D device.
+        barriers: Returns a list of `gate_id`s of barrier gates. E.g. left,
+            central and right barrier. The order of gate IDs determines the
+            order they are swept.
+        plungers: Returns a list of `gate_id`s of plunger gates, such as
+            left and right plunger. The order of gate IDs determines the
+            order they are swept.
+        outer_barriers: Returns a list of `gate_id`s of outer barrier gates.
+            The order of gate IDs determines the order they are swept.
+        central_barrier: Returns the `gate_id` of the central barrier.
+        plunger_barrier_pairs: Returns a list of tuples, where each the first
+            item of each tuple is a plunger and the second a barrier ID. These
+            pairs belong to capacitiveley coupled plungers and barriers and
+            indicated which barrier needs to be changed if a plunger reached
+            its safety range when swept.
+    """
     @classmethod
     @abstractmethod
     def helper_gate(self) -> int:
@@ -51,6 +71,7 @@ class DeviceLayout(DataClassMixin, IDeviceLayout):
 
 @dataclass
 class DoubleDotLayout(DeviceLayout):
+    """DeviceLayout subclass defining a 2D double dot layout."""
     top_barrier = 0
     left_barrier = 1
     left_plunger = 2
