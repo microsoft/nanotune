@@ -171,7 +171,7 @@ class DotTuner(Tuner):
         tuning a device with a helper gate, it expects this gate to be set
         already. After setting the remaining barriers (central and outer), a
         tuning loop determines suitable plungers ranges for a charge diagram and
-        takes this diagram. If the result is classified as the the target
+        takes this diagram. If the result is classified as the target
         regime, new barrier voltages are chosen. The loop then resumes.
 
         It appears that the first regime can often be improved by a few
