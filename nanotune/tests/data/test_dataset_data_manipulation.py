@@ -90,12 +90,6 @@ def test_dataset_normalisation(nt_dataset_pinchoff, tmp_path):
     assert np.min(norm_sig) >= 0.0
 
 
-# TODO: def test_dataset_missing_data()
-# if np.isnan(np.sum(signal)):
-#     imp = SimpleImputer(missing_values=np.nan, strategy='mean')
-#     signal = imp.fit_transform(signal)
-
-
 def test_dataset_1d_frequencies(nt_dataset_pinchoff, tmp_path):
     ds = Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
 

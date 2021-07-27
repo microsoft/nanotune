@@ -1,0 +1,157 @@
+"init ranges 2D":
+
+  - "Sweep central barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.central_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1208
+
+  - "Sweep left barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.left_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1209
+
+  - "Sweep right barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.right_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1210
+
+  - "Sweep central barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.central_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1211
+
+  - "Sweep left barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.left_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1212
+
+  - "Sweep right barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.right_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1213
+
+  - "Sweep central barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.central_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1214
+
+  - "Sweep left barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.left_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1215
+
+  - "Sweep right barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.right_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1216
+
+  - "Sweep central barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.central_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1217
+
+  - "Sweep top barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.top_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1218
+
+  - "Sweep top barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.top_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1219
+
+  - "Sweep top barrier":
+      type : "sim.simulation_scenario.SetDataProviderAction"
+      init :
+        pin : "qd_mock_instrument.drain"
+        data_provider :
+          type: "sim.data_providers.QcodesDataProvider"
+          init:
+            input_providers: ["qd_mock_instrument.top_barrier"]
+            db_path : "${db_path}/data/tuning/gatecharacterization2d.db"
+            exp_name : "GB_Newtown_Dev_3_2"
+            run_id : 1220

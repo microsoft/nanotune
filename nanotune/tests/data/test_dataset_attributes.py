@@ -46,10 +46,6 @@ def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
     assert ds.db_name == "temp.db"
     assert ds.quality == 1
     assert set(ds.label) == {"doubledot"}
-    # Check if signal has been normalized
-    # ds.signal_raw: not normalized
-    # ds.signal: normalized and nans removed
-    # assert np.max(ds.signal[0]) <= 1
 
 
 def test_dataset_defaults_for_missing_metadata(

@@ -1,10 +1,11 @@
+from dataclasses import asdict
 import pytest
-import os
-import qcodes as qc
-
+import numpy as np
 import nanotune as nt
 from nanotune.drivers.dac_interface import RelayState
-from nanotune.device.device import _add_station_and_label_to_channel_init
+from nanotune.device.device import (Readout,
+    _add_station_and_label_to_channel_init, NormalizationConstants,
+    ReadoutMethods)
 
 
 def test_device_init_defaults(station):
@@ -15,12 +16,10 @@ def test_device_init_defaults(station):
 
     assert not device.gates
     assert not device.ohmics
-    assert not device.readout
+    assert device.readout == Readout()
     assert not device.initial_valid_ranges()
     assert device.quality() == 0
-    assert device.normalization_constants() == {
-                key: (0, 1) for key in ["transport", "sensing"]
-            }
+    assert device.normalization_constants == NormalizationConstants()
     assert device.current_valid_ranges() == device.initial_valid_ranges()
     assert not device.transition_voltages()
 
@@ -37,18 +36,15 @@ def test_device_init(device, station):
 
     assert device.current_valid_ranges() == {0: [-0.5, 0], 1: [-3, 0]}
     assert device.initial_valid_ranges() == {0: [-3, 0], 1: [-3, 0]}
-    assert device.transition_voltages() == {0: -0.4, 1: None}
+    assert device.transition_voltages() == {0: -0.4, 1: np.nan}
 
-    norm_constants = device.normalization_constants()
-    assert norm_constants["transport"] == [0, 2]
-    assert norm_constants["sensing"] == [-0.3, 0.6]
+    assert device.main_readout_method == ReadoutMethods.transport
 
-    result = device.readout()
-    assert hasattr(result, 'transport')
-    assert hasattr(result, 'sensing')
-    assert isinstance(
-        device.readout,
-        qc.instrument. delegate.grouped_parameter.GroupedParameter)
+    norm_constants = device.normalization_constants
+    assert norm_constants.transport == (0, 2)
+    assert norm_constants.sensing == (-0.3, 0.6)
+
+    assert isinstance(device.readout, Readout)
 
     with pytest.raises(KeyError):
         _ = nt.Device(
@@ -59,19 +55,35 @@ def test_device_init(device, station):
 
 
 def test_device_normalization_constants_setter(device):
-    with pytest.raises(TypeError):
-        device.normalization_constants([0, 1.1])
 
-    with pytest.raises(TypeError):
-        device.normalization_constants({'transport': -1})
+    device.normalization_constants = {
+        'transport': (-1.9, -1.2), 'rf': (-2, 0)
+    }
+    assert device.normalization_constants.transport == (-1.9, -1.2)
+    assert device.normalization_constants.rf == (-2, 0)
 
-    with pytest.raises(KeyError):
-        device.normalization_constants({'dc_transport': [0, 1]})
+    norm_dict = asdict(device.normalization_constants)
+    assert device.metadata['normalization_constants'] == norm_dict
 
-    current_norms = device.normalization_constants()
-    device.normalization_constants({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
-    current_norms.update({'transport': [-1.9, -1.2], 'rf': [-2, 0]})
-    assert device.normalization_constants() == current_norms
+    device.normalization_constants = NormalizationConstants(
+        transport=(-1, 1.1)
+    )
+    assert device.normalization_constants.transport == (-1, 1.1)
+    assert device.normalization_constants.sensing == (0, 1)
+
+    norm_dict = asdict(device.normalization_constants)
+    assert device.metadata['normalization_constants'] == norm_dict
+
+
+def test_device_main_readout_method_setter(device):
+    device.main_readout_method = ReadoutMethods.transport
+    assert device.main_readout_method == ReadoutMethods.transport
+
+    with pytest.raises(ValueError):
+        device.main_readout_method = 'transport'
+
+    with pytest.raises(ValueError):
+        device.main_readout_method = ReadoutMethods.rf
 
 
 def test_device_initial_valid_ranges(device):
@@ -88,22 +100,22 @@ def test_device_current_valid_ranges(device):
     assert device.current_valid_ranges() == ranges
 
 
-def test_voltage_range_setter(device):
+def test__voltage_range_setter(device):
     ranges = {0: [-0.99, -0.1], 1: [-0.2, -0.13]}
     new_sub_dict = {'top_barrier': [-0.6, -0.3], 1: [-0.1, 0]}
-    new_ranges = device.voltage_range_setter(ranges, new_sub_dict)
+    new_ranges = device._voltage_range_setter(ranges, new_sub_dict)
     assert new_ranges == {0: [-0.6, -0.3], 1: [-0.1, 0]}
 
     ranges = {0: [-0.98, -0.11], 1: [-0.21, -0.14]}
     new_sub_dict = {device.gates[0]: [-0.7, -0.5], 1: [-0.2, 0]}
-    new_ranges = device.voltage_range_setter(ranges, new_sub_dict)
+    new_ranges = device._voltage_range_setter(ranges, new_sub_dict)
     assert new_ranges == {0: [-0.7, -0.5], 1: [-0.2, 0]}
 
 
     device.gates[0].safety_voltage_range([-1, 0])
     ranges = {0: [-0.5, -0.11], 1: [-0.21, -0.14]}
     new_sub_dict = {device.gates[0]: [-1.1, 0.5], 1: [-0.2, 0]}
-    new_ranges = device.voltage_range_setter(ranges, new_sub_dict)
+    new_ranges = device._voltage_range_setter(ranges, new_sub_dict)
     assert new_ranges == {0: [-1, 0], 1: [-0.2, 0]}
 
 
@@ -122,29 +134,34 @@ def test_device_get_gate_id(device, gate_1):
         device.get_gate_id([0])
 
 
-def test_device_check_and_update_new_voltage_range(device):
+def test_device__check_and_update_new_voltage_range(device):
     v_range = [-1, 0]
-    safety_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_range)
+    safety_voltage_range = [-2, 0]
+    new_range = device._check_and_update_new_voltage_range(
+        v_range, safety_voltage_range, 0)
     assert new_range == v_range
 
-    new_range = device.check_and_update_new_voltage_range([0, -1], safety_range)
+    new_range = device._check_and_update_new_voltage_range(
+        [0, -1], safety_voltage_range, 0)
     assert new_range == v_range
 
     v_range = [-2.3, 0.5]
-    safety_range = [-2, 0]
-    new_range = device.check_and_update_new_voltage_range(v_range, safety_range)
+    safety_voltage_range = [-2, 0]
+    new_range = device._check_and_update_new_voltage_range(
+        v_range, safety_voltage_range, 0)
     assert new_range == [-2, 0]
 
     v_range = [-3, -2.5]
-    safety_range = [-2, 0]
+    safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_range)
+        device._check_and_update_new_voltage_range(
+            v_range, safety_voltage_range, 0)
 
     v_range = [1, 2]
-    safety_range = [-2, 0]
+    safety_voltage_range = [-2, 0]
     with pytest.raises(ValueError):
-        device.check_and_update_new_voltage_range(v_range, safety_range)
+        device._check_and_update_new_voltage_range(
+            v_range, safety_voltage_range, 0)
 
 def test_device_methods(device):
 
@@ -231,11 +248,17 @@ def test_device_initialize_channel_lists(station):
                 station=station,
                 channels=channels_input_mapping,
             )
-    gates, ohmics, gate_labels = device.initialize_channel_lists(
+    (gates,
+     ohmics,
+     gate_labels,
+     gates_list,
+     ohmics_list) = device.initialize_channel_lists(
         channels_input_mapping)
     ## gates and ohmic without IDs are ignored
     assert len(gates) == 2
     assert len(ohmics) == 1
+    assert len(gates_list) == 2
+    assert len(ohmics_list) == 1
     assert len(gate_labels) == 2
     assert gates[0] == device.top_barrier
     assert gates[1] == device.left_plunger

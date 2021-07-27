@@ -1,19 +1,22 @@
 import logging
 from abc import ABCMeta, abstractmethod
 from functools import partial
-from typing import Any, Dict, List, Tuple
-
+from typing import Any, Dict, List, Tuple, Sequence
 import qcodes as qc
+from qcodes.dataset.experiment_container import (load_last_experiment,
+                                                 new_experiment,
+                                                 load_experiment)
 import nanotune as nt
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import Readout
 
 from .base_tasks import (  # please update docstrings if import path changes
-    DataSettingsDict, ReadoutMethodsDict, SetpointSettingsDict,
     compute_linear_setpoints, get_current_voltages, iterate_stage, plot_fit,
     prepare_metadata, print_tuningstage_status, run_stage,
     save_extracted_features, save_machine_learning_result, set_voltages,
-    swap_range_limits_if_needed, take_data_add_metadata)
+    take_data_add_metadata)
 from .take_data import ramp_to_setpoint
+from nanotune.tuningstages.settings import DataSettings, SetpointSettings
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,7 @@ class TuningStage(metaclass=ABCMeta):
         setpoint_settings: Dictionary with information required to compute
             setpoints. Necessary keys are 'current_valid_ranges',
             'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-        readout_methods: Dictionary mapping string identifiers such as
+        readout: Dictionary mapping string identifiers such as
             'transport' to QCoDeS parameters measuring/returning the desired
             quantity (e.g. current throught the device).
         current_valid_ranges: List of voltages ranges (tuples of floats) to
@@ -45,9 +48,9 @@ class TuningStage(metaclass=ABCMeta):
     def __init__(
         self,
         stage: str,
-        data_settings: DataSettingsDict,
-        setpoint_settings: SetpointSettingsDict,
-        readout_methods: ReadoutMethodsDict,
+        data_settings: DataSettings,
+        setpoint_settings: SetpointSettings,
+        readout: Readout,
     ) -> None:
         """Initializes the base class of a tuning stage. Voltages to sweep and
         safety voltages are determined from the list of parameters in
@@ -64,19 +67,16 @@ class TuningStage(metaclass=ABCMeta):
                 setpoints. Necessary keys are 'current_valid_ranges',
                 'safety_voltage_ranges', 'parameters_to_sweep' and
                 'voltage_precision'.
-            readout_methods: Dictionary mapping string identifiers such as
-                'transport' to QCoDeS parameters measuring/returning the
-                desired quantity (e.g. current throught the device).
+            readout: Dataclass of DelegateParameter used for readout
         """
 
         self.stage = stage
         self.data_settings = data_settings
         self.setpoint_settings = setpoint_settings
-        self.readout_methods = readout_methods
+        self.readout = readout
 
-        ranges = self.setpoint_settings["current_valid_ranges"]
+        ranges = self.setpoint_settings.ranges_to_sweep
         self.current_valid_ranges = ranges
-        self.safety_voltage_ranges = self.setpoint_settings["safety_voltage_ranges"]
 
     @property
     @abstractmethod
@@ -89,11 +89,11 @@ class TuningStage(metaclass=ABCMeta):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         current_iteration: int,
         max_n_iterations: int,
-    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
         been successful. An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
@@ -162,8 +162,8 @@ class TuningStage(metaclass=ABCMeta):
         save_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
         save_machine_learning_result(run_id, ml_result)
 
@@ -186,8 +186,8 @@ class TuningStage(metaclass=ABCMeta):
 
     def compute_setpoints(
         self,
-        current_valid_ranges: List[Tuple[float, float]],
-    ) -> List[List[float]]:
+        current_valid_ranges: Sequence[Sequence[float]],
+    ) -> Sequence[Sequence[float]]:
         """Computes setpoints for the next measurement. Unless this method is
         overwritten in a child class, linearly spaced setpoints are computed.
 
@@ -200,7 +200,7 @@ class TuningStage(metaclass=ABCMeta):
 
         setpoints = compute_linear_setpoints(
             current_valid_ranges,
-            self.setpoint_settings["voltage_precision"],
+            self.setpoint_settings.voltage_precision,
         )
         return setpoints
 
@@ -223,8 +223,8 @@ class TuningStage(metaclass=ABCMeta):
             plot_fit(
                 self.fit_class,
                 current_id,
-                self.data_settings["db_name"],
-                db_folder=self.data_settings["db_folder"],
+                self.data_settings.db_name,
+                db_folder=self.data_settings.db_folder,
             )
         print_tuningstage_status(tuning_result)
 
@@ -236,12 +236,12 @@ class TuningStage(metaclass=ABCMeta):
             dict: Metadata dict with fields known prior to a measurement filled
                 in.
         """
-        example_param = self.setpoint_settings["parameters_to_sweep"][0]
+        example_param = self.setpoint_settings.parameters_to_sweep[0]
         device_name = example_param.name_parts[0]
         nt_meta = prepare_metadata(
             device_name,
-            self.data_settings["normalization_constants"],
-            self.readout_methods,
+            self.data_settings.normalization_constants,
+            self.readout,
         )
         return nt_meta
 
@@ -304,17 +304,26 @@ class TuningStage(metaclass=ABCMeta):
         """
 
         nt.set_database(
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"]
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder
         )
+        if self.data_settings.experiment_id is None:
+            try:
+                qcodes_experiment = load_last_experiment()
+            except ValueError:
+                logger.warning(
+                    "No qcodes experiment found. Starting a new "
+                    'one called "automated_tuning", with an unknown sample.'
+                )
+                qcodes_experiment = new_experiment(
+                    "automated_tuning", sample_name="unknown"
+                )
+            self.data_settings.experiment_id = qcodes_experiment.exp_id
+        else:
+            load_experiment(self.data_settings.experiment_id)
 
         initial_voltages = get_current_voltages(
-            self.setpoint_settings["parameters_to_sweep"]
-        )
-
-        self.current_valid_ranges = swap_range_limits_if_needed(
-            initial_voltages,
-            self.current_valid_ranges,
+            self.setpoint_settings.parameters_to_sweep
         )
 
         run_stage_tasks = [
@@ -329,10 +338,10 @@ class TuningStage(metaclass=ABCMeta):
 
         tuning_result = iterate_stage(
             self.stage,
-            self.setpoint_settings["parameters_to_sweep"],
-            [*self.readout_methods.values()],  # type: ignore
+            self.setpoint_settings.parameters_to_sweep,
+            self.readout.get_parameters(),
             self.current_valid_ranges,
-            self.safety_voltage_ranges,
+            self.setpoint_settings.safety_voltage_ranges,
             run_stage,
             run_stage_tasks,  # type: ignore
             self.conclude_iteration,
@@ -340,11 +349,11 @@ class TuningStage(metaclass=ABCMeta):
             max_iterations,
         )
         set_voltages(
-            self.setpoint_settings["parameters_to_sweep"],
+            self.setpoint_settings.parameters_to_sweep,
             initial_voltages,
         )
 
-        tuning_result.db_name = self.data_settings["db_name"]
-        tuning_result.db_folder = self.data_settings["db_folder"]
+        tuning_result.db_name = self.data_settings.db_name
+        tuning_result.db_folder = self.data_settings.db_folder
 
         return tuning_result

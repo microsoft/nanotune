@@ -4,7 +4,7 @@
 # https://opensource.org/licenses/MIT
 import copy
 import logging
-from typing import List, Tuple
+from typing import List, Sequence, Tuple
 
 import numpy as np
 
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 def get_new_gatecharacterization_range(
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     range_update_directives: List[str],
-) -> List[Tuple[float, float]]:
+) -> Sequence[Sequence[float]]:
     """Determines new voltage range for a subsequent tuning stage
     iteration. It extends the current range to the relevant safety range, i.e.
     if the directive required a voltage to be swept more negative, then the
@@ -35,24 +35,24 @@ def get_new_gatecharacterization_range(
     assert len(safety_voltage_ranges) == 1
 
     new_min, new_max = current_valid_ranges[0]
-    safety_range = safety_voltage_ranges[0]
+    safety_voltage_range = safety_voltage_ranges[0]
 
     for directive in range_update_directives:
         if directive not in ["x more negative", "x more positive"]:
             raise KeyError("Unknown voltage range update directive.")
 
     if "x more negative" in range_update_directives:
-        new_min = safety_range[0]
+        new_min = safety_voltage_range[0]
     if "x more positive" in range_update_directives:
-        new_max = safety_range[1]
+        new_max = safety_voltage_range[1]
 
     return [(new_min, new_max)]
 
 
 def get_range_directives_gatecharacterization(
     fit_range_update_directives: List[str],
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     dV_stop: float = 0.1,
 ) -> Tuple[List[str], List[str]]:
     """Determines voltage range directives to update ranges for a subsequent

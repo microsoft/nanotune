@@ -57,6 +57,7 @@ class MockDoubleQuantumDot(MockDevice):
             name,
             [
                 MockPin("src"),
+                MockPin("top_barrier"),
                 MockPin("left_barrier"),
                 MockPin("left_plunger"),
                 MockPin("central_barrier"),
@@ -71,6 +72,12 @@ class MockDoubleQuantumDot(MockDevice):
         """Source Pin"""
 
         return self["src"]
+
+    @property
+    def top_barrier(self) -> IMockPin:
+        """Top Barrier Pin"""
+
+        return self["top_barrier"]
 
     @property
     def left_barrier(self) -> IMockPin:

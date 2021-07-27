@@ -1,16 +1,25 @@
-import os
-import pathlib
 import pytest
 from qcodes.tests.instrument_mocks import MockDAC as QcodesMockDAC
+from qcodes.instrument.delegate.delegate_instrument import DelegateInstrument
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def qcodes_dac():
     dac = QcodesMockDAC('qcodes_dac', num_channels=3)
     try:
         yield dac
     finally:
         dac.close()
+
+
+@pytest.fixture(scope="function")
+def delegate_instrument(station):
+    instr = DelegateInstrument(
+        'dummy',
+        station,
+        parameters={'test_param': 'lockin.phase'}
+    )
+    return instr
 
 
 @pytest.fixture(name="moc_dac_server")

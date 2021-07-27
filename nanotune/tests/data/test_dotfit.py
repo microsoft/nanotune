@@ -21,7 +21,7 @@ def test_dotfit_init(nt_dataset_doubledot, tmp_path):
         "segmented_data",
     ]
 
-    df = DotFit(1, "temp.db", db_folder=str(tmp_path), signal_thresholds=[0.03, 0.4])
+    df = DotFit(1, "temp.db", db_folder=str(tmp_path))
 
     for attr in attributes:
         assert hasattr(df, attr)
@@ -33,7 +33,8 @@ def test_dotfit_range_update_directives(nt_dataset_doubledot, tmp_path):
         1,
         "temp.db",
         db_folder=str(tmp_path),
-        signal_thresholds=[0.03, 0.4],
+        noise_floor=0.03,
+        dot_signal_threshold=0.4,
     )
     assert not df.range_update_directives
 
