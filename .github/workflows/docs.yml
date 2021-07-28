@@ -84,12 +84,12 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: docs_${{ matrix.python-version }}_${{ matrix.os }}
-        path: ${{ github.workspace }}/docs/html
+        path: ${{ github.workspace }}/docs/_build/html
     - name: Deploy to gh pages
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
         branch: gh-pages
-        folder: ${{ github.workspace }}/docs/html
+        folder: ${{ github.workspace }}/docs/_build/html
         clean: true
         single-commit: true
         git-config-email: "bot"
