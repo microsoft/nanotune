@@ -58,15 +58,21 @@ Drivers
 Interfaces
 ----------
 
-
+The `DACChannelInterface` and `DACInterface` are interfaces to a DAC instrument
+and its channels, so that any kind of instrument can be used with nanotune. The
+interfaces need to be subclassed and all
+abstract methods need to be implemented. These methods define how for example
+parameters of DAC channels are accessed and set. It is the `DACInterface` subclass
+that needs to be used in measurements.
 
 
 Mock instruments
 ----------------
 
 `MockDACChannel`, `MockDAC`, as well as `MockLockin` and `MockRF` are primarily
-used in unit and functional tests. However, `MockDACChannel` and `MockDAC`
-show how to use `DACChannelInterface` and `MockDAC`.
+used in unit and functional tests. However, as stated above `MockDACChannel`
+and `MockDAC`
+show how to use `DACChannelInterface` and `DACInterface`.
 
 
 Server-Client Setup for DACs
