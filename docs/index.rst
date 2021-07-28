@@ -8,16 +8,18 @@ Documentation
 .. toctree::
    :maxdepth: 4
 
+   start/index.rst
    overview/index.rst
    quantum_dots/index.rst
-   start/index.rst
-   examples/index.rst
    tuning/index.rst
    device/index.rst
+   drivers/index.rst
    device_tuner/index.rst
    data/index.rst
+   fit/index.rst
    classification/index.rst
-   labelling/index.rst
+   capacitance_model/index.rst
+   examples/index.rst
 
 
 ==================
