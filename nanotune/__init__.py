@@ -9,5 +9,7 @@ from nanotune.data.databases import *
 from nanotune.data.dataset import Dataset
 from nanotune.device.device import Device
 
-version = __version__
+repo = git.Repo(path=os.path.dirname(nt.__file__), search_parent_directories=True)
+sha = repo.head.object.hexsha
+version = __version__  # repo.git.rev_parse(sha, short=8)
 meta_tag = nt.config["core"]["meta_add_on"]
