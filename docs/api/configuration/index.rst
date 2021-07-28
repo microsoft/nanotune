@@ -1,18 +1,18 @@
 .. _configuration_api :
 
+nanotune.configuration
+======================
+
+.. autosummary::
+
     nanotune.configuration
-    =======================
+    nanotune.configuration.config
 
-    .. autosummary::
-
-        nanotune.configuration
-        nanotune.configuration.config
-
-    .. automodule:: nanotune.configuration
+.. automodule:: nanotune.configuration
 
 
-    .. toctree::
-       :maxdepth: 4
-       :hidden:
+.. toctree::
+    :maxdepth: 4
+    :hidden:
 
-       config
+    config
