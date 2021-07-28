@@ -19,7 +19,7 @@ import nanotune
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../../'))
-sys.path.insert(0, os.path.abspath('../../../qcodes'))
+sys.path.insert(0, os.path.abspath('../../../nanotune'))
 sys.setrecursionlimit(1500)
 
 
@@ -226,7 +226,6 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'py': ('https://pylib.readthedocs.io/en/stable/', None),
-    'pyvisa': ('https://pyvisa.readthedocs.io/en/master/', None),
     'IPython': ('https://ipython.readthedocs.io/en/stable/', None),
     'qcodes': ('https://qcodes.github.io/Qcodes/', None),
 }
