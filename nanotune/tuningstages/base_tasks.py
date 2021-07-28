@@ -292,7 +292,7 @@ def prepare_metadata(
     """
     nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
     nt_meta["normalization_constants"] = asdict(normalization_constants)
-    nt_meta["git_hash"] = nt.git_hash
+    nt_meta["version"] = nt.version
     nt_meta["device_name"] = device_name
     readout_dict = readout_methods.as_name_dict()
     nt_meta["readout_methods"] = readout_dict

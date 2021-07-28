@@ -13,5 +13,5 @@ from nanotune.device.device import Device
 
 repo = git.Repo(path=os.path.dirname(nt.__file__), search_parent_directories=True)
 sha = repo.head.object.hexsha
-git_hash = repo.git.rev_parse(sha, short=8)
+version = __version__  # repo.git.rev_parse(sha, short=8)
 meta_tag = nt.config["core"]["meta_add_on"]

@@ -131,7 +131,7 @@ def test_prepare_metadata(dummy_dmm):
     assert metadata["device_name"] == "test_device"
     assert metadata["readout_methods"] == {
         "transport": dummy_dmm.dac1.full_name}
-    assert "git_hash" in metadata.keys()
+    assert "version" in metadata.keys()
     assert "features" in metadata.keys()
 
 
