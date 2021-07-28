@@ -1,5 +1,3 @@
-Drivers
-=======
 
 Interfaces
 ----------
@@ -52,3 +50,7 @@ The layout_id parameter is the gate's index in the device layout list.
 .. automodule:: nanotune.device
     :members:
 
+=======
+=======
+Drivers
+=======
