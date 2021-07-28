@@ -5,7 +5,10 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = .
+BUILDDIR      = _build
+
+# this is to to autmagic gh-pages
+GH_PAGES_SOURCES = docs nanotune CONTRIBUTING.rst LICENSE
 
 # this is to to autmagic gh-pages
 GH_PAGES_SOURCES = docs nanotune CONTRIBUTING.rst LICENSE
@@ -22,5 +25,5 @@ clean:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
+%: Makefile genapi
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
