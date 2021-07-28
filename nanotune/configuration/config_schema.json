@@ -29,7 +29,7 @@
                                 "ramp_rate", "write_period",
                                 "normalization_constants", "device_name",
                                 "features", "predicted_category",
-                                "signal_types", "git_hash"]
+                                "signal_types", "version"]
                 },
                 "implemented": {
                     "description": "implemented tuning stages",
