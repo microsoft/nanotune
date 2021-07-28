@@ -6,10 +6,10 @@
    "id": "dependent-assistant",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:45.951338Z",
-     "iopub.status.busy": "2021-07-27T12:51:45.949596Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.024950Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.026568Z"
+     "iopub.execute_input": "2021-07-27T14:47:30.434952Z",
+     "iopub.status.busy": "2021-07-27T14:47:30.430791Z",
+     "iopub.status.idle": "2021-07-27T14:47:38.577568Z",
+     "shell.execute_reply": "2021-07-27T14:47:38.578183Z"
     }
    },
    "outputs": [
@@ -31,7 +31,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14875-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-26195-qcodes.log\n"
      ]
     }
    ],
@@ -46,10 +46,10 @@
    "id": "assisted-geography",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.038856Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.037578Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.309898Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.310351Z"
+     "iopub.execute_input": "2021-07-27T14:47:38.593495Z",
+     "iopub.status.busy": "2021-07-27T14:47:38.591929Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.644606Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.645227Z"
     }
    },
    "outputs": [
@@ -60,7 +60,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-463829e6931d>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m result = TuningResult(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0;34m'gatecharacterization'\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0;32mTrue\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mguids\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'aaaaaaaa-0000-0000-0000-000000000000'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mdata_ids\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_26195/3967434994.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m result = TuningResult(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0;34m'gatecharacterization'\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0;32mTrue\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mguids\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'aaaaaaaa-0000-0000-0000-000000000000'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mdata_ids\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
       "\u001b[0;31mTypeError\u001b[0m: __init__() got an unexpected keyword argument 'features'"
      ]
     }
@@ -85,10 +85,10 @@
    "id": "static-rouge",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.314595Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.313931Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.322027Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.321410Z"
+     "iopub.execute_input": "2021-07-27T14:47:39.685976Z",
+     "iopub.status.busy": "2021-07-27T14:47:39.682364Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.690782Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.691807Z"
     }
    },
    "outputs": [
@@ -99,7 +99,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-a977d4cfb133>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mresult\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msuccess\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_26195/2901083997.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mresult\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msuccess\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'result' is not defined"
      ]
     }
@@ -114,10 +114,10 @@
    "id": "protected-management",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.330194Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.325396Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.334285Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.333732Z"
+     "iopub.execute_input": "2021-07-27T14:47:39.700568Z",
+     "iopub.status.busy": "2021-07-27T14:47:39.698737Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.719213Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.720093Z"
     }
    },
    "outputs": [
@@ -128,7 +128,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-f98ec301e262>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mresult\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mto_dict\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_26195/3140865674.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mresult\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mto_dict\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'result' is not defined"
      ]
     }
@@ -143,10 +143,10 @@
    "id": "forty-compiler",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.338454Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.337734Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.340012Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.340573Z"
+     "iopub.execute_input": "2021-07-27T14:47:39.730342Z",
+     "iopub.status.busy": "2021-07-27T14:47:39.728967Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.732561Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.733905Z"
     }
    },
    "outputs": [],
@@ -160,10 +160,10 @@
    "id": "minor-river",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.344722Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.343980Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.352328Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.352913Z"
+     "iopub.execute_input": "2021-07-27T14:47:39.741673Z",
+     "iopub.status.busy": "2021-07-27T14:47:39.740396Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.756924Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.759685Z"
     }
    },
    "outputs": [
@@ -174,7 +174,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-08ef45cc1007>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_result\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mresult\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'gate1_characterization'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_26195/47855685.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_result\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mresult\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'gate1_characterization'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'result' is not defined"
      ]
     }
@@ -189,10 +189,10 @@
    "id": "stylish-drama",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:51:52.357475Z",
-     "iopub.status.busy": "2021-07-27T12:51:52.356743Z",
-     "iopub.status.idle": "2021-07-27T12:51:52.365583Z",
-     "shell.execute_reply": "2021-07-27T12:51:52.364801Z"
+     "iopub.execute_input": "2021-07-27T14:47:39.768882Z",
+     "iopub.status.busy": "2021-07-27T14:47:39.767779Z",
+     "iopub.status.idle": "2021-07-27T14:47:39.785006Z",
+     "shell.execute_reply": "2021-07-27T14:47:39.785826Z"
     }
    },
    "outputs": [
@@ -203,7 +203,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-cc73e38fba50>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningresults\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'gate1_characterization'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfeatures\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_26195/776168843.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningresults\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'gate1_characterization'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfeatures\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mKeyError\u001b[0m: 'gate1_characterization'"
      ]
     }
@@ -261,7 +261,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.1"
+   "version": "3.8.10"
   }
  },
  "nbformat": 4,

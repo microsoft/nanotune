@@ -6,10 +6,10 @@
    "id": "focused-hardwood",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:06:32.298726Z",
-     "iopub.status.busy": "2021-07-27T12:06:32.297497Z",
-     "iopub.status.idle": "2021-07-27T12:06:37.680706Z",
-     "shell.execute_reply": "2021-07-27T12:06:37.681388Z"
+     "iopub.execute_input": "2021-07-27T12:52:03.826223Z",
+     "iopub.status.busy": "2021-07-27T12:52:03.825238Z",
+     "iopub.status.idle": "2021-07-27T12:52:08.488819Z",
+     "shell.execute_reply": "2021-07-27T12:52:08.489411Z"
     }
    },
    "outputs": [
@@ -31,7 +31,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-9533-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14914-qcodes.log\n"
      ]
     }
    ],
@@ -61,10 +61,10 @@
    "id": "particular-latest",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:06:37.689018Z",
-     "iopub.status.busy": "2021-07-27T12:06:37.688110Z",
-     "iopub.status.idle": "2021-07-27T12:06:37.765678Z",
-     "shell.execute_reply": "2021-07-27T12:06:37.764436Z"
+     "iopub.execute_input": "2021-07-27T12:52:08.496697Z",
+     "iopub.status.busy": "2021-07-27T12:52:08.495263Z",
+     "iopub.status.idle": "2021-07-27T12:52:08.567344Z",
+     "shell.execute_reply": "2021-07-27T12:52:08.568191Z"
     }
    },
    "outputs": [],
@@ -92,10 +92,10 @@
    "id": "aboriginal-cliff",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:06:37.776369Z",
-     "iopub.status.busy": "2021-07-27T12:06:37.775119Z",
-     "iopub.status.idle": "2021-07-27T12:06:38.377535Z",
-     "shell.execute_reply": "2021-07-27T12:06:38.378234Z"
+     "iopub.execute_input": "2021-07-27T12:52:08.574827Z",
+     "iopub.status.busy": "2021-07-27T12:52:08.573507Z",
+     "iopub.status.idle": "2021-07-27T12:52:08.963917Z",
+     "shell.execute_reply": "2021-07-27T12:52:08.964352Z"
     }
    },
    "outputs": [],
@@ -117,10 +117,10 @@
    "id": "fancy-snake",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:06:38.385028Z",
-     "iopub.status.busy": "2021-07-27T12:06:38.383402Z",
-     "iopub.status.idle": "2021-07-27T12:06:38.394572Z",
-     "shell.execute_reply": "2021-07-27T12:06:38.395108Z"
+     "iopub.execute_input": "2021-07-27T12:52:08.970111Z",
+     "iopub.status.busy": "2021-07-27T12:52:08.969306Z",
+     "iopub.status.idle": "2021-07-27T12:52:08.975755Z",
+     "shell.execute_reply": "2021-07-27T12:52:08.976252Z"
     }
    },
    "outputs": [],
@@ -138,10 +138,10 @@
    "id": "close-lemon",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:06:38.401506Z",
-     "iopub.status.busy": "2021-07-27T12:06:38.400596Z",
-     "iopub.status.idle": "2021-07-27T12:06:38.869846Z",
-     "shell.execute_reply": "2021-07-27T12:06:38.871138Z"
+     "iopub.execute_input": "2021-07-27T12:52:08.981818Z",
+     "iopub.status.busy": "2021-07-27T12:52:08.981005Z",
+     "iopub.status.idle": "2021-07-27T12:52:09.286301Z",
+     "shell.execute_reply": "2021-07-27T12:52:09.286811Z"
     }
    },
    "outputs": [

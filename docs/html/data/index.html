@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data &mdash; nanotune 0+untagged.490.g7174bd0.dirty documentation</title>
+  <title>Data &mdash; nanotune 0+untagged.499.g48fdd24 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -64,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.490.g7174bd0.dirty
+                0+untagged.499.g48fdd24
               </div>
             
           
@@ -223,63 +226,63 @@ Poor single dot. A dot starts to form but diagonal lines are not sharp. 1D Coulo
 <div class="toctree-wrapper compound">
 </div>
 <span class="target" id="module-nanotune.data.dataset"></span><dl class="py class">
-<dt id="nanotune.data.dataset.Dataset">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">nanotune.data.dataset.</span></code><code class="sig-name descname"><span class="pre">Dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_tolerances</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(-</span> <span class="pre">0.1,</span> <span class="pre">1.1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.data.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_tolerances</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(-</span> <span class="pre">0.1,</span> <span class="pre">1.1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>To be used as parent class for dot fits (in the future)
 For now, it is used to load data and to normalise it with
 normalization_constants.</p>
 <p>Loads existing data from a database, e.g. it expects the data (measured and
 saved with qcodes) to exit in the given database.</p>
-<dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.snapshot">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">snapshot</span></code><a class="headerlink" href="#nanotune.data.dataset.Dataset.snapshot" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.snapshot">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">snapshot</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#nanotune.data.dataset.Dataset.snapshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.nt_metadata">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">nt_metadata</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#nanotune.data.dataset.Dataset.nt_metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.normalization_constants">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">normalization_constants</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">List[float]]</span></em><a class="headerlink" href="#nanotune.data.dataset.Dataset.normalization_constants" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.features">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">Dict[str,</span> <span class="pre">Any]]</span></em><a class="headerlink" href="#nanotune.data.dataset.Dataset.features" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.nt_metadata">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nt_metadata</span></code><a class="headerlink" href="#nanotune.data.dataset.Dataset.nt_metadata" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.get_plot_label">
+<span class="sig-name descname"><span class="pre">get_plot_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_spect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.get_plot_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.get_plot_label" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.normalization_constants">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">normalization_constants</span></code><a class="headerlink" href="#nanotune.data.dataset.Dataset.normalization_constants" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.features">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">features</span></code><a class="headerlink" href="#nanotune.data.dataset.Dataset.features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.get_plot_label">
-<code class="sig-name descname"><span class="pre">get_plot_label</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_spect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.get_plot_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.get_plot_label" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.from_qcodes_dataset">
-<code class="sig-name descname"><span class="pre">from_qcodes_dataset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.from_qcodes_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.from_qcodes_dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.from_qcodes_dataset">
+<span class="sig-name descname"><span class="pre">from_qcodes_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.from_qcodes_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.from_qcodes_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load data from qcodes dataset</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.prepare_filtered_data">
-<code class="sig-name descname"><span class="pre">prepare_filtered_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.prepare_filtered_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.prepare_filtered_data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.prepare_filtered_data">
+<span class="sig-name descname"><span class="pre">prepare_filtered_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.prepare_filtered_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.prepare_filtered_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.compute_1D_power_spectrum">
-<code class="sig-name descname"><span class="pre">compute_1D_power_spectrum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">xarray.core.dataarray.DataArray</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_1D_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_1D_power_spectrum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.compute_1D_power_spectrum">
+<span class="sig-name descname"><span class="pre">compute_1D_power_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataarray.DataArray</span></span></span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_1D_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_1D_power_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.compute_2D_power_spectrum">
-<code class="sig-name descname"><span class="pre">compute_2D_power_spectrum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">xarray.core.dataarray.DataArray</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_2D_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_2D_power_spectrum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.compute_2D_power_spectrum">
+<span class="sig-name descname"><span class="pre">compute_2D_power_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.core.dataarray.DataArray</span></span></span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_2D_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_2D_power_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="nanotune.data.dataset.Dataset.compute_power_spectrum">
-<code class="sig-name descname"><span class="pre">compute_power_spectrum</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_power_spectrum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nanotune.data.dataset.Dataset.compute_power_spectrum">
+<span class="sig-name descname"><span class="pre">compute_power_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/data/dataset.html#Dataset.compute_power_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.data.dataset.Dataset.compute_power_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute frequencies of the signal. Detrend before that to eliminate DC
 component.
 No high pass filter applied as we do not want to accidentally remove

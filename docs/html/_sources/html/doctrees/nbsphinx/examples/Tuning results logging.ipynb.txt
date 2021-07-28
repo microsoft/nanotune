@@ -6,10 +6,10 @@
    "id": "dependent-assistant",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:58.153892Z",
-     "iopub.status.busy": "2021-07-27T12:04:58.152499Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.291044Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.291990Z"
+     "iopub.execute_input": "2021-07-27T12:48:19.842664Z",
+     "iopub.status.busy": "2021-07-27T12:48:19.841445Z",
+     "iopub.status.idle": "2021-07-27T12:48:26.786804Z",
+     "shell.execute_reply": "2021-07-27T12:48:26.791319Z"
     }
    },
    "outputs": [
@@ -31,7 +31,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-9305-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14433-qcodes.log\n"
      ]
     }
    ],
@@ -46,10 +46,10 @@
    "id": "assisted-geography",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.301292Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.299819Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.549047Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.549508Z"
+     "iopub.execute_input": "2021-07-27T12:48:26.800593Z",
+     "iopub.status.busy": "2021-07-27T12:48:26.799109Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.110384Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.109760Z"
     }
    },
    "outputs": [
@@ -85,10 +85,10 @@
    "id": "static-rouge",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.554178Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.553354Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.564438Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.564857Z"
+     "iopub.execute_input": "2021-07-27T12:48:27.115504Z",
+     "iopub.status.busy": "2021-07-27T12:48:27.114785Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.123362Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.123876Z"
     }
    },
    "outputs": [
@@ -114,10 +114,10 @@
    "id": "protected-management",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.569575Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.568842Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.579109Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.579611Z"
+     "iopub.execute_input": "2021-07-27T12:48:27.128473Z",
+     "iopub.status.busy": "2021-07-27T12:48:27.127157Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.135267Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.135789Z"
     }
    },
    "outputs": [
@@ -143,10 +143,10 @@
    "id": "forty-compiler",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.584111Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.583280Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.585322Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.585787Z"
+     "iopub.execute_input": "2021-07-27T12:48:27.140036Z",
+     "iopub.status.busy": "2021-07-27T12:48:27.139407Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.142431Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.143595Z"
     }
    },
    "outputs": [],
@@ -160,10 +160,10 @@
    "id": "minor-river",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.589893Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.589144Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.599846Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.600291Z"
+     "iopub.execute_input": "2021-07-27T12:48:27.149240Z",
+     "iopub.status.busy": "2021-07-27T12:48:27.148303Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.169233Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.170230Z"
     }
    },
    "outputs": [
@@ -189,10 +189,10 @@
    "id": "stylish-drama",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:05:04.604479Z",
-     "iopub.status.busy": "2021-07-27T12:05:04.603823Z",
-     "iopub.status.idle": "2021-07-27T12:05:04.612932Z",
-     "shell.execute_reply": "2021-07-27T12:05:04.613764Z"
+     "iopub.execute_input": "2021-07-27T12:48:27.177803Z",
+     "iopub.status.busy": "2021-07-27T12:48:27.176057Z",
+     "iopub.status.idle": "2021-07-27T12:48:27.195754Z",
+     "shell.execute_reply": "2021-07-27T12:48:27.196536Z"
     }
    },
    "outputs": [

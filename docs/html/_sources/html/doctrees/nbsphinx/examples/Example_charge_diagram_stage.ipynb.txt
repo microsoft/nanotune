@@ -6,10 +6,10 @@
    "id": "celtic-google",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:03:51.946388Z",
-     "iopub.status.busy": "2021-07-27T12:03:51.932184Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.677667Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.678383Z"
+     "iopub.execute_input": "2021-07-27T12:47:33.556520Z",
+     "iopub.status.busy": "2021-07-27T12:47:33.555430Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.807930Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.808474Z"
     }
    },
    "outputs": [
@@ -31,7 +31,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-9161-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14332-qcodes.log\n"
      ]
     },
     {
@@ -77,10 +77,10 @@
    "id": "tutorial-raleigh",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.684577Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.683319Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.695737Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.696635Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.814632Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.813679Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.823806Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.824616Z"
     }
    },
    "outputs": [
@@ -119,10 +119,10 @@
    "id": "premium-organic",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.704544Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.703109Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.715028Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.714380Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.837060Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.829687Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.841061Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.841692Z"
     }
    },
    "outputs": [
@@ -161,10 +161,10 @@
    "id": "bored-facial",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.720913Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.719929Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.734356Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.735327Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.847502Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.846376Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.857606Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.858155Z"
     }
    },
    "outputs": [
@@ -196,10 +196,10 @@
    "id": "familiar-mambo",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.748268Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.745333Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.756706Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.758217Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.864008Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.862887Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.875569Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.874944Z"
     }
    },
    "outputs": [
@@ -230,10 +230,10 @@
    "id": "automated-stations",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.766259Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.765086Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.779047Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.780448Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.880923Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.879568Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.890926Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.891501Z"
     }
    },
    "outputs": [
@@ -260,10 +260,10 @@
    "id": "sound-tomorrow",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.788871Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.787726Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.801710Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.802531Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.898437Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.897558Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.908666Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.909562Z"
     }
    },
    "outputs": [
@@ -308,10 +308,10 @@
    "id": "consistent-coverage",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.808563Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.807537Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.819060Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.820077Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.914798Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.913906Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.925005Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.925662Z"
     },
     "scrolled": true
    },
@@ -338,10 +338,10 @@
    "id": "blind-fairy",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.825578Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.824480Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.838381Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.839721Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.931314Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.929863Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.942173Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.942750Z"
     }
    },
    "outputs": [
@@ -367,10 +367,10 @@
    "id": "seasonal-harbor",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.847192Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.845876Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.860516Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.861161Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.947336Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.946557Z",
+     "iopub.status.idle": "2021-07-27T12:47:43.971203Z",
+     "shell.execute_reply": "2021-07-27T12:47:43.970062Z"
     }
    },
    "outputs": [
@@ -397,10 +397,10 @@
    "id": "abandoned-anaheim",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:04:07.866462Z",
-     "iopub.status.busy": "2021-07-27T12:04:07.864930Z",
-     "iopub.status.idle": "2021-07-27T12:04:07.880121Z",
-     "shell.execute_reply": "2021-07-27T12:04:07.880737Z"
+     "iopub.execute_input": "2021-07-27T12:47:43.980302Z",
+     "iopub.status.busy": "2021-07-27T12:47:43.979086Z",
+     "iopub.status.idle": "2021-07-27T12:47:44.009250Z",
+     "shell.execute_reply": "2021-07-27T12:47:44.010885Z"
     }
    },
    "outputs": [

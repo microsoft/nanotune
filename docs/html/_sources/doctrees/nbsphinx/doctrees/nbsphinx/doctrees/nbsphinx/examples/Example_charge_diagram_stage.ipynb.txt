@@ -6,10 +6,10 @@
    "id": "celtic-google",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:35.847034Z",
-     "iopub.status.busy": "2021-07-27T12:45:35.844303Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.530082Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.530584Z"
+     "iopub.execute_input": "2021-07-27T14:41:05.289171Z",
+     "iopub.status.busy": "2021-07-27T14:41:05.287735Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.607653Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.608511Z"
     }
    },
    "outputs": [
@@ -31,18 +31,22 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14125-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-24863-qcodes.log\n"
      ]
     },
     {
-     "ename": "ImportError",
-     "evalue": "cannot import name 'QuantumDotMockInstrument' from 'sim.qcodes_mocks' (/Users/jana/Documents/code/nanotune/nanotune/sim/qcodes_mocks.py)",
+     "ename": "ModuleNotFoundError",
+     "evalue": "No module named 'prettytable'",
      "output_type": "error",
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mImportError\u001b[0m                               Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-587fd42dcd64>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     10\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_providers\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mQcodesDataProvider\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 12\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0msim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mqcodes_mocks\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mQuantumDotMockInstrument\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     13\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     14\u001b[0m \u001b[0mnt_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdirname\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdirname\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mabspath\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m__file__\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mImportError\u001b[0m: cannot import name 'QuantumDotMockInstrument' from 'sim.qcodes_mocks' (/Users/jana/Documents/code/nanotune/nanotune/sim/qcodes_mocks.py)"
+      "\u001b[0;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3107994226.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnanotune\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      8\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtests\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmock_classifier\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mMockClassifer\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 9\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningstages\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mchargediagram\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mChargeDiagram\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     10\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_providers\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mQcodesDataProvider\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/tuningstages/chargediagram.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      8\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mReadout\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      9\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfit\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdotfit\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mDotFit\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 10\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningstages\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningstage\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mTuningStage\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     11\u001b[0m from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,\n\u001b[1;32m     12\u001b[0m     Classifiers)\n",
+      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/tuningstages/tuningstage.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mReadout\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     12\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 13\u001b[0;31m from .base_tasks import (  # please update docstrings if import path changes\n\u001b[0m\u001b[1;32m     14\u001b[0m     \u001b[0mcompute_linear_setpoints\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mget_current_voltages\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0miterate_stage\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mplot_fit\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     15\u001b[0m     \u001b[0mprepare_metadata\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mprint_tuningstage_status\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mrun_stage\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/tuningstages/base_tasks.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     23\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     24\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnanotune\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 25\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclassification\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclassifier\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mClassifier\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     26\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice_tuner\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtuningresult\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mTuningResult\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     27\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdevice\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mNormalizationConstants\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mReadout\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/classification/classifier.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mmatplotlib\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpyplot\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mplt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      8\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnumpy\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 9\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mprettytable\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mPrettyTable\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     10\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mscipy\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0minterp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0msvm\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m: No module named 'prettytable'"
      ]
     }
    ],
@@ -77,10 +81,10 @@
    "id": "tutorial-raleigh",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.535671Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.535007Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.543925Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.544449Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.615859Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.614837Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.625748Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.626405Z"
     }
    },
    "outputs": [
@@ -91,7 +95,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-0e434f30eb17>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m\"dot_tuning_sequences.db\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mdb_folder_original_data\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnt_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"data\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"tuning\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      3\u001b[0m \u001b[0mchargediagram_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdb_folder_original_data\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0mdb_name_replay\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'qdsim_test.db'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/21570433.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m\"dot_tuning_sequences.db\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mdb_folder_original_data\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnt_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"data\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"tuning\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      3\u001b[0m \u001b[0mchargediagram_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdb_folder_original_data\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0mdb_name_replay\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m'qdsim_test.db'\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
       "\u001b[0;31mNameError\u001b[0m: name 'nt_path' is not defined"
      ]
     }
@@ -119,10 +123,10 @@
    "id": "premium-organic",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.549103Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.548455Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.558572Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.558019Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.632213Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.631392Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.642221Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.643039Z"
     }
    },
    "outputs": [
@@ -133,7 +137,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-e0f94335ba9e>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mstation\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mStation\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0mqd_mock_instrument\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mQuantumDotMockInstrument\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m \u001b[0mstation\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_component\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mqd_mock_instrument\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mname\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"qdmock\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3115529665.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mstation\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mStation\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0mqd_mock_instrument\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mQuantumDotMockInstrument\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m \u001b[0mstation\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0madd_component\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mqd_mock_instrument\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mname\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"qdmock\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
       "\u001b[0;31mNameError\u001b[0m: name 'QuantumDotMockInstrument' is not defined"
      ]
     }
@@ -161,22 +165,22 @@
    "id": "bored-facial",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.563390Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.562472Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.572142Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.572558Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.648841Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.647918Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.658563Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.659236Z"
     }
    },
    "outputs": [
     {
      "ename": "NameError",
-     "evalue": "name 'qdsim' is not defined",
+     "evalue": "name 'QcodesDataProvider' is not defined",
      "output_type": "error",
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-6d286b35158f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m charge_state_data = QcodesDataProvider(\n\u001b[0;32m----> 2\u001b[0;31m     \u001b[0minput_providers\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mqdsim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0ml_plunger\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mqdsim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mr_plunger\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      3\u001b[0m     \u001b[0mdb_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mchargediagram_path\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mexp_name\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"GB_Newtown_Dev_1_1\"\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mrun_id\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m19\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mNameError\u001b[0m: name 'qdsim' is not defined"
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/1896909532.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m charge_state_data = QcodesDataProvider(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0minput_providers\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mqdsim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0ml_plunger\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mqdsim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mr_plunger\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0mdb_path\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mchargediagram_path\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mexp_name\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"GB_Newtown_Dev_1_1\"\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mrun_id\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m19\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'QcodesDataProvider' is not defined"
      ]
     }
    ],
@@ -196,10 +200,10 @@
    "id": "familiar-mambo",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.577555Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.576881Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.585723Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.586177Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.665387Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.664599Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.674396Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.674994Z"
     }
    },
    "outputs": [
@@ -210,7 +214,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-ef4c6835689b>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mds\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m19\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_folder_original_data\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m range_to_sweep = [\n\u001b[1;32m      3\u001b[0m     \u001b[0;34m(\u001b[0m\u001b[0mmin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_x\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_x\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0;34m(\u001b[0m\u001b[0mmin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_y\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_y\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m ]\n",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/2307889990.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mds\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mDataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m19\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_name_original_data2D\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_folder_original_data\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m range_to_sweep = [\n\u001b[1;32m      3\u001b[0m     \u001b[0;34m(\u001b[0m\u001b[0mmin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_x\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_x\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0;34m(\u001b[0m\u001b[0mmin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_y\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvoltage_y\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m ]\n",
       "\u001b[0;31mNameError\u001b[0m: name 'db_folder_original_data' is not defined"
      ]
     }
@@ -230,10 +234,10 @@
    "id": "automated-stations",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.590248Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.589552Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.598775Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.599203Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.685502Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.684510Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.688888Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.689417Z"
     }
    },
    "outputs": [
@@ -244,7 +248,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-5e4524304098>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mset_database\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdb_name_replay\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_folder_replay\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0mexp\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mload_or_create_experiment\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"simtest\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3176297617.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mset_database\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdb_name_replay\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_folder_replay\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0mexp\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mload_or_create_experiment\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"simtest\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
       "\u001b[0;31mNameError\u001b[0m: name 'db_name_replay' is not defined"
      ]
     }
@@ -260,22 +264,22 @@
    "id": "sound-tomorrow",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.604655Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.603986Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.618958Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.619455Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.698015Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.696899Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.708329Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.709038Z"
     }
    },
    "outputs": [
     {
      "ename": "NameError",
-     "evalue": "name 'db_name_replay' is not defined",
+     "evalue": "name 'ChargeDiagram' is not defined",
      "output_type": "error",
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-8bf3603b8541>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m chadiag = ChargeDiagram(\n\u001b[1;32m      2\u001b[0m     data_settings={\n\u001b[0;32m----> 3\u001b[0;31m         \u001b[0;34m'db_name'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mdb_name_replay\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m         \u001b[0;34m'db_folder'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mdb_folder_replay\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0;34m'normalization_constants'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mnormalization_constants\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mNameError\u001b[0m: name 'db_name_replay' is not defined"
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/1469651859.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m chadiag = ChargeDiagram(\n\u001b[0m\u001b[1;32m      2\u001b[0m     data_settings={\n\u001b[1;32m      3\u001b[0m         \u001b[0;34m'db_name'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mdb_name_replay\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m         \u001b[0;34m'db_folder'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mdb_folder_replay\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0;34m'normalization_constants'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mds\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mnormalization_constants\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'ChargeDiagram' is not defined"
      ]
     }
    ],
@@ -308,10 +312,10 @@
    "id": "consistent-coverage",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.623677Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.622998Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.631611Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.632041Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.720161Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.718988Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.722676Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.723275Z"
     },
     "scrolled": true
    },
@@ -323,7 +327,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-9ce30c9d771c>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mchadiag\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrun_stage\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/128250766.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mchadiag\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mrun_stage\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'chadiag' is not defined"
      ]
     }
@@ -338,10 +342,10 @@
    "id": "blind-fairy",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.636317Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.635387Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.644992Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.645785Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.735030Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.728091Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.738855Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.739404Z"
     }
    },
    "outputs": [
@@ -352,7 +356,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-365f60c088a7>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msuccess\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3202731488.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msuccess\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'tuning_result' is not defined"
      ]
     }
@@ -367,10 +371,10 @@
    "id": "seasonal-harbor",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.650249Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.649388Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.658509Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.658939Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.750680Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.749737Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.753067Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.753681Z"
     }
    },
    "outputs": [
@@ -381,7 +385,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-c699366c4808>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;31m# Note that a mock classifier was used, which always returns True == good result\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mml_result\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3150862173.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;31m# Note that a mock classifier was used, which always returns True == good result\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mml_result\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'tuning_result' is not defined"
      ]
     }
@@ -397,10 +401,10 @@
    "id": "abandoned-anaheim",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:42.665730Z",
-     "iopub.status.busy": "2021-07-27T12:45:42.664817Z",
-     "iopub.status.idle": "2021-07-27T12:45:42.680199Z",
-     "shell.execute_reply": "2021-07-27T12:45:42.680792Z"
+     "iopub.execute_input": "2021-07-27T14:41:09.758925Z",
+     "iopub.status.busy": "2021-07-27T14:41:09.758088Z",
+     "iopub.status.idle": "2021-07-27T14:41:09.767378Z",
+     "shell.execute_reply": "2021-07-27T14:41:09.767922Z"
     }
    },
    "outputs": [
@@ -411,7 +415,7 @@
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-7b9e5f1f356e>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_ids\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24863/3649862796.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtuning_result\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdata_ids\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
       "\u001b[0;31mNameError\u001b[0m: name 'tuning_result' is not defined"
      ]
     }
@@ -453,7 +457,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.1"
+   "version": "3.8.10"
   }
  },
  "nbformat": 4,

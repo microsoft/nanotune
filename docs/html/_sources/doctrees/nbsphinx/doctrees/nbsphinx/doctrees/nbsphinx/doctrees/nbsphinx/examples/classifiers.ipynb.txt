@@ -6,10 +6,10 @@
    "id": "focused-hardwood",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:16.620327Z",
-     "iopub.status.busy": "2021-07-27T12:45:16.618639Z",
-     "iopub.status.idle": "2021-07-27T12:45:27.526222Z",
-     "shell.execute_reply": "2021-07-27T12:45:27.526962Z"
+     "iopub.execute_input": "2021-07-27T14:40:56.557411Z",
+     "iopub.status.busy": "2021-07-27T14:40:56.556447Z",
+     "iopub.status.idle": "2021-07-27T14:41:00.986279Z",
+     "shell.execute_reply": "2021-07-27T14:41:00.986789Z"
     }
    },
    "outputs": [
@@ -31,7 +31,19 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14087-qcodes.log\n"
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210727-24840-qcodes.log\n"
+     ]
+    },
+    {
+     "ename": "ModuleNotFoundError",
+     "evalue": "No module named 'prettytable'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24840/3864144265.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnanotune\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mnanotune\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclassification\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclassifier\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mClassifier\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      9\u001b[0m \u001b[0mnt_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdirname\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdirname\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mabspath\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m__file__\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/classification/classifier.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mmatplotlib\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpyplot\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mplt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      8\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnumpy\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 9\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mprettytable\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mPrettyTable\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     10\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mscipy\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0minterp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0msvm\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m: No module named 'prettytable'"
      ]
     }
    ],
@@ -61,13 +73,25 @@
    "id": "particular-latest",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:27.533805Z",
-     "iopub.status.busy": "2021-07-27T12:45:27.533062Z",
-     "iopub.status.idle": "2021-07-27T12:45:27.589048Z",
-     "shell.execute_reply": "2021-07-27T12:45:27.589465Z"
+     "iopub.execute_input": "2021-07-27T14:41:00.996519Z",
+     "iopub.status.busy": "2021-07-27T14:41:00.991399Z",
+     "iopub.status.idle": "2021-07-27T14:41:00.999543Z",
+     "shell.execute_reply": "2021-07-27T14:41:01.000048Z"
     }
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'Classifier' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24840/903708021.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m clf = Classifier(\n\u001b[0m\u001b[1;32m      2\u001b[0m     \u001b[0;34m[\u001b[0m\u001b[0;34m'pinchoff.npy'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0;34m'pinchoff'\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mdata_types\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"signal\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mclassifier\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"SVC\"\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'Classifier' is not defined"
+     ]
+    }
+   ],
    "source": [
     "clf = Classifier(\n",
     "    ['pinchoff.npy'],\n",
@@ -92,13 +116,25 @@
    "id": "aboriginal-cliff",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:27.593643Z",
-     "iopub.status.busy": "2021-07-27T12:45:27.592978Z",
-     "iopub.status.idle": "2021-07-27T12:45:27.936173Z",
-     "shell.execute_reply": "2021-07-27T12:45:27.936637Z"
+     "iopub.execute_input": "2021-07-27T14:41:01.009026Z",
+     "iopub.status.busy": "2021-07-27T14:41:01.008100Z",
+     "iopub.status.idle": "2021-07-27T14:41:01.011757Z",
+     "shell.execute_reply": "2021-07-27T14:41:01.012332Z"
     }
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'clf' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24840/1218518102.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mclf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtrain\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'clf' is not defined"
+     ]
+    }
+   ],
    "source": [
     "clf.train()"
    ]
@@ -117,13 +153,25 @@
    "id": "fancy-snake",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:27.945588Z",
-     "iopub.status.busy": "2021-07-27T12:45:27.944635Z",
-     "iopub.status.idle": "2021-07-27T12:45:27.954800Z",
-     "shell.execute_reply": "2021-07-27T12:45:27.955267Z"
+     "iopub.execute_input": "2021-07-27T14:41:01.021875Z",
+     "iopub.status.busy": "2021-07-27T14:41:01.016478Z",
+     "iopub.status.idle": "2021-07-27T14:41:01.025075Z",
+     "shell.execute_reply": "2021-07-27T14:41:01.025592Z"
     }
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'nt_path' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24840/2849831189.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mdb_folder\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnt_path\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'data'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'tuning'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0mdb_name\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m\"device_characterization.db\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0mrun_ids\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;36m1203\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m347\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0mnt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mset_database\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdb_name\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_folder\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'nt_path' is not defined"
+     ]
+    }
+   ],
    "source": [
     "db_folder = os.path.join(nt_path, 'data', 'tuning')\n",
     "db_name = \"device_characterization.db\"\n",
@@ -138,24 +186,22 @@
    "id": "close-lemon",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2021-07-27T12:45:27.960820Z",
-     "iopub.status.busy": "2021-07-27T12:45:27.960167Z",
-     "iopub.status.idle": "2021-07-27T12:45:28.318149Z",
-     "shell.execute_reply": "2021-07-27T12:45:28.318668Z"
+     "iopub.execute_input": "2021-07-27T14:41:01.035723Z",
+     "iopub.status.busy": "2021-07-27T14:41:01.034812Z",
+     "iopub.status.idle": "2021-07-27T14:41:01.037973Z",
+     "shell.execute_reply": "2021-07-27T14:41:01.038473Z"
     }
    },
    "outputs": [
     {
-     "ename": "KeyError",
-     "evalue": "'transport'",
+     "ename": "NameError",
+     "evalue": "name 'run_ids' is not defined",
      "output_type": "error",
      "traceback": [
       "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-1-4256aea8e79f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mrun_id\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrun_ids\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m     quality = clf.predict(\n\u001b[0m\u001b[1;32m      3\u001b[0m         \u001b[0mrun_id\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m         \u001b[0mdb_name\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0mdb_folder\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/classification/classifier.py\u001b[0m in \u001b[0;36mpredict\u001b[0;34m(self, dataid, db_name, db_folder)\u001b[0m\n\u001b[1;32m    438\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    439\u001b[0m         \u001b[0mdf\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mDataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdataid\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdb_name\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 440\u001b[0;31m         \u001b[0mcondensed_data_all\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mprep_data\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcategory\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    441\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    442\u001b[0m         \u001b[0mpredictions\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;32m~/Documents/code/nanotune/nanotune/nanotune/data/export_data.py\u001b[0m in \u001b[0;36mprep_data\u001b[0;34m(dataset, category, flip_data)\u001b[0m\n\u001b[1;32m    101\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mall\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0misinstance\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdict\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mdataset\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfeatures\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    102\u001b[0m                 \u001b[0;32mfor\u001b[0m \u001b[0mfeat\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrelevant_features\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 103\u001b[0;31m                     \u001b[0mfeatures\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mappend\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdataset\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfeatures\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mreadout_method\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mfeat\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    104\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    105\u001b[0m                 \u001b[0;32mfor\u001b[0m \u001b[0mfeat\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrelevant_features\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
-      "\u001b[0;31mKeyError\u001b[0m: 'transport'"
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24840/3482619418.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0;32mfor\u001b[0m \u001b[0mrun_id\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrun_ids\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m     quality = clf.predict(\n\u001b[1;32m      3\u001b[0m         \u001b[0mrun_id\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m         \u001b[0mdb_name\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0mdb_folder\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'run_ids' is not defined"
      ]
     }
    ],
@@ -208,7 +254,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.1"
+   "version": "3.8.10"
   }
  },
  "nbformat": 4,

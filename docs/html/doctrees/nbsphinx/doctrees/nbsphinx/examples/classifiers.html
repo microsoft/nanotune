@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>&lt;no title&gt; &mdash; nanotune 0+untagged.490.g7174bd0.dirty documentation</title>
+  <title>&lt;no title&gt; &mdash; nanotune 0+untagged.499.g48fdd24 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,10 +31,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -62,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.490.g7174bd0.dirty
+                0+untagged.499.g48fdd24
               </div>
             
           
@@ -450,7 +455,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -463,11 +468,35 @@ Output logging : True
 Raw input log  : False
 Timestamping   : True
 State          : active
-Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14292-qcodes.log
+Qcodes Logfile : /Users/jana/.qcodes/logs/210727-24992-qcodes.log
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24992/3864144265.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      5</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span> <span class="ansi-green-fg">import</span> nanotune <span class="ansi-green-fg">as</span> nt
+<span class="ansi-green-fg">----&gt; 7</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">from</span> nanotune<span class="ansi-blue-fg">.</span>classification<span class="ansi-blue-fg">.</span>classifier <span class="ansi-green-fg">import</span> Classifier
+<span class="ansi-green-intense-fg ansi-bold">      8</span>
+<span class="ansi-green-intense-fg ansi-bold">      9</span> nt_path <span class="ansi-blue-fg">=</span> os<span class="ansi-blue-fg">.</span>path<span class="ansi-blue-fg">.</span>dirname<span class="ansi-blue-fg">(</span>os<span class="ansi-blue-fg">.</span>path<span class="ansi-blue-fg">.</span>dirname<span class="ansi-blue-fg">(</span>os<span class="ansi-blue-fg">.</span>path<span class="ansi-blue-fg">.</span>abspath<span class="ansi-blue-fg">(</span>nt<span class="ansi-blue-fg">.</span>__file__<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/Documents/code/nanotune/nanotune/nanotune/classification/classifier.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span> <span class="ansi-green-fg">import</span> matplotlib<span class="ansi-blue-fg">.</span>pyplot <span class="ansi-green-fg">as</span> plt
+<span class="ansi-green-intense-fg ansi-bold">      8</span> <span class="ansi-green-fg">import</span> numpy <span class="ansi-green-fg">as</span> np
+<span class="ansi-green-fg">----&gt; 9</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">from</span> prettytable <span class="ansi-green-fg">import</span> PrettyTable
+<span class="ansi-green-intense-fg ansi-bold">     10</span> <span class="ansi-green-fg">from</span> scipy <span class="ansi-green-fg">import</span> interp
+<span class="ansi-green-intense-fg ansi-bold">     11</span> <span class="ansi-green-fg">from</span> sklearn <span class="ansi-green-fg">import</span> svm
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;prettytable&#39;
 </pre></div></div>
 </div>
 <p>Instantiate classifier, which also load the training data</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -482,8 +511,25 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14292-qcodes.log
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24992/903708021.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> clf = Classifier(
+</span><span class="ansi-green-intense-fg ansi-bold">      2</span>     <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#39;pinchoff.npy&#39;</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span>     <span class="ansi-blue-fg">&#39;pinchoff&#39;</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span>     data_types<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#34;signal&#34;</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      5</span>     classifier<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#34;SVC&#34;</span><span class="ansi-blue-fg">,</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;Classifier&#39; is not defined
+</pre></div></div>
+</div>
 <p>Train the classifier</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -492,8 +538,21 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14292-qcodes.log
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24992/1218518102.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>clf<span class="ansi-blue-fg">.</span>train<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;clf&#39; is not defined
+</pre></div></div>
+</div>
 <p>Choose data which should be classified</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -505,6 +564,23 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14292-qcodes.log
 <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24992/2849831189.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>db_folder <span class="ansi-blue-fg">=</span> os<span class="ansi-blue-fg">.</span>path<span class="ansi-blue-fg">.</span>join<span class="ansi-blue-fg">(</span>nt_path<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;data&#39;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;tuning&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> db_name <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#34;device_characterization.db&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> run_ids <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1203</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">347</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span>
+<span class="ansi-green-intense-fg ansi-bold">      5</span> nt<span class="ansi-blue-fg">.</span>set_database<span class="ansi-blue-fg">(</span>db_name<span class="ansi-blue-fg">,</span> db_folder<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;nt_path&#39; is not defined
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -533,29 +609,15 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210727-14292-qcodes.log
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-1-4256aea8e79f&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">for</span> run_id <span class="ansi-green-fg">in</span> run_ids<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg">     quality = clf.predict(
-</span><span class="ansi-green-intense-fg ansi-bold">      3</span>         run_id<span class="ansi-blue-fg">,</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">/var/folders/6p/gsmpfmfs6k7gkkt4ls8d_qrm0000gn/T/ipykernel_24992/3482619418.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">for</span> run_id <span class="ansi-green-fg">in</span> run_ids<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span>     quality = clf.predict(
+<span class="ansi-green-intense-fg ansi-bold">      3</span>         run_id<span class="ansi-blue-fg">,</span>
 <span class="ansi-green-intense-fg ansi-bold">      4</span>         db_name<span class="ansi-blue-fg">,</span>
 <span class="ansi-green-intense-fg ansi-bold">      5</span>         db_folder<span class="ansi-blue-fg">,</span>
 
-<span class="ansi-green-fg">~/Documents/code/nanotune/nanotune/nanotune/classification/classifier.py</span> in <span class="ansi-cyan-fg">predict</span><span class="ansi-blue-fg">(self, dataid, db_name, db_folder)</span>
-<span class="ansi-green-intense-fg ansi-bold">    438</span>
-<span class="ansi-green-intense-fg ansi-bold">    439</span>         df <span class="ansi-blue-fg">=</span> Dataset<span class="ansi-blue-fg">(</span>dataid<span class="ansi-blue-fg">,</span> db_name<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">--&gt; 440</span><span class="ansi-red-fg">         </span>condensed_data_all <span class="ansi-blue-fg">=</span> prep_data<span class="ansi-blue-fg">(</span>df<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>category<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    441</span>
-<span class="ansi-green-intense-fg ansi-bold">    442</span>         predictions <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">]</span>
-
-<span class="ansi-green-fg">~/Documents/code/nanotune/nanotune/nanotune/data/export_data.py</span> in <span class="ansi-cyan-fg">prep_data</span><span class="ansi-blue-fg">(dataset, category, flip_data)</span>
-<span class="ansi-green-intense-fg ansi-bold">    101</span>             <span class="ansi-green-fg">if</span> all<span class="ansi-blue-fg">(</span>isinstance<span class="ansi-blue-fg">(</span>i<span class="ansi-blue-fg">,</span> dict<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> i <span class="ansi-green-fg">in</span> dataset<span class="ansi-blue-fg">.</span>features<span class="ansi-blue-fg">.</span>values<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    102</span>                 <span class="ansi-green-fg">for</span> feat <span class="ansi-green-fg">in</span> relevant_features<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 103</span><span class="ansi-red-fg">                     </span>features<span class="ansi-blue-fg">.</span>append<span class="ansi-blue-fg">(</span>dataset<span class="ansi-blue-fg">.</span>features<span class="ansi-blue-fg">[</span>readout_method<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">[</span>feat<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    104</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    105</span>                 <span class="ansi-green-fg">for</span> feat <span class="ansi-green-fg">in</span> relevant_features<span class="ansi-blue-fg">:</span>
-
-<span class="ansi-red-fg">KeyError</span>: &#39;transport&#39;
+<span class="ansi-red-fg">NameError</span>: name &#39;run_ids&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">

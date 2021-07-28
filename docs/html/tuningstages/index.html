@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuningstages &mdash; nanotune 0+untagged.490.g7174bd0.dirty documentation</title>
+  <title>Tuningstages &mdash; nanotune 0+untagged.499.g48fdd24 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.490.g7174bd0.dirty
+                0+untagged.499.g48fdd24
               </div>
             
           
@@ -197,230 +200,6 @@ If the new ranges do not exceed the gates’ safety ranges, the measurement loop
 <p>The TuningStage abstract base class contains all necessary attributes and methods to implement the workflow above. It’s main method is run_stage, which makes use of a few abstract methods, such as check_quality, update_current_ranges and get_next_actions. These depend on the type of measurements and hence require specific implementations. Currently implemented subclasses are GateCharacterization1D and ChargeDiagram. If required, these have additional attributes or methods.</p>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-nanotune.tuningstages.gatecharacterization1d"></span><dl class="py class">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">nanotune.tuningstages.gatecharacterization1d.</span></code><code class="sig-name descname"><span class="pre">GateCharacterization1D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_settings:</span> <span class="pre">nanotune.tuningstages.settings.DataSettings</span></em>, <em class="sig-param"><span class="pre">setpoint_settings:</span> <span class="pre">nanotune.tuningstages.settings.SetpointSettings</span></em>, <em class="sig-param"><span class="pre">readout:</span> <span class="pre">nanotune.device.device.Readout</span></em>, <em class="sig-param"><span class="pre">classifier:</span> <span class="pre">nanotune.classification.classifier.Classifier</span></em>, <em class="sig-param"><span class="pre">noise_level:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.001</span></em>, <em class="sig-param"><span class="pre">main_readout_method:</span> <span class="pre">nanotune.device.device.ReadoutMethods</span> <span class="pre">=</span> <span class="pre">&lt;ReadoutMethods.transport:</span> <span class="pre">0&gt;</span></em>, <em class="sig-param"><span class="pre">voltage_interval_to_track=0.3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.tuningstages.tuningstage.TuningStage</span></code></p>
-<p>Tuning stage performing individual gate characterizations.</p>
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.stage">
-<code class="sig-name descname"><span class="pre">stage</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.stage" title="Permalink to this definition">¶</a></dt>
-<dd><p>String indicating which stage it implements, e.g.
-gatecharacterization.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.data_settings">
-<code class="sig-name descname"><span class="pre">data_settings</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.data_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary with information about data, e.g. where it
-should be saved and how it should be normalized.
-Required fields are ‘db_name’, ‘db_folder’ and
-‘normalization_constants’.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.setpoint_settings">
-<code class="sig-name descname"><span class="pre">setpoint_settings</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.setpoint_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary with information required to compute
-setpoints. Necessary keys are ‘current_valid_ranges’,
-‘safety_voltage_ranges’, ‘parameters_to_sweep’ and ‘voltage_precision’.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.readout">
-<code class="sig-name descname"><span class="pre">readout</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.readout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary mapping string identifiers such as
-‘transport’ to QCoDeS parameters measuring/returning the desired
-quantity (e.g. current throught the device).</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.current_valid_ranges">
-<code class="sig-name descname"><span class="pre">current_valid_ranges</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.current_valid_ranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of voltages ranges (tuples of floats) to measure.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.safety_voltage_ranges">
-<code class="sig-name descname"><span class="pre">safety_voltage_ranges</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.safety_voltage_ranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of satefy voltages ranges, i.e. safety limits within
-which gates don’t blow up.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.classifier">
-<code class="sig-name descname"><span class="pre">classifier</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.classifier" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pre-trained nt.Classifier predicting the quality of a
-pinchoff curve.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.noise_level">
-<code class="sig-name descname"><span class="pre">noise_level</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.noise_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>Relative level above which a measured output is considered
-being above the noise floor. Is compared to a normalized signal.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.main_readout_method">
-<code class="sig-name descname"><span class="pre">main_readout_method</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.main_readout_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>Readout method to use for early finish check.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.voltage_interval_to_track">
-<code class="sig-name descname"><span class="pre">voltage_interval_to_track</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.voltage_interval_to_track" title="Permalink to this definition">¶</a></dt>
-<dd><p>Voltage interval over which the measured
-output is checked</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.fit_class">
-<code class="sig-name descname"><span class="pre">fit_class</span></code><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.fit_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the class used to perform data fitting, i.e.
-PinchoffFit.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="id0">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">fit_class</span></code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data fitting class to extract pinchoff features.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.machine_learning_task">
-<code class="sig-name descname"><span class="pre">machine_learning_task</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D.machine_learning_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.machine_learning_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Executes the post-measurement machine learning task, a binary
-classification predicting the quality of the measurement. The
-result is saved in a dictionary with ‘quality’ and ‘regime’ keys, the
-latter for completeness and compatibility with general tuning stage
-methods.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>run_id</strong> – QCoDeS data run ID.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>The classification outcome, saved under the ‘quality’ key. For</dt><dd><p>completeness, the ‘regime’ key maps onto ‘pinchoff’.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.verify_machine_learning_result">
-<code class="sig-name descname"><span class="pre">verify_machine_learning_result</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D.verify_machine_learning_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.verify_machine_learning_result" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verifies whether a good pinchoff curve has been predicted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ml_result</strong> – Result returned by <code class="docutils literal notranslate"><span class="pre">machine_learning_task</span></code>, a
-dictionary with ‘quality’ and ‘regime’ keys.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the desired outcome has been found.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.conclude_iteration">
-<code class="sig-name descname"><span class="pre">conclude_iteration</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tuning_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_iteration</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D.conclude_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.conclude_iteration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method checking if one iteration of a run_stage measurement cycle has
-been successful. An iteration of such a measurement cycle takes data,
-performs a machine learning task, verifies and saves the machine
-learning result. If a repetition of this cycle is supported, then
-<code class="docutils literal notranslate"><span class="pre">conclude_iteration</span></code> determines whether another iteration should take
-place and which voltage ranges need to be measured.
-It wraps conclude_iteration_with_range_update in .base_tasks.py and
-resets self._recent_readout_output. <code class="docutils literal notranslate"><span class="pre">self._recent_readout_output</span></code> is
-used in <code class="docutils literal notranslate"><span class="pre">self.finish_early</span></code> to detect a pinched-off regime.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tuning_result</strong> – Result of the last run_stage measurement cycle.</p></li>
-<li><p><strong>current_valid_ranges</strong> – Voltage ranges last swept.</p></li>
-<li><p><strong>safety_voltage_ranges</strong> – Safety voltage ranges, i.e. largest possible
-range that could be swept.</p></li>
-<li><p><strong>current_iteration</strong> – Number of current iteration.</p></li>
-<li><p><strong>max_n_iterations</strong> – Maximum number of iterations to perform before
-abandoning.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Whether this is the last iteration and the stage is done/to</dt><dd><p>be stopped.</p>
-</dd>
-</dl>
-<p>list: New voltage ranges to sweep if the stage is not done.
-list: List of strings indicating failure modes.</p>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.get_range_update_directives">
-<code class="sig-name descname"><span class="pre">get_range_update_directives</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D.get_range_update_directives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.get_range_update_directives" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines directives indicating if the current voltage ranges need
-to be extended or shifted. It first gets these directives from the data
-fit using <code class="docutils literal notranslate"><span class="pre">get_fit_range_update_directives</span></code> defined in .base_tasks.py
-and then checks if they can be put into action using
-<code class="docutils literal notranslate"><span class="pre">get_range_directives_gatecharacterization</span></code> defined in
-gatecharacterization_tasks.py. The check looks at whether safety ranges
-have been reached already, or whether a voltage range extension is
-possible.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_id</strong> – QCoDeS data run ID.</p></li>
-<li><p><strong>current_valid_ranges</strong> – Last voltage range swept.</p></li>
-<li><p><strong>safety_voltage_ranges</strong> – Safety range of gate swept.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List with range update directives.
-list: List with issues encountered.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.finish_early">
-<code class="sig-name descname"><span class="pre">finish_early</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a><a class="reference internal" href="../_modules/nanotune/tuningstages/gatecharacterization1d.html#GateCharacterization1D.finish_early"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization1d.GateCharacterization1D.finish_early" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks the average strength of measured signal over a given voltage
-interval is below the noise floor. If this is the case, the boolean
-returned indicates that the measurement can be stopped. It wraps
-<code class="docutils literal notranslate"><span class="pre">finish_early_pinched_off</span></code> defined in .gatecharacterization_tasks.py.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>current_output_dict</strong> – Dictionary mapping strings indicating the
-readout method to QCoDeS parameters.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the measurement can be stopped early.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
