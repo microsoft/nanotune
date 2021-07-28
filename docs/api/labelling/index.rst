@@ -1,24 +1,24 @@
 .. _labelling_api :
 
+nanotune.labelling
+==================
+
+.. autosummary::
+
     nanotune.labelling
-    ======================
+    nanotune.labelling.labellingtool
+    nanotune.labelling.window
+    nanotune.labelling.launch
+    nanotune.labelling.manipulate_labels
 
-    .. autosummary::
-
-        nanotune.labelling
-        nanotune.labelling.labellingtool
-        nanotune.labelling.window
-        nanotune.labelling.launch
-        nanotune.labelling.manipulate_labels
-
-    .. automodule:: nanotune.labelling
+.. automodule:: nanotune.labelling
 
 
-    .. toctree::
-       :maxdepth: 4
-       :hidden:
+.. toctree::
+    :maxdepth: 4
+    :hidden:
 
-       labellingtool
-       window
-       launch
-       manipulate_labels
+    labellingtool
+    window
+    launch
+    manipulate_labels
