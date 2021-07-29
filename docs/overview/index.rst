@@ -42,8 +42,11 @@ dots formed in 1D systems such as nanowires. All measurements were taken in
 DC transport, i.e. measuring current through the device. This readout method
 can be replaced by sensing technique easily.
 
-Tuning workflow
----------------
+.. _fig_algorithm:
+.. figure:: ./algorithm_dot_tuning.svg
+    :alt: Dot tuning algorithm implemented in nanotune.
+    :align: center
+    :width: 50.0%
 
 The dot-initialization workflow consists of two pre-calibration, one
 characterization and one tuning step, as outlined in the flowchart pictured in

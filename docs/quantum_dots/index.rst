@@ -36,7 +36,7 @@ Dots in a two-dimensional heterostructure (2DEG)
 .. figure:: ./quantum_dots-18.svg
    :alt: A 2DEG heterostructure
    :align: center
-   :width: 50.0%
+   :width: 45.0%
 
    GaAs/AlGaAs heterostructure hosting a double quantum dot. Mobile electrons
    from the thin silicon donor layer are attracted by the lower energy arising
@@ -72,6 +72,7 @@ is called a quantum point contact (QPC).
     :align: center
     :width: 50.0%
 
+<<<<<<< HEAD
     Dimensions of electron gases.
 
 
@@ -103,11 +104,23 @@ dots and reservoirs are modelled as a resistor in parallel to a capacitor.
    :alt: Simplified model of a single dot.
    :align: center
    :width: 45.0%
+=======
+.. _fig_dims:
+.. figure:: ./quantum_dots-22.svg
+   :alt: Dimensions of electron gases.
+   :align: center
+   :width: 45.0%
+
+   Dimensions of electron gases.
+
+Once formed, quantum dots can be modelled as conducting islands, shown in grey, connected to source (S) and drain (D), shown in blue. Couplings between dots and reservoirs are modelled as a resistor in parallel to a capacitor.
+>>>>>>> Update rst files
 
    Schematic of a single dot, modelled as a conducting island connected via
    tunnel junctions to source and drain reservoirs. A nearby plunger gate is
    capacitively coupled to the dot and used to tune the its energy levels.
 
+<<<<<<< HEAD
 .. _fig_double_dot_model:
 .. figure:: ./quantum_dots-20.svg
    :alt: Simplified model of a double dot.
@@ -140,27 +153,70 @@ dots energy levels.
 If the levels don't align, as in figure :numref:`fig_2d_hop_forbidden`, the dot
 is in the Coulomb blockade regime. Here, Coulomb repulsion between electrons prevents
 multiple electrons to occupy the same energy level and transport is suppressed.
+=======
+One way to determine a quantum dot's properties is to measure current through it, i.e. perform a DC transport measurement. In such a measurement, a small bias between source and drain is applied. If the dots' energy levels are within the small bias window, then electron transport will occur. One often omits the small bias and talks about the alignment of the dots energy levels, as shown in the left figure below.
+If the levels don't align, as pictured on the right, the dot is in the Coulomb blockade regime: Coulomb repulsion between electrons prevents multiple electrons to occupy the same energy level and transport is suppressed.
+
+.. _fig_single_dot_model:
+.. figure:: ./quantum_dots-19.svg
+   :alt: Simplified model of a single dot.
+   :align: center
+   :width: 40.0%
+
+   Simplified model of a single dot.
+
+.. _fig_double_dot_model:
+.. figure:: ./quantum_dots-20.svg
+   :alt: Simplified model of a double dot.
+   :align: center
+   :width: 40.0%
+
+   Simplified model of a double dot.
+>>>>>>> Update rst files
 
 
 .. _fig_2d_hop_allowed:
 .. figure:: ./quantum_dots-07.svg
+<<<<<<< HEAD
     :alt: Electron transport of double dot: aligned energy levels.
+=======
+    :alt: A 2DEG heterostructure
+>>>>>>> Update rst files
     :align: center
     :width: 45.0%
 
+<<<<<<< HEAD
     Electron transport via resonant tunnelling occurs from source to drain when
     both dot energy levels are within the bias window.
 
 .. _fig_2d_hop_forbidden:
 .. figure:: ./quantum_dots-06.svg
     :alt: Electron transport of double dot: energy levels not aligned.
+=======
+    Electrons tunnel individually as the energy required to add two electrons is
+    significantly higher than to add one.
+
+
+.. _fig_2d_hop_forbidden:
+.. figure:: ./quantum_dots-06.svg
+    :alt: A 2DEG heterostructure
+>>>>>>> Update rst files
     :align: center
     :width: 45.0%
 
+<<<<<<< HEAD
     Electron tunnelling is suppressed whenever the dots' energy levels are not
     within the energy levels of the reservoirs. However, if one energy level is
     within the bias window, a measurable current arises due to a so-called
     co-tunnelling processes via virtual states.
+=======
+    Coulomb blockade regime: no transport occurs/no current is measured. The
+    green electron has neither the required energy to occupy the upper energy
+    state εN+1, nor can it occupy εN due to Coulomb repulsion with the electron
+    there.
+    If one energy level is within the bias window, a measurable current arises
+    due to a so-called co-tunneling processes via virtual states.
+>>>>>>> Update rst files
 
 .. _fig_chargediagram:
 .. figure:: ./quantum_dots-12.svg
@@ -168,6 +224,7 @@ multiple electrons to occupy the same energy level and transport is suppressed.
     :align: center
     :width: 40.0%
 
+<<<<<<< HEAD
     Schema of a so-called charge diagram showing the charge
     transition pattern of a double dot.
 .. _fig_chargediag_explained:
@@ -180,8 +237,23 @@ multiple electrons to occupy the same energy level and transport is suppressed.
     voltages and monitoring current from source to drain. Four types of charge
     transitions are observed, exchanging charges between dots, a dot and its
     adjacent reservoir, or allowing a current to flow from source to drain.
+=======
+Transport features of dots with well-localized and weakly coupled charges can
+be explained and qualitatively reproduced by the classical capacitance model,
+which represents gates, dots and reservoirs as conductors connected through
+resistors and capacitors. It also allows to capture the so-called gate
+cross-talk, i.e. the effect of capacitive couplings of all gates to each dot.
 
+.. _fig_gen:
+.. figure:: ./quantum_dots-09.svg
+    :alt: Schema double dot device.
+    :align: center
+    :width: 30.0%
+>>>>>>> Update rst files
 
+    Schema of a double dot device with six electrostatic gates.
+
+<<<<<<< HEAD
 Transport features of dots with well-localized and weakly coupled charges can
 be explained and qualitatively reproduced by the classical capacitance model,
 which represents gates, dots and reservoirs as conductors connected through
@@ -189,3 +261,12 @@ resistors and capacitors. It also allows to capture the so-called gate
 cross-talk, i.e. the effect of capacitive couplings of all gates to each dot.
 The capacitance model is discussed in :ref:`capa_model`.
 
+=======
+.. _fig_capa_coupling_device:
+.. figure:: ./quantum_dots-08.svg
+    :alt: Capacitive coupling between gate electrodes and dots of a 2D double dot device.
+    :align: center
+    :width: 40.0%
+
+    Capacitive coupling between gates and gates and dots of a double dot device with six electrostatic gates.
+>>>>>>> Update rst files
