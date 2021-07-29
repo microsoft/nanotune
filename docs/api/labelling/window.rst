@@ -1,5 +1,5 @@
-nanotune.labelling.window
--------------------------
+.. nanotune.labelling.window
+.. -------------------------
 
-.. automodule:: nanotune.labelling.window
-   :members:
+.. .. automodule:: nanotune.labelling.window
+..    :members:
