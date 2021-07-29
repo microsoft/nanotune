@@ -1,5 +1,5 @@
-nanotune.labelling.manipulate_labels
-------------------------------------
+.. nanotune.labelling.manipulate_labels
+.. ------------------------------------
 
-.. automodule:: nanotune.labelling.manipulate_labels
-   :members:
+.. .. automodule:: nanotune.labelling.manipulate_labels
+..    :members:
