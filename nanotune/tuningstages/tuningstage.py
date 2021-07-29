@@ -95,10 +95,12 @@ class TuningStage(metaclass=ABCMeta):
         max_n_iterations: int,
     ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
-        been successful. An iteration of such a measurement cycle takes data,
+        been successful.
+
+        An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
         learning result. If a repetition of this cycle is supported, then
-        ``conclude_iteration`` determines whether another iteration should take
+        `conclude_iteration` determines whether another iteration should take
         place and which voltage ranges need to be measured.
         Each child class needs to implement the body of this method, tailoring
         it to the respective tuning stage.
