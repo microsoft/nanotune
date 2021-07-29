@@ -24,4 +24,3 @@ nanotune API
    math/index
    model/index
    tuningstages/index
-..    labelling/index
