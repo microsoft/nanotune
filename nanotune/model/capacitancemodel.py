@@ -576,7 +576,8 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
     ) -> np.ndarray:
         """Calculate chemical potentials of all dots for charge configuration
-            N, corresponding to electron triple points. mu_j(N)
+        N, corresponding to electron triple points. mu_j(N)
+
         Args:
             new_voltages: values of new gate voltages, to be replaced in
                           self.V_v. These are the values scipy.optimize.fsolve
@@ -610,7 +611,8 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
     ) -> np.ndarray:
         """Calculate chemical potentials of all dots for charge configuration
-            N, corresponding to hole triple points, mu_j(N + e_hat_i)
+        N, corresponding to hole triple points, mu_j(N + e_hat_i).
+
         Args:
             new_voltages: values of new gate voltages, to be replaced in
                           self.V_v. These are the values scipy.optimize.fsolve
@@ -1091,16 +1093,16 @@ class CapacitanceModel(Instrument):
         db_name: str,
         device_type: str = "doubledot_2D",
     ) -> None:
-        """
-        parameters to fit:
-                #         N.  LW.   LP.  C.  RP.  RW
-        self.V_v([-1, -0.1, -4.2, -0.1, -0.5, -0.3])
+        # """
+        # parameters to fit:
+        #         #         N.  LW.   LP.  C.  RP.  RW
+        # self.V_v([-1, -0.1, -4.2, -0.1, -0.5, -0.3])
 
-        qdot.C_cc([[-8e-18]])
-        #            N.        LW.     LP.      C.      RP.    RW
-        qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A
-                [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B
-        """
+        # qdot.C_cc([[-8e-18]])
+        # #            N.        LW.     LP.      C.      RP.    RW
+        # qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A
+        #         [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B
+        # """
         nt.Dataset(ds_id, db_name)
 
         def err_func(p: Sequence[float]) -> np.ndarray:

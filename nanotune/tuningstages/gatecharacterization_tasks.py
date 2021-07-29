@@ -108,8 +108,10 @@ def finish_early_pinched_off(
     voltage_interval_to_track: float = 0.3,
 ) -> Tuple[bool, List[float]]:
     """Checks the average strength of measured signal over a given voltage
-    interval is below the noise floor. If this is the case, the boolean returned
-    indicates that the measurement can be stopped.
+    interval is below the noise floor.
+
+    If this is the case, the boolean returned indicates that the measurement
+    can be stopped.
 
     Args:
         last_measurement_strength: Last measurement output.
@@ -117,12 +119,12 @@ def finish_early_pinched_off(
         recent_measurement_strengths: List of most recent signal strengths.
         voltage_precision: Voltage precision of the measurement, i.e. voltage
             difference between setpoints.
-        noise_level: Relative noise in percent compared to normalised signal.
+        noise_level: Relative noise in percent compared to normalized signal.
         voltage_interval_to_track: Voltage interval over which the average
             should be taken. Voltage ranges less than voltage_interval_to_track
             will be ignored, i.e. will always return False.
 
-    Return:
+    Returns:
         bool: Whether or not a measurement can be stopped.
         list: List of measurements strenghts/outputs over the last
             voltage_interval_to_track.

@@ -67,11 +67,6 @@ class DeviceChannel(InstrumentChannel):
         amplitude: Amplitude parameter, part of the AWG functionality of
             the underlying channel (if supported - as defined by the
             instance of DACInterface instance).
-
-    Methods:
-        ground: Set relay_state to RelayState.ground
-        float: Set relay_state to RelayState.floating
-        set_voltage: Voltage setter.
     """
     def __init__(
         self,
