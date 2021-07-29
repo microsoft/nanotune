@@ -8,10 +8,13 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 class IDeviceLayout(ABC):
-    """Interface for device layout defining classes. Abstract class methods
-    needs return gate IDs of gates fulfilling the function the method's name
+    """Interface for device layout defining classes.
+
+    Abstract class methods
+    need to return gate IDs of gates fulfilling the function the method's name
     suggests.
     """
+
     @classmethod
     @abstractmethod
     def helper_gate(self) -> int:
@@ -23,7 +26,7 @@ class IDeviceLayout(ABC):
     @classmethod
     @abstractmethod
     def barriers(self) -> List[int]:
-        """Returns a list of `gate_id`s of barrier gates. E.g. left,
+        """Returns a list of `gate_id` of barrier gates. E.g. left,
         central and right barrier. The order of gate IDs determines the
         order they are swept."""
         pass
@@ -31,7 +34,7 @@ class IDeviceLayout(ABC):
     @classmethod
     @abstractmethod
     def plungers(self) -> List[int]:
-        """Returns a list of `gate_id`s of plunger gates, such as
+        """Returns a list of `gate_id` of plunger gates, such as
         left and right plunger. The order of gate IDs determines the
         order they are swept."""
         pass
@@ -39,7 +42,7 @@ class IDeviceLayout(ABC):
     @classmethod
     @abstractmethod
     def outer_barriers(self) -> List[int]:
-        """Returns a list of `gate_id`s of outer barrier gates.
+        """Returns a list of `gate_id` of outer barrier gates.
         The order of gate IDs determines the order they are swept."""
         pass
 

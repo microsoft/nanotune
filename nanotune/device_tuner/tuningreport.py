@@ -128,15 +128,14 @@ class TuningReport:
         # self.distribute()
 
     def summarize(self):
-        """
-        generates list of files to send
+        # """
+        # generates list of files to send
 
-        fig saved with
-        self.dir = os.path.join(nt.config['db_folder'], 'tuning_results',
-                                    self.device_name)
-
-        filename = str(self.ds.guid)
-        """
+        # fig saved with
+        # self.dir = os.path.join(nt.config['db_folder'], 'tuning_results',
+        #                             self.device_name)
+        # filename = str(self.ds.guid)
+        # """
         self.smalltalk += "\n Data IDs in this bundle: \n"
         self._files = {}
         inv_dict = {}
@@ -170,13 +169,12 @@ class TuningReport:
             self._files[str(qc_run_id)] = filename
 
     def create_pdf(self):
-        """
-        fig saved with
-        self.dir = os.path.join(nt.config['db_folder'], 'tuning_results',
-                                    self.device_name)
-
-        filename = str(self.ds.guid)
-        """
+        # """
+        # fig saved with
+        # self.dir = os.path.join(nt.config['db_folder'], 'tuning_results',
+        #                             self.device_name)
+        # filename = str(self.ds.guid)
+        # """
 
         my_datetime = datetime.now()
         self.pdf_name = (
