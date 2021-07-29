@@ -33,12 +33,13 @@ class NormalizationConstants:
     values to measure the lower bound, while the upper bound is measured with
     all gates set to their highest allowed voltages.
 
-    Parameters:
+    Attributes:
         transport: constants for DC transport.
         sensing: constants for charge sensing (transport
             or other).
         rf: constants for reflectometry measurements.
     """
+
     transport: Tuple[float, float] = (0., 1.)
     sensing: Tuple[float, float] = (0., 1.)
     rf: Tuple[float, float] = (0., 1.)
@@ -183,7 +184,7 @@ class Device(DelegateInstrument):
         quality: quality of device, typically determined during
             characterization. Only good devices will be tuned.
 
-    Main methods:
+    Methods:
         ground_gates: grounds all gates.
         float_ohmics: sets relay of all ohmics to float.
         get_gate_status: returns dict mapping gate labels onto another dict
@@ -192,6 +193,7 @@ class Device(DelegateInstrument):
         all_gates_to_lowest: sets all gates to their lower safety limit.
         get_gate_id: returns ID of a gate based on either the gate or its label.
     """
+
     def __init__(
         self,
         name: str,
@@ -427,13 +429,7 @@ class Device(DelegateInstrument):
         Returns:
             dict: mapping from gate labels to mapping with current valid ranges
             and voltages. Example:
-            ```
-            {top_barrier: {
-                current_valid_range: (-0.9, -0.7),
-                voltage: -0.81,
-                }
-            }
-            ```
+            `{top_barrier: {current_valid_range: (-0.9, -0.7), voltage: -0.81}}`
         """
         current_gate_status: Dict[
             str, Dict[str, Union[Tuple[float, float], float]]
