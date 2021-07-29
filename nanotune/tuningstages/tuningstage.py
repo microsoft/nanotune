@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class TuningStage(metaclass=ABCMeta):
     """Base class implementing the common sequence of a tuning stage.
 
-    Attributes:
+    Parameters:
         stage: String indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it

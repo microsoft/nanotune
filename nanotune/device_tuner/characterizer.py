@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Characterizer(Tuner):
     """Tuner sub-class specializing on device characterization.
 
-    Attributes:
+    Parameters:
         classifiers (Classifiers): a setting.Classifiers instance
             holding all required classifiers. Eg. pinchoff.
         data_settings (DataSettings): A settings.DataSettings instance with

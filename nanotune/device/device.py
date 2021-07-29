@@ -25,13 +25,15 @@ ChannelsType = Optional[
 
 @dataclass
 class NormalizationConstants:
-    """Container to hold normalization constant. They are the highest and
+    """Container to hold normalization constant.
+
+    They are the highest and
     lowest signals measured, corresponding to pinched-off and open signals.
     They are typically measured by setting all gates to their lowest allowed
     values to measure the lower bound, while the upper bound is measured with
     all gates set to their highest allowed voltages.
 
-    Attributes:
+    Parameters:
         transport: constants for DC transport.
         sensing: constants for charge sensing (transport
             or other).
@@ -77,7 +79,7 @@ class NormalizationConstants:
 class Readout:
     """Container grouping readout of a device.
 
-    Attributes:
+    Parameters:
         transport: parameter to read out for DC transport.
         sensing: parameter to read out for charge sensing
             (transport or other).
@@ -145,7 +147,7 @@ class ReadoutMethods(Enum):
 class Device(DelegateInstrument):
     """Device abstraction with attributes and methods for (dot) tuning.
 
-    Attributes:
+    Parameters:
         name: string identifier, used e.g. when saving tuning results.
         readout: readout parameters. One QCoDeS GroupedParameter for
             each readout method (transport, sensing, rf).
