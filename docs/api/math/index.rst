@@ -14,9 +14,9 @@ nanotune.math
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    distributions
-    gaussians
-    lorentzians
+   distributions
+   gaussians
+   lorentzians

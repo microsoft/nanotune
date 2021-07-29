@@ -12,7 +12,7 @@ nanotune.configuration
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    config
+   config
