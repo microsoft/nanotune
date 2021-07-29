@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 class ChargeDiagram(TuningStage):
     """Tuning stage measuring charge stability diagrams.
 
-    Attributes:
+    Parameters:
         stage: String identifier indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it

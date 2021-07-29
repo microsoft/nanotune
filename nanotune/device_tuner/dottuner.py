@@ -18,7 +18,7 @@ from enum import Enum
 class VoltageChangeDirection(Enum):
     """Direction in which gate voltages can be changes.
 
-    Attributes:
+    Parameters:
         positive (0): increase voltage.
         negative (1): decrease voltage.
     """
@@ -29,7 +29,7 @@ class VoltageChangeDirection(Enum):
 class DeviceState(Enum):
     """Possible device states.
 
-    Attributes:
+    Parameters:
         pinchedoff (0): pinched off, no measurable current through the device.
         opencurrent (1): open regime, high current through the device (possibly
             no or few gates set to small voltages.)
@@ -49,7 +49,7 @@ class DeviceState(Enum):
 class RangeChangeSetting:
     """Settings defining how voltage ranges should be updated when needed.
 
-    Attributes:
+    Parameters:
         relative_range_change (float): percentage of previous range of how much
             the new range should differ/be moved towards either positive or
             negative values.
@@ -67,7 +67,7 @@ class RangeChangeSetting:
 class DotTuner(Tuner):
     """`Tuner` sub-class with dot tuning procedures.
 
-    Attributes:
+    Parameters:
         classifiers (Classifiers): a setting.Classifiers instance
             holding all required classifiers. Eg. pinchoff.
         data_settings (DataSettings): A settings.DataSettings instance with

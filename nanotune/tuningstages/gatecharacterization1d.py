@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class GateCharacterization1D(TuningStage):
     """Tuning stage performing individual gate characterizations.
 
-    Attributes:
+    Parameters:
         stage: String indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it

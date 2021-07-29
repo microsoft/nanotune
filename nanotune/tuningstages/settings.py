@@ -47,7 +47,7 @@ class DataSettings(Settings):
     """`Setting` sub-class holding data-related information such as where
     data is saved or how it is normalized.
 
-    Attributes:
+    Parameters:
         db_name (str): database name. Default set to `nt.config['db_name']`.
         db_folder (str): path of folder containing `db_name`. Default set to
             `nt.config['db_folder']`.
@@ -115,7 +115,7 @@ class SetpointSettings(Settings):
     """`Settings` sub-class holding setpoint-related information such as
     voltage precision and parameters to sweep.
 
-    Attributes:
+    Parameters:
         voltage_precision (float): voltage difference between setpoints.
         parameters_to_sweep (Sequence[_BaseParameter]): list of QCoDeS parameters
             to sweep.
@@ -142,7 +142,7 @@ class SetpointSettings(Settings):
 class Classifiers:
     """Class grouping binary classifiers required for tuning.
 
-    Attributes:
+    Parameters:
         pinchoff (optional nt.Classifier): pre-trained pinch-off classifier.
         singledot (optional nt.Classifier): pre-trained single dot classifier.
         doubledot (optional nt.Classifier): pre-trained double dot classifier.

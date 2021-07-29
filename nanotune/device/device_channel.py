@@ -19,59 +19,59 @@ logger = logging.getLogger(__name__)
 class DeviceChannel(InstrumentChannel):
     """Class representing a channel of a device such as gate or ohmic.
 
-        It emulates an existing intrument channel and adds convenience
-        functionality for tuning. It implements its own voltage setting method
-        which, for example, checks whether the value is within the safety range
-        before starting to set anything - as opposed to qcodes. The emulated
-        channel must be a channel of a subclass of
-        `nanotune.drivers.dac_interface.DACInterface`. When setting a voltage,
-        it can be either ramped or set, specified by the `use_ramp` parameter.
-        A hardware ramp is performed if the underlying instrument channel
-        supports it, which is indicated by the `supports_hardware_ramp`
-        property. Otherwise QCoDeS' software ramp using delay and step
-        properties is used.
+    It emulates an existing intrument channel and adds convenience
+    functionality for tuning. It implements its own voltage setting method
+    which, for example, checks whether the value is within the safety range
+    before starting to set anything - as opposed to qcodes. The emulated
+    channel must be a channel of a subclass of
+    `nanotune.drivers.dac_interface.DACInterface`. When setting a voltage,
+    it can be either ramped or set, specified by the `use_ramp` parameter.
+    A hardware ramp is performed if the underlying instrument channel
+    supports it, which is indicated by the `supports_hardware_ramp`
+    property. Otherwise QCoDeS' software ramp using delay and step
+    properties is used.
 
-        Attributes:
-            gate_id: Integer identifier of the gate with respect to the device
-                layout. Not to be set if it is an ohmic.
-            ohmic_id: Integer identifier of the ohmic with respect to the
-                device layout. Not to be set if it is a gate.
-            label: String identifier to be printed on plots.
-            safety_voltage_range: Range of voltages within which safe operation
-                is guaranteed.
-            use_ramp: Whether voltages should be ramped.
-            ramp_rate: Rate at which voltages should be ramped. In V/s.
-            max_voltage_step: Maximum voltage difference to be applied in a
-                single step. Note that this step does not apply when `use_ramp`
-                is set to False.
-            post_delay: Delay to wait after a voltage is set, in seconds. If
-                ramping in software (supports_hardware_ramp == False and
-                use_ramp() == True and thus using QCoDeS' delay and step
-                parameter) and `inter_delay` is not set, then `post_delay` will
-                be used.
-            inter_delay: Delay to wait between voltage setpoints, in seconds.
-                If set to zero but `post_delay` is not zero, software ramp
-                (supports_hardware_ramp == False and use_ramp() == True) will
-                take the `post_delay` as delay between sets.
-            supports_hardware_ramp: Bool indicating whether under the
-                underlying intrument channel supports voltage ramping in
-                hardware.
-            relay_state: State of DAC relay, one of
-                `nanotune.dac_interface.RelayState`'s members.
-            frequency: Frequency parameter, part of the AWG functionality of
-                the underlying channel (if supported - as defined by the
-                instance of DACInterface instance).
-            offset: Offset parameter, part of the AWG functionality of
-                the underlying channel (if supported - as defined by the
-                instance of DACInterface instance).
-            amplitude: Amplitude parameter, part of the AWG functionality of
-                the underlying channel (if supported - as defined by the
-                instance of DACInterface instance).
+    Parameters:
+        gate_id: Integer identifier of the gate with respect to the device
+            layout. Not to be set if it is an ohmic.
+        ohmic_id: Integer identifier of the ohmic with respect to the
+            device layout. Not to be set if it is a gate.
+        label: String identifier to be printed on plots.
+        safety_voltage_range: Range of voltages within which safe operation
+            is guaranteed.
+        use_ramp: Whether voltages should be ramped.
+        ramp_rate: Rate at which voltages should be ramped. In V/s.
+        max_voltage_step: Maximum voltage difference to be applied in a
+            single step. Note that this step does not apply when `use_ramp`
+            is set to False.
+        post_delay: Delay to wait after a voltage is set, in seconds. If
+            ramping in software (supports_hardware_ramp == False and
+            use_ramp() == True and thus using QCoDeS' delay and step
+            parameter) and `inter_delay` is not set, then `post_delay` will
+            be used.
+        inter_delay: Delay to wait between voltage setpoints, in seconds.
+            If set to zero but `post_delay` is not zero, software ramp
+            (supports_hardware_ramp == False and use_ramp() == True) will
+            take the `post_delay` as delay between sets.
+        supports_hardware_ramp: Bool indicating whether under the
+            underlying instrument channel supports voltage ramping in
+            hardware.
+        relay_state: State of DAC relay, one of
+            `nanotune.dac_interface.RelayState`'s members.
+        frequency: Frequency parameter, part of the AWG functionality of
+            the underlying channel (if supported - as defined by the
+            instance of DACInterface instance).
+        offset: Offset parameter, part of the AWG functionality of
+            the underlying channel (if supported - as defined by the
+            instance of DACInterface instance).
+        amplitude: Amplitude parameter, part of the AWG functionality of
+            the underlying channel (if supported - as defined by the
+            instance of DACInterface instance).
 
-        Methods:
-            ground: Set relay_state to RelayState.ground
-            float: Set relay_state to RelayState.floating
-            set_voltage: Voltage setter.
+    Methods:
+        ground: Set relay_state to RelayState.ground
+        float: Set relay_state to RelayState.floating
+        set_voltage: Voltage setter.
     """
     def __init__(
         self,

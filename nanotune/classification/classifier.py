@@ -42,7 +42,6 @@ RELEVANT_FEATURE_INDEXES: Dict[str, List[int]] = {
 
 DEFAULT_CLF_PARAMETERS: Dict[str, Any] = {
     "SVC": {"kernel": "linear", "probability": True, "gamma": "auto"},
-    # 'LinearSVC': {'class_weight': 'balanced', 'max_iter': 5000},
     "LogisticRegression": {"solver": "newton-cg", "max_iter": 3000},
     "MLPClassifier": {"max_iter": 3000},
     "GaussianProcessClassifier": {},
@@ -72,10 +71,33 @@ DEFAULT_N_ITER = {
 
 
 class Classifier:
-    """
-    We assume that if no relevant_labels are supplied, single and double dot
-    data have been extracted into the same file and labelled with labels
-    specified in DOT_LABEL_MAPPING.
+    """Emulates binary classifiers implemented in scikit-learn.
+    It includes methods loading labelled data saved to numpy files, splitting
+    it into balanced sets, training and evaluating the classifier. The data to
+    load is expected to be in the same format as outputted by
+    `nanotune.data.export_data.export_data`.
+
+    Parameters:
+        relevant_labels: Labels to use, corresponding to the regime/data type
+            one wishes to load.
+        clf_params:
+        category:
+        feature_indexes
+        relevant_labels
+        file_fractions
+        folder_path
+        file_paths
+        name
+        clf_type
+        retained_variance
+        data_types
+        test_size
+        multi_class
+        clf
+        original_data
+        labels
+        file_paths
+        data_types
     """
 
     def __init__(
