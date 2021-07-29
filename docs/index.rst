@@ -21,6 +21,7 @@ Documentation
    fit/index
    classification/index
    capacitance_model/index
+   examples/index
    api/index
 
 
