@@ -191,18 +191,11 @@ class DotFit(DataFit):
         segment_db_name: str,
         segment_db_folder: Optional[str] = None,
     ) -> Dict[int, Dict[str, Any]]:
-        """
-        Save each mesh in a new dataset in given databases
+        """Save each mesh in a new dataset in given databases
 
-        returns:
-        segment_info = {
-            data_id: {
-                readout_method: {'range_x': (),
-                                 'range_y': ()
-                        }
-                voltage_ranges: [range_x, range_y],
-                    }
-        }
+        Returns:
+            dict: nested, with the data ID as key on the first level, readout
+                method and `voltage_ranges` on the second.
         """
         if segment_db_folder is None:
             segment_db_folder = nt.config["db_folder"]

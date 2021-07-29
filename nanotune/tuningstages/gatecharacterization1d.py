@@ -187,10 +187,10 @@ class GateCharacterization1D(TuningStage):
                 abandoning.
 
         Returns:
-            bool: Whether this is the last iteration and the stage is done/to
-                be stopped.
+            bool: Whether this is the last iteration and the stage is done/to be stopped.
             list: New voltage ranges to sweep if the stage is not done.
             list: List of strings indicating failure modes.
+
         """
 
         (

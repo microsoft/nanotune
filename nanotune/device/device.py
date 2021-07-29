@@ -183,15 +183,6 @@ class Device(DelegateInstrument):
             instruments change. They are saved to static metadata.
         quality: quality of device, typically determined during
             characterization. Only good devices will be tuned.
-
-    # Methods:
-    #     ground_gates: grounds all gates.
-    #     float_ohmics: sets relay of all ohmics to float.
-    #     get_gate_status: returns dict mapping gate labels onto another dict
-    #         with their current valid range and current voltage.
-    #     all_gates_to_highest: sets all gates to their upper safety limit.
-    #     all_gates_to_lowest: sets all gates to their lower safety limit.
-    #     get_gate_id: returns ID of a gate based on either the gate or its label.
     """
 
     def __init__(

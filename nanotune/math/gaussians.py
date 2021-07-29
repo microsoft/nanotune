@@ -50,15 +50,15 @@ def gaussian2D_fct(
 
 
 def moments2D(data: np.ndarray):
-    """
-    Estimates initial guesses for fit paramters of a 2d gaussian.
-    Use like this:
-    step_fct_corner: 2d vector of data we want to fit
+    # """
+    # Estimates initial guesses for fit paramters of a 2d gaussian.
+    # Use like this:
+    # step_fct_corner: 2d vector of data we want to fit
 
-    params = moments(step_fct_corner)
-    errorfunction = lambda p: ravel(gaussian2D(*p)(Xin, Yin) -  step_fct_corner)
-    p, success = optimize.leastsq(errorfunction, params)
-    """
+    # params = moments(step_fct_corner)
+    # errorfunction = lambda p: ravel(gaussian2D(*p)(Xin, Yin) -  step_fct_corner)
+    # p, success = optimize.leastsq(errorfunction, params)
+    # """
     total = data.sum()
     X, Y = np.indices(data.shape)
     x = (X * data).sum() / total
