@@ -279,15 +279,14 @@ class TuningStage(metaclass=ABCMeta):
         plot_result: bool = True,
     ) -> TuningResult:
         """Performs iterations of a basic measurement cycle of a tuning stage.
+
         It wraps ```iterate_stage``` in .base_tasks.py. One measurement cycle
         does the following subtasks:
         - computes setpoints
         - perform the actual measurement, i.e. take data
         - perform a machine learning task, e.g. classification
-        - validate the machine learning result, e.g. check if a good regime was
-            found
+        - validate the machine learning result, e.g. check if a good regime was found
         - collect all information in a TuningResult instance.
-
         At each iteration, ```conclude_iteration``` check whether another
         measurement cycle will be performed.
         At the very end, ```clean_up``` does the desired post-measurement task.
