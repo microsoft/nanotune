@@ -16,11 +16,11 @@ nanotune.drivers
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    dac_interface
-    mock_dac
-    mock_readout_instruments
-    dac_client
-    dac_channel_server
+   dac_interface
+   mock_dac
+   mock_readout_instruments
+   dac_client
+   dac_channel_server

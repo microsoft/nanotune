@@ -1,7 +1,7 @@
 .. _fit:
 
-Fit
-===
+Data Fitting
+============
 
 .. toctree::
    :maxdepth: 2

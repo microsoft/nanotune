@@ -15,10 +15,10 @@ nanotune.model
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    capacitancemodel
-    node
-    noise
-    utils
+   capacitancemodel
+   node
+   noise
+   utils
