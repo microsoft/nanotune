@@ -40,7 +40,7 @@ class PinchoffFit(DataFit):
         gradient_percentile (optional float):
         get_transition_from_fit (optional bool):
 
-    Attributes:
+    Parameters:
         features (dict):
         range_update_directives (list):
 

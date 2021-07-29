@@ -45,7 +45,7 @@ def set_back_voltages(gates: List[DeviceChannel]) -> Generator[None, None, None]
 class TuningHistory:
     """Container holding tuning results of several devices.
 
-    Attributes:
+    Parameters:
         results: Mapping device name to an instance of
             MeasurementHistory.
     """
@@ -79,7 +79,7 @@ class Tuner(qc.Instrument):
     """Tuner base class. It implements common methods used in both device
     characterization and dot tuning.
 
-    Attributes:
+    Parameters:
         classifiers: a setting.Classifiers instance
             holding all required classifiers. Eg. pinchoff.
         data_settings: A settings.DataSettings instance with
