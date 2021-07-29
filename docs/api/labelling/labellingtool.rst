@@ -1,5 +1,5 @@
-nanotune.labelling.labellingtool
---------------------------------
+.. nanotune.labelling.labellingtool
+.. --------------------------------
 
-.. automodule:: nanotune.labelling.labellingtool
-   :members:
+.. .. automodule:: nanotune.labelling.labellingtool
+..    :members:
