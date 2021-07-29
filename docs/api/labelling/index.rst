@@ -20,5 +20,5 @@ nanotune.labelling
 
    labellingtool
    window
-   launch
    manipulate_labels
+..    launch

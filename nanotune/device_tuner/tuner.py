@@ -84,7 +84,7 @@ class Tuner(qc.Instrument):
             holding all required classifiers. Eg. pinchoff.
         data_settings: A settings.DataSettings instance with
             data related information such as `db_name` and
-            `normalization_constants'.
+            `normalization_constants`.
         setpoint_settings: A settings.SetpointSettings
             instance with setpoint related information such as
             `voltage_precision`.
