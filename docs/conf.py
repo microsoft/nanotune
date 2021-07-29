@@ -110,6 +110,8 @@ napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
+napoleon_custom_sections = [('Returns', 'params_style')]
+
 # autodoc_mock_imports = ['numpy', 'jsonschema',  'ruamel_yaml',
 #                          #'qcodes', 'qcodes.dataset',
 #                         #  'websockets', 'h5py', 'visa', 'pyvisa', 'zmq',
