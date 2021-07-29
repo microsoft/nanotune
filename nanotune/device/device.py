@@ -33,7 +33,7 @@ class NormalizationConstants:
     values to measure the lower bound, while the upper bound is measured with
     all gates set to their highest allowed voltages.
 
-    Attributes:
+    Parameters:
         transport: constants for DC transport.
         sensing: constants for charge sensing (transport
             or other).

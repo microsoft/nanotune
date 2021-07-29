@@ -1,5 +1,3 @@
-.. _tuning:
-
 ======
 Tuning
 ======
@@ -7,6 +5,7 @@ Tuning
 .. toctree::
    :maxdepth: 2
 
+.. _fig_workflow:
 .. figure:: ../overview/workflow_small_1.png
    :alt: Tuning workflow overview.
    :align: center
