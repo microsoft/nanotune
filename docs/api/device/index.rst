@@ -14,9 +14,9 @@ nanotune.device
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    device
-    device_channel
-    device_layout
+   device
+   device_channel
+   device_layout

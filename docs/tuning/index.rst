@@ -5,11 +5,13 @@ Tuning
 .. toctree::
    :maxdepth: 2
 
-.. figure:: ../overview/workflow_small.png
-   :scale: 50 %
-   :alt: dot tuning algorithm
+.. _fig_workflow:
+.. figure:: ../overview/workflow_small_1.png
+   :alt: Tuning workflow overview.
+   :align: center
+   :width: 45 %
 
-   Dot tuning algorithm implemented by the DotTuner class.
+   Overview of tuning workflow.
 
 
 Tuner
@@ -26,9 +28,10 @@ DotTuner
 entire tuning of 2D device: dottuner.tune
 
 
-.. figure:: ../overview/algorithm_dot_tuning_1.svg
-   :scale: 50 %
+.. figure:: ../overview/algorithm_dot_tuning.svg
    :alt: dot tuning algorithm
+   :align: center
+   :width: 55 %
 
    Dot tuning algorithm implemented by the DotTuner class.
 

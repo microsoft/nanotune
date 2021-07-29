@@ -10,7 +10,7 @@ nanotune.tuningstages
     nanotune.tuningstages.gatecharacterization1d
     nanotune.tuningstages.chargediagram
     nanotune.tuningstages.base_tasks
-    nanotune.tuningstages.gatecharacterization1d_tasks
+    nanotune.tuningstages.gatecharacterization_tasks
     nanotune.tuningstages.chargediagram_tasks
     nanotune.tuningstages.settings
     nanotune.tuningstages.take_data
@@ -20,14 +20,14 @@ nanotune.tuningstages
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    tuningstage
-    gatecharacterization1d
-    chargediagram
-    base_tasks
-    gatecharacterization1d_tasks
-    chargediagram_tasks
-    settings
-    take_data
+   tuningstage
+   gatecharacterization1d
+   chargediagram
+   base_tasks
+   gatecharacterization_tasks
+   chargediagram_tasks
+   settings
+   take_data

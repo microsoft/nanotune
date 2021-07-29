@@ -15,10 +15,10 @@ nanotune.labelling
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    labellingtool
-    window
-    launch
-    manipulate_labels
+   labellingtool
+   window
+   launch
+   manipulate_labels

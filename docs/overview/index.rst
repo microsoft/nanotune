@@ -10,11 +10,11 @@ device layout (i.e. number and arrangement of gates),
 safety voltage ranges (i.e. which voltages can be applied without damaging the device) ,
 setup specific noise floor (to ensure noise is not mistaken for an open regime in pre-calibration steps).
 
-.. _fig_gen:
-.. figure:: workflow_small.png
-    :alt: nanotune
+.. _fig_workflow:
+.. figure:: ./workflow_small_1.png
+    :alt: Tuning workflow overview.
     :align: center
-    :width: 60.0%
+    :width: 40.0%
 
 The dot-tuning sequence was demonstrated on double quantum dots formed in a GaAs two-dimensional electron gas, however no assumptions about the material were made. The gate layout of the devices used, shown on the right, consist of six gates: four so-called barriers and two plungers.
 Barrier gates typically create potential wells, defining tunnel resistances between dots and reservoirs, while plungers are used to adjust the electrochemical potential of a dot, changing the number of electrons if desired.
@@ -35,11 +35,11 @@ A subclass of a TuningStage, currently either GateCharacterization1D or ChargeDi
 The DeviceTuner class implements the tuning sequence itself by combining instances of TuningStages with a hard-coded decision logic leading to a dot being formed. There are two DeviceTuner subclasses, a Characterizer performing the a device characterization and a DotTuner.
 The DeviceTuner acts on an instance of a Device class, which represents the physical device including a list of gates, ohmics, gate layout and readout methods.
 
-.. _fig_gen:
-.. figure:: algorithm_dot_tuning.png
-    :alt: A 2DEG heterostructure
+.. _fig_algorithm:
+.. figure:: ./algorithm_dot_tuning.svg
+    :alt: Dot tuning algorithm implemented in nanotune.
     :align: center
-    :width: 60.0%
+    :width: 50.0%
 
 
 Data flow

@@ -16,11 +16,11 @@ nanotune.device_tuner
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    tuner
-    characterizer
-    dottuner
-    tuningreport
-    tuningresult
+   tuner
+   characterizer
+   dottuner
+   tuningreport
+   tuningresult

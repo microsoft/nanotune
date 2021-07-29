@@ -14,9 +14,9 @@ nanotune.data
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    dataset
-    databases
-    export_data
+   dataset
+   databases
+   export_data

@@ -15,10 +15,10 @@ nanotune.classification
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    classifier
-    data_augmentation
-    default_hyperparameters
-    utils
+   classifier
+   data_augmentation
+   default_hyperparameters
+   utils

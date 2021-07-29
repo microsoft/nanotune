@@ -6,7 +6,7 @@ nanotune.fit
 .. autosummary::
 
     nanotune.fit
-    nanotune.fit.data_fit
+    nanotune.fit.datafit
     nanotune.fit.pinchofffit
     nanotune.fit.dotfit
     nanotune.fit.coulomboscillationfit
@@ -15,10 +15,10 @@ nanotune.fit
 
 
 .. toctree::
-    :maxdepth: 4
-    :hidden:
+   :maxdepth: 4
+   :hidden:
 
-    data_fit
-    pinchofffit
-    dotfit
-    coulomboscillationfit
+   datafit
+   pinchofffit
+   dotfit
+   coulomboscillationfit
