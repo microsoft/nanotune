@@ -74,6 +74,27 @@ extensions = [
     # 'rinoh.frontend.sphinx'
 ]
 
+nitpicky = False
+
+# we allow most types from the typing modules to be used in
+# docstrings even if they don't resolve
+nitpick_ignore = [('py:class', 'Optional'), ('py:class', 'Union'),
+                  ('py:class', 'Any'), ('py:class', 'Tuple'),
+                  ('py:class', 'List'), ('py:class', 'Sequence'),
+                  ('py:class', 'Iterable'), ('py:class', 'Type'),
+                  # These are some types currently in use
+                  # in docstrings not actually defined anywhere
+                  ('py:class', 'io_manager'), ('py:class', 'chan_type'),
+                  ('py:class', 'SD_Wave'), ('py:class', 'array'),
+                  # External types that for some reason or the other
+                  # don't resolve.
+                  ('py:class', 'json.encoder.JSONEncoder'),
+                  ('py:attr', 'broadbean.sequence.fs_schmema'),
+                  ('py:class', 'SPI_rack'),
+                  ('py:class', 'unittest.case.TestCase'),
+                  ('py:class', 'builtins.AssertionError'),
+                  ('py:exc', 'visa.VisaIOError')]
+
 napoleon_include_special_with_doc = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
@@ -271,6 +292,6 @@ numfig = True
 # Use this kernel instead of the one stored in the notebook metadata:
 nbsphinx_kernel_name = 'python3'
 # always execute notebooks.
-nbsphinx_execute = 'always'
+nbsphinx_execute = 'never'
 
 nbsphinx_allow_errors = True
