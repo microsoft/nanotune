@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.model.noise &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.model.noise</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.model.noise</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.fftpack</span> <span class="k">as</span> <span class="nn">fp</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">resize</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">NOISE_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="s2">&quot;rnt&quot;</span><span class="p">,</span> <span class="s2">&quot;one_over_f&quot;</span><span class="p">,</span> <span class="s2">&quot;random_blobs&quot;</span><span class="p">,</span> <span class="s2">&quot;current_drop&quot;</span><span class="p">]</span>
+
+<span class="n">DEFAULT_FILES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;white&quot;</span><span class="p">:</span> <span class="s2">&quot;white_noise.npy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rnt&quot;</span><span class="p">:</span> <span class="s2">&quot;random_telegraph_noise.npy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;one_over_f&quot;</span><span class="p">:</span> <span class="s2">&quot;one_over_f_noise.npy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;random_blobs&quot;</span><span class="p">:</span> <span class="s2">&quot;random_blobs.npy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;current_drop&quot;</span><span class="p">:</span> <span class="s2">&quot;current_drop.npy&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">N_2D</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;standard_shapes&quot;</span><span class="p">][</span><span class="s2">&quot;2&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="load_noise"><a class="viewcode-back" href="../../../api/model/noise.html#nanotune.model.noise.load_noise">[docs]</a><span class="k">def</span> <span class="nf">load_noise</span><span class="p">(</span>
+    <span class="n">noise_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">number_of_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note: complex numbers are cast into floats here, might need to fix this</span>
+<span class="sd">    of frequencies do not give desired result</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">DEFAULT_FILES</span>
+
+    <span class="k">if</span> <span class="n">folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+    <span class="n">all_noise</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># np.zeros((len(noise_types), 2, number_of_samples, *N_2D))</span>
+    <span class="c1"># noise_idx = []</span>
+    <span class="k">for</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="n">noise_types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ntype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NOISE_TYPES</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown noise type. Choose one of the following: &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">NOISE_TYPES</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">NOISE_TYPES</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ntype</span><span class="p">)</span>
+
+        <span class="n">raw_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">DEFAULT_FILES</span><span class="p">[</span><span class="n">ntype</span><span class="p">]))</span>
+        <span class="n">raw_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">raw_noise</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="p">(</span><span class="n">raw_noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+
+        <span class="n">raw_noise</span> <span class="o">=</span> <span class="n">raw_noise</span><span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw_noise</span><span class="p">),</span> <span class="n">number_of_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="nb">int</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">raw_noise_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequencies2</span><span class="p">(</span><span class="n">raw_noise</span><span class="p">)</span>
+        <span class="n">raw_noise_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequenciesshift</span><span class="p">(</span><span class="n">raw_noise_freq</span><span class="p">)</span>
+
+        <span class="n">all_noise</span><span class="p">[</span><span class="n">ntype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">number_of_samples</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+        <span class="n">all_noise</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_noise</span>
+        <span class="n">all_noise</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_noise_freq</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="k">return</span> <span class="n">all_noise</span></div>
+
+
+<div class="viewcode-block" id="add_noise"><a class="viewcode-back" href="../../../api/model/noise.html#nanotune.model.noise.add_noise">[docs]</a><span class="k">def</span> <span class="nf">add_noise</span><span class="p">(</span>
+    <span class="n">original_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">noise_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">max_strength</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">n_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">in_current</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">min_strength</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">noise_types</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_strength</span><span class="p">)</span>
+
+    <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">original_data</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">noisy_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">min_strength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_strength</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">noise_types</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">m</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">in_current</span><span class="p">:</span>
+        <span class="n">org_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">noisy_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+        <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequencies2</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">)</span>
+        <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequenciesshift</span><span class="p">(</span><span class="n">noisy_freq</span><span class="p">)</span>
+
+    <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">raw_noise</span> <span class="o">=</span> <span class="n">load_noise</span><span class="p">(</span><span class="n">noise_types</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">inn</span><span class="p">,</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">noise_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ntype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NOISE_TYPES</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown noise type. Choose one of the following: &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">NOISE_TYPES</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+        <span class="c1"># if ntype in [&#39;current_drop&#39;, &#39;random_blobs&#39;]:</span>
+        <span class="c1">#     min_strength[inn] = np.min(1,  max_strength[inn])</span>
+
+        <span class="n">amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_strength</span><span class="p">[</span><span class="n">inn</span><span class="p">],</span> <span class="n">max_strength</span><span class="p">[</span><span class="n">inn</span><span class="p">],</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span> <span class="o">-</span> <span class="n">n_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">amp</span><span class="p">))</span>
+        <span class="n">amp</span> <span class="o">=</span> <span class="n">amp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_current</span><span class="p">:</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">raw_noise</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">old_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;current_drop&quot;</span><span class="p">,</span> <span class="s2">&quot;random_blobs&quot;</span><span class="p">]:</span>
+                <span class="c1"># amp[amp=0] = 1</span>
+                <span class="n">noise</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">noise</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">amp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">noise</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">noisy_data</span> <span class="o">*</span> <span class="n">noise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">noisy_data</span> <span class="o">+</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">noise</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">new_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">noisy_data</span> <span class="o">*</span> <span class="n">old_max</span> <span class="o">/</span> <span class="n">new_max</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">raw_noise</span><span class="p">[</span><span class="n">ntype</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ntype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;current_drop&quot;</span><span class="p">,</span> <span class="s2">&quot;random_blobs&quot;</span><span class="p">]:</span>
+                <span class="n">noise</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">noise</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">amp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">noise</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">noisy_freq</span> <span class="o">*</span> <span class="n">noise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">noisy_freq</span> <span class="o">+</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">noise</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">in_current</span><span class="p">:</span>
+        <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+        <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequencies2</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">)</span>
+        <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequenciesshift</span><span class="p">(</span><span class="n">noisy_freq</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_freq</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+        <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">ifrequencies2</span><span class="p">(</span><span class="n">noisy_freq</span><span class="p">))</span>
+
+        <span class="n">new_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">noisy_data</span> <span class="o">*</span> <span class="n">org_max</span> <span class="o">/</span> <span class="n">new_max</span>
+
+    <span class="n">noisy_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_freq</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">noisy_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">noisy_data</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># noisy_data = (noisy_data - np.min(noisy_data))/(np.max(noisy_data) - np.min(noisy_data)) * 0.3</span>
+    <span class="c1"># nmin = np.min(images, axis=(1, 2)).reshape(-1, 1)</span>
+    <span class="c1"># nmax = np.max(images, axis=(1, 2)).reshape(-1, 1)</span>
+    <span class="c1"># images = images.reshape(images.shape[0], -1)</span>
+    <span class="c1"># images = (images - nmin)/(nmax - nmin)</span>
+    <span class="k">return</span> <span class="n">noisy_data</span><span class="p">,</span> <span class="n">noisy_freq</span></div>
+
+
+<div class="viewcode-block" id="add_random_charge_shifts"><a class="viewcode-back" href="../../../api/model/noise.html#nanotune.model.noise.add_random_charge_shifts">[docs]</a><span class="k">def</span> <span class="nf">add_random_charge_shifts</span><span class="p">(</span>
+    <span class="n">original_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">number_of_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">original_data</span><span class="p">)</span>
+    <span class="n">data_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+        <span class="n">original_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">number_of_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">org_shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">data_idx</span><span class="p">:</span>
+        <span class="n">ex_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="n">n_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">min_d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">n_diff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">n_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">ex_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">transpose</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">transpose</span><span class="p">:</span>
+            <span class="n">new_img1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">ex_data</span><span class="p">[:</span><span class="n">n_step</span><span class="p">,</span> <span class="p">:],</span>
+                    <span class="n">ex_data</span><span class="p">[</span><span class="n">n_step</span> <span class="o">-</span> <span class="n">min_d</span> <span class="p">:</span> <span class="n">n_step</span> <span class="o">+</span> <span class="n">min_d</span><span class="p">,</span> <span class="p">:],</span>
+                    <span class="n">ex_data</span><span class="p">[</span><span class="n">n_step</span> <span class="o">+</span> <span class="n">min_d</span> <span class="p">:,</span> <span class="p">:],</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_img1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">ex_data</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_step</span><span class="p">],</span>
+                    <span class="n">ex_data</span><span class="p">[:,</span> <span class="n">n_step</span> <span class="o">-</span> <span class="n">min_d</span> <span class="p">:</span> <span class="n">n_step</span> <span class="o">+</span> <span class="n">min_d</span><span class="p">],</span>
+                    <span class="n">ex_data</span><span class="p">[:,</span> <span class="n">n_step</span> <span class="o">+</span> <span class="n">min_d</span> <span class="p">:],</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">new_img1</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">new_img1</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_img1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">org_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">N_2D</span><span class="p">))</span>
+    <span class="n">freq_data</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">frequencies2</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">freq_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">frequenciesshift</span><span class="p">(</span><span class="n">freq_data</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">org_shape</span><span class="p">)</span>
+    <span class="n">freq_data</span> <span class="o">=</span> <span class="n">freq_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">org_shape</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">freq_data</span></div>
+
+
+<span class="c1"># def add_noise_in_freq_domain(files: List) -&gt; None:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     # # syn_data_freq = fp.frequencies2(data_current)</span>
+<span class="c1">#     # # syn_data_freq = fp.frequenciesshift(syn_data_freq)</span>
+
+<span class="c1">#     # noisy_freqs = np.copy(syn_freq)</span>
+
+<span class="c1">#     # m = noisy_freqs.shape[0]</span>
+
+<span class="c1">#     # amp = np.random.uniform(0, 0.3, (3, m))</span>
+<span class="c1">#     # rnt_amp = np.random.uniform(0, 0.03, (m))</span>
+<span class="c1">#     # noisy_freqs = np.reshape(noisy_freqs, (m, -1))</span>
+
+<span class="c1">#     # # noisy_freqs = noisy_freqs + amp[0].reshape(-1, 1)*white_freq_selection.reshape(m, -1)</span>
+<span class="c1">#     # noisy_freqs = noisy_freqs + amp[1].reshape(-1, 1)*one_over_f_freq_selection.reshape(m, -1)</span>
+<span class="c1">#     # # noisy_freqs = noisy_freqs + amp[2].reshape(-1, 1)*random_blobs_freq_selection.reshape(m, -1)*0.1</span>
+<span class="c1">#     # # noisy_freqs = noisy_freqs + rnt_amp.reshape(-1, 1)*rnt_freq_selection.reshape(m, -1)</span>
+<span class="c1">#     # # noisy_freqs = noisy_freqs*current_drop_freq_selection.reshape(m, -1)</span>
+
+<span class="c1">#     # noisy_freqs = np.reshape(noisy_freqs, (m, 50, 50))</span>
+
+<span class="c1">#     # images = np.abs(fp.ifrequencies2(noisy_freqs))</span>
+
+<span class="c1">#     # images = images*current_drop_selection</span>
+
+<span class="c1">#     # # nmin = np.min(images, axis=(1, 2)).reshape(-1, 1)</span>
+<span class="c1">#     # # nmax = np.max(images, axis=(1, 2)).reshape(-1, 1)</span>
+<span class="c1">#     # # images = images.reshape(images.shape[0], -1)</span>
+<span class="c1">#     # # images = (images - nmin)/(nmax - nmin)</span>
+<span class="c1">#     # images = images.reshape(images.shape[0], 50, 50, 1)</span>
+
+<span class="c1">#     # for iid in range(10):</span>
+<span class="c1">#     #     plt.pcolormesh(images[iid].reshape(50, 50))</span>
+<span class="c1">#     #     plt.colorbar()</span>
+<span class="c1">#     #     plt.show()</span>
+
+<span class="c1">#     # print(np.min(images))</span>
+<span class="c1">#     # print(np.max(images))</span>
+
+<span class="c1">#     # print(np.min(exp_data))</span>
+<span class="c1">#     # print(np.max(exp_data))</span>
+
+<span class="c1">#     return None</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

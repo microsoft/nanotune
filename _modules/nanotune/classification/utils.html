@@ -1,0 +1,1206 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.classification.utils &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.classification.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.classification.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.classification.classifier</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DEFAULT_CLF_PARAMETERS</span><span class="p">,</span>
+                                                <span class="n">DEFAULT_DATA_FILES</span><span class="p">,</span>
+                                                <span class="n">METRIC_NAMES</span><span class="p">,</span> <span class="n">Classifier</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">metric_mapping</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;accuracy_score&quot;</span><span class="p">:</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;auc&quot;</span><span class="p">:</span> <span class="s2">&quot;AUC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;average_precision_recall&quot;</span><span class="p">:</span> <span class="s2">&quot;precision recall&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;brier_score_loss&quot;</span><span class="p">:</span> <span class="s2">&quot;Brier loss&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="qf_model"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.qf_model">[docs]</a><span class="k">def</span> <span class="nf">qf_model</span><span class="p">(</span>
+    <span class="n">input_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">:</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+            <span class="mi">32</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channels_last&quot;</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">())</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">,</span>  <span class="c1"># categorical_crossentropy,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="my_model"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.my_model">[docs]</a><span class="k">def</span> <span class="nf">my_model</span><span class="p">(</span>
+    <span class="n">input_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+            <span class="mi">32</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channels_last&quot;</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+            <span class="mi">32</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channels_last&quot;</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+            <span class="mi">64</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channels_last&quot;</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">())</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">))</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">,</span>  <span class="c1"># categorical_crossentropy,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="load_syn_data"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.load_syn_data">[docs]</a><span class="k">def</span> <span class="nf">load_syn_data</span><span class="p">(</span>
+    <span class="n">data_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">for_CNN</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># data_files = {</span>
+        <span class="c1">#     &#39;qflow&#39;: [&#39;qflow_data_large.npy&#39;],</span>
+        <span class="c1">#     &#39;capa&#39;: [&#39;noiseless_data.npy&#39;],</span>
+        <span class="c1"># }</span>
+        <span class="n">data_files</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;qflow&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_qf_data1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_qf_data2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_qf_data3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;capa&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_cm_data1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_cm_data2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_cm_data3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">elem</span> <span class="ow">in</span> <span class="n">data_files</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;qflow&quot;</span><span class="p">,</span> <span class="s2">&quot;capa&quot;</span><span class="p">]):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;data_files must contain following keys: &quot;qflow&quot;, &quot;capa&quot;.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">if</span> <span class="n">data_types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
+
+    <span class="n">qf_data</span><span class="p">,</span> <span class="n">qf_labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+        <span class="n">data_files</span><span class="p">[</span><span class="s2">&quot;qflow&quot;</span><span class="p">],</span>
+        <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">qf_data</span> <span class="o">=</span> <span class="n">qf_data</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">cm_data</span><span class="p">,</span> <span class="n">cm_labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+        <span class="n">data_files</span><span class="p">[</span><span class="s2">&quot;capa&quot;</span><span class="p">],</span>
+        <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cm_data</span> <span class="o">=</span> <span class="n">cm_data</span> <span class="o">*</span> <span class="mf">0.6</span>
+
+    <span class="n">syn_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">qf_data</span><span class="p">,</span> <span class="n">cm_data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">syn_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">qf_labels</span><span class="p">,</span> <span class="n">cm_labels</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">syn_labels</span><span class="p">))</span>
+    <span class="n">syn_data</span> <span class="o">=</span> <span class="n">syn_data</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+    <span class="n">syn_labels</span> <span class="o">=</span> <span class="n">syn_labels</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">for_CNN</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">syn_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">syn_labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">syn_labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">syn_curr</span> <span class="o">=</span> <span class="n">syn_data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">syn_freq</span> <span class="o">=</span> <span class="n">syn_data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">syn_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">syn_curr</span><span class="p">,</span> <span class="n">syn_freq</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;No data reshaping for parametric binary classifiers&quot;</span> <span class="o">+</span> <span class="s2">&quot; was performed.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">syn_data</span><span class="p">,</span> <span class="n">syn_labels</span></div>
+
+
+<div class="viewcode-block" id="load_exp_data"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.load_exp_data">[docs]</a><span class="k">def</span> <span class="nf">load_exp_data</span><span class="p">(</span>
+    <span class="n">which</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">data_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">for_CNN</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># data_files = {</span>
+        <span class="c1">#     &#39;clean&#39;: [&#39;clean_exp_dots.npy&#39;],</span>
+        <span class="c1">#     &#39;good&#39;: [&#39;exp_dots_corrected.npy&#39;],</span>
+        <span class="c1">#     &#39;bad&#39;: [&#39;exp_dots_corrected.npy&#39;],</span>
+        <span class="c1">#     &#39;good_minus_clean&#39;: [&#39;exp_dots_minus_clean.npy&#39;],</span>
+        <span class="c1">#     &#39;good_and_bad&#39;: [&#39;exp_dots_corrected.npy&#39;],</span>
+        <span class="c1">#     &#39;good_and_bad_minus_clean&#39;: None,</span>
+
+        <span class="c1"># }</span>
+        <span class="n">data_files</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;clean&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_clean_exp_dots1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_clean_exp_dots2.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;good&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;bad&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;good_minus_clean&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_exp_dots_minus_clean1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_minus_clean2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_minus_clean3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;good_and_bad&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected1.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected2.npy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;augmented_exp_dots_corrected3.npy&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;good_and_bad_minus_clean&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">data_types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
+
+    <span class="n">exp_data_all</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;good_and_bad&quot;</span><span class="p">:</span>
+            <span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span> <span class="o">=</span> <span class="n">_load_good_and_poor</span><span class="p">(</span>
+                <span class="n">data_files</span><span class="p">[</span><span class="n">dtype</span><span class="p">],</span> <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span>
+            <span class="p">)</span>
+
+            <span class="n">exp_data_all</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bad&quot;</span><span class="p">:</span>
+            <span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+                <span class="n">data_files</span><span class="p">[</span><span class="n">dtype</span><span class="p">],</span> <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span> <span class="n">relevant_labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="n">exp_data_all</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;good_and_bad_minus_clean&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_files</span><span class="p">[</span><span class="s2">&quot;good_and_bad_minus_clean&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">f_name</span> <span class="o">=</span> <span class="n">data_files</span><span class="p">[</span><span class="s2">&quot;good_minus_clean&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f_name</span> <span class="o">=</span> <span class="n">data_files</span><span class="p">[</span><span class="s2">&quot;good_and_bad_minus_clean&quot;</span><span class="p">]</span>
+            <span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span> <span class="o">=</span> <span class="n">_load_good_and_poor</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">)</span>
+
+            <span class="n">exp_data_all</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;clean&quot;</span><span class="p">,</span> <span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;good_minus_clean&quot;</span><span class="p">]:</span>
+            <span class="c1"># not in [&#39;good_and_bad&#39;, &#39;good_and_bad_minus_clean&#39;, &#39;bad&#39;]:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+                <span class="n">data_files</span><span class="p">[</span><span class="n">dtype</span><span class="p">],</span>
+                <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">exp_data_all</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Trying to load unknown data.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">for_CNN</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idd</span><span class="p">,</span> <span class="n">sub_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">exp_data_all</span><span class="p">):</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">sub_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">sub_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">curr</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">curr</span><span class="p">,</span> <span class="n">freq</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">exp_data_all</span><span class="p">[</span><span class="n">idd</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;No data reshaping for parametric binary classifiers&quot;</span> <span class="o">+</span> <span class="s2">&quot; was performed.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">exp_data_all</span></div>
+
+
+<span class="k">def</span> <span class="nf">_load_good_and_poor</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
+    <span class="n">singledots</span><span class="p">,</span> <span class="n">single_labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+        <span class="n">filenames</span><span class="p">,</span>
+        <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+        <span class="n">regime</span><span class="o">=</span><span class="s2">&quot;singledot&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">doubledots</span><span class="p">,</span> <span class="n">double_labels</span> <span class="o">=</span> <span class="n">_load_data</span><span class="p">(</span>
+        <span class="n">filenames</span><span class="p">,</span>
+        <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+        <span class="n">regime</span><span class="o">=</span><span class="s2">&quot;doubledot&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">single_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">single_labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">double_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">double_labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">n_each</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">single_labels</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">double_labels</span><span class="p">)]))</span>
+
+    <span class="n">sd_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_each</span><span class="p">,</span> <span class="n">n_each</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">dd_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_each</span><span class="p">,</span> <span class="n">n_each</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">singledot</span> <span class="o">=</span> <span class="n">singledots</span><span class="p">[</span><span class="n">sd_ids</span><span class="p">]</span>
+    <span class="n">sd_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_each</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">doubledot</span> <span class="o">=</span> <span class="n">doubledots</span><span class="p">[</span><span class="n">dd_ids</span><span class="p">]</span>
+    <span class="n">dd_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_each</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">all_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">singledot</span><span class="p">,</span> <span class="n">doubledot</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">all_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">sd_labels</span><span class="p">,</span> <span class="n">dd_labels</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_labels</span><span class="p">))</span>
+    <span class="n">all_data</span> <span class="o">=</span> <span class="n">all_data</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+    <span class="n">all_labels</span> <span class="o">=</span> <span class="n">all_labels</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="n">all_labels</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">all_labels</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">all_data</span><span class="p">,</span> <span class="n">all_labels</span>
+
+
+<span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">regime</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dotregime&quot;</span><span class="p">,</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">relevant_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load data from multiple data files but do it seperaterly to ensure</span>
+<span class="sd">    &#39;select_equal_populations&#39; won&#39;t accidentially</span>
+<span class="sd">    select data mainly from one file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="s2">&quot;frequencies&quot;</span><span class="p">]</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)])</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">dfile</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+
+        <span class="n">data_loader</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">dfile</span><span class="p">],</span>
+            <span class="n">regime</span><span class="p">,</span>
+            <span class="n">data_types</span><span class="o">=</span><span class="n">data_types</span><span class="p">,</span>
+            <span class="n">relevant_labels</span><span class="o">=</span><span class="n">relevant_labels</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="p">(</span><span class="n">sub_data</span><span class="p">,</span> <span class="n">sub_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">data_loader</span><span class="o">.</span><span class="n">select_equal_populations</span><span class="p">(</span>
+            <span class="n">data_loader</span><span class="o">.</span><span class="n">original_data</span><span class="p">,</span> <span class="n">data_loader</span><span class="o">.</span><span class="n">labels</span>
+        <span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data_sig</span> <span class="o">=</span> <span class="n">sub_data</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2500</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">data_frq</span> <span class="o">=</span> <span class="n">sub_data</span><span class="p">[:,</span> <span class="mi">2500</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">sub_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data_sig</span><span class="p">,</span> <span class="n">data_frq</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="c1">#         print(sub_data.shape)</span>
+        <span class="c1">#         print(data.shape)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sub_data</span> <span class="o">=</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">sub_data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">labels</span><span class="p">,</span> <span class="n">sub_labels</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span>
+
+
+<div class="viewcode-block" id="select_equal_populations"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.select_equal_populations">[docs]</a><span class="k">def</span> <span class="nf">select_equal_populations</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make sure we have 50% of one and 50% of other population</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># self.data_to_use = copy.deepcopy(self.original_data)</span>
+    <span class="n">populations_labels</span><span class="p">,</span> <span class="n">population_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">n_each</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">population_counts</span><span class="p">))</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">n_each</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">populations_labels</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">new_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_each</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">populations_labels</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">populations_labels</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_each</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="n">ii</span> <span class="o">*</span> <span class="n">n_each</span> <span class="p">:</span> <span class="p">(</span><span class="n">ii</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_each</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span>
+        <span class="n">label_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_each</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">new_labels</span><span class="p">[</span><span class="n">ii</span> <span class="o">*</span> <span class="n">n_each</span> <span class="p">:</span> <span class="p">(</span><span class="n">ii</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_each</span><span class="p">]</span> <span class="o">=</span> <span class="n">label_array</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_labels</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">new_data</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">new_labels</span><span class="p">[</span><span class="n">p</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="print_data_stats"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.print_data_stats">[docs]</a><span class="k">def</span> <span class="nf">print_data_stats</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of samples: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;populations (number and count): </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;min value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;std: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;median: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="mi">500</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+    <span class="c1">#     _ = plt.hist(a, bins=100,  range=[np.min(data), np.min(data) + 2*np.std(data)])  # arguments are passed to np.histogram</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Histogram qf_data&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="feature_combination_metrics"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.feature_combination_metrics">[docs]</a><span class="k">def</span> <span class="nf">feature_combination_metrics</span><span class="p">(</span>
+    <span class="n">classifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_filenames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;accuracy_score&quot;</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">classifier_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">feature_indexes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">75</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="c1"># TODO: Fix this method. It is broken. Has not been used for a while</span>
+
+    <span class="c1"># n_feat = len(feature_indexes)</span>
+    <span class="c1"># scores: List[str] = []</span>
+
+    <span class="c1"># for k in range(1, n_feat+1):</span>
+    <span class="c1">#     f_indx = itertools.combinations(range(1, n_feat+1), k)</span>
+    <span class="c1">#     for f_combo in feature_indexes:</span>
+    <span class="c1">#         qclf = Classifier(data_filenames,</span>
+    <span class="c1">#                               category,</span>
+    <span class="c1">#                               classifier=classifier,</span>
+    <span class="c1">#                               hyper_parameters=classifier_parameters,</span>
+    <span class="c1">#                               data_types=[&#39;features&#39;],</span>
+    <span class="c1">#                               feature_indexes=list(f_combo),</span>
+    <span class="c1">#                               )</span>
+    <span class="c1">#     infos = qclf.compute_metrics(n_iter=n_iter)</span>
+    <span class="c1">#     features_str = &#39;&#39;</span>
+    <span class="c1">#     sub_feat = [features[f] for f in f_combo]</span>
+    <span class="c1">#     scores.append([&#39;, &#39;.join(sub_feat), infos[metric][&#39;mean&#39;],</span>
+    <span class="c1">#                    infos[metric][&#39;std&#39;]])</span>
+
+    <span class="c1"># info_dict = {</span>
+    <span class="c1">#     &#39;stage&#39;: category,</span>
+    <span class="c1">#     &#39;classifier&#39;: qclf.clf_type,</span>
+    <span class="c1">#     &#39;classifier_parameters&#39;: qclf.clf.get_params(),</span>
+    <span class="c1">#     &#39;n_iter&#39;: n_iter,</span>
+    <span class="c1">#     &#39;data_files&#39;: qclf.file_paths,</span>
+    <span class="c1">#     &#39;scores&#39;: scores,</span>
+    <span class="c1">#     &#39;metric&#39;: metric,</span>
+    <span class="c1"># }</span>
+
+    <span class="c1"># if filename is None:</span>
+    <span class="c1">#     filename = qclf.clf_type + &#39;_&#39; + metric + &#39;.json&#39;</span>
+
+    <span class="c1"># path = os.path.join(nt.config[&#39;db_folder&#39;], category + &#39;_features_metrics&#39;)</span>
+    <span class="c1"># if not os.path.exists(path):</span>
+    <span class="c1">#     os.makedirs(path)</span>
+    <span class="c1"># path = os.path.join(path, filename)</span>
+    <span class="c1"># with open(path, &#39;w&#39;) as f:</span>
+    <span class="c1">#     json.dump(info_dict, f)</span>
+
+    <span class="c1"># return info_dict</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;feature_combination_metrics under construction&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<span class="c1"># def feature_metric_to_latex(directory: str,</span>
+<span class="c1">#                             filenames: List[str],</span>
+<span class="c1">#                             tables_folder: str) -&gt; None:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     metric = &#39;accuracy_score&#39;</span>
+<span class="c1">#     classifiers = [&#39;SVC_rbf&#39;, &#39;SVC_linear&#39;, &#39;MLPClassifier&#39;]</span>
+<span class="c1">#     stage = &#39;po&#39;</span>
+<span class="c1">#     directory = &#39;/Users/jana/Documents/code/nanotune/measurements/databases/&#39; + stage + &#39;_features_metrics&#39;</span>
+
+<span class="c1">#     for classifier in classifiers:</span>
+<span class="c1">#         filename = classifier + &#39;_&#39; + metric + &#39;.json&#39;</span>
+
+<span class="c1">#         path = os.path.join(directory, filename)</span>
+<span class="c1">#         with open(path) as f:</span>
+<span class="c1">#             feat_data = json.load(f)</span>
+
+<span class="c1">#         header =  [&#39;features&#39;, &#39;mean &#39; + metric, &#39;std&#39;]</span>
+<span class="c1">#         scores = sorted(feat_data[&#39;scores&#39;], key=itemgetter(1), reverse=True)[0:40]</span>
+
+<span class="c1">#         df = pd.DataFrame(scores)</span>
+<span class="c1">#         filepath = os.path.join(tables_folder,  stage + &#39;_&#39; + classifier + &#39;_&#39; + metric +&#39;.tex&#39;)</span>
+<span class="c1">#         with open(filepath, &#39;w&#39;) as tf:</span>
+<span class="c1">#             with pd.option_context(&quot;max_colwidth&quot;, 1000):</span>
+<span class="c1">#                 tf.write(df.to_latex(index=False,</span>
+<span class="c1">#                                      formatters=[dont_format, format_float,</span>
+<span class="c1">#                                                  format_float],</span>
+<span class="c1">#                                      header=header,</span>
+<span class="c1">#                                      column_format=&#39;lcc&#39;).replace(&#39;\\toprule&#39;, &#39;\\hline&#39;).replace(&#39;\\midrule&#39;, &#39;\\hline&#39;).replace(&#39;\\bottomrule&#39;,&#39;\\hline&#39;))</span>
+
+
+<div class="viewcode-block" id="performance_metrics_to_latex"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.performance_metrics_to_latex">[docs]</a><span class="k">def</span> <span class="nf">performance_metrics_to_latex</span><span class="p">(</span>
+    <span class="n">tables_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;accuracy_score&quot;</span><span class="p">,</span>
+    <span class="n">file_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;pinchoff&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">&quot;pinchoff&quot;</span><span class="p">,</span>
+            <span class="p">[[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">,</span> <span class="s2">&quot;signal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]],</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;singledot&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dots&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="s2">&quot;frequencies&quot;</span><span class="p">]]),</span>
+        <span class="s2">&quot;doubledot&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dots&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">,</span> <span class="s2">&quot;signal&quot;</span><span class="p">]]),</span>
+        <span class="s2">&quot;dotregime&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dots&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">,</span> <span class="s2">&quot;signal&quot;</span><span class="p">]]),</span>
+    <span class="p">}</span>
+    <span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;DecisionTreeClassifier&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;GaussianProcessClassifier&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;KNeighborsClassifier&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LogisticRegression&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MLPClassifier&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuadraticDiscriminantAnalysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;RandomForestClassifier&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SVC&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">file_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;classifier_metrics&quot;</span><span class="p">)</span>
+
+    <span class="n">header2</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;classifier &quot;</span><span class="p">,</span>
+        <span class="n">metric_mapping</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span>
+        <span class="s2">&quot;evaluation time [s]&quot;</span><span class="p">,</span>
+        <span class="n">metric_mapping</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span>
+        <span class="s2">&quot;evaluation time [s]&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">settings</span> <span class="ow">in</span> <span class="n">categories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">data_file</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data_types</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">data_types</span><span class="p">:</span>
+
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">base_pattern</span> <span class="o">=</span> <span class="n">data_file</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
+            <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_directory</span><span class="p">,</span> <span class="n">base_pattern</span><span class="p">))</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+            <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">d_type</span> <span class="ow">in</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;data_types&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">d_type</span><span class="p">)</span>
+                    <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+                <span class="n">clf_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+                <span class="n">sub_score</span> <span class="o">=</span> <span class="p">[</span><span class="n">classifier</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">pca_setting</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;no_PCA&quot;</span><span class="p">,</span> <span class="s2">&quot;PCA.&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">pca_setting</span> <span class="o">==</span> <span class="s2">&quot;PCA.&quot;</span><span class="p">:</span>
+                        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">clf_files</span> <span class="k">if</span> <span class="n">pca_setting</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">clf_files</span> <span class="k">if</span> <span class="s2">&quot;PCA&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+
+                    <span class="n">sub_score</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="s2">&quot;</span><span class="si">{0:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">metric</span><span class="p">][</span><span class="s2">&quot;mean&quot;</span><span class="p">]))</span>
+                            <span class="o">+</span> <span class="s2">&quot; $\pm$ &quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{0:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">metric</span><span class="p">][</span><span class="s2">&quot;std&quot;</span><span class="p">])),</span>
+                            <span class="n">format_time</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mean_test_time&quot;</span><span class="p">]))</span>
+                            <span class="o">+</span> <span class="s2">&quot; $\pm$ &quot;</span>
+                            <span class="o">+</span> <span class="n">format_time</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;std_test_time&quot;</span><span class="p">])),</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_score</span><span class="p">)</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">tables_directory</span> <span class="o">+</span> <span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">pattern</span> <span class="o">+</span> <span class="s2">&quot;.tex&quot;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+                    <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">formatters</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="n">header</span><span class="o">=</span><span class="n">header2</span><span class="p">,</span>
+                    <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;@{\extracolsep</span><span class="si">{6pt}</span><span class="s2">}lcccc&quot;</span><span class="p">,</span>
+                    <span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">toprule&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline </span><span class="se">\\</span><span class="s2">hline &amp; \multicolumn</span><span class="si">{2}{c}{PCA}</span><span class="s2"> &amp; \multicolumn</span><span class="si">{2}{c}</span><span class="s2">{no PCA} </span><span class="se">\\\\</span><span class="s2"> \cline{2-3} \cline{4-5} &quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline&quot;</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">bottomrule&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline </span><span class="se">\\</span><span class="s2">hline&quot;</span><span class="p">)</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="performance_metrics_to_figure"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.performance_metrics_to_figure">[docs]</a><span class="k">def</span> <span class="nf">performance_metrics_to_figure</span><span class="p">(</span>
+    <span class="n">data_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">figure_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rcparams</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rcparams</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rcparams</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;classifier_metrics&quot;</span><span class="p">)</span>
+
+    <span class="n">base_pattern</span> <span class="o">=</span> <span class="n">data_file</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_directory</span><span class="p">,</span> <span class="n">base_pattern</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">data_types</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+        <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">d_type</span> <span class="ow">in</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;data_types&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">:</span>
+                <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+        <span class="n">file_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;PCA&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="s2">&quot;PCA.&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">],</span>
+            <span class="s2">&quot;PCA_scaled_PC&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="s2">&quot;PCA_scaled&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">],</span>
+            <span class="s2">&quot;no_PCA&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="s2">&quot;PCA&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">pca_setting</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">file_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">means</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">stds</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+                    <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;classifier&quot;</span><span class="p">])</span>
+                    <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">metric</span><span class="p">][</span><span class="s2">&quot;mean&quot;</span><span class="p">]))</span>
+                    <span class="n">stds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">metric</span><span class="p">][</span><span class="s2">&quot;std&quot;</span><span class="p">]))</span>
+
+            <span class="n">means</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">means</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">stds</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">stds</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">figure_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">figure_directory</span> <span class="o">=</span> <span class="n">file_directory</span>
+
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">figure_directory</span> <span class="o">+</span> <span class="n">category</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">pattern</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span> <span class="o">+</span> <span class="n">metric</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">pca_setting</span> <span class="o">+</span> <span class="s2">&quot;_all_clf.eps&quot;</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">filepath</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span>
+                <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_metric_fluctuations"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.plot_metric_fluctuations">[docs]</a><span class="k">def</span> <span class="nf">plot_metric_fluctuations</span><span class="p">(</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">data_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">classifier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">figure_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rcparams</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rcparams</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rcparams</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_file</span> <span class="o">=</span> <span class="n">DEFAULT_DATA_FILES</span><span class="p">[</span><span class="n">category</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">METRIC_NAMES</span>
+    <span class="k">if</span> <span class="n">file_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;classifier_stats&quot;</span><span class="p">)</span>
+
+    <span class="n">base_pattern</span> <span class="o">=</span> <span class="s2">&quot;metric_fluctuations_&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">data_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">base_pattern</span> <span class="o">=</span> <span class="n">base_pattern</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">category</span>
+
+    <span class="k">if</span> <span class="n">classifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">base_pattern</span> <span class="o">=</span> <span class="n">base_pattern</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">DEFAULT_CLF_PARAMETERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">base_pattern</span> <span class="o">=</span> <span class="n">base_pattern</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">classifier</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
+
+    <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_directory</span><span class="p">,</span> <span class="n">base_pattern</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">data_types</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+        <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">d_type</span> <span class="ow">in</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;data_types&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">:</span>
+                <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+                <span class="n">rel_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rel_files</span> <span class="k">if</span> <span class="s2">&quot;.json&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+        <span class="c1"># print(rel_files)</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">rel_files</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                <span class="n">info_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+
+            <span class="n">means</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;mean_metric_variations&quot;</span><span class="p">]</span>
+            <span class="n">stds</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;std_metric_variations&quot;</span><span class="p">]</span>
+
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">]</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">m_id</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metrics</span><span class="p">):</span>
+                <span class="c1"># if metric is not &#39;confusion_matrix&#39;:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">means</span><span class="p">[</span><span class="n">m_id</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">m_id</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;mean &quot;</span> <span class="o">+</span> <span class="n">metric_mapping</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">stds</span><span class="p">[</span><span class="n">m_id</span><span class="p">],</span>
+                    <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">m_id</span><span class="p">],</span>
+                    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;dotted&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;std &quot;</span> <span class="o">+</span> <span class="n">metric_mapping</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span>
+                <span class="p">)</span>
+
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Metric Fluctuations &quot;</span> <span class="o">+</span> <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">title</span> <span class="o">+</span> <span class="s2">&quot; (&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;\# re-draws&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;score&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">means</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">5</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">figure_directory</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">figure_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">figure_directory</span> <span class="o">=</span> <span class="n">file_directory</span>
+
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figure_directory</span><span class="p">,</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.eps&quot;</span><span class="p">),</span>
+                <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span>
+                <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="summarize_hyper_parameter_optimization"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.summarize_hyper_parameter_optimization">[docs]</a><span class="k">def</span> <span class="nf">summarize_hyper_parameter_optimization</span><span class="p">(</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">to_latex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">table_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span> <span class="s2">&quot;classifier_hyperparams&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">&quot;/*.json&quot;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_files</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getctime</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">table_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">table_folder</span> <span class="o">=</span> <span class="n">directory</span>
+
+    <span class="n">f_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">hparams</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="n">besties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">hparams</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">hparams</span><span class="p">[</span><span class="n">clf</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">besties</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">clf</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">besties</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">besties</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">clf</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">best_score</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">best_option</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">best_dtype</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">hparams</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">hparams_comb</span> <span class="ow">in</span> <span class="n">hparams</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">][</span><span class="n">dtype</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">hparams_comb</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
+
+                        <span class="n">best_option</span> <span class="o">=</span> <span class="n">hparams_comb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">best_score</span> <span class="o">=</span> <span class="n">hparams_comb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">best_dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+
+                        <span class="c1">#             besties[clf][category][best_dtype] = [best_option, best_score]</span>
+                        <span class="n">besties</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">clf</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">best_dtype</span><span class="p">,</span> <span class="n">best_option</span><span class="p">,</span> <span class="n">best_score</span><span class="p">]</span>
+    <span class="n">besties2</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">table_besties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">besties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
+                <span class="n">besties2</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">clf</span><span class="p">]</span> <span class="o">+</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">]</span>
+                <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="n">cat</span><span class="p">])</span>
+                <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="n">clf</span><span class="p">])</span>
+                <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;accuracy_score&quot;</span><span class="p">,</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+                <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">table_besties</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pname</span><span class="p">,</span> <span class="n">param</span><span class="p">])</span>
+
+                <span class="n">best_score</span> <span class="o">=</span> <span class="n">besties</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="n">clf</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="c1"># table_besties[cat] = [clf] + besties[cat][clf][0:1]</span>
+                <span class="c1"># table_besties[cat] += [besties[cat][clf][-1]]</span>
+
+    <span class="k">if</span> <span class="n">to_latex</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">cat</span><span class="p">,</span> <span class="n">param_table</span> <span class="ow">in</span> <span class="n">table_besties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">param_table</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;best_clf_params_&quot;</span> <span class="o">+</span> <span class="n">cat</span> <span class="o">+</span> <span class="s2">&quot;.tex&quot;</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table_folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+                    <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="c1">#  multirow=True,</span>
+                    <span class="c1">#  col_space=10000,</span>
+                    <span class="n">formatters</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="n">dont_format</span><span class="p">,</span>
+                        <span class="c1">#  format_dict,</span>
+                        <span class="c1">#  format_float,</span>
+                    <span class="p">],</span>
+                    <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                    <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;cc&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">toprule&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline </span><span class="se">\\</span><span class="s2">hline &quot;</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline&quot;</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">bottomrule&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">hline </span><span class="se">\\</span><span class="s2">hline&quot;</span><span class="p">)</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">besties2</span></div>
+
+
+<div class="viewcode-block" id="merge_optimization_files"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.merge_optimization_files">[docs]</a><span class="k">def</span> <span class="nf">merge_optimization_files</span><span class="p">(</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">base</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]))</span>
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s2">&quot;classifier_opimization&quot;</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">)</span>
+
+    <span class="n">all_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">&quot;/*.json&quot;</span><span class="p">)</span>
+
+    <span class="n">d_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clf_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">best_params_all</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
+        <span class="c1"># print(&#39;\n&#39;)</span>
+        <span class="c1"># print(file)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">hparams</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="c1"># print(hparams)</span>
+        <span class="k">for</span> <span class="n">clf</span><span class="p">,</span> <span class="n">sub_dict</span> <span class="ow">in</span> <span class="n">hparams</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># print(&#39;\n&#39;)</span>
+            <span class="c1"># print(clf)</span>
+            <span class="n">clf_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">clf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">sub_sub_dict</span> <span class="ow">in</span> <span class="n">sub_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="c1"># print(category)</span>
+                <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+
+                <span class="n">best_core</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">current_best_params</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">params_list</span> <span class="ow">in</span> <span class="n">sub_sub_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">][</span><span class="n">data_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{},</span> <span class="mi">0</span><span class="p">]</span>
+
+                    <span class="n">d_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+                    <span class="c1"># print(data_type)</span>
+
+                    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params_list</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best_core</span><span class="p">:</span>
+                            <span class="n">current_best_params</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">current_best_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="o">&gt;</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">][</span><span class="n">data_type</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="n">param</span> <span class="o">=</span> <span class="n">current_best_params</span>
+                        <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">][</span><span class="n">data_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">categories_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+    <span class="n">d_types_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d_types</span><span class="p">)</span>
+    <span class="n">clf_names_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">clf_names</span><span class="p">)</span>
+    <span class="n">clf_names_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">clf_names_set</span><span class="p">)</span>
+
+    <span class="n">params_by_category</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories_set</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params_by_category</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">params_by_category</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">d_type</span> <span class="ow">in</span> <span class="n">d_types_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params_by_category</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">params_by_category</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">d_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">clf_names_sorted</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">d_type</span> <span class="ow">in</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="n">param</span> <span class="o">=</span> <span class="n">best_params_all</span><span class="p">[</span><span class="n">clf</span><span class="p">][</span><span class="n">category</span><span class="p">][</span><span class="n">d_type</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                            <span class="n">params_by_category</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">d_type</span><span class="p">][</span><span class="n">clf</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+
+    <span class="k">return</span> <span class="n">best_params_all</span><span class="p">,</span> <span class="n">params_by_category</span></div>
+
+
+<div class="viewcode-block" id="dont_format"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.dont_format">[docs]</a><span class="k">def</span> <span class="nf">dont_format</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="unpack"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.unpack">[docs]</a><span class="k">def</span> <span class="nf">unpack</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="format_float"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.format_float">[docs]</a><span class="k">def</span> <span class="nf">format_float</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="format_time"><a class="viewcode-back" href="../../../api/classification/utils.html#nanotune.classification.utils.format_time">[docs]</a><span class="k">def</span> <span class="nf">format_time</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

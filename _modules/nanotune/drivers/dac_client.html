@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.drivers.dac_client &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.drivers.dac_client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.drivers.dac_client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">zmq</span>
+
+<span class="kn">from</span> <span class="nn">nanotune.drivers.dac_interface</span> <span class="kn">import</span> <span class="n">DACInterface</span>
+
+<span class="c1"># from qcodes import Station</span>
+
+<span class="n">PORT</span> <span class="o">=</span> <span class="mi">7780</span>
+
+
+<span class="c1"># to be used as:</span>
+<span class="c1"># def main():</span>
+
+<span class="c1">#     # initialise a connection to the instrument</span>
+<span class="c1">#     scfg = Station(&#39;system1.yaml&#39;)</span>
+<span class="c1">#     mips = scfg.load_instrument(&#39;dac&#39;)</span>
+
+
+<span class="c1">#     # initialize the server</span>
+<span class="c1">#     context = zmq.Context()</span>
+<span class="c1">#     socket = context.socket(zmq.REP)</span>
+<span class="c1">#     socket.bind(f&quot;tcp://127.0.0.1:{PORT}&quot;)</span>
+
+<span class="c1">#     print(f&quot;Started server on localhost port {PORT}&quot;)</span>
+
+<span class="c1">#     keep_going = True</span>
+<span class="c1">#     while keep_going:</span>
+<span class="c1">#         data = socket.recv()</span>
+<span class="c1">#         # print(f&#39;Got a message: {data}&#39;)</span>
+<span class="c1">#         if data == b&quot;kill&quot;:</span>
+<span class="c1">#             socket.send(b&quot;Received kill order, goodbye&quot;)</span>
+<span class="c1">#             socket.close()</span>
+<span class="c1">#             context.term()</span>
+<span class="c1">#             keep_going = False</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             reply = message_parser(mips, data.decode(&#39;utf-8&#39;))</span>
+<span class="c1">#             socket.send(reply.encode(&#39;utf-8&#39;))</span>
+
+
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     print(&quot;Running main&quot;)</span>
+<span class="c1">#     main()</span>
+
+
+<div class="viewcode-block" id="message_parser"><a class="viewcode-back" href="../../../api/drivers/dac_client.html#nanotune.drivers.dac_client.message_parser">[docs]</a><span class="k">def</span> <span class="nf">message_parser</span><span class="p">(</span><span class="n">mips</span><span class="p">:</span> <span class="n">DACInterface</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A very crude proof-of-principle way of making the mips do something</span>
+<span class="sd">    based on a message. The idea is that we send &#39;parametername;value&#39; for set</span>
+<span class="sd">    or &#39;parametername;?&#39; for a query. ONLY works for float values.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Illegal command&quot;</span>
+
+    <span class="n">ch_id</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+    <span class="n">channelid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ch_id</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># channel list is zero indexed</span>
+    <span class="k">if</span> <span class="n">channelid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;No such parameter&quot;</span>
+
+    <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get properties of qcodes parameter dac.chX.voltage</span>
+            <span class="k">if</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;post_delay&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;inter_delay&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;step&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;short_name&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mips</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channelid</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+            <span class="c1"># Get qcodes parameters</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mips</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channelid</span><span class="p">],</span> <span class="n">parameter</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get dac.ch</span><span class="si">{</span><span class="n">channelid</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Could not get dac.ch</span><span class="si">{</span><span class="n">channelid</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Set properties of qcodes parameter dac.chX.voltage</span>
+            <span class="k">if</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;post_delay&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;inter_delay&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;step&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;short_name&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="k">if</span> <span class="n">parameter</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+                <span class="c1"># if parameter not in [&#39;label&#39;, &#39;name&#39;, &#39;short_name&#39;]:</span>
+                <span class="c1">#     value = float(value)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">mips</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channelid</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+            <span class="c1"># Set qcodes parameters</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if parameter == &#39;voltage&#39;:</span>
+                <span class="c1">#     value = float(value)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">mips</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channelid</span><span class="p">],</span> <span class="n">parameter</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Set dac.ch</span><span class="si">{</span><span class="n">channelid</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not set dac.ch</span><span class="si">{</span><span class="n">channelid</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Could not set dac.ch</span><span class="si">{</span><span class="n">channelid</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="DACClient"><a class="viewcode-back" href="../../../api/drivers/dac_client.html#nanotune.drivers.dac_client.DACClient">[docs]</a><span class="k">class</span> <span class="nc">DACClient</span><span class="p">:</span>
+
+    <span class="n">PORT</span> <span class="o">=</span> <span class="mi">7780</span>  <span class="c1"># make sure that this agrees with the server</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">REQ</span><span class="p">)</span>
+        <span class="c1"># self.socket.connect(f&quot;tcp://127.0.0.1:{self.PORT}&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tcp://127.0.0.1:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">PORT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DACClient.send"><a class="viewcode-back" href="../../../api/drivers/dac_client.html#nanotune.drivers.dac_client.DACClient.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a message to the server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># recieve OK</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

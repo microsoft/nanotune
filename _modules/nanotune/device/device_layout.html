@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device_layout &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device.device_layout</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device.device_layout</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021 Jana Darulova</span>
+<span class="c1">#</span>
+<span class="c1"># This software is released under the MIT License.</span>
+<span class="c1"># https://opensource.org/licenses/MIT</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<div class="viewcode-block" id="IDeviceLayout"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout">[docs]</a><span class="k">class</span> <span class="nc">IDeviceLayout</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface for device layout defining classes.</span>
+
+<span class="sd">    Abstract class methods</span>
+<span class="sd">    need to return gate IDs of gates fulfilling the function the method&#39;s name</span>
+<span class="sd">    suggests.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IDeviceLayout.helper_gate"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.helper_gate">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">helper_gate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the `gate_id` of the additional gate such as a top barrier</span>
+<span class="sd">        of a 2D layout or bottom gate below a 1D device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IDeviceLayout.barriers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.barriers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">barriers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of `gate_id` of barrier gates. E.g. left,</span>
+<span class="sd">        central and right barrier. The order of gate IDs determines the</span>
+<span class="sd">        order they are swept.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IDeviceLayout.plungers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.plungers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">plungers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of `gate_id` of plunger gates, such as</span>
+<span class="sd">        left and right plunger. The order of gate IDs determines the</span>
+<span class="sd">        order they are swept.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IDeviceLayout.outer_barriers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.outer_barriers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">outer_barriers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of `gate_id` of outer barrier gates.</span>
+<span class="sd">        The order of gate IDs determines the order they are swept.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IDeviceLayout.central_barrier"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.central_barrier">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">central_barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the `gate_id` of the central barrier.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IDeviceLayout.plunger_barrier_pairs"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.plunger_barrier_pairs">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">plunger_barrier_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of tuples, where the first</span>
+<span class="sd">        item of each tuple is a plunger and the second a barrier ID. These</span>
+<span class="sd">        pairs belong to capacitiveley coupled plungers and barriers and</span>
+<span class="sd">        indicated which barrier needs to be changed if a plunger reached</span>
+<span class="sd">        its safety range when swept.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="DataClassMixin"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DataClassMixin">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataClassMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A dataclass mixin.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="DeviceLayout"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DeviceLayout">[docs]</a><span class="k">class</span> <span class="nc">DeviceLayout</span><span class="p">(</span><span class="n">DataClassMixin</span><span class="p">,</span> <span class="n">IDeviceLayout</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An abstract data class.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="DoubleDotLayout"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DoubleDotLayout</span><span class="p">(</span><span class="n">DeviceLayout</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DeviceLayout subclass defining a 2D double dot layout. The attributes&#39;</span>
+<span class="sd">    values are the gates&#39; IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">top_barrier</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">left_barrier</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">left_plunger</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">central_barrier_</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">right_plunger</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">right_barrier</span> <span class="o">=</span> <span class="mi">5</span>
+
+<div class="viewcode-block" id="DoubleDotLayout.barriers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.barriers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">barriers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns list with left, central and right barrier IDs.&quot;&quot;&quot;</span>
+        <span class="n">main_barriers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">left_barrier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_barrier_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_barrier</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">main_barriers</span></div>
+
+<div class="viewcode-block" id="DoubleDotLayout.plungers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.plungers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plungers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns list with left and right plunger IDs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left_plunger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_plunger</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DoubleDotLayout.outer_barriers"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.outer_barriers">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">outer_barriers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns list with left and right barrier IDs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left_barrier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_barrier</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DoubleDotLayout.plunger_barrier_pairs"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.plunger_barrier_pairs">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">plunger_barrier_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of tuples, where the left plunger forms a tuple with</span>
+<span class="sd">        the left barrier and the right plunger with the right barrier. It</span>
+<span class="sd">        indicates which barrier needs to be adjusted when a plunger reaches its</span>
+<span class="sd">        safety range when swept.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: [(plunger ID, barrier ID)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p_b_pairs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left_plunger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_barrier</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right_plunger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_barrier</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">p_b_pairs</span></div>
+
+<div class="viewcode-block" id="DoubleDotLayout.central_barrier"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.central_barrier">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">central_barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the central barrier&#39;s gate ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_barrier_</span></div>
+
+<div class="viewcode-block" id="DoubleDotLayout.helper_gate"><a class="viewcode-back" href="../../../api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.helper_gate">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">helper_gate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the top barrier&#39;s gate ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_barrier</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.tuningstages.gatecharacterization_tasks &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.tuningstages.chargediagram_tasks" href="chargediagram_tasks.html" />
+    <link rel="prev" title="nanotune.tuningstages.base_tasks" href="base_tasks.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../device/index.html">nanotune.device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../device_tuner/index.html">nanotune.device_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.tuningstages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="tuningstage.html">nanotune.tuningstages.tuningstage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gatecharacterization1d.html">nanotune.tuningstages.gatecharacterization1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chargediagram.html">nanotune.tuningstages.chargediagram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="base_tasks.html">nanotune.tuningstages.base_tasks</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.tuningstages.gatecharacterization_tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chargediagram_tasks.html">nanotune.tuningstages.chargediagram_tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="settings.html">nanotune.tuningstages.settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="take_data.html">nanotune.tuningstages.take_data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.tuningstages</a> &raquo;</li>
+        
+      <li>nanotune.tuningstages.gatecharacterization_tasks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/tuningstages/gatecharacterization_tasks.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.tuningstages.gatecharacterization_tasks">
+<span id="nanotune-tuningstages-gatecharacterization-tasks"></span><h1>nanotune.tuningstages.gatecharacterization_tasks<a class="headerlink" href="#module-nanotune.tuningstages.gatecharacterization_tasks" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="nanotune.tuningstages.gatecharacterization_tasks.get_new_gatecharacterization_range">
+<span class="sig-prename descclassname"><span class="pre">nanotune.tuningstages.gatecharacterization_tasks.</span></span><span class="sig-name descname"><span class="pre">get_new_gatecharacterization_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_update_directives</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/gatecharacterization_tasks.html#get_new_gatecharacterization_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization_tasks.get_new_gatecharacterization_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines new voltage range for a subsequent tuning stage
+iteration. It extends the current range to the relevant safety range, i.e.
+if the directive required a voltage to be swept more negative, then the
+lower bound is set to the lower safety value.
+No intermediate tries, just being efficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_valid_ranges</strong> – Current voltage ranges.</p></li>
+<li><p><strong>safety_voltage_ranges</strong> – List of safety ranges.</p></li>
+<li><p><strong>range_update_directives</strong> – List of range update directives.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list</strong> – List with a tuple with the new voltage range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nanotune.tuningstages.gatecharacterization_tasks.get_range_directives_gatecharacterization">
+<span class="sig-prename descclassname"><span class="pre">nanotune.tuningstages.gatecharacterization_tasks.</span></span><span class="sig-name descname"><span class="pre">get_range_directives_gatecharacterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_range_update_directives</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dV_stop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/gatecharacterization_tasks.html#get_range_directives_gatecharacterization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization_tasks.get_range_directives_gatecharacterization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines voltage range directives to update ranges for a subsequent
+tuning stage iteration. It checks if the voltage range update directives
+determined previously, e.g by a fit class, can be carried out based on the
+supplied safety ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit_range_update_directives</strong> – Directives determined previously, such as
+during fitting.</p></li>
+<li><p><strong>current_valid_ranges</strong> – Voltage range swept at previous iteration.</p></li>
+<li><p><strong>safety_voltage_ranges</strong> – Safety range of gate/voltage parameter swept.</p></li>
+<li><p><strong>dV_stop</strong> – Mininmal voltage difference between current and safety ranges
+for current ranges to be changed. Default is 100mV.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>list</strong> – Range update directives, e.g. ‘x more negative’.</p></li>
+<li><p><strong>list</strong> – Issues encountered, e.g. ‘positive safety voltage reached’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nanotune.tuningstages.gatecharacterization_tasks.finish_early_pinched_off">
+<span class="sig-prename descclassname"><span class="pre">nanotune.tuningstages.gatecharacterization_tasks.</span></span><span class="sig-name descname"><span class="pre">finish_early_pinched_off</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_measurement_strength</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_constant</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_measurement_strengths</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_interval_to_track</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/gatecharacterization_tasks.html#finish_early_pinched_off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.gatecharacterization_tasks.finish_early_pinched_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the average strength of measured signal over a given voltage
+interval is below the noise floor.</p>
+<p>If this is the case, the boolean returned indicates that the measurement
+can be stopped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>last_measurement_strength</strong> – Last measurement output.</p></li>
+<li><p><strong>normalization_constant</strong> – Constant to normalize last_measurement_strength.</p></li>
+<li><p><strong>recent_measurement_strengths</strong> – List of most recent signal strengths.</p></li>
+<li><p><strong>voltage_precision</strong> – Voltage precision of the measurement, i.e. voltage
+difference between setpoints.</p></li>
+<li><p><strong>noise_level</strong> – Relative noise in percent compared to normalized signal.</p></li>
+<li><p><strong>voltage_interval_to_track</strong> – Voltage interval over which the average
+should be taken. Voltage ranges less than voltage_interval_to_track
+will be ignored, i.e. will always return False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bool</strong> – Whether or not a measurement can be stopped.</p></li>
+<li><p><strong>list</strong> – List of measurements strenghts/outputs over the last
+voltage_interval_to_track.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="chargediagram_tasks.html" class="btn btn-neutral float-right" title="nanotune.tuningstages.chargediagram_tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="base_tasks.html" class="btn btn-neutral float-left" title="nanotune.tuningstages.base_tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

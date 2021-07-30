@@ -1,0 +1,439 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.data.databases &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.data.databases</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.data.databases</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">ntpath</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="n">experiments</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.connection</span> <span class="kn">import</span> <span class="n">atomic</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.database</span> <span class="kn">import</span> <span class="n">connect</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.queries</span> <span class="kn">import</span> <span class="n">add_meta_data</span><span class="p">,</span> <span class="n">get_metadata</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.query_helpers</span> <span class="kn">import</span> <span class="n">insert_column</span><span class="p">,</span> <span class="n">many_many</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_dataIDs"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_dataIDs">[docs]</a><span class="k">def</span> <span class="nf">get_dataIDs</span><span class="p">(</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT run_id FROM runs WHERE </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">            &quot;&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT run_id FROM runs</span>
+<span class="s2">                WHERE (</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">                AND (good=</span><span class="si">{</span><span class="n">quality</span><span class="si">}</span><span class="s2"> OR good LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">quality</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+    <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;run_id&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">param_names_temp</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_unlabelled_ids"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_unlabelled_ids">[docs]</a><span class="k">def</span> <span class="nf">get_unlabelled_ids</span><span class="p">(</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT run_id FROM runs WHERE good IS NULL</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+    <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;run_id&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">param_names_temp</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="list_experiments"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.list_experiments">[docs]</a><span class="k">def</span> <span class="nf">list_experiments</span><span class="p">(</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+    <span class="c1"># print(os.listdir(db_folder))</span>
+    <span class="c1"># print(db_folder)</span>
+    <span class="c1"># db_files = glob.glob(db_folder + &#39;*.db&#39;)</span>
+    <span class="c1"># db_files = glob.glob(db_folder)</span>
+    <span class="n">all_fls</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">db_folder</span><span class="p">)</span>
+    <span class="n">db_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">db_file</span> <span class="k">for</span> <span class="n">db_file</span> <span class="ow">in</span> <span class="n">all_fls</span> <span class="k">if</span> <span class="n">db_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.db&quot;</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;db_files: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_files</span><span class="p">))</span>
+    <span class="n">db_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ntpath</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">db_files</span><span class="p">]</span>
+
+    <span class="n">all_experiments</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">idb</span><span class="p">,</span> <span class="n">db_file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">db_files</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_file</span><span class="p">)</span>
+
+        <span class="n">exp_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">exps</span> <span class="o">=</span> <span class="n">experiments</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">exprmt</span> <span class="ow">in</span> <span class="n">exps</span><span class="p">:</span>
+            <span class="n">exp_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exprmt</span><span class="o">.</span><span class="n">exp_id</span><span class="p">)</span>
+
+        <span class="n">all_experiments</span><span class="p">[</span><span class="n">db_names</span><span class="p">[</span><span class="n">idb</span><span class="p">]]</span> <span class="o">=</span> <span class="n">exp_ids</span>
+
+    <span class="k">return</span> <span class="n">db_folder</span><span class="p">,</span> <span class="n">all_experiments</span></div>
+
+
+<div class="viewcode-block" id="new_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.new_database">[docs]</a><span class="k">def</span> <span class="nf">new_database</span><span class="p">(</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ceate new database and initialise it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_folder</span>
+
+    <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">initialise_or_create_database_at</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_name</span>
+
+    <span class="c1"># add label columns</span>
+    <span class="n">db_conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">atomic</span><span class="p">(</span><span class="n">db_conn</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">add_meta_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;original_guid&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]:</span>
+            <span class="n">add_meta_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="set_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.set_database">[docs]</a><span class="k">def</span> <span class="nf">set_database</span><span class="p">(</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_folder</span>
+
+    <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
+    <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_name</span>
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_path</span>
+
+    <span class="c1"># check if label columns exist, create if not</span>
+    <span class="n">db_conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">atomic</span><span class="p">(</span><span class="n">db_conn</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">get_metadata</span><span class="p">(</span><span class="n">db_conn</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]:</span>
+                <span class="n">add_meta_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="get_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_database">[docs]</a><span class="k">def</span> <span class="nf">get_database</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span>
+    <span class="n">db_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+    <span class="n">db_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span></div>
+
+
+<div class="viewcode-block" id="get_last_dataid"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_last_dataid">[docs]</a><span class="k">def</span> <span class="nf">get_last_dataid</span><span class="p">(</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return last &#39;global&#39; dataid for given database. It is this ID that is used</span>
+<span class="sd">    in plot_by_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
+
+    <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">)</span>
+    <span class="n">last_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">():</span>
+        <span class="n">last_index</span> <span class="o">+=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">last_counter</span>
+
+    <span class="k">return</span> <span class="n">last_index</span></div>
+
+
+<div class="viewcode-block" id="switch_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.switch_database">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">switch_database</span><span class="p">(</span><span class="n">temp_db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">temp_db_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="n">original_db</span><span class="p">,</span> <span class="n">original_db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
+    <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">temp_db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">temp_db_folder</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">original_db</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">original_db_folder</span><span class="p">)</span></div>
+
+
+<span class="c1"># def rename_labels(db_name: str,</span>
+<span class="c1">#                   db_folder: Optional[str] = nt.config[&#39;db_folder&#39;]) -&gt; bool:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     nt.set_database(db_name)</span>
+<span class="c1">#     for data_id in range(1, nt.get_last_dataid(db_name)+1):</span>
+<span class="c1">#         print(data_id)</span>
+<span class="c1">#         nt.correct_label_names(data_id, db_name)</span>
+<span class="c1">#         time.sleep(0.1)</span>
+
+<span class="c1"># if sqlite3.sqlite_version is 3.25 and above, we can use ALTER TABLE to</span>
+<span class="c1"># rename columns:</span>
+<span class="c1"># conn = connect(db_path)</span>
+<span class="c1"># sql = f&quot;&quot;&quot;</span>
+<span class="c1">#     ALTER TABLE runs RENAME COLUMN wallwall TO leadscoupling;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1"># c = conn.execute(sql)</span>
+
+<span class="c1"># ALTER TABLE runs RENAME COLUMN wallwall TO leadcoupling;</span>
+<span class="c1"># ALTER TABLE runs RENAME COLUMN clmboscs TO coulomboscillations;</span>
+<span class="c1"># ALTER TABLE runs RENAME COLUMN clmbdiam TO coulombdiamonds;</span>
+<span class="c1"># ALTER TABLE runs RENAME COLUMN zbp TO zerobiaspeak;</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

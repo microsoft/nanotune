@@ -1,0 +1,1246 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device_tuner.dottuner &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device_tuner.dottuner</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device_tuner.dottuner</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device</span> <span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device_channel</span> <span class="kn">import</span> <span class="n">DeviceChannel</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device_layout</span> <span class="kn">import</span> <span class="n">DeviceLayout</span><span class="p">,</span> <span class="n">DoubleDotLayout</span>
+<span class="kn">from</span> <span class="nn">nanotune.device_tuner.tuner</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Tuner</span><span class="p">,</span> <span class="n">DataSettings</span><span class="p">,</span> <span class="n">SetpointSettings</span><span class="p">,</span>
+    <span class="n">Classifiers</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">nanotune.device_tuner.tuningresult</span> <span class="kn">import</span> <span class="n">MeasurementHistory</span><span class="p">,</span> <span class="n">TuningResult</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<div class="viewcode-block" id="VoltageChangeDirection"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.VoltageChangeDirection">[docs]</a><span class="k">class</span> <span class="nc">VoltageChangeDirection</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Direction in which gate voltages can be changes.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        positive (0): increase voltage.</span>
+<span class="sd">        negative (1): decrease voltage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">positive</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">negative</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="DeviceState"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DeviceState">[docs]</a><span class="k">class</span> <span class="nc">DeviceState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Possible device states.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        pinchedoff (0): pinched off, no measurable current through the device.</span>
+<span class="sd">        opencurrent (1): open regime, high current through the device (possibly</span>
+<span class="sd">            no or few gates set to small voltages.)</span>
+<span class="sd">        singledot (2): a single quantum dot is formed.</span>
+<span class="sd">        doubledot (3): two dots next to each other are formed.</span>
+<span class="sd">        undefined (4): either unknown regime, dots about to form or state at</span>
+<span class="sd">            initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pinchedoff</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">opencurrent</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">singledot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">doubledot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">undefined</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+
+<div class="viewcode-block" id="RangeChangeSetting"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.RangeChangeSetting">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RangeChangeSetting</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Settings defining how voltage ranges should be updated when needed.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        relative_range_change (float): percentage of previous range of how much</span>
+<span class="sd">            the new range should differ/be moved towards either positive or</span>
+<span class="sd">            negative values.</span>
+<span class="sd">        max_range_change (float): absolute maximum range change in V, i.e. max</span>
+<span class="sd">            of how much the range will change at once.</span>
+<span class="sd">        min_range_change (float): absolute minimum range change in V, i.e. min</span>
+<span class="sd">            of how much the range will change at once.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">relative_range_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">max_range_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
+    <span class="n">min_range_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+
+<div class="viewcode-block" id="DotTuner"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner">[docs]</a><span class="k">class</span> <span class="nc">DotTuner</span><span class="p">(</span><span class="n">Tuner</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;`Tuner` sub-class with dot tuning procedures.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        classifiers (Classifiers): a setting.Classifiers instance</span>
+<span class="sd">            holding all required classifiers. Eg. pinchoff.</span>
+<span class="sd">        data_settings (DataSettings): A settings.DataSettings instance with</span>
+<span class="sd">            data related information such as `db_name` and</span>
+<span class="sd">            `normalization_constants`.</span>
+<span class="sd">        setpoint_settings (SetpointSettings): A settings.SetpointSettings</span>
+<span class="sd">            instance with setpoint related information such as</span>
+<span class="sd">            `voltage_precision`.</span>
+<span class="sd">        tuning_history (TuningHistory): A TuningHistory instance holding all</span>
+<span class="sd">            tuning results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_settings</span><span class="p">:</span> <span class="n">DataSettings</span><span class="p">,</span>
+        <span class="n">classifiers</span><span class="p">:</span> <span class="n">Classifiers</span><span class="p">,</span>
+        <span class="n">setpoint_settings</span><span class="p">:</span> <span class="n">SetpointSettings</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">data_settings</span><span class="p">,</span>
+            <span class="n">classifiers</span><span class="p">,</span>
+            <span class="n">setpoint_settings</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DotTuner.tune"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.tune">[docs]</a>    <span class="k">def</span> <span class="nf">tune</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">device_layout</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DeviceLayout</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="n">take_high_res</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">continue_tuning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">MeasurementHistory</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Tunes a device into a target dot regime. It expects the device to</span>
+<span class="sd">        have a helper gate such as a top barrier in a 2DEG device or a bottom</span>
+<span class="sd">        gate below a 1D system. Any previous tuning is reset by ramping all</span>
+<span class="sd">        gates to their heighest allowed values and the device&#39;s normalization</span>
+<span class="sd">        constants are updated. Then the helper gate is set before the regime</span>
+<span class="sd">        its tuning using `tune_dot_regime`.</span>
+
+<span class="sd">        It appears that the first regime can often be improved by a few</span>
+<span class="sd">        subsequent iterations of the algorithm, which can be achieved by</span>
+<span class="sd">        setting `continue_tuning` to True.</span>
+<span class="sd">        All measurements are saved in self.tuning_history under the device.name</span>
+<span class="sd">        key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            device_layout (DeviceLayout): device layout, default is</span>
+<span class="sd">                DoubleDotLayout.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot.</span>
+<span class="sd">            max_iter (int): maximum number of iterations. Each iteration</span>
+<span class="sd">                chooses new barrier gate voltage combinations based on previous</span>
+<span class="sd">                measurement outcomes and takes a charge diagram.</span>
+<span class="sd">            take_high_res (bool): whether high resolution diagram should be</span>
+<span class="sd">                taken when the target regime is found.</span>
+<span class="sd">            continue_tuning (bool): whether to continue tuning even if the</span>
+<span class="sd">                target regime was found. Used when either classifiers are not</span>
+<span class="sd">                reliable enough or when aiming for an even better regime.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: success of tuning.</span>
+<span class="sd">            MeasurementHistory: all tuning results of the device tuned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">is_dot_classifier</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not all dot classifiers found.&quot;</span><span class="p">)</span>
+
+        <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_highest</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_normalization_constants</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_helper_gate</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">helper_gate_id</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">(),</span>
+            <span class="n">gates_for_init_range_measurement</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">barriers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tune_dot_regime</span><span class="p">(</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">device_layout</span><span class="o">=</span><span class="n">device_layout</span><span class="p">,</span>
+            <span class="n">target_state</span><span class="o">=</span><span class="n">target_state</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">take_high_res</span><span class="o">=</span><span class="n">take_high_res</span><span class="p">,</span>
+            <span class="n">continue_tuning</span><span class="o">=</span><span class="n">continue_tuning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning_history</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DotTuner.tune_dot_regime"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.tune_dot_regime">[docs]</a>    <span class="k">def</span> <span class="nf">tune_dot_regime</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">device_layout</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DeviceLayout</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="n">take_high_res</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">continue_tuning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Tunes a device into a target dot regime, either single or double. If</span>
+<span class="sd">        tuning a device with a helper gate, it expects this gate to be set</span>
+<span class="sd">        already. After setting the remaining barriers (central and outer), a</span>
+<span class="sd">        tuning loop determines suitable plungers ranges for a charge diagram and</span>
+<span class="sd">        takes this diagram. If the result is classified as the target</span>
+<span class="sd">        regime, new barrier voltages are chosen. The loop then resumes.</span>
+
+<span class="sd">        It appears that the first regime can often be improved by a few</span>
+<span class="sd">        subsequent iterations of the algorithm, which can be achieved by</span>
+<span class="sd">        setting `continue_tuning` to True.</span>
+<span class="sd">        All measurements are saved in self.tuning_history under the device.name</span>
+<span class="sd">        key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            device_layout (DeviceLayout): device layout, default is</span>
+<span class="sd">                DoubleDotLayout.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot.</span>
+<span class="sd">            max_iter (int): maximum number of iterations. Each iteration</span>
+<span class="sd">                chooses new barrier gate voltage combinations based on previous</span>
+<span class="sd">                measurement outcomes and takes a charge diagram.</span>
+<span class="sd">            take_high_res (bool): whether high resolution diagram should be</span>
+<span class="sd">                taken when the target regime is found.</span>
+<span class="sd">            continue_tuning (bool): whether to continue tuning even if the</span>
+<span class="sd">                target regime was found. Used when either classifiers are not</span>
+<span class="sd">                reliable enough or when aiming for an even better regime.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: success of tuning.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_central_and_outer_barriers</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span> <span class="n">device_layout</span><span class="p">,</span> <span class="n">target_state</span>
+        <span class="p">)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span> <span class="ow">and</span> <span class="n">n_iter</span> <span class="o">&lt;=</span> <span class="n">max_iter</span><span class="p">:</span>
+            <span class="n">n_iter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_valid_plunger_ranges</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">device_layout</span><span class="p">)</span>
+            <span class="n">tuningresult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_charge_diagram</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">device_layout</span><span class="o">.</span><span class="n">plungers</span><span class="p">()],</span>
+                <span class="n">iterate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tuningresult</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="n">take_high_res</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">take_high_resolution_diagram</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span>
+                    <span class="n">device_layout</span><span class="o">.</span><span class="n">plungers</span><span class="p">(),</span>
+                    <span class="n">take_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="n">tuningresult</span><span class="o">.</span><span class="n">success</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">tuningresult</span><span class="o">.</span><span class="n">success</span>
+            <span class="k">if</span> <span class="n">continue_tuning</span><span class="p">:</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Continue tuning regardless of the outcome.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_gate_configuration</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span> <span class="n">tuningresult</span><span class="p">,</span> <span class="n">target_state</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_iter</span> <span class="o">&gt;=</span> <span class="n">max_iter</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Tuning </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Max number of iterations&quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;reached.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="DotTuner.take_high_resolution_diagram"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.take_high_resolution_diagram">[docs]</a>    <span class="k">def</span> <span class="nf">take_high_resolution_diagram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">gate_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">plungers</span><span class="p">(),</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">take_segments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Takes high resolution diagram with optionally re-taking good segments</span>
+<span class="sd">        at a different voltage precision.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            gate_ids (Sequence[int]): IDs of gates to sweep, default is</span>
+<span class="sd">                DoubleDotLayout.plungers()</span>
+<span class="sd">            target_state (DeviceState): target state, default is</span>
+<span class="sd">                DeviceState.doubledot.</span>
+<span class="sd">            take_segments (bool): whether or not to take individual segments at</span>
+<span class="sd">                a potentially different resolution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Take high resolution of entire charge diagram.&quot;</span><span class="p">)</span>
+        <span class="n">tuningresult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_charge_diagram</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gate_ids</span><span class="p">],</span>
+            <span class="n">voltage_precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">high_res_precisions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">take_segments</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">take_high_res_dot_segments</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">dot_segments</span><span class="o">=</span><span class="n">tuningresult</span><span class="o">.</span><span class="n">ml_result</span><span class="p">[</span><span class="s1">&#39;dot_segments&#39;</span><span class="p">],</span>
+                <span class="n">gate_ids</span><span class="o">=</span><span class="n">gate_ids</span><span class="p">,</span>
+                <span class="n">target_state</span><span class="o">=</span><span class="n">target_state</span><span class="p">,</span>
+                <span class="n">voltage_precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">high_res_precisions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.take_high_res_dot_segments"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.take_high_res_dot_segments">[docs]</a>    <span class="k">def</span> <span class="nf">take_high_res_dot_segments</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">dot_segments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">gate_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">plungers</span><span class="p">(),</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">voltage_precision</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Takes high resolution charge diagrams of dot segments which have</span>
+<span class="sd">        been classified to show the desired regime.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            dot_segments (Dict[int, Any]): dot segment information, e.g.</span>
+<span class="sd">                compiled by DotFit and stored in</span>
+<span class="sd">                `tuningresult.ml_result[&#39;dot_segments&#39;]`. Maps run ids of</span>
+<span class="sd">                segmented data onto a dict with &quot;predicted_regime&quot; and</span>
+<span class="sd">                &quot;voltage_ranges&quot; keys.</span>
+<span class="sd">            gate_ids (Sequence[int]): IDs of gates to sweep, default is</span>
+<span class="sd">                DoubleDotLayout.plungers()</span>
+<span class="sd">            target_state (DeviceState): target state, default is</span>
+<span class="sd">                DeviceState.doubledot.</span>
+<span class="sd">            voltage_precision (float): optional voltage precision, usually a</span>
+<span class="sd">                smaller number than for other measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Take high resolution of good charge diagram segments.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r_id</span> <span class="ow">in</span> <span class="n">dot_segments</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">dot_segments</span><span class="p">[</span><span class="n">r_id</span><span class="p">][</span><span class="s2">&quot;predicted_regime&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target_state</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="n">v_rgs</span> <span class="o">=</span> <span class="n">dot_segments</span><span class="p">[</span><span class="n">r_id</span><span class="p">][</span><span class="s2">&quot;voltage_ranges&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">g_id</span><span class="p">,</span> <span class="n">v_range</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gate_ids</span><span class="p">,</span> <span class="n">v_rgs</span><span class="p">):</span>
+                    <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">({</span><span class="n">g_id</span><span class="p">:</span> <span class="n">v_range</span><span class="p">})</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_charge_diagram</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span>
+                    <span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gate_ids</span><span class="p">],</span>
+                    <span class="n">voltage_precision</span><span class="o">=</span><span class="n">voltage_precision</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_valid_plunger_ranges"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_valid_plunger_ranges">[docs]</a>    <span class="k">def</span> <span class="nf">set_valid_plunger_ranges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">device_layout</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DeviceLayout</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Determines and set current valid ranges for plungers. It</span>
+<span class="sd">        characterizes each plunger to determine the ranges. If these reach</span>
+<span class="sd">        their respective safety limits,</span>
+<span class="sd">        `adjust_outer_barriers_possibly_helper_gate` is called in a loop until</span>
+<span class="sd">        all barriers and plunger ranges can be set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            device_layout (DeviceLayout): device layout, e.g. DoubleDotLayout.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">good_plunger_ranges</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">good_plunger_ranges</span><span class="p">:</span>
+            <span class="n">barrier_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_new_plunger_ranges</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">plunger_barrier_pairs</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">plunger_barrier_pairs</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">barrier_changes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">adjust_outer_barriers_possibly_helper_gate</span><span class="p">(</span>
+                        <span class="n">device</span><span class="p">,</span>
+                        <span class="n">device_layout</span><span class="p">,</span>
+                        <span class="n">barrier_changes</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">good_plunger_ranges</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DotTuner.adjust_outer_barriers_possibly_helper_gate"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.adjust_outer_barriers_possibly_helper_gate">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_outer_barriers_possibly_helper_gate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">device_layout</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DeviceLayout</span><span class="p">],</span>
+        <span class="n">barrier_changes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Adjusts outer barriers and if needed the helper gate. It first</span>
+<span class="sd">        applies voltages changes specified by `barrier_changes` and if these</span>
+<span class="sd">        are not successful, the helper gate is adjusted. This step is repeated</span>
+<span class="sd">        until all barriers are set with a within their safety</span>
+<span class="sd">        ranges.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            device_layout (DeviceLayout): device layout, e.g. DoubleDotLayout.</span>
+<span class="sd">            barrier_changes (Dict[int, VoltageChangeDirection]): voltage change</span>
+<span class="sd">                directions for barriers. Maps gate IDs into</span>
+<span class="sd">                `VoltageChangeDirection`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_v_change_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span> <span class="n">barrier_changes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">new_v_change_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Outer barrier reached safety limit. &quot;</span> \
+                <span class="s2">&quot;Setting new top barrier.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="p">{</span><span class="n">device_layout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">():</span> <span class="n">new_v_change_dir</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">new_v_change_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_outer_barriers</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span> <span class="n">gate_ids</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">new_v_change_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">device_layout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">():</span> <span class="n">new_v_change_dir</span><span class="p">},</span>
+                <span class="p">)</span>
+                <span class="n">new_v_change_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_outer_barriers</span><span class="p">(</span>
+                    <span class="n">device</span><span class="p">,</span> <span class="n">gate_ids</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_central_and_outer_barriers"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_central_and_outer_barriers">[docs]</a>    <span class="k">def</span> <span class="nf">set_central_and_outer_barriers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">device_layout</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DeviceLayout</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets central and outer barriers given a target state. The central</span>
+<span class="sd">        barrier is set first, to higher voltages for single than for the double</span>
+<span class="sd">        dot regime, before setting outer barriers. If the latter is not</span>
+<span class="sd">        successful, a loop adjusting the helper gate  as well as outer barriers</span>
+<span class="sd">        is executed until all gates are happy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            device_layout (DeviceLayout): device layout, default is</span>
+<span class="sd">                DoubleDotLayout.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_central_barrier</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">target_state</span><span class="o">=</span><span class="n">target_state</span><span class="p">,</span>
+            <span class="n">gate_id</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">new_vltg_change_directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_outer_barriers</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span> <span class="n">gate_ids</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">new_vltg_change_directions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="p">{</span><span class="n">device_layout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">():</span> <span class="n">new_vltg_change_directions</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">new_vltg_change_directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_outer_barriers</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span> <span class="n">gate_ids</span><span class="o">=</span><span class="n">device_layout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_helper_gate"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_helper_gate">[docs]</a>    <span class="k">def</span> <span class="nf">set_helper_gate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">helper_gate_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">(),</span>
+        <span class="n">gates_for_init_range_measurement</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">barriers</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the voltage of a device&#39;s helper gate, such as the top_barrier</span>
+<span class="sd">        in a 2D doubledot device. Typically used in the very beginning of a</span>
+<span class="sd">        tuning process and thus using `initial_valid_ranges`. If these are not</span>
+<span class="sd">        set/the same as the gate&#39;s safety range, `measure_initial_ranges_2D`</span>
+<span class="sd">        estimated a valid range.</span>
+<span class="sd">        The gate&#39;s current valid range is set to either its initial valid</span>
+<span class="sd">        range or the newly determined range. The voltage is set to the upper</span>
+<span class="sd">        limit of the new current valid range.</span>
+<span class="sd">        Raises an error if `helper_gate_id` is not in the device&#39;s gates list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            helper_gate_id (int): gate ID of helper gate. Default is</span>
+<span class="sd">                DoubleDotLayout.top_barrier().</span>
+<span class="sd">            gates_for_init_range_measurement (Sequence[int]): list of gates</span>
+<span class="sd">                coupled to the helper gate most, i.e which have the biggest</span>
+<span class="sd">                influence on its valid range. Typically outer and central</span>
+<span class="sd">                barriers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">helper_gate_id</span>  <span class="ow">not</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">_gates_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Gate not found.&quot;</span><span class="p">)</span>
+
+        <span class="n">init_ranges</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">initial_valid_ranges</span><span class="p">()[</span><span class="n">helper_gate_id</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">init_ranges</span> <span class="o">==</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">helper_gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">():</span>
+            <span class="n">gates_to_sweep</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">gate_id</span> <span class="ow">in</span> <span class="n">gates_for_init_range_measurement</span>
+            <span class="p">]</span>
+            <span class="p">(</span><span class="n">voltage_ranges</span><span class="p">,</span>
+             <span class="n">measurement_result</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_initial_ranges_2D</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">helper_gate_id</span><span class="p">],</span> <span class="n">gates_to_sweep</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tuning_history</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">measurement_result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">voltage_ranges</span> <span class="o">=</span> <span class="n">init_ranges</span>
+
+        <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">({</span><span class="n">helper_gate_id</span><span class="p">:</span> <span class="n">voltage_ranges</span><span class="p">})</span>
+        <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">helper_gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">voltage_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DotTuner.update_gate_configuration"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.update_gate_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">update_gate_configuration</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">last_result</span><span class="p">:</span> <span class="n">TuningResult</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">helper_gate_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">(),</span>
+        <span class="n">central_barrier_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+        <span class="n">outer_barrier_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+        <span class="n">range_change_setting</span><span class="p">:</span> <span class="n">RangeChangeSetting</span> <span class="o">=</span> <span class="n">RangeChangeSetting</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Updates gate configuration based on last measurement result. If the</span>
+<span class="sd">        previous measurement shows a good but not the target regime, the</span>
+<span class="sd">        central barrier is adjusted. If the detected regime is poor, new outer</span>
+<span class="sd">        barrier voltages are chosen. In both cases all barriers are adjusted</span>
+<span class="sd">        using `adjust_all_barriers_loop` to ensure that the new settings sit</span>
+<span class="sd">        well with all other barriers.</span>
+<span class="sd">        Raises an error if no termination_reasons are found and the previous</span>
+<span class="sd">        tuning result was poor.</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            last_result (TuningResult): tuning result of last measurement/tuning</span>
+<span class="sd">                stage.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot. Raises an error for a state other than</span>
+<span class="sd">                `pinchedoff`, `singledot` or `doubledot`.</span>
+<span class="sd">            helper_gate_id (int): gate ID of helper gate. Default is</span>
+<span class="sd">                DoubleDotLayout.top_barrier().</span>
+<span class="sd">            central_barrier_id (int): gate ID of central barrier. Default is</span>
+<span class="sd">                DoubleDotLayout.central_barrier()</span>
+<span class="sd">            outer_barriers_id (Sequence[int]): gate IDs of outer barriers.</span>
+<span class="sd">                Default is DoubleDotLayout.outer_barriers().</span>
+<span class="sd">            range_change_setting (RangeChangeSetting): instance of</span>
+<span class="sd">                RangeChangeSetting with relative, maximum and minimum range</span>
+<span class="sd">                changes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">termination_reasons</span> <span class="o">=</span> <span class="n">last_result</span><span class="o">.</span><span class="n">termination_reasons</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">termination_reasons</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">last_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown tuning outcome. Expect either a &quot;</span> \
+                <span class="s2">&quot;successful tuning stage or termination reasons&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">termination_reasons</span> <span class="ow">and</span> <span class="n">last_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="c1"># A good regime was found, but not the right one.</span>
+            <span class="n">initial_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_dotregime_directive</span><span class="p">(</span>
+                <span class="n">target_state</span><span class="p">,</span> <span class="n">central_barrier_id</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">termination_reasons</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">last_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="c1"># the charge diagram terminated unsuccessfully: no plunger ranges</span>
+            <span class="c1"># were found to give a good diagram. The device might be too</span>
+            <span class="c1"># pinched off or too open.</span>
+            <span class="n">initial_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_outer_barrier_directives</span><span class="p">(</span>
+                <span class="n">termination_reasons</span><span class="p">,</span> <span class="n">outer_barrier_ids</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Unknown tuning status&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjust_all_barriers_loop</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">target_state</span><span class="p">,</span>
+            <span class="n">initial_update</span><span class="p">,</span>
+            <span class="n">helper_gate_id</span><span class="p">,</span>
+            <span class="n">central_barrier_id</span><span class="p">,</span>
+            <span class="n">outer_barrier_ids</span><span class="p">,</span>
+            <span class="n">range_change_setting</span><span class="o">=</span><span class="n">range_change_setting</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Updated gate configuration to: </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">get_gate_status</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_dotregime_directive</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">target_regime</span><span class="p">:</span> <span class="n">DeviceState</span><span class="p">,</span>
+        <span class="n">central_barrier_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Translates a target regime to voltage change directive for the</span>
+<span class="sd">        central barrier. Used when a good, but not the desired regime was found.</span>
+<span class="sd">        Ex: good single found but need double dot.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target_regime (DeviceState): target regime, either single or double</span>
+<span class="sd">                dot. Raises an error otherwise.</span>
+<span class="sd">            central_barrier_id (int): gate ID of central barrier. Default is</span>
+<span class="sd">                DoubleDotLayout.central_barrier().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[int, VoltageChangeDirection]: new voltage change direction</span>
+<span class="sd">                for the central barrier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">target_regime</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">singledot</span><span class="p">:</span>
+            <span class="n">v_direction</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">positive</span>
+        <span class="k">elif</span> <span class="n">target_regime</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">:</span>
+            <span class="n">v_direction</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">negative</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid target regime.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">central_barrier_id</span><span class="p">:</span> <span class="n">v_direction</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_select_outer_barrier_directives</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">termination_reasons</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">outer_barriers_id</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Translates termination reasons of a previous tuning stage into</span>
+<span class="sd">        voltage change directives for outer barriers. Raises an error in case</span>
+<span class="sd">        of invalid termination reasons.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            termination_reasons (List[str]): reasons why a previous tuning stage</span>
+<span class="sd">                finished.</span>
+<span class="sd">            outer_barriers_id (Sequence[int]): gate IDs of outer barriers.</span>
+<span class="sd">                Default is DoubleDotLayout.outer_barriers().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[int, VoltageChangeDirection]: voltage change directives for</span>
+<span class="sd">                barriers. Mapping gate IDs onto `VoltageChangeDirection`s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">barrier_directives</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">termin_reason</span> <span class="ow">in</span> <span class="n">termination_reasons</span><span class="p">:</span>
+            <span class="n">v_dir</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="s1">&#39;positive&#39;</span> <span class="ow">in</span> <span class="n">termin_reason</span><span class="p">:</span>
+                <span class="n">v_dir</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">positive</span>
+            <span class="k">elif</span> <span class="s1">&#39;negative&#39;</span> <span class="ow">in</span> <span class="n">termin_reason</span><span class="p">:</span>
+                <span class="n">v_dir</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">negative</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No valid termination reason found.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">gate_id</span> <span class="ow">in</span> <span class="n">outer_barriers_id</span><span class="p">:</span>
+                    <span class="n">barrier_directives</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_dir</span>
+        <span class="k">return</span> <span class="n">barrier_directives</span>
+
+<div class="viewcode-block" id="DotTuner.adjust_all_barriers_loop"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.adjust_all_barriers_loop">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_all_barriers_loop</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span><span class="p">,</span>
+        <span class="n">initial_voltage_update</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">],</span>
+        <span class="n">helper_gate_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">(),</span>
+        <span class="n">central_barrier_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+        <span class="n">outer_barriers_id</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+        <span class="n">range_change_setting</span><span class="p">:</span> <span class="n">RangeChangeSetting</span> <span class="o">=</span> <span class="n">RangeChangeSetting</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Adjusts all barriers in a loop until a satisfying (within safety</span>
+<span class="sd">        limits) is found. It first updates voltages as specified in</span>
+<span class="sd">        `initial_voltage_update` and then uses `adjust_all_barriers` until no</span>
+<span class="sd">        new voltage update is required.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            target_state (DeviceState): target regime. Raises an error for a</span>
+<span class="sd">                state other than</span>
+<span class="sd">                `pinchedoff`, `singledot` or `doubledot`, although only</span>
+<span class="sd">                `singledot` or `doubledot` make sense here.</span>
+<span class="sd">            initial_voltage_update (Dict[int, VoltageChangeDirection]): dict</span>
+<span class="sd">                mapping gate IDs onto direction in which their voltages need to</span>
+<span class="sd">                be changed.</span>
+<span class="sd">            helper_gate_id (int): gate ID of helper gate. Default is</span>
+<span class="sd">                DoubleDotLayout.top_barrier().</span>
+<span class="sd">            central_barrier_id (int): gate ID of central barrier. Default is</span>
+<span class="sd">                DoubleDotLayout.central_barrier()</span>
+<span class="sd">            outer_barriers_id (Sequence[int]): gate IDs of outer barriers.</span>
+<span class="sd">                Default is DoubleDotLayout.outer_barriers().</span>
+<span class="sd">            range_change_setting (RangeChangeSetting): instance of</span>
+<span class="sd">                RangeChangeSetting with relative, maximum and minimum range</span>
+<span class="sd">                changes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_v_direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">initial_voltage_update</span><span class="p">,</span>
+            <span class="n">range_change_setting</span><span class="o">=</span><span class="n">range_change_setting</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">while</span> <span class="n">new_v_direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_v_direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjust_all_barriers</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">target_state</span><span class="p">,</span>
+                <span class="n">new_v_direction</span><span class="p">,</span>
+                <span class="n">helper_gate_id</span><span class="p">,</span>
+                <span class="n">central_barrier_id</span><span class="p">,</span>
+                <span class="n">outer_barriers_id</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.adjust_all_barriers"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.adjust_all_barriers">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_all_barriers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span><span class="p">,</span>
+        <span class="n">voltage_change_direction</span><span class="p">:</span> <span class="n">VoltageChangeDirection</span><span class="p">,</span>
+        <span class="n">helper_gate_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">helper_gate</span><span class="p">(),</span>
+        <span class="n">central_barrier_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+        <span class="n">outer_barriers_id</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+        <span class="n">range_change_setting</span><span class="p">:</span> <span class="n">RangeChangeSetting</span> <span class="o">=</span> <span class="n">RangeChangeSetting</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Adjusts all barriers of a device based on a voltage change direction.</span>
+<span class="sd">        Typically used when a device is too closed/pinched off or too open. It</span>
+<span class="sd">        first updates the helper gate, then the central barrier and finally</span>
+<span class="sd">        the outer barriers. If the outer barriers can not be updated, a</span>
+<span class="sd">        voltage change direction is returned.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot. Raises an error for a state other than</span>
+<span class="sd">                `pinchedoff`, `singledot` or `doubledot`.</span>
+<span class="sd">            voltage_change_direction (VoltageChangeDirection): general</span>
+<span class="sd">                direction in which voltages need to change. Either</span>
+<span class="sd">                `VoltageChangeDirection.positive` or</span>
+<span class="sd">                `VoltageChangeDirection.negative`.</span>
+<span class="sd">            helper_gate_id (int): gate ID of helper gate. Default is</span>
+<span class="sd">                DoubleDotLayout.top_barrier().</span>
+<span class="sd">            central_barrier_id (int): gate ID of central barrier. Default is</span>
+<span class="sd">                DoubleDotLayout.central_barrier()</span>
+<span class="sd">            outer_barriers_id (Sequence[int]): gate IDs of outer barriers.</span>
+<span class="sd">                Default is DoubleDotLayout.outer_barriers().</span>
+<span class="sd">            range_change_setting (RangeChangeSetting): instance of</span>
+<span class="sd">                RangeChangeSetting with relative, maximum and minimum range</span>
+<span class="sd">                changes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[VoltageChangeDirection]: None is voltage updates have been</span>
+<span class="sd">                successful, a new voltage change direction if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_voltages_based_on_directives</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="p">{</span><span class="n">helper_gate_id</span><span class="p">:</span> <span class="n">voltage_change_direction</span><span class="p">},</span>
+            <span class="n">range_change_setting</span><span class="o">=</span><span class="n">range_change_setting</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_central_barrier</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">target_state</span><span class="o">=</span><span class="n">target_state</span><span class="p">,</span>
+            <span class="n">gate_id</span><span class="o">=</span><span class="n">central_barrier_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">new_direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_outer_barriers</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">gate_ids</span><span class="o">=</span><span class="n">outer_barriers_id</span><span class="p">,</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="n">range_change_setting</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_direction</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_outer_barriers"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_outer_barriers">[docs]</a>    <span class="k">def</span> <span class="nf">set_outer_barriers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gate_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">outer_barriers</span><span class="p">(),</span>
+        <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Sets outer barriers. Each barrier is characterized and a new voltage</span>
+<span class="sd">        chosen based on the extracted features `low_voltage` (L),</span>
+<span class="sd">        `high_voltage` (H) and `transition_voltage` (T). The new voltage,</span>
+<span class="sd">        `new_voltage = T + 2 / 3 * abs(T - H)` is checked and set if the check</span>
+<span class="sd">        is passes (not too close to safety limits). The central barrier&#39;s</span>
+<span class="sd">        current valid range is updated to `[L, H]` and transition voltage to</span>
+<span class="sd">        `T`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            gate_ids (Sequence[int]): barrier gate IDs, default is</span>
+<span class="sd">                DoubleDotLayout.outer_barriers().</span>
+<span class="sd">            tolerance (float): minimal voltage difference to keep to safety</span>
+<span class="sd">                ranges. Default is 0.1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[VoltageChangeDirection]: None is voltage updates have been</span>
+<span class="sd">                successful, a new voltage change direction if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate_ids</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">gate_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">gate_ids</span><span class="p">]</span>
+        <span class="n">main_readout_method</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">main_readout_method</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">new_direction</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">barrier_id</span> <span class="ow">in</span> <span class="n">gate_ids</span><span class="p">:</span>
+            <span class="n">barrier</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">barrier_id</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterize_gate</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">barrier</span><span class="p">,</span>
+                <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Characterize outer barriers before setting them.&quot;</span><span class="p">,</span>
+                <span class="n">use_safety_voltage_ranges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ml_result</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">][</span><span class="n">main_readout_method</span><span class="p">]</span>
+            <span class="n">L</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">]</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;transition_voltage&quot;</span><span class="p">]</span>
+            <span class="n">new_voltage</span> <span class="o">=</span> <span class="n">T</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">H</span><span class="p">)</span>
+
+            <span class="n">new_direction</span> <span class="o">=</span> <span class="n">check_new_voltage</span><span class="p">(</span><span class="n">new_voltage</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">barrier</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">new_voltage</span><span class="p">)</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">({</span><span class="n">barrier_id</span><span class="p">:</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">H</span><span class="p">]})</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">transition_voltages</span><span class="p">({</span><span class="n">barrier_id</span><span class="p">:</span> <span class="n">T</span><span class="p">})</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set </span><span class="si">{</span><span class="n">barrier</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_voltage</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_direction</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_central_barrier"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_central_barrier">[docs]</a>    <span class="k">def</span> <span class="nf">set_central_barrier</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">target_state</span><span class="p">:</span> <span class="n">DeviceState</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">,</span>
+        <span class="n">gate_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">central_barrier</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the central barrier. The voltage chosen depends on the target</span>
+<span class="sd">        state, with a more positive value when aiming for a single and</span>
+<span class="sd">        a more negative one for a double dot. It characterizes the barrier</span>
+<span class="sd">        chooses a value based on the determined `high_voltage` or signal</span>
+<span class="sd">        strengths. For a double dot regime, the central barrier is set to the</span>
+<span class="sd">        highest voltage at which the device show 2/3 of its open signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            target_state (DeviceState): target regime. Default is</span>
+<span class="sd">                DeviceState.doubledot. Raises an error for a state other than</span>
+<span class="sd">                `pinchedoff`, `singledot` or `doubledot`.</span>
+<span class="sd">            gate_id (int): Default is DoubleDotLayout.central_barrier().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_state</span><span class="p">,</span> <span class="n">DeviceState</span><span class="p">)</span>
+        <span class="n">barrier</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterize_gate</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">barrier</span><span class="p">,</span>
+            <span class="n">use_safety_voltage_ranges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">main_readout_method</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">main_readout_method</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ml_result</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">][</span><span class="n">main_readout_method</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">target_state</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">singledot</span><span class="p">:</span>
+            <span class="n">barrier</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">target_state</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">doubledot</span><span class="p">:</span>
+            <span class="n">data_id</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">data_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+                <span class="n">data_id</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
+                <span class="n">db_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_folder</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">main_readout_method</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">voltage</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">main_readout_method</span><span class="p">][</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="n">v_sat_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">signal</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_sat_idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">v_index</span> <span class="o">=</span> <span class="n">v_sat_idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">barrier</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">voltage</span><span class="p">[</span><span class="n">v_index</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">target_state</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">pinchedoff</span><span class="p">:</span>
+            <span class="n">barrier</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid DeviceState. Use singledot, doubledot &quot;</span> \
+                <span class="s2">&quot;or pinchedoff.&quot;</span><span class="p">)</span>
+
+        <span class="n">new_range</span> <span class="o">=</span> <span class="p">[</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">]]</span>
+        <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">({</span><span class="n">barrier</span><span class="o">.</span><span class="n">gate_id</span><span class="p">:</span> <span class="n">new_range</span><span class="p">})</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Central barrier set to </span><span class="si">{</span><span class="n">barrier</span><span class="o">.</span><span class="n">voltage</span><span class="p">()</span><span class="si">}</span><span class="s2"> with valid &quot;</span> \
+            <span class="s2">&quot;range (</span><span class="si">{features[&#39;low_voltage&#39;]}</span><span class="s2">, </span><span class="si">{features[&#39;high_voltage&#39;]}</span><span class="s2">). &quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DotTuner.update_voltages_based_on_directives"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.update_voltages_based_on_directives">[docs]</a>    <span class="k">def</span> <span class="nf">update_voltages_based_on_directives</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">voltage_changes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">],</span>
+        <span class="n">range_change_setting</span><span class="p">:</span> <span class="n">RangeChangeSetting</span> <span class="o">=</span> <span class="n">RangeChangeSetting</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Updates voltages based on `VoltageChangeDirection`.</span>
+<span class="sd">        Mainly used to update top or outer barriers. In case of outer barriers</span>
+<span class="sd">        reaching limits, there is only one other gate (helper gate) to change.</span>
+<span class="sd">        Returning only one direction is sufficient. In the current algorithm, it</span>
+<span class="sd">        does not happen that one barrier requires the helper gate to be</span>
+<span class="sd">        more positive and the other more negative.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            voltage_changes (Dict[int, VoltageChangeDirection]): dict mapping</span>
+<span class="sd">                gate IDs onto a direction in which the voltage should be</span>
+<span class="sd">                changed.</span>
+<span class="sd">            range_change_setting (RangeChangeSetting): instance of</span>
+<span class="sd">                RangeChangeSetting with relative, maximum and minimum range</span>
+<span class="sd">                changes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[VoltageChangeDirection]: None is voltage updates have been</span>
+<span class="sd">                successful, a new voltage change direction if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_direction</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">gate_id</span><span class="p">,</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">voltage_changes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">gate</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span>
+            <span class="n">new_voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_new_gate_voltage</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span>
+                <span class="n">gate_id</span><span class="p">,</span>
+                <span class="n">direction</span><span class="p">,</span>
+                <span class="n">range_change_setting</span><span class="o">=</span><span class="n">range_change_setting</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">new_direction</span> <span class="o">=</span> <span class="n">check_new_voltage</span><span class="p">(</span>
+                <span class="n">new_voltage</span><span class="p">,</span> <span class="n">gate</span><span class="p">,</span> <span class="n">range_change_setting</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">new_voltage</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Choosing new voltage for </span><span class="si">{</span><span class="n">gate</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">new_voltage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_direction</span></div>
+
+<div class="viewcode-block" id="DotTuner.set_new_plunger_ranges"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.set_new_plunger_ranges">[docs]</a>    <span class="k">def</span> <span class="nf">set_new_plunger_ranges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">plunger_barrier_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">DoubleDotLayout</span><span class="o">.</span><span class="n">plunger_barrier_pairs</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Determines and sets new valid ranges for plungers.</span>
+<span class="sd">        It characterizes each plunger individually using `characterize_plunger`,</span>
+<span class="sd">        checking if a nearby barrier needs to adjusted.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            plunger_barrier_pairs (List[Tuple[int, int]]): list of tuples, where</span>
+<span class="sd">                the first tuple item is plunger gate_id and the second a</span>
+<span class="sd">                barrier gate_id, indicating which barrier needs to be changed</span>
+<span class="sd">                if a plunger&#39;s range can not be updated.</span>
+<span class="sd">                Ex: [(left_plunger.gate_id, left_barrier.gate_id)]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[Dict[int, VoltageChangeDirection]]: if required (plunger</span>
+<span class="sd">                range updates were not successful), the required changes to be</span>
+<span class="sd">                applied to barrier voltages are returned. If a dict is returned,</span>
+<span class="sd">                it maps gate ID onto `VoltageChangeDirection`. The new</span>
+<span class="sd">                direction is None if new ranges have been set successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plunger_barrier_pairs</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid plunger_barrier_pairs input.&#39;</span><span class="p">)</span>
+
+        <span class="n">barrier_changes_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">plunger_id</span><span class="p">,</span> <span class="n">barrier_id</span> <span class="ow">in</span> <span class="n">plunger_barrier_pairs</span><span class="p">:</span>
+            <span class="n">plunger</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">plunger_id</span><span class="p">]</span>
+            <span class="n">new_range</span><span class="p">,</span> <span class="n">device_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterize_plunger</span><span class="p">(</span>
+                <span class="n">device</span><span class="p">,</span> <span class="n">plunger</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">({</span><span class="n">plunger_id</span><span class="p">:</span> <span class="n">new_range</span><span class="p">})</span>
+
+            <span class="k">if</span> <span class="n">device_state</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">pinchedoff</span><span class="p">:</span>
+                <span class="n">drct</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">positive</span>
+                <span class="n">barrier_changes_dict</span><span class="p">[</span><span class="n">barrier_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">drct</span>
+
+            <span class="k">if</span> <span class="n">device_state</span> <span class="o">==</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">opencurrent</span><span class="p">:</span>
+                <span class="n">drct</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">negative</span>
+                <span class="n">barrier_changes_dict</span><span class="p">[</span><span class="n">barrier_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">drct</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">barrier_changes_dict</span><span class="p">:</span>
+            <span class="n">barrier_changes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">barrier_changes</span> <span class="o">=</span> <span class="n">barrier_changes_dict</span>
+        <span class="k">return</span> <span class="n">barrier_changes</span></div>
+
+<div class="viewcode-block" id="DotTuner.characterize_plunger"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.characterize_plunger">[docs]</a>    <span class="k">def</span> <span class="nf">characterize_plunger</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">plunger</span><span class="p">:</span> <span class="n">DeviceChannel</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">DeviceState</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Characterizes a plunger of a device by performing a gate</span>
+<span class="sd">        characterization and checking whether the measured (normalized) signal</span>
+<span class="sd">        is neither to high nor too low, i.e. whether the device is pinched off</span>
+<span class="sd">        or in the open regime. A dot regime is found in-between these two</span>
+<span class="sd">        regimes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            plunger (DeviceChannel): DeviceChannel instance of a plunger.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float, float]:</span>
+<span class="sd">            DeviceState: state of the device, `undefined` if the</span>
+<span class="sd">                characterization was successful. If the measured signal is below</span>
+<span class="sd">                `data_settings.noise_floor`, `DeviceState.pinchedoff` is</span>
+<span class="sd">                returned. If the signal is too high, the value is</span>
+<span class="sd">                `DeviceState.opencurrent`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterize_gate</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">plunger</span><span class="p">,</span>
+            <span class="n">use_safety_voltage_ranges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">iterate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">readout</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">main_readout_method</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ml_result</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">][</span><span class="n">readout</span><span class="p">]</span>
+        <span class="n">new_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">])</span>
+
+        <span class="n">device_state</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">undefined</span>
+        <span class="k">if</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;min_signal&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">dot_signal_threshold</span><span class="p">:</span>
+            <span class="n">device_state</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">opencurrent</span>
+        <span class="k">if</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;max_signal&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">noise_floor</span><span class="p">:</span>
+            <span class="n">device_state</span> <span class="o">=</span> <span class="n">DeviceState</span><span class="o">.</span><span class="n">pinchedoff</span>
+
+        <span class="k">return</span> <span class="n">new_range</span><span class="p">,</span> <span class="n">device_state</span></div>
+
+<div class="viewcode-block" id="DotTuner.choose_new_gate_voltage"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DotTuner.choose_new_gate_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">choose_new_gate_voltage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gate_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">voltage_change_direction</span><span class="p">:</span> <span class="n">VoltageChangeDirection</span><span class="p">,</span>
+        <span class="n">range_change_setting</span><span class="p">:</span> <span class="n">RangeChangeSetting</span> <span class="o">=</span> <span class="n">RangeChangeSetting</span><span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        based on current_valid_range or safety_voltage_range if no</span>
+<span class="sd">        current_valid_range is set</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (nt.Device): device to tune.</span>
+<span class="sd">            gate_id (int): ID of gate to set.</span>
+<span class="sd">            voltage_change_direction (VoltageChangeDirection): direction in</span>
+<span class="sd">                which the voltage should be adjusted. Positive or negative.</span>
+<span class="sd">            range_change_setting (RangeChangeSetting): instance of</span>
+<span class="sd">                RangeChangeSetting with relative, maximum and minimum range</span>
+<span class="sd">                changes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: new gate voltage to set on gate with ID `gate_id`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">relative_range_change</span> <span class="o">=</span>  <span class="n">range_change_setting</span><span class="o">.</span><span class="n">relative_range_change</span>
+        <span class="n">max_range_change</span> <span class="o">=</span> <span class="n">range_change_setting</span><span class="o">.</span><span class="n">max_range_change</span>
+        <span class="n">min_range_change</span> <span class="o">=</span> <span class="n">range_change_setting</span><span class="o">.</span><span class="n">min_range_change</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">voltage_change_direction</span><span class="p">,</span> <span class="n">VoltageChangeDirection</span><span class="p">)</span>
+
+        <span class="n">curr_v</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">()</span>
+        <span class="n">sfty_rng</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+        <span class="n">L</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">()[</span><span class="n">gate_id</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">voltage_change_direction</span> <span class="o">==</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">negative</span><span class="p">:</span>
+            <span class="n">v_change</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                <span class="n">relative_range_change</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">curr_v</span> <span class="o">-</span> <span class="n">L</span><span class="p">),</span> <span class="n">min_range_change</span>
+            <span class="p">)</span>
+            <span class="n">v_change</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_range_change</span><span class="p">,</span> <span class="n">v_change</span><span class="p">)</span>
+            <span class="n">new_v</span> <span class="o">=</span> <span class="n">curr_v</span> <span class="o">-</span> <span class="n">v_change</span>
+            <span class="k">if</span> <span class="n">new_v</span> <span class="o">&lt;</span> <span class="n">sfty_rng</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">new_v</span> <span class="o">=</span> <span class="n">sfty_rng</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">voltage_change_direction</span> <span class="o">==</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">positive</span><span class="p">:</span>
+            <span class="n">v_change</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                <span class="n">relative_range_change</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">curr_v</span> <span class="o">-</span> <span class="n">H</span><span class="p">),</span> <span class="n">min_range_change</span>
+            <span class="p">)</span>
+            <span class="n">v_change</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_range_change</span><span class="p">,</span> <span class="n">v_change</span><span class="p">)</span>
+            <span class="n">new_v</span> <span class="o">=</span> <span class="n">curr_v</span> <span class="o">+</span> <span class="n">v_change</span>
+            <span class="k">if</span> <span class="n">new_v</span> <span class="o">&gt;</span> <span class="n">sfty_rng</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">new_v</span> <span class="o">=</span> <span class="n">sfty_rng</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">new_v</span></div></div>
+
+
+<div class="viewcode-block" id="check_new_voltage"><a class="viewcode-back" href="../../../api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.check_new_voltage">[docs]</a><span class="k">def</span> <span class="nf">check_new_voltage</span><span class="p">(</span>
+    <span class="n">new_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gate</span><span class="p">:</span> <span class="n">DeviceChannel</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VoltageChangeDirection</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Checks whether a voltage can be set on a gate. If not, a</span>
+<span class="sd">    VoltageChangeDirection indicating how other gates need to be updated</span>
+<span class="sd">    is returned.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_voltage (float): voltage to check before it is set.</span>
+<span class="sd">        gate (DeviceChannel): gate whose voltage should be set.</span>
+<span class="sd">        tolerance (float): minimal voltage difference to keep to safety ranges.</span>
+<span class="sd">            Default is 0.1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        VoltageChangeDirection: Direction in which other gates should be</span>
+<span class="sd">            changed if the new voltage can not be set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">safe_range</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+    <span class="n">touching_limits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
+        <span class="n">new_voltage</span><span class="p">,</span> <span class="n">safe_range</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tolerance</span>
+    <span class="p">)</span>
+    <span class="n">new_direction</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">touching_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">new_direction</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">negative</span>
+    <span class="k">if</span> <span class="n">touching_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">new_direction</span> <span class="o">=</span> <span class="n">VoltageChangeDirection</span><span class="o">.</span><span class="n">positive</span>
+    <span class="k">return</span> <span class="n">new_direction</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

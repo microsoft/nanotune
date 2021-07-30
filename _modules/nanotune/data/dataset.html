@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.data.dataset &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.data.dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.data.dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.data_set</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">import</span> <span class="nn">scipy.fftpack</span> <span class="k">as</span> <span class="nn">fp</span>
+<span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">sg</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">gaussian_filter</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+
+<span class="n">LABELS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">default_coord_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;voltage_x&quot;</span><span class="p">,</span> <span class="s2">&quot;voltage_y&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;frequency_x&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency_y&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">old_readout_methods</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;dc_current&#39;</span><span class="p">:</span> <span class="s1">&#39;transport&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dc_sensor&#39;</span><span class="p">:</span> <span class="s1">&#39;sensing&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">default_readout_methods</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;readout_methods&quot;</span><span class="p">]</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    To be used as parent class for dot fits (in the future)</span>
+<span class="sd">    For now, it is used to load data and to normalise it with</span>
+<span class="sd">    normalization_constants.</span>
+
+<span class="sd">    Loads existing data from a database, e.g. it expects the data (measured and</span>
+<span class="sd">    saved with qcodes) to exit in the given database.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">qc_run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">db_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">normalization_tolerances</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span> <span class="o">=</span> <span class="n">db_folder</span>
+
+        <span class="k">if</span> <span class="n">db_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span> <span class="o">=</span> <span class="n">db_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qc_run_id</span> <span class="o">=</span> <span class="n">qc_run_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_tolerances</span> <span class="o">=</span> <span class="n">normalization_tolerances</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qc_parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_spectrum</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_qcodes_dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare_filtered_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_power_spectrum</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nt_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">normalization_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;features&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Dataset.get_plot_label"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.get_plot_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_plot_label</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">power_spect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="n">curr_dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">curr_dim</span> <span class="o">&gt;=</span> <span class="n">axis</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">curr_dim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">power_spect</span><span class="p">:</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">][</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="n">axis</span><span class="p">]]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">power_spect</span><span class="p">:</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;power spectrum </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ut</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">unit</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">ut</span><span class="si">}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lbl</span></div>
+
+<div class="viewcode-block" id="Dataset.from_qcodes_dataset"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.from_qcodes_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">from_qcodes_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load data from qcodes dataset &quot;&quot;&quot;</span>
+        <span class="n">qc_dataset</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">load_by_run_spec</span><span class="p">(</span><span class="n">captured_run_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qc_run_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">exp_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">guid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qc_parameters</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">to_xarray_dataset</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_metadata_from_qcodes</span><span class="p">(</span><span class="n">qc_dataset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prep_qcodes_data</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_load_metadata_from_qcodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qc_dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;transport&quot;</span><span class="p">,</span> <span class="s2">&quot;rf&quot;</span><span class="p">,</span> <span class="s2">&quot;sensing&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">qc_dataset</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s2">&quot;snapshot&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">qc_dataset</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">meta_tag</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="c1"># try:</span>
+            <span class="c1">#     self._nt_metadata = json.loads(</span>
+            <span class="c1">#         qc_dataset.get_metadata(&#39;nanotune_meta&#39;))</span>
+            <span class="c1"># except (RuntimeError, TypeError):</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">[</span><span class="s2">&quot;normalization_constants&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">old_key</span><span class="p">,</span> <span class="n">new_key</span> <span class="ow">in</span> <span class="n">old_readout_methods</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">old_key</span> <span class="ow">in</span> <span class="n">nm</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">nm</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">old_key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">[</span><span class="s2">&quot;device_name&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No device name specified.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span> <span class="o">=</span> <span class="s2">&quot;noname_device&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_metadata</span><span class="p">[</span><span class="s2">&quot;readout_methods&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No readout method specified.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">methods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we assume the default order of readout methods if nothing</span>
+                <span class="c1"># else is specified</span>
+                <span class="n">methods</span> <span class="o">=</span> <span class="n">default_readout_methods</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">)]</span>
+            <span class="n">read_params</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="n">read_params</span><span class="p">))</span>
+
+        <span class="n">quality</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s2">&quot;good&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">quality</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">LABELS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="o">!=</span> <span class="s2">&quot;good&quot;</span><span class="p">:</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="n">qc_dataset</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lbl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">lbl</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prep_qcodes_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; normalize data and rename labels &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">interpolate_na</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rename</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rename_xarray_variables</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">r_meth</span><span class="p">,</span> <span class="n">r_param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">r_meth</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">r_param</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
+            <span class="n">nrm_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">r_param</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">r_meth</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">r_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">nrm_dt</span>
+
+            <span class="k">for</span> <span class="n">vi</span><span class="p">,</span> <span class="n">vr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">r_param</span><span class="p">]</span><span class="o">.</span><span class="n">depends_on</span><span class="p">):</span>
+                <span class="n">coord_name</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="n">vi</span><span class="p">]</span>
+                <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_label</span><span class="p">(</span><span class="n">r_param</span><span class="p">,</span> <span class="n">vr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">r_meth</span><span class="p">][</span><span class="n">coord_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lbl</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">coords</span><span class="p">),</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_nt_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">readout_paramter</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">readout_paramter</span><span class="p">][</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">readout_paramter</span><span class="p">][</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lbl</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_rename_xarray_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">old</span><span class="p">:</span> <span class="n">new</span> <span class="k">for</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">new_names_all</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">old_n</span> <span class="ow">in</span> <span class="n">new_names</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">c_i</span><span class="p">,</span> <span class="n">old_crd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="n">old_n</span><span class="p">]</span><span class="o">.</span><span class="n">depends_on</span><span class="p">):</span>
+                <span class="n">new_names_all</span><span class="p">[</span><span class="n">old_crd</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="n">c_i</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_names_all</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_normalize_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">signal_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="n">minv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_constants</span><span class="p">[</span><span class="n">signal_type</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">maxv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_constants</span><span class="p">[</span><span class="n">signal_type</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">normalized_sig</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span> <span class="o">-</span> <span class="n">minv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">maxv</span> <span class="o">-</span> <span class="n">minv</span><span class="p">)</span>
+        <span class="n">min_tol</span><span class="p">,</span> <span class="n">max_tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_tolerances</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">normalized_sig</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_tol</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">normalized_sig</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_tol</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Dataset </span><span class="si">{}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qc_run_id</span><span class="p">),</span>
+                <span class="s2">&quot;Wrong normalization constant&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">normalized_sig</span>
+
+<div class="viewcode-block" id="Dataset.prepare_filtered_data"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.prepare_filtered_data">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_filtered_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
+            <span class="n">smooth</span> <span class="o">=</span> <span class="n">gaussian_filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">smooth</span></div>
+
+<div class="viewcode-block" id="Dataset.compute_1D_power_spectrum"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.compute_1D_power_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">compute_1D_power_spectrum</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="n">c_name</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">voltage_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">][</span><span class="n">c_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">xv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">frequencies_res</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">frequencies_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">frequencies_res</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">fx</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">frequencies_res</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="n">xv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">freq_xar</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">frequencies_res</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">[(</span><span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">fx</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">freq_xar</span></div>
+
+<div class="viewcode-block" id="Dataset.compute_2D_power_spectrum"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.compute_2D_power_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">compute_2D_power_spectrum</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="n">c_name_x</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">c_name_y</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">voltage_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">][</span><span class="n">c_name_x</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">voltage_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">][</span><span class="n">c_name_y</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">xv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)</span>
+        <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">)</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">frequencies_res</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">frequencies_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">frequencies_res</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">fx_1d</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">frequencies_res</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="n">xv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">fy_1d</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">frequencies_res</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="n">yv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">freq_xar</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">frequencies_res</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">fx_1d</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">fy_1d</span><span class="p">),</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">freq_xar</span></div>
+
+<div class="viewcode-block" id="Dataset.compute_power_spectrum"><a class="viewcode-back" href="../../../api/data/dataset.html#nanotune.data.dataset.Dataset.compute_power_spectrum">[docs]</a>    <span class="k">def</span> <span class="nf">compute_power_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute frequencies of the signal. Detrend before that to eliminate DC</span>
+<span class="sd">        component.</span>
+<span class="sd">        No high pass filter applied as we do not want to accidentally remove</span>
+<span class="sd">        information contained in low frequencies. We count on PCA to assess</span>
+<span class="sd">        which signal/frequencies are important</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_spectrum</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">readout_method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">freq_xar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_1D_power_spectrum</span><span class="p">(</span><span class="n">readout_method</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">freq_xar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_2D_power_spectrum</span><span class="p">(</span><span class="n">readout_method</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">power_spectrum</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq_xar</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

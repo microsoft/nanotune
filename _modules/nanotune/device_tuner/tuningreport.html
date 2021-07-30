@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device_tuner.tuningreport &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device_tuner.tuningreport</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device_tuner.tuningreport</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">email</span> <span class="kn">import</span> <span class="n">encoders</span>
+<span class="kn">from</span> <span class="nn">email.mime.base</span> <span class="kn">import</span> <span class="n">MIMEBase</span>
+<span class="kn">from</span> <span class="nn">email.mime.multipart</span> <span class="kn">import</span> <span class="n">MIMEMultipart</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+<span class="kn">from</span> <span class="nn">email.utils</span> <span class="kn">import</span> <span class="n">formatdate</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">reportlab.lib</span> <span class="kn">import</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.pagesizes</span> <span class="kn">import</span> <span class="n">A4</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.styles</span> <span class="kn">import</span> <span class="n">ParagraphStyle</span><span class="p">,</span> <span class="n">getSampleStyleSheet</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.units</span> <span class="kn">import</span> <span class="n">inch</span>  <span class="c1"># , cm</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.utils</span> <span class="kn">import</span> <span class="n">ImageReader</span>
+<span class="kn">from</span> <span class="nn">reportlab.pdfgen</span> <span class="kn">import</span> <span class="n">canvas</span>
+<span class="kn">from</span> <span class="nn">reportlab.platypus</span> <span class="kn">import</span> <span class="n">Paragraph</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">TableStyle</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span><span class="p">,</span> <span class="n">get_param_values</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">title_style</span> <span class="o">=</span> <span class="n">ParagraphStyle</span><span class="p">(</span>
+    <span class="s2">&quot;title_style&quot;</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fontSize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontName</span><span class="o">=</span><span class="s2">&quot;Times-Roman&quot;</span>
+<span class="p">)</span>
+
+<span class="n">body_style</span> <span class="o">=</span> <span class="n">ParagraphStyle</span><span class="p">(</span>
+    <span class="s2">&quot;body_style&quot;</span><span class="p">,</span>
+    <span class="n">alignment</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">fontSize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">fontName</span><span class="o">=</span><span class="s2">&quot;Times-Roman&quot;</span><span class="p">,</span>
+    <span class="n">justifyBreaks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">splitLongWords</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">rightIndent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">rpstyles</span> <span class="o">=</span> <span class="n">getSampleStyleSheet</span><span class="p">()</span>
+
+<span class="n">aW</span> <span class="o">=</span> <span class="mi">460</span>
+<span class="n">aH</span> <span class="o">=</span> <span class="mi">800</span>
+
+<span class="n">left_margin</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">right_margin</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">top_margin</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">bottom_margin</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">h_padding</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">v_padding</span> <span class="o">=</span> <span class="mi">40</span>
+
+
+<div class="viewcode-block" id="TuningReport"><a class="viewcode-back" href="../../../api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport">[docs]</a><span class="k">class</span> <span class="nc">TuningReport</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stage_summaries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]],</span>
+        <span class="n">receiver</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="c1"># = [&#39;me@onenote.com&#39;, &#39;nanotune@outlook.com&#39;],</span>
+        <span class="n">sender</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="c1">#   = &#39;nanotune@outlook.com&#39;,</span>
+        <span class="n">sender_pwd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>  <span class="c1"># = &#39;N@notune&#39;,</span>
+        <span class="n">db_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">comments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nt device&quot;</span><span class="p">,</span>
+        <span class="n">section</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">smalltalk</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;smtp-mail.outlook.com&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">587</span><span class="p">,</span>
+        <span class="n">pdf_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pdf_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nanotune_results&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">db_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;me@onenote.com&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">receiver</span><span class="p">:</span>
+            <span class="n">receiver</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;me@onenote.com&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span> <span class="o">=</span> <span class="n">receiver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="o">=</span> <span class="n">sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smalltalk</span> <span class="o">=</span> <span class="n">smalltalk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_summaries</span> <span class="o">=</span> <span class="n">stage_summaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">comments</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">comments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span> <span class="o">=</span> <span class="n">db_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span> <span class="o">=</span> <span class="n">device_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span> <span class="o">=</span> <span class="n">db_folder</span>
+
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="s2">&quot; @&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;@Measurements&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender_pwd</span> <span class="o">=</span> <span class="n">sender_pwd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span> <span class="o">=</span> <span class="n">pdf_name</span>
+        <span class="k">if</span> <span class="n">pdf_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span> <span class="o">=</span> <span class="n">pdf_folder</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span><span class="p">,</span> <span class="s2">&quot;tuning_results&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="p">,</span> <span class="s2">&quot;pdfs&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_ratio</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">]</span>
+        <span class="c1"># [figure_width, table_width] * total</span>
+
+<div class="viewcode-block" id="TuningReport.press"><a class="viewcode-back" href="../../../api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.press">[docs]</a>    <span class="k">def</span> <span class="nf">press</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_pdf</span><span class="p">()</span></div>
+        <span class="c1"># self.distribute()</span>
+
+<div class="viewcode-block" id="TuningReport.summarize"><a class="viewcode-back" href="../../../api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.summarize">[docs]</a>    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># generates list of files to send</span>
+
+        <span class="c1"># fig saved with</span>
+        <span class="c1"># self.dir = os.path.join(nt.config[&#39;db_folder&#39;], &#39;tuning_results&#39;,</span>
+        <span class="c1">#                             self.device_name)</span>
+        <span class="c1"># filename = str(self.ds.guid)</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smalltalk</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Data IDs in this bundle: </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">inv_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># sort IDs to make sure pdfs are printed in same oder as they were</span>
+        <span class="c1"># taken</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage_summaries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">qc_id</span> <span class="ow">in</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">inv_dict</span><span class="p">[</span><span class="n">qc_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">sorted_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_summaries</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">sorted_ids</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># for stage, value in self.stage_summaries.items():</span>
+        <span class="k">for</span> <span class="n">qc_run_id</span> <span class="ow">in</span> <span class="n">sorted_ids</span><span class="p">:</span>
+            <span class="c1"># stage = inv_dict[qc_run_id]</span>
+            <span class="c1"># if stage[0:7] == &#39;failed_&#39;:</span>
+            <span class="c1">#     stage = stage[7:]</span>
+            <span class="c1">#     try:</span>
+            <span class="c1">#         s = self.comments[qc_run_id]</span>
+            <span class="c1">#     except KeyError:</span>
+            <span class="c1">#         s = &#39;&#39;</span>
+            <span class="c1">#     self.comments[qc_run_id] = &#39;Classified as poor result.\n&#39; + s</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">qc_run_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">)</span>
+            <span class="n">device_name</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">device_name</span>
+            <span class="n">f_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span><span class="p">,</span> <span class="s2">&quot;tuning_results&quot;</span><span class="p">,</span> <span class="n">device_name</span><span class="p">)</span>
+            <span class="c1"># for qc_run_id in flatten_list(value):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">smalltalk</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">qc_run_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+
+            <span class="c1"># filename = stage + &#39;_fit_ds&#39;</span>
+            <span class="c1"># filename += str(qc_run_id) + &#39;.png&#39;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f_folder</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">qc_run_id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">filename</span></div>
+
+<div class="viewcode-block" id="TuningReport.create_pdf"><a class="viewcode-back" href="../../../api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.create_pdf">[docs]</a>    <span class="k">def</span> <span class="nf">create_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># fig saved with</span>
+        <span class="c1"># self.dir = os.path.join(nt.config[&#39;db_folder&#39;], &#39;tuning_results&#39;,</span>
+        <span class="c1">#                             self.device_name)</span>
+        <span class="c1"># filename = str(self.ds.guid)</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+
+        <span class="n">my_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">my_datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H%M_</span><span class="si">%d</span><span class="s2">%m%Y&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.pdf&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fig_width</span> <span class="o">=</span> <span class="n">aW</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_ratio</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">clm_width_meta</span> <span class="o">=</span> <span class="p">(</span><span class="n">aW</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_ratio</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span><span class="p">),</span> <span class="n">pagesize</span><span class="o">=</span><span class="n">A4</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">qc_run_id</span><span class="p">,</span> <span class="n">fig_file</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="p">(</span><span class="n">param_values</span><span class="p">,</span> <span class="n">feature_values</span><span class="p">)</span> <span class="o">=</span> <span class="n">get_param_values</span><span class="p">(</span>
+                <span class="n">qc_run_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="n">return_meta_add_on</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span>
+            <span class="c1"># c.saveState()</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Dataset &quot;</span> <span class="o">+</span> <span class="n">qc_run_id</span>
+
+            <span class="c1"># Prepare header</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">title_style</span><span class="p">)</span>
+            <span class="n">h_w</span><span class="p">,</span> <span class="n">h_h</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">aW</span><span class="p">,</span> <span class="n">aH</span><span class="p">)</span>
+
+            <span class="c1"># Prepare image</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">ImageReader</span><span class="p">(</span><span class="n">fig_file</span><span class="p">)</span>
+            <span class="n">im_width</span><span class="p">,</span> <span class="n">im_height</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">getSize</span><span class="p">()</span>
+            <span class="n">aspect</span> <span class="o">=</span> <span class="n">im_height</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">im_width</span><span class="p">)</span>
+            <span class="n">fig_height</span> <span class="o">=</span> <span class="n">fig_width</span> <span class="o">*</span> <span class="n">aspect</span>
+
+            <span class="c1"># Prepare metadata section</span>
+
+            <span class="n">meta_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+                <span class="n">param_values</span><span class="p">,</span>
+                <span class="n">colWidths</span><span class="o">=</span><span class="p">[</span><span class="n">clm_width_meta</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">),</span>
+                <span class="n">hAlign</span><span class="o">=</span><span class="s2">&quot;CENTER&quot;</span><span class="p">,</span>
+                <span class="n">rowHeights</span><span class="o">=</span><span class="mf">0.22</span> <span class="o">*</span> <span class="n">inch</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">meta_table</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span>
+                <span class="n">TableStyle</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">(</span><span class="s2">&quot;FONT&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Helvetica-Bold&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;FONT&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;LINEBELOW&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">0.08</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;SIZE&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">8</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;VALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;BOTTOM&quot;</span><span class="p">),</span>
+                        <span class="c1"># (&#39;ALIGN&#39;, (0, 0), (-1, 0), &#39;CENTER&#39;),</span>
+                        <span class="p">(</span><span class="s2">&quot;ALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;LEFT&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;ALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;LEFT&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;INNERGRID&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mf">0.08</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">beige</span><span class="p">),</span>
+                        <span class="c1"># (&#39;BOX&#39;, (0,0), (-1,-1), 0.25, colors.grey),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">meta_width</span><span class="p">,</span> <span class="n">meta_height</span> <span class="o">=</span> <span class="n">meta_table</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">aW</span> <span class="o">-</span> <span class="n">im_width</span><span class="p">,</span> <span class="n">aH</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Prepare comments header</span>
+            <span class="n">comments_header</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s2">&quot;Comments:&quot;</span><span class="p">,</span> <span class="n">title_style</span><span class="p">)</span>
+            <span class="n">avail_height</span> <span class="o">=</span> <span class="n">aH</span> <span class="o">-</span> <span class="n">fig_height</span> <span class="o">-</span> <span class="n">v_padding</span>
+            <span class="n">comm_h_width</span><span class="p">,</span> <span class="n">comm_h_height</span> <span class="o">=</span> <span class="n">comments_header</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span>
+                <span class="n">im_width</span><span class="p">,</span> <span class="n">avail_height</span>  <span class="c1"># aW - meta_width,</span>
+            <span class="p">)</span>
+            <span class="c1"># Prepare comments</span>
+            <span class="n">my_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="s2">&quot;Printed on &quot;</span> <span class="o">+</span> <span class="n">my_datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data_specific_comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">qc_run_id</span><span class="p">)]</span>
+                <span class="n">comment</span> <span class="o">+=</span> <span class="n">data_specific_comment</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span>
+                <span class="n">comment</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span>
+
+                <span class="n">comment</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smalltalk</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Unable to summarize result of &quot;</span> <span class="o">+</span> <span class="s2">&quot;dataset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">qc_run_id</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">comment_ts</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="n">ts</span>
+            <span class="n">comment_ts</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">comment_ts</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+            <span class="n">comment_ts</span> <span class="o">=</span> <span class="n">comment_ts</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="p">)</span>
+
+            <span class="n">comments_p</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="n">comment_ts</span><span class="p">,</span> <span class="n">body_style</span><span class="p">)</span>
+
+            <span class="n">avail_height</span> <span class="o">=</span> <span class="n">aH</span> <span class="o">-</span> <span class="n">fig_height</span> <span class="o">-</span> <span class="n">v_padding</span> <span class="o">-</span> <span class="n">comm_h_height</span>
+
+            <span class="n">comm_width</span><span class="p">,</span> <span class="n">comm_height</span> <span class="o">=</span> <span class="n">comments_p</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">im_width</span><span class="p">,</span> <span class="n">avail_height</span><span class="p">)</span>  <span class="c1"># aW,</span>
+
+            <span class="n">line_widths</span> <span class="o">=</span> <span class="n">comments_p</span><span class="o">.</span><span class="n">getActualLineWidths0</span><span class="p">()</span>
+            <span class="n">number_of_lines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_widths</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">number_of_lines</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">number_of_lines</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">min</span><span class="p">(</span><span class="n">line_widths</span><span class="p">)</span>
+                <span class="n">comm_width</span><span class="p">,</span> <span class="n">comm_height</span> <span class="o">=</span> <span class="n">comments_p</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">im_width</span><span class="p">,</span> <span class="n">avail_height</span><span class="p">)</span>
+
+            <span class="c1"># Prepare features</span>
+            <span class="n">feat_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+                <span class="n">feature_values</span><span class="p">,</span>
+                <span class="n">colWidths</span><span class="o">=</span><span class="p">[</span><span class="n">clm_width_meta</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">),</span>
+                <span class="n">hAlign</span><span class="o">=</span><span class="s2">&quot;CENTER&quot;</span><span class="p">,</span>
+                <span class="n">rowHeights</span><span class="o">=</span><span class="mf">0.22</span> <span class="o">*</span> <span class="n">inch</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">feat_table</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span>
+                <span class="n">TableStyle</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">(</span><span class="s2">&quot;FONT&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Helvetica-Bold&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;FONT&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;LINEBELOW&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">0.08</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;SIZE&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">8</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;VALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;BOTTOM&quot;</span><span class="p">),</span>
+                        <span class="c1"># (&#39;ALIGN&#39;, (0, 0), (-1, 0), &#39;CENTER&#39;),</span>
+                        <span class="p">(</span><span class="s2">&quot;ALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;LEFT&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;ALIGN&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;LEFT&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s2">&quot;INNERGRID&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mf">0.08</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">beige</span><span class="p">),</span>
+                        <span class="c1"># (&#39;BOX&#39;, (0,0), (-1,-1), 0.25, colors.grey),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">avail_height</span> <span class="o">=</span> <span class="n">aH</span> <span class="o">-</span> <span class="n">meta_height</span>  <span class="c1"># fig_height - v_padding - comm_h_height</span>
+            <span class="n">avail_height</span> <span class="o">-=</span> <span class="n">comm_height</span>
+            <span class="n">feat_width</span><span class="p">,</span> <span class="n">feat_height</span> <span class="o">=</span> <span class="n">feat_table</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">aW</span> <span class="o">-</span> <span class="n">im_width</span><span class="p">,</span> <span class="n">avail_height</span><span class="p">)</span>
+
+            <span class="c1"># Draw everyting on canvas</span>
+
+            <span class="n">header</span><span class="o">.</span><span class="n">drawOn</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">left_margin</span><span class="p">,</span> <span class="n">aH</span> <span class="o">-</span> <span class="n">top_margin</span><span class="p">)</span>
+
+            <span class="n">c</span><span class="o">.</span><span class="n">drawImage</span><span class="p">(</span>
+                <span class="n">img</span><span class="p">,</span>
+                <span class="n">left_margin</span><span class="p">,</span>
+                <span class="n">aH</span> <span class="o">-</span> <span class="n">top_margin</span> <span class="o">-</span> <span class="n">fig_height</span> <span class="o">-</span> <span class="n">v_padding</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">fig_width</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">,</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">fig_height</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">,</span>
+                <span class="n">mask</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">meta_table</span><span class="o">.</span><span class="n">drawOn</span><span class="p">(</span>
+                <span class="n">c</span><span class="p">,</span>
+                <span class="n">left_margin</span> <span class="o">+</span> <span class="n">fig_width</span> <span class="o">+</span> <span class="n">h_padding</span><span class="p">,</span>
+                <span class="n">aH</span> <span class="o">-</span> <span class="n">meta_height</span> <span class="o">-</span> <span class="n">top_margin</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1">#  - v_padding</span>
+            <span class="p">)</span>
+
+            <span class="n">comments_header</span><span class="o">.</span><span class="n">drawOn</span><span class="p">(</span>
+                <span class="n">c</span><span class="p">,</span>
+                <span class="n">left_margin</span><span class="p">,</span>
+                <span class="n">aH</span>
+                <span class="o">-</span> <span class="n">top_margin</span>
+                <span class="o">-</span> <span class="n">comm_h_height</span>
+                <span class="o">-</span> <span class="n">fig_height</span>
+                <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v_padding</span><span class="p">,</span>  <span class="c1"># - add_on_height</span>
+            <span class="p">)</span>
+
+            <span class="n">comments_p</span><span class="o">.</span><span class="n">drawOn</span><span class="p">(</span>
+                <span class="n">c</span><span class="p">,</span>
+                <span class="n">left_margin</span><span class="p">,</span>
+                <span class="n">aH</span>
+                <span class="o">-</span> <span class="n">top_margin</span>
+                <span class="o">-</span> <span class="n">comm_h_height</span>
+                <span class="o">-</span> <span class="n">comm_height</span>
+                <span class="o">-</span> <span class="n">fig_height</span>
+                <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v_padding</span>
+                <span class="o">-</span> <span class="n">comm_h_height</span><span class="p">,</span>  <span class="c1"># - add_on_height</span>
+            <span class="p">)</span>
+
+            <span class="n">feat_table</span><span class="o">.</span><span class="n">drawOn</span><span class="p">(</span>
+                <span class="n">c</span><span class="p">,</span>
+                <span class="n">left_margin</span> <span class="o">+</span> <span class="n">fig_width</span> <span class="o">+</span> <span class="n">h_padding</span><span class="p">,</span>
+                <span class="n">aH</span> <span class="o">-</span> <span class="n">meta_height</span> <span class="o">-</span> <span class="n">top_margin</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">feat_height</span> <span class="o">-</span> <span class="n">v_padding</span><span class="p">,</span>
+                <span class="c1"># top_margin - fig_height - 2*v_padding - feat_height</span>
+            <span class="p">)</span>
+
+            <span class="c1"># new page</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">showPage</span><span class="p">()</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">saveState</span><span class="p">()</span>
+
+        <span class="n">c</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TuningReport.distribute"><a class="viewcode-back" href="../../../api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.distribute">[docs]</a>    <span class="k">def</span> <span class="nf">distribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">MIMEMultipart</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s2">&quot;To&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">formatdate</span><span class="p">(</span><span class="n">localtime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s2">&quot;Subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">MIMEText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smalltalk</span><span class="p">))</span>
+
+        <span class="n">part</span> <span class="o">=</span> <span class="n">MIMEBase</span><span class="p">(</span><span class="s2">&quot;application&quot;</span><span class="p">,</span> <span class="s2">&quot;octet-stream&quot;</span><span class="p">)</span>
+        <span class="n">pdf_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdf_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdf_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">set_payload</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">encoders</span><span class="o">.</span><span class="n">encode_base64</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">part</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span>
+            <span class="s2">&quot;Content-Disposition&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;attachment; filename=&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdf_name</span><span class="p">)),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+        <span class="n">smtp</span> <span class="o">=</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">smtp</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
+        <span class="n">smtp</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender_pwd</span><span class="p">)</span>
+        <span class="n">smtp</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span>
+        <span class="n">smtp</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

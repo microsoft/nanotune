@@ -1,0 +1,888 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device.device</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device.device</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span>
+    <span class="n">MutableMapping</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes</span> <span class="kn">import</span> <span class="n">validators</span> <span class="k">as</span> <span class="n">vals</span>
+<span class="kn">from</span> <span class="nn">qcodes.station</span> <span class="kn">import</span> <span class="n">Station</span>
+
+<span class="kn">from</span> <span class="nn">nanotune.device.device_channel</span> <span class="kn">import</span> <span class="n">DeviceChannel</span>
+<span class="kn">from</span> <span class="nn">qcodes.instrument.delegate</span> <span class="kn">import</span> <span class="n">DelegateInstrument</span>
+
+<span class="kn">from</span> <span class="nn">qcodes.instrument.delegate.grouped_parameter</span> <span class="kn">import</span> <span class="n">GroupedParameter</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">voltage_range_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+<span class="n">ChannelsType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span>
+
+<div class="viewcode-block" id="NormalizationConstants"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.NormalizationConstants">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NormalizationConstants</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Container to hold normalization constant.</span>
+
+<span class="sd">    They are the highest and</span>
+<span class="sd">    lowest signals measured, corresponding to pinched-off and open signals.</span>
+<span class="sd">    They are typically measured by setting all gates to their lowest allowed</span>
+<span class="sd">    values to measure the lower bound, while the upper bound is measured with</span>
+<span class="sd">    all gates set to their highest allowed voltages.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        transport: constants for DC transport.</span>
+<span class="sd">        sensing: constants for charge sensing (transport</span>
+<span class="sd">            or other).</span>
+<span class="sd">        rf: constants for reflectometry measurements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">transport</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="n">sensing</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="n">rf</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NormalizationConstants.update"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.NormalizationConstants.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_constants</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">NormalizationConstants</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Updates normalization constant. Raises an error if input is not a</span>
+<span class="sd">        dict or NormalizationConstants instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_constants: new normalization</span>
+<span class="sd">                constants. If they don&#39;t contain all constants, only those</span>
+<span class="sd">                specified are updated with all other keeping their previous</span>
+<span class="sd">                values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_constants</span><span class="p">,</span> <span class="n">NormalizationConstants</span><span class="p">):</span>
+            <span class="n">new_constants_dict</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">new_constants</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_constants</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">new_constants_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">new_constants</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid normalization constants. Use </span><span class="se">\</span>
+<span class="s1">                NormalizationConstants or a Dict instead.&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">read_type</span><span class="p">,</span> <span class="n">constant</span> <span class="ow">in</span> <span class="n">new_constants_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">constant</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Wrong normalization constant item type, </span><span class="se">\</span>
+<span class="s1">                    expect list or tuple.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid normalization constant identifier, </span><span class="se">\</span>
+<span class="s1">                    use one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">constant</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Readout"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Readout">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Readout</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Container grouping readout of a device.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        transport: parameter to read out for DC transport.</span>
+<span class="sd">        sensing: parameter to read out for charge sensing</span>
+<span class="sd">            (transport or other).</span>
+<span class="sd">        rf: parameter to read out for reflectometry</span>
+<span class="sd">            measurements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transport</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">GroupedParameter</span><span class="p">,</span> <span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sensing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">GroupedParameter</span><span class="p">,</span> <span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rf</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">GroupedParameter</span><span class="p">,</span> <span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Readout.available_readout"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Readout.available_readout">[docs]</a>    <span class="k">def</span> <span class="nf">available_readout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GroupedParameter</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets readout parameters which are not None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict: mapping string identifier, e.g. &quot;transport&quot; onto a QCoDeS</span>
+<span class="sd">                GroupedParameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ReadoutMethods</span><span class="o">.</span><span class="n">names</span><span class="p">():</span>
+            <span class="n">readout</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">readout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">readout</span>
+        <span class="k">return</span> <span class="n">param_dict</span></div>
+
+<div class="viewcode-block" id="Readout.get_parameters"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Readout.get_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GroupedParameter</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets list of parameters to read out.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of those GroupedParameters which are not None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_readout</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Readout.as_name_dict"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Readout.as_name_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_name_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets readout parameter names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: mapping of string identifiers, e.g. &#39;transport&#39; onto the</span>
+<span class="sd">                GroupParameter&#39;s full name (also string).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ReadoutMethods</span><span class="o">.</span><span class="n">names</span><span class="p">():</span>
+            <span class="n">readout</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">readout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">param_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">readout</span><span class="o">.</span><span class="n">full_name</span>
+        <span class="k">return</span> <span class="n">param_dict</span></div></div>
+
+
+<div class="viewcode-block" id="ReadoutMethods"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.ReadoutMethods">[docs]</a><span class="k">class</span> <span class="nc">ReadoutMethods</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enumerates readout methods used in nanotune.&quot;&quot;&quot;</span>
+    <span class="n">transport</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sensing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">rf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="ReadoutMethods.list"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.ReadoutMethods.list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets attribute values as a list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>  <span class="c1"># type: ignore</span></div>
+
+<div class="viewcode-block" id="ReadoutMethods.names"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.ReadoutMethods.names">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets list of attribute names (strings).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">(</span><span class="n">DelegateInstrument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Device abstraction with attributes and methods for (dot) tuning.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        name: string identifier, used e.g. when saving tuning results.</span>
+<span class="sd">        readout: readout parameters. One QCoDeS GroupedParameter for</span>
+<span class="sd">            each readout method (transport, sensing, rf).</span>
+<span class="sd">        gates: list of gates; instances of DeviceChannel</span>
+<span class="sd">        ohmics: list of ohmics; instances of DeviceChannel</span>
+<span class="sd">        &lt;each gate&gt;: each gate is added as an attribute with its name, eg.</span>
+<span class="sd">            device.top_barrier.</span>
+<span class="sd">        &lt;each ohmic&gt;: each ohmic is added as an attribute with its name, eg.</span>
+<span class="sd">            device.left_ohmic.</span>
+<span class="sd">        parameters: mapping parameter names onto parameters, of all</span>
+<span class="sd">            parameters.</span>
+<span class="sd">        initial_valid_ranges: dict mapping gate IDs onto the gate&#39;s</span>
+<span class="sd">            initial valid ranges. This is a valid range known in advance,</span>
+<span class="sd">            before any tuning happens. Defaults to the gate&#39;s safety range if</span>
+<span class="sd">            not specified.</span>
+<span class="sd">        transition_voltages: dict mapping gate IDs onto the gate&#39;s</span>
+<span class="sd">            transition voltage. This voltage is typically determined through a</span>
+<span class="sd">            fit and can depend on the voltages of other gates.</span>
+<span class="sd">        current_valid_ranges: dict mapping gate IDs onto the gate&#39;s</span>
+<span class="sd">            current valid range. These ranges will most probably depend on</span>
+<span class="sd">            voltaged of other gates and will be updated during tuning. These</span>
+<span class="sd">            are the ranges which will be swept during measurements. They</span>
+<span class="sd">            represent the voltage range in which interesting/desired features</span>
+<span class="sd">            are expected.</span>
+<span class="sd">        main_readout_method: a ReadoutMethods item indicating</span>
+<span class="sd">            which readout signal should be used for tuning decisions.</span>
+<span class="sd">            It is added to static metadata.</span>
+<span class="sd">        normalization_constants: normalization</span>
+<span class="sd">            constants keeping track of highest and lowest signals recorded for</span>
+<span class="sd">            all specified readout methods. Required for correct classification</span>
+<span class="sd">            and thus need to be updated when settings on measurement</span>
+<span class="sd">            instruments change. They are saved to static metadata.</span>
+<span class="sd">        quality: quality of device, typically determined during</span>
+<span class="sd">            characterization. Only good devices will be tuned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">readout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">main_readout_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ReadoutMethods</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ReadoutMethods</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span>
+        <span class="n">initial_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">set_initial_values_on_load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">device_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">initial_valid_ranges</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">current_valid_ranges</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">normalization_constants</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">NormalizationConstants</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">transition_voltages</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Device init method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: instrument/device name.</span>
+<span class="sd">            station: station containing the real instrument that</span>
+<span class="sd">                is used to get the endpoint parameters.</span>
+<span class="sd">            parameters: mapping from the name of a parameter to the sequence</span>
+<span class="sd">                of source parameters that it points to.</span>
+<span class="sd">            channels: mapping from channel name to inputs to `DeviceChannel`,</span>
+<span class="sd">                such as the instrument channel, e.g. DAC channel, and `gate_id`.</span>
+<span class="sd">            readout: mapping from readout type, e.g. `transport` to the</span>
+<span class="sd">                respective parameters. The type has to be one of</span>
+<span class="sd">                the `ReadoutMethods` items.</span>
+<span class="sd">            main_readout_method: the readout method to</span>
+<span class="sd">                use for decision making. If more than one is being recorded,</span>
+<span class="sd">                fitting and classification result of only one will be taken</span>
+<span class="sd">                into account when making decisions during tuning.</span>
+<span class="sd">            initial_values: Default values to set on the</span>
+<span class="sd">                delegate instrument&#39;s parameters. Defaults to None (no initial</span>
+<span class="sd">                values are specified or set).</span>
+<span class="sd">            set_initial_values_on_load: Flag to set initial values when the</span>
+<span class="sd">                instrument is loaded. Defaults to False.</span>
+<span class="sd">            device_type: type of device, e.g. &#39;doubledot_2D&#39;.</span>
+<span class="sd">            initial_valid_ranges: mapping from gate IDs (int) to tuples</span>
+<span class="sd">                of voltages. If known, these valid ranges within</span>
+<span class="sd">                which to tune. Will be set to each gate&#39;s safety range if not</span>
+<span class="sd">                specified.</span>
+<span class="sd">            current_valid_ranges: mapping from gate IDs (int) to tuples</span>
+<span class="sd">                of voltages. If known, these are the current ranges within</span>
+<span class="sd">                which to tune. Can be used if the device needs to be</span>
+<span class="sd">                (re-)loaded in the middle of a tune-up. Will be set to each</span>
+<span class="sd">                gate&#39;s safety range if not specified.</span>
+<span class="sd">            normalization_constants: normalization</span>
+<span class="sd">                constants keeping track of highest and lowest signals recorded</span>
+<span class="sd">                for all specified readout methods. Required for correct</span>
+<span class="sd">                classification and thus need to be updated when settings on</span>
+<span class="sd">                measurement instruments change. They are saved to static</span>
+<span class="sd">                metadata.</span>
+<span class="sd">            transition_voltages: mapping from gate IDs onto their</span>
+<span class="sd">                current transition voltage. Can be used if the device needs to</span>
+<span class="sd">                be (re-)loaded in the middle of a tune-up.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">_add_station_and_label_to_channel_init</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">station</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">,</span>
+            <span class="n">channels</span><span class="p">,</span>
+            <span class="n">initial_values</span><span class="p">,</span>
+            <span class="n">set_initial_values_on_load</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device_type&#39;</span><span class="p">:</span> <span class="n">device_type</span><span class="p">},</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">ohmics</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_gate_labels</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_gates_dict</span><span class="p">,</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_ohmics_dict</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_channel_lists</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">readout</span> <span class="o">=</span> <span class="n">Readout</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">readout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">param_names</span><span class="p">,</span> <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">readout</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+            <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">param_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ReadoutMethods</span><span class="o">.</span><span class="n">names</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid readout method key. Use one of </span><span class="se">\</span>
+<span class="s2">                        </span><span class="si">{</span><span class="n">ReadoutMethods</span><span class="o">.</span><span class="n">names</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_create_and_add_parameter</span><span class="p">(</span>
+                    <span class="n">param_name</span><span class="p">,</span>
+                    <span class="n">station</span><span class="p">,</span>
+                    <span class="n">path</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;readout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="o">.</span><span class="n">as_name_dict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">main_readout_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_readout_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">ReadoutMethods</span><span class="p">,</span> <span class="n">main_readout_method</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_readout_method</span> <span class="o">=</span> <span class="n">main_readout_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;main_readout_method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_readout_method</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">initial_valid_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">init_valid_ranges_renamed</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+                <span class="n">gate_id</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span>
+                <span class="k">assert</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">init_valid_ranges_renamed</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">init_valid_ranges_renamed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rename_gate_identifier</span><span class="p">(</span>
+                <span class="n">initial_valid_ranges</span>
+            <span class="p">)</span>
+            <span class="n">init_valid_ranges_renamed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_missing_voltage_ranges</span><span class="p">(</span>
+                <span class="n">init_valid_ranges_renamed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_valid_ranges</span><span class="p">:</span> <span class="n">voltage_range_type</span> <span class="o">=</span> <span class="n">init_valid_ranges_renamed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;initial_valid_ranges&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;initial valid ranges&quot;</span><span class="p">,</span>
+            <span class="n">docstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_initial_valid_ranges</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_initial_valid_ranges</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">init_valid_ranges_renamed</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Dict</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;device quality&quot;</span><span class="p">,</span>
+            <span class="n">docstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span> <span class="o">=</span> <span class="n">NormalizationConstants</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">normalization_constants</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">normalization_constants</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_valid_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_valid_ranges_renamed</span> <span class="o">=</span> <span class="n">init_valid_ranges_renamed</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_valid_ranges_renamed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rename_gate_identifier</span><span class="p">(</span>
+                <span class="n">current_valid_ranges</span>
+            <span class="p">)</span>
+            <span class="n">current_valid_ranges_renamed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_missing_voltage_ranges</span><span class="p">(</span>
+                <span class="n">current_valid_ranges_renamed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_valid_ranges</span> <span class="o">=</span> <span class="n">current_valid_ranges_renamed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;current_valid_ranges&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;current valid ranges&quot;</span><span class="p">,</span>
+            <span class="n">docstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_current_valid_ranges</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_valid_ranges</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">current_valid_ranges_renamed</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Dict</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">gate_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gate_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Skipping gate without gate_id.&quot;</span><span class="p">)</span>
+        <span class="n">transition_voltages_renamed</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">gate_ids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transition_voltages</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transition_voltages_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rename_gate_identifier</span><span class="p">(</span>
+                <span class="n">transition_voltages</span>
+            <span class="p">)</span>
+            <span class="n">transition_voltages_renamed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">transition_voltages_update</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltages</span> <span class="o">=</span> <span class="n">transition_voltages_renamed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;transition_voltages&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;gate transition voltages&quot;</span><span class="p">,</span>
+            <span class="n">docstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_transition_voltages</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_transition_voltages</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">transition_voltages_renamed</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Dict</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">normalization_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NormalizationConstants</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span>
+
+    <span class="nd">@normalization_constants</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">normalization_constants</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_constants</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">NormalizationConstants</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_constants</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s1">&#39;normalization_constants&#39;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalization_constants</span><span class="p">)}</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">main_readout_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReadoutMethods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_readout_method</span>
+
+    <span class="nd">@main_readout_method</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">main_readout_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">readout_method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">readout_method</span><span class="p">,</span> <span class="n">ReadoutMethods</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown main readout method.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span> <span class="n">readout_method</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Main readout method </span><span class="si">{</span><span class="n">readout_method</span><span class="si">}</span><span class="s1"> not found for &#39;</span> \
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_readout_method</span>
+
+<div class="viewcode-block" id="Device.ground_gates"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.ground_gates">[docs]</a>    <span class="k">def</span> <span class="nf">ground_gates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets all gate relays to ground.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="n">gate</span><span class="o">.</span><span class="n">ground</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DeviceChannel </span><span class="si">{}</span><span class="s2"> grounded.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Device.float_ohmics"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.float_ohmics">[docs]</a>    <span class="k">def</span> <span class="nf">float_ohmics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets all ohmic relays to float.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ohmic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ohmics</span><span class="p">:</span>
+            <span class="n">ohmic</span><span class="o">.</span><span class="n">float_relay</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Ohmic </span><span class="si">{}</span><span class="s2"> floating.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ohmic</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Device.get_gate_status"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.get_gate_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_gate_status</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets current voltages and valid ranges of all gates in a readable</span>
+<span class="sd">        form.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: mapping from gate labels to mapping with current valid ranges</span>
+<span class="sd">            and voltages. Example:</span>
+<span class="sd">            `{top_barrier: {current_valid_range: (-0.9, -0.7), voltage: -0.81}}`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_gate_status</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">current_valid_ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="n">current_gate_status</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="n">current_valid_ranges</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span>
+            <span class="n">current_gate_status</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">label</span><span class="p">][</span><span class="s2">&quot;current_valid_range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span>
+            <span class="n">current_gate_status</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">label</span><span class="p">][</span><span class="s2">&quot;voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">current_gate_status</span></div>
+
+<div class="viewcode-block" id="Device.all_gates_to_highest"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.all_gates_to_highest">[docs]</a>    <span class="k">def</span> <span class="nf">all_gates_to_highest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets all gates to their upper safety limit, the heighest allowed</span>
+<span class="sd">        voltage. Voltages are ramped if `gate.use_ramp` is set to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Device.all_gates_to_lowest"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.all_gates_to_lowest">[docs]</a>    <span class="k">def</span> <span class="nf">all_gates_to_lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets all gates to their lower safety limit, the lowest allowed</span>
+<span class="sd">        voltage. Voltages are ramped if `gate.use_ramp` is set to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_initial_valid_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">voltage_range_type</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_valid_ranges</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_initial_valid_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_range</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_valid_ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_voltage_range_setter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_valid_ranges</span><span class="p">,</span> <span class="n">new_range</span><span class="p">,</span> <span class="s1">&#39;initial valid range&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_current_valid_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">voltage_range_type</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_valid_ranges</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_current_valid_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_range</span><span class="p">:</span> <span class="n">voltage_range_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_valid_ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_voltage_range_setter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_valid_ranges</span><span class="p">,</span> <span class="n">new_range</span><span class="p">,</span> <span class="s1">&#39;current valid range&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_voltage_range_setter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">voltage_ranges</span><span class="p">:</span> <span class="n">voltage_range_type</span><span class="p">,</span>
+        <span class="n">new_sub_dict</span><span class="p">:</span> <span class="n">voltage_range_type</span><span class="p">,</span>
+        <span class="n">range_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;voltage range&#39;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">voltage_range_type</span><span class="p">:</span>
+        <span class="n">new_voltage_ranges</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">voltage_ranges</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">gate_identifier</span><span class="p">,</span> <span class="n">new_range</span> <span class="ow">in</span> <span class="n">new_sub_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gate_id</span><span class="p">(</span><span class="n">gate_identifier</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Gate </span><span class="si">{</span><span class="n">gate_identifier</span><span class="si">}</span><span class="s1">: no gate_id.&#39;</span><span class="p">)</span>
+            <span class="n">sfty_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gates_dict</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+            <span class="n">new_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_update_new_voltage_range</span><span class="p">(</span>
+                <span class="n">new_range</span><span class="p">,</span> <span class="n">sfty_range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gates_dict</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">voltage</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">new_voltage_ranges</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">gate_id</span><span class="p">:</span> <span class="n">new_range</span><span class="p">})</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: new </span><span class="si">{</span><span class="n">range_label</span><span class="si">}</span><span class="s2"> set </span><span class="se">\</span>
+<span class="s2">                    to </span><span class="si">{</span><span class="n">new_range</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_voltage_ranges</span>
+
+    <span class="k">def</span> <span class="nf">_get_transition_voltages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltages</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_transition_voltages</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_transition_voltages</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        will update existing dict, not simply over write</span>
+<span class="sd">        and set current valid ranges to ranges stored in current_valid_ranges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">gate_identifier</span><span class="p">,</span> <span class="n">new_T</span> <span class="ow">in</span> <span class="n">new_transition_voltages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gate_id</span><span class="p">(</span><span class="n">gate_identifier</span><span class="p">)</span>
+            <span class="n">sfty_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">new_T</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_T</span> <span class="o">&gt;</span> <span class="n">sfty_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">new_T</span> <span class="o">=</span> <span class="n">sfty_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Setting invalid transition voltage for </span><span class="se">\</span>
+<span class="s2">                        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gate_labels</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\</span>
+<span class="s2">                        Taking upper safety voltage. &quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_T</span> <span class="o">&lt;</span> <span class="n">sfty_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">new_T</span> <span class="o">=</span> <span class="n">sfty_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Setting invalid transition voltage for </span><span class="se">\</span>
+<span class="s2">                        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_gate_labels</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\</span>
+<span class="s2">                        Taking lower safety voltage. &quot;</span>
+                    <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltages</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">gate_id</span><span class="p">:</span> <span class="n">new_T</span><span class="p">})</span>
+
+<div class="viewcode-block" id="Device.rename_gate_identifier"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.rename_gate_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">rename_gate_identifier</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mapping_to_rename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="n">Mapping</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+            <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+            <span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+        <span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Renames keys of mappings which are some gate identifier to gate</span>
+<span class="sd">        IDs. Example: `{&#39;top_barrier&#39;: (-0.9, -0.7)}` -&gt; `{0: (-0.9, -0.7)}`,</span>
+<span class="sd">        where 0 is the top barrier&#39;s gate ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mapping: mapping from either gate ID, gate label or DeviceChannel</span>
+<span class="sd">                instance onto some data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mapping: mapping from gate ID onto the unchanged data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">gate_ref</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">mapping_to_rename</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gate_id</span><span class="p">(</span><span class="n">gate_ref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_dict</span><span class="p">[</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Skipping gate without gate_id.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_dict</span></div>
+
+<div class="viewcode-block" id="Device.initialize_channel_lists"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.initialize_channel_lists">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_channel_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">channels_input_mapping</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DeviceChannel</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DeviceChannel</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Compiled gate and ohmics list as well as mapping between gate IDs</span>
+<span class="sd">        and the respective DeviceChannel instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">gate_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ohmic_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">gate_labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">gates_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ohmics_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">channels_input_mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">channels_input_mapping</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="n">channels_input_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">channel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">gate_dict</span><span class="p">[</span><span class="n">channel</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+                    <span class="n">gate_labels</span><span class="p">[</span><span class="n">channel</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_name</span>
+                <span class="k">elif</span> <span class="n">channel</span><span class="o">.</span><span class="n">ohmic_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ohmic_dict</span><span class="p">[</span><span class="n">channel</span><span class="o">.</span><span class="n">ohmic_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+            <span class="k">for</span> <span class="n">gate_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">gate_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">gates_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate_dict</span><span class="p">[</span><span class="n">gate_id</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">ohmic_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ohmic_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">ohmics_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ohmic_dict</span><span class="p">[</span><span class="n">ohmic_id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">gates_list</span><span class="p">,</span> <span class="n">ohmics_list</span><span class="p">,</span> <span class="n">gate_labels</span><span class="p">,</span> <span class="n">gate_dict</span><span class="p">,</span> <span class="n">ohmic_dict</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_and_update_new_voltage_range</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">safety_voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">current_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_range</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_range</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Wrong voltage range type.&#39;</span><span class="p">)</span>
+        <span class="n">new_range</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">new_range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_voltage</span> <span class="o">&lt;</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">current_voltage</span> <span class="o">&gt;</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Current voltage not within new valid range.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">new_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;New range out of safety range. Taking upper safety limit.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;New lower voltage range is higher than upper safety </span><span class="se">\</span>
+<span class="s2">                        limit. Something seems quite wrong.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">new_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;New range out of safety range. Taking lower safety limit.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;New upper voltage range is lower than upper </span><span class="se">\</span>
+<span class="s2">                    safety limit. Something seems quite wrong.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_range</span>
+
+<div class="viewcode-block" id="Device.get_gate_id"><a class="viewcode-back" href="../../../api/device/device.html#nanotune.device.device.Device.get_gate_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_gate_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gate_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">DeviceChannel</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate_identifier</span><span class="p">,</span> <span class="n">DeviceChannel</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gate_identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gate not found in device.gates.&quot;</span><span class="p">)</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="n">gate_identifier</span><span class="o">.</span><span class="n">gate_id</span>
+            <span class="k">assert</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate_identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gate_identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gate_labels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown gate ID - gate not found in </span><span class="se">\</span>
+<span class="s2">                    device.gates.&quot;</span><span class="p">)</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="n">gate_identifier</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate_identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gate_identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gate_labels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown gate label - gate not found in </span><span class="se">\</span>
+<span class="s2">                    device.gates.&quot;</span><span class="p">)</span>
+            <span class="n">gate_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gate_identifier</span><span class="p">)</span><span class="o">.</span><span class="n">gate_id</span>
+            <span class="k">assert</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid gate specifier. Use gate_id, label or </span><span class="se">\</span>
+<span class="s2">                the channel itself.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gate_id</span></div>
+
+    <span class="k">def</span> <span class="nf">_fill_missing_voltage_ranges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">assert</span> <span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">current_values</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">current_values</span></div>
+
+
+<span class="k">def</span> <span class="nf">_add_station_and_label_to_channel_init</span><span class="p">(</span>
+    <span class="n">station</span><span class="p">:</span> <span class="n">qc</span><span class="o">.</span><span class="n">Station</span><span class="p">,</span>
+    <span class="n">channels</span><span class="p">:</span> <span class="n">ChannelsType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChannelsType</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_value</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel_value</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;station&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channel_value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">channel_value</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channel_value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">channel_value</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">return</span> <span class="n">channels</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

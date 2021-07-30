@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device_channel &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device.device_channel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device.device_channel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isclose</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Generator</span>
+
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes</span> <span class="kn">import</span> <span class="n">InstrumentChannel</span>
+<span class="kn">from</span> <span class="nn">qcodes</span> <span class="kn">import</span> <span class="n">validators</span> <span class="k">as</span> <span class="n">vals</span>
+<span class="kn">from</span> <span class="nn">qcodes.station</span> <span class="kn">import</span> <span class="n">Station</span>
+
+<span class="kn">from</span> <span class="nn">nanotune.drivers.dac_interface</span> <span class="kn">import</span> <span class="n">DACInterface</span><span class="p">,</span> <span class="n">RelayState</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DeviceChannel"><a class="viewcode-back" href="../../../api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel">[docs]</a><span class="k">class</span> <span class="nc">DeviceChannel</span><span class="p">(</span><span class="n">InstrumentChannel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class representing a channel of a device such as gate or ohmic.</span>
+
+<span class="sd">    It emulates an existing intrument channel and adds convenience</span>
+<span class="sd">    functionality for tuning. It implements its own voltage setting method</span>
+<span class="sd">    which, for example, checks whether the value is within the safety range</span>
+<span class="sd">    before starting to set anything - as opposed to qcodes. The emulated</span>
+<span class="sd">    channel must be a channel of a subclass of</span>
+<span class="sd">    `nanotune.drivers.dac_interface.DACInterface`. When setting a voltage,</span>
+<span class="sd">    it can be either ramped or set, specified by the `use_ramp` parameter.</span>
+<span class="sd">    A hardware ramp is performed if the underlying instrument channel</span>
+<span class="sd">    supports it, which is indicated by the `supports_hardware_ramp`</span>
+<span class="sd">    property. Otherwise QCoDeS&#39; software ramp using delay and step</span>
+<span class="sd">    properties is used.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        gate_id: Integer identifier of the gate with respect to the device</span>
+<span class="sd">            layout. Not to be set if it is an ohmic.</span>
+<span class="sd">        ohmic_id: Integer identifier of the ohmic with respect to the</span>
+<span class="sd">            device layout. Not to be set if it is a gate.</span>
+<span class="sd">        label: String identifier to be printed on plots.</span>
+<span class="sd">        safety_voltage_range: Range of voltages within which safe operation</span>
+<span class="sd">            is guaranteed.</span>
+<span class="sd">        use_ramp: Whether voltages should be ramped.</span>
+<span class="sd">        ramp_rate: Rate at which voltages should be ramped. In V/s.</span>
+<span class="sd">        max_voltage_step: Maximum voltage difference to be applied in a</span>
+<span class="sd">            single step. Note that this step does not apply when `use_ramp`</span>
+<span class="sd">            is set to False.</span>
+<span class="sd">        post_delay: Delay to wait after a voltage is set, in seconds. If</span>
+<span class="sd">            ramping in software (supports_hardware_ramp == False and</span>
+<span class="sd">            use_ramp() == True and thus using QCoDeS&#39; delay and step</span>
+<span class="sd">            parameter) and `inter_delay` is not set, then `post_delay` will</span>
+<span class="sd">            be used.</span>
+<span class="sd">        inter_delay: Delay to wait between voltage setpoints, in seconds.</span>
+<span class="sd">            If set to zero but `post_delay` is not zero, software ramp</span>
+<span class="sd">            (supports_hardware_ramp == False and use_ramp() == True) will</span>
+<span class="sd">            take the `post_delay` as delay between sets.</span>
+<span class="sd">        supports_hardware_ramp: Bool indicating whether under the</span>
+<span class="sd">            underlying instrument channel supports voltage ramping in</span>
+<span class="sd">            hardware.</span>
+<span class="sd">        relay_state: State of DAC relay, one of</span>
+<span class="sd">            `nanotune.dac_interface.RelayState`&#39;s members.</span>
+<span class="sd">        frequency: Frequency parameter, part of the AWG functionality of</span>
+<span class="sd">            the underlying channel (if supported - as defined by the</span>
+<span class="sd">            instance of DACInterface instance).</span>
+<span class="sd">        offset: Offset parameter, part of the AWG functionality of</span>
+<span class="sd">            the underlying channel (if supported - as defined by the</span>
+<span class="sd">            instance of DACInterface instance).</span>
+<span class="sd">        amplitude: Amplitude parameter, part of the AWG functionality of</span>
+<span class="sd">            the underlying channel (if supported - as defined by the</span>
+<span class="sd">            instance of DACInterface instance).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">station</span><span class="p">:</span> <span class="n">qc</span><span class="o">.</span><span class="n">Station</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">InstrumentChannel</span><span class="p">],</span>
+        <span class="n">gate_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ohmic_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;device_channel&quot;</span><span class="p">,</span>
+        <span class="n">safety_voltage_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">use_ramp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">ramp_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_voltage_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">post_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">inter_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;DeviceChannel init.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel: existing instrument channel, e.g. of a DAC: dac.ch01.</span>
+<span class="sd">                Either a string or instrument channel instance.</span>
+<span class="sd">            gate_id: Integer identifier of the gate with respect to the device</span>
+<span class="sd">                layout. Not to be set if it is an ohmic.</span>
+<span class="sd">            ohmic_id: Integer identifier of the ohmic with respect to the</span>
+<span class="sd">                device layout. Not to be set if it is a gate.</span>
+<span class="sd">            label: String identifier to be printed on plots.</span>
+<span class="sd">            safety_voltage_range: Range of voltages within which safe operation</span>
+<span class="sd">                is guaranteed.</span>
+<span class="sd">            use_ramp: Whether voltages should be ramped.</span>
+<span class="sd">            ramp_rate: Rate at which voltages should be ramped. In V/s.</span>
+<span class="sd">            max_voltage_step: Maximum voltage difference to be applied in a</span>
+<span class="sd">                single step. Note that this step does not apply when `use_ramp`</span>
+<span class="sd">                is set to False.</span>
+<span class="sd">            post_delay: Delay to wait after a voltage is set, in seconds. If</span>
+<span class="sd">                ramping in software (supports_hardware_ramp == False and</span>
+<span class="sd">                use_ramp() == True and thus using QCoDeS&#39; delay and step</span>
+<span class="sd">                parameter) and `inter_delay` is not set, then `post_delay` will</span>
+<span class="sd">                be used.</span>
+<span class="sd">            inter_delay: Delay to wait between voltage setpoints, in seconds.</span>
+<span class="sd">                If set to zero but `post_delay` is not zero, software ramp</span>
+<span class="sd">                (supports_hardware_ramp == False and use_ramp() == True) will</span>
+<span class="sd">                take the `post_delay` as delay between sets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_channel_instance</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gate_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ohmic_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Initializing DeviceChannel of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="si">}</span><span class="s2"> as both gate </span><span class="se">\</span>
+<span class="s2">                    and ohmic.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">channel_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">channel_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">DACInterface</span><span class="p">)</span>
+
+        <span class="n">static_metadata</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">static_metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;gate_id&#39;</span><span class="p">:</span><span class="n">gate_id</span><span class="p">,</span>
+            <span class="s1">&#39;ohmic_id&#39;</span><span class="p">:</span> <span class="n">ohmic_id</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;parent&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">parent</span>
+
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">static_metadata</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gate_id</span> <span class="o">=</span> <span class="n">gate_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ohmic_id</span> <span class="o">=</span> <span class="n">ohmic_id</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> voltage&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_voltage</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">*</span><span class="n">safety_voltage_range</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span> <span class="o">=</span> <span class="n">inter_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_delay</span> <span class="o">=</span> <span class="n">post_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span> <span class="o">=</span> <span class="n">max_voltage_step</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;safety_voltage_range&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> voltage safety range&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_safety_voltage_range</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_safety_voltage_range</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">safety_voltage_range</span><span class="p">),</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Lists</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ramp_rate&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> ramp rate&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_ramp_rate</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_ramp_rate</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">ramp_rate</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;use_ramp&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> ramp setting&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_ramp</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ramp</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">use_ramp</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Bool</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relay_state&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> DAC channel relay state&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_relay_state</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_relay_state</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_relay_state</span><span class="p">(),</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">RelayState</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;amplitude&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> amplitude&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_amplitude</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_amplitude</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> offset&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_offset</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_offset</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">*</span><span class="n">safety_voltage_range</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;frequency&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> frequency&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_frequency</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_frequency</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gate_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Device layout ID of a gate.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gate_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ohmic_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Device layout ID of an ohmic.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ohmic_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">supports_hardware_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Boolean indication whether the underlying instrument channel</span>
+<span class="sd">        supports hardware ramp.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">supports_hardware_ramp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">post_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Waiting time in seconds after a sequence of set operations.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_voltage_post_delay</span><span class="p">()</span>
+
+    <span class="nd">@post_delay</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">post_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_voltage_post_delay</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inter_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Waiting time in seconds between set operations.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_voltage_inter_delay</span><span class="p">()</span>
+
+    <span class="nd">@inter_delay</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">inter_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_voltage_inter_delay</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Maximum voltage difference between consecutive voltage sets. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">get_voltage_step</span><span class="p">()</span>
+
+    <span class="nd">@max_voltage_step</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">max_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_voltage_step</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeviceChannel.ground"><a class="viewcode-back" href="../../../api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel.ground">[docs]</a>    <span class="k">def</span> <span class="nf">ground</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set relay state to ground.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relay_state</span><span class="p">(</span><span class="n">RelayState</span><span class="o">.</span><span class="n">ground</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeviceChannel.float_relay"><a class="viewcode-back" href="../../../api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel.float_relay">[docs]</a>    <span class="k">def</span> <span class="nf">float_relay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set relay state to float.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relay_state</span><span class="p">(</span><span class="n">RelayState</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeviceChannel.set_voltage"><a class="viewcode-back" href="../../../api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel.set_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Voltage setter.</span>
+
+<span class="sd">        It checks if the new value is within safety ranges</span>
+<span class="sd">        before setting anything - as opposed to qcodes, which throws an error</span>
+<span class="sd">        only once the safety range is reached.</span>
+<span class="sd">        It ramps to the new value if ramping is enabled, using either software</span>
+<span class="sd">        or hardware ramps - depending on `supports_hardware_ramp`. It&#39;s a</span>
+<span class="sd">        blocking ramp.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            new_value: New voltage value to set.</span>
+<span class="sd">            tol: Tolerance in Volt. Used to check if ramp has finished.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">safe_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">new_value</span> <span class="o">&lt;</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">tol</span> <span class="ow">or</span> <span class="n">new_value</span> <span class="o">&gt;</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Setting voltage outside of permitted range: </span><span class="se">\</span>
+<span class="s2">                    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_hardware_ramp</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_ramp</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">ramp_voltage</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">isclose</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">(),</span> <span class="n">abs_tol</span><span class="o">=</span><span class="n">tol</span><span class="p">):</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post_delay</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_hardware_ramp</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_ramp</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_delay</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_delay</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">delay</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Using software ramp without max_voltage_step </span><span class="se">\</span>
+<span class="s2">                    or inter_delay set.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_ramp</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">()</span> <span class="o">-</span> <span class="n">new_value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Setting voltage in steps larger than </span><span class="se">\</span>
+<span class="s2">                    max_voltage_step. Decrease </span><span class="se">\</span>
+<span class="s2">                    max_voltage_step or set use_ramp(True).&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_temp_inter_delay_and_step</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown voltage setting mode. Should I ramp or not?&quot;</span>
+            <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_safety_voltage_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_safety_voltage_range</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_safety_voltage_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid safety voltage range.&quot;</span><span class="p">)</span>
+
+        <span class="n">new_range</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">new_range</span><span class="p">)</span>
+        <span class="n">current_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_v</span> <span class="o">&lt;</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">current_v</span> <span class="o">&gt;</span> <span class="n">new_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Current voltage not within new safety range.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_safety_voltage_range</span> <span class="o">=</span> <span class="n">new_range</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: changing safety range to </span><span class="si">{</span><span class="n">new_range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_voltage_limit</span><span class="p">(</span><span class="n">new_range</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">*</span><span class="n">new_range</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">safe_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">new_offset</span> <span class="o">&gt;=</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">new_offset</span> <span class="o">&lt;=</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="o">.</span><span class="n">set_offset</span><span class="p">(</span><span class="n">new_offset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">: offset voltage outside of safety range.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ramp</span>
+
+    <span class="k">def</span> <span class="nf">_set_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">on</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> will not ramp voltages. Make sure to </span><span class="se">\</span>
+<span class="s2">                choose a reasonable `max_voltage_step`.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ramp</span> <span class="o">=</span> <span class="n">on</span>
+
+    <span class="k">def</span> <span class="nf">_get_channel_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">InstrumentChannel</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InstrumentChannel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">_parse_path</span><span class="p">(</span><span class="n">parent</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">elem</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">child</span>
+                <span class="k">return</span> <span class="n">_parse_path</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">elem</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+            <span class="k">return</span> <span class="n">_parse_path</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">InstrumentChannel</span><span class="p">):</span>
+            <span class="n">instr_channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid type for &quot;channel&quot; input.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instr_channel</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">_set_temp_inter_delay_and_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inter_delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">max_voltage_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="n">current_inter_delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span>
+        <span class="n">current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span> <span class="o">=</span> <span class="n">inter_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span> <span class="o">=</span> <span class="n">max_voltage_step</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inter_delay</span> <span class="o">=</span> <span class="n">current_inter_delay</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_voltage_step</span> <span class="o">=</span> <span class="n">current_step</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

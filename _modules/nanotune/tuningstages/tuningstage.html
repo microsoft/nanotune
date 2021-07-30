@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.tuningstages.tuningstage &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.tuningstages.tuningstage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.tuningstages.tuningstage</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="p">(</span><span class="n">load_last_experiment</span><span class="p">,</span>
+                                                 <span class="n">new_experiment</span><span class="p">,</span>
+                                                 <span class="n">load_experiment</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.device_tuner.tuningresult</span> <span class="kn">import</span> <span class="n">TuningResult</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device</span> <span class="kn">import</span> <span class="n">Readout</span>
+
+<span class="kn">from</span> <span class="nn">.base_tasks</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># please update docstrings if import path changes</span>
+    <span class="n">compute_linear_setpoints</span><span class="p">,</span> <span class="n">get_current_voltages</span><span class="p">,</span> <span class="n">iterate_stage</span><span class="p">,</span> <span class="n">plot_fit</span><span class="p">,</span>
+    <span class="n">prepare_metadata</span><span class="p">,</span> <span class="n">print_tuningstage_status</span><span class="p">,</span> <span class="n">run_stage</span><span class="p">,</span>
+    <span class="n">save_extracted_features</span><span class="p">,</span> <span class="n">save_machine_learning_result</span><span class="p">,</span> <span class="n">set_voltages</span><span class="p">,</span>
+    <span class="n">take_data_add_metadata</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.take_data</span> <span class="kn">import</span> <span class="n">ramp_to_setpoint</span>
+<span class="kn">from</span> <span class="nn">nanotune.tuningstages.settings</span> <span class="kn">import</span> <span class="n">DataSettings</span><span class="p">,</span> <span class="n">SetpointSettings</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TuningStage"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage">[docs]</a><span class="k">class</span> <span class="nc">TuningStage</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class implementing the common sequence of a tuning stage.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        stage: String indicating which stage it implements, e.g.</span>
+<span class="sd">            gatecharacterization.</span>
+<span class="sd">        data_settings: Dictionary with information about data, e.g. where it</span>
+<span class="sd">            should be saved and how it should be normalized.</span>
+<span class="sd">            Required fields are &#39;db_name&#39;, &#39;db_folder&#39; and</span>
+<span class="sd">            &#39;normalization_constants&#39;.</span>
+<span class="sd">        setpoint_settings: Dictionary with information required to compute</span>
+<span class="sd">            setpoints. Necessary keys are &#39;current_valid_ranges&#39;,</span>
+<span class="sd">            &#39;safety_voltage_ranges&#39;, &#39;parameters_to_sweep&#39; and &#39;voltage_precision&#39;.</span>
+<span class="sd">        readout: Dictionary mapping string identifiers such as</span>
+<span class="sd">            &#39;transport&#39; to QCoDeS parameters measuring/returning the desired</span>
+<span class="sd">            quantity (e.g. current throught the device).</span>
+<span class="sd">        current_valid_ranges: List of voltages ranges (tuples of floats) to</span>
+<span class="sd">            measure.</span>
+<span class="sd">        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety</span>
+<span class="sd">            limits within which gates don&#39;t blow up.</span>
+<span class="sd">        fit_class: Abstract property, to be specified in child classes. It is</span>
+<span class="sd">            the class that should perform the data fitting, e.g. PinchoffFit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_settings</span><span class="p">:</span> <span class="n">DataSettings</span><span class="p">,</span>
+        <span class="n">setpoint_settings</span><span class="p">:</span> <span class="n">SetpointSettings</span><span class="p">,</span>
+        <span class="n">readout</span><span class="p">:</span> <span class="n">Readout</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the base class of a tuning stage. Voltages to sweep and</span>
+<span class="sd">        safety voltages are determined from the list of parameters in</span>
+<span class="sd">        setpoint_settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stage: String identifier indicating which stage it implements, e.g.</span>
+<span class="sd">                gatecharacterization.</span>
+<span class="sd">            data_settings: Dictionary with information about data, e.g. where</span>
+<span class="sd">                it should be saved and how it should be normalized.</span>
+<span class="sd">                Required fields are &#39;db_name&#39;, &#39;db_folder&#39; and</span>
+<span class="sd">                &#39;normalization_constants&#39;.</span>
+<span class="sd">            setpoint_settings: Dictionary with information required to compute</span>
+<span class="sd">                setpoints. Necessary keys are &#39;current_valid_ranges&#39;,</span>
+<span class="sd">                &#39;safety_voltage_ranges&#39;, &#39;parameters_to_sweep&#39; and</span>
+<span class="sd">                &#39;voltage_precision&#39;.</span>
+<span class="sd">            readout: Dataclass of DelegateParameter used for readout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="n">stage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span> <span class="o">=</span> <span class="n">data_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span> <span class="o">=</span> <span class="n">setpoint_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readout</span> <span class="o">=</span> <span class="n">readout</span>
+
+        <span class="n">ranges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">ranges_to_sweep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_valid_ranges</span> <span class="o">=</span> <span class="n">ranges</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">fit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To be specified in child classes. It is the data fitting</span>
+<span class="sd">        class should be used to perform a fit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TuningStage.conclude_iteration"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.conclude_iteration">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">conclude_iteration</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tuning_result</span><span class="p">:</span> <span class="n">TuningResult</span><span class="p">,</span>
+        <span class="n">current_valid_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">safety_voltage_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">current_iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">max_n_iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Method checking if one iteration of a run_stage measurement cycle has</span>
+<span class="sd">        been successful.</span>
+
+<span class="sd">        An iteration of such a measurement cycle takes data,</span>
+<span class="sd">        performs a machine learning task, verifies and saves the machine</span>
+<span class="sd">        learning result. If a repetition of this cycle is supported, then</span>
+<span class="sd">        `conclude_iteration` determines whether another iteration should take</span>
+<span class="sd">        place and which voltage ranges need to be measured.</span>
+<span class="sd">        Each child class needs to implement the body of this method, tailoring</span>
+<span class="sd">        it to the respective tuning stage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tuning_result: Result of the last run_stage measurement cycle.</span>
+<span class="sd">            current_valid_ranges: Voltage ranges last swept.</span>
+<span class="sd">            safety_voltage_ranges: Safety voltage ranges, i.e. largest possible</span>
+<span class="sd">                range that could be swept.</span>
+<span class="sd">            current_iteration: Number of current iteration.</span>
+<span class="sd">            max_n_iterations: Maximum number of iterations to perform before</span>
+<span class="sd">                abandoning.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether this is the last iteration and the stage is done/to be stopped.</span>
+<span class="sd">            list: New voltage ranges to sweep if the stage is not done.</span>
+<span class="sd">            list: List of strings indicating failure modes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TuningStage.verify_machine_learning_result"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.verify_machine_learning_result">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">verify_machine_learning_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ml_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Verifies if the desired measurement quality or regime has been found.</span>
+<span class="sd">        Needs to be implemented by child classed to account for the different</span>
+<span class="sd">        regimes or measurements they are dealing with.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ml_result: Result returned by ``machine_learning_task``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether the desired outcome has been found.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TuningStage.machine_learning_task"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.machine_learning_task">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">machine_learning_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The machine learning task to perform after a measurement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            run_id: QCoDeS data run ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TuningStage.save_ml_result"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.save_ml_result">[docs]</a>    <span class="k">def</span> <span class="nf">save_ml_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">ml_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Saves the result returned by ```machine_learning_task```: the</span>
+<span class="sd">        extracted features are stored into metadata of the respective dataset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            run_id: QCoDeS data run ID.</span>
+<span class="sd">            ml_result: Result returned by ``machine_learning_task``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">save_extracted_features</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_class</span><span class="p">,</span>
+            <span class="n">run_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
+            <span class="n">db_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_folder</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">save_machine_learning_result</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">ml_result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TuningStage.finish_early"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.finish_early">[docs]</a>    <span class="k">def</span> <span class="nf">finish_early</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_output_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the current data taking can be stopped. E.g. if the device</span>
+<span class="sd">        is pinched off entirely.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_output_dict: Dictionary mapping a string indicating the</span>
+<span class="sd">                readout method to the respective value last measured.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether the current data taking procedure can be stopped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="TuningStage.compute_setpoints"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.compute_setpoints">[docs]</a>    <span class="k">def</span> <span class="nf">compute_setpoints</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_valid_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Computes setpoints for the next measurement. Unless this method is</span>
+<span class="sd">        overwritten in a child class, linearly spaced setpoints are computed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_valid_ranges: Voltages ranges to sweep.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of lists with setpoints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">setpoints</span> <span class="o">=</span> <span class="n">compute_linear_setpoints</span><span class="p">(</span>
+            <span class="n">current_valid_ranges</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">voltage_precision</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">setpoints</span></div>
+
+<div class="viewcode-block" id="TuningStage.show_result"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.show_result">[docs]</a>    <span class="k">def</span> <span class="nf">show_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">plot_result</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">current_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">tuning_result</span><span class="p">:</span> <span class="n">TuningResult</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Displays tuning result and optionally plots the fitting result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plot_result: Bool indicating whether the data fit should be</span>
+<span class="sd">                plotted.</span>
+<span class="sd">            current_id: QCoDeS data run ID.</span>
+<span class="sd">            tuning_result: Result of a tuning stage run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">plot_result</span><span class="p">:</span>
+            <span class="n">plot_fit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fit_class</span><span class="p">,</span>
+                <span class="n">current_id</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
+                <span class="n">db_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_folder</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">print_tuningstage_status</span><span class="p">(</span><span class="n">tuning_result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TuningStage.prepare_nt_metadata"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.prepare_nt_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_nt_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Sets up a metadata dictionary with fields known prior to a</span>
+<span class="sd">        measurement set. Wraps ```prepare_metadata``` in .base_tasks.py.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Metadata dict with fields known prior to a measurement filled</span>
+<span class="sd">                in.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">example_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">device_name</span> <span class="o">=</span> <span class="n">example_param</span><span class="o">.</span><span class="n">name_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nt_meta</span> <span class="o">=</span> <span class="n">prepare_metadata</span><span class="p">(</span>
+            <span class="n">device_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">normalization_constants</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">nt_meta</span></div>
+
+<div class="viewcode-block" id="TuningStage.measure"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameters_to_sweep</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">parameters_to_measure</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">setpoints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Takes 1D or 2D data and saves relevant metadata into the dataset.</span>
+<span class="sd">        Wraps ```take_data_add_metadata``` in .base_tasks.py.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            setpoints: Setpoints to measure.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: QCoDeS data run ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">run_id</span> <span class="o">=</span> <span class="n">take_data_add_metadata</span><span class="p">(</span>
+            <span class="n">parameters_to_sweep</span><span class="p">,</span>
+            <span class="n">parameters_to_measure</span><span class="p">,</span>
+            <span class="n">setpoints</span><span class="p">,</span>
+            <span class="n">finish_early_check</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">finish_early</span><span class="p">,</span>
+            <span class="n">do_at_inner_setpoint</span><span class="o">=</span><span class="n">ramp_to_setpoint</span><span class="p">,</span>
+            <span class="n">pre_measurement_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prepare_nt_metadata</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">run_id</span></div>
+
+<div class="viewcode-block" id="TuningStage.run_stage"><a class="viewcode-back" href="../../../api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.run_stage">[docs]</a>    <span class="k">def</span> <span class="nf">run_stage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">iterate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">plot_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TuningResult</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Performs iterations of a basic measurement cycle of a tuning stage.</span>
+
+<span class="sd">        It wraps ```iterate_stage``` in .base_tasks.py. One measurement cycle</span>
+<span class="sd">        does the following subtasks:</span>
+<span class="sd">        - computes setpoints</span>
+<span class="sd">        - perform the actual measurement, i.e. take data</span>
+<span class="sd">        - perform a machine learning task, e.g. classification</span>
+<span class="sd">        - validate the machine learning result, e.g. check if a good regime was found</span>
+<span class="sd">        - collect all information in a TuningResult instance.</span>
+<span class="sd">        At each iteration, ```conclude_iteration``` check whether another</span>
+<span class="sd">        measurement cycle will be performed.</span>
+<span class="sd">        At the very end, ```clean_up``` does the desired post-measurement task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            iterate:</span>
+<span class="sd">            max_iterations:</span>
+<span class="sd">            plot_result:</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TuningResult: Tuning results of the last iteration, with the</span>
+<span class="sd">                dataids field containing QCoDeS run IDs of all datasets</span>
+<span class="sd">                measured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
+            <span class="n">db_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_folder</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">experiment_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">qcodes_experiment</span> <span class="o">=</span> <span class="n">load_last_experiment</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;No qcodes experiment found. Starting a new &quot;</span>
+                    <span class="s1">&#39;one called &quot;automated_tuning&quot;, with an unknown sample.&#39;</span>
+                <span class="p">)</span>
+                <span class="n">qcodes_experiment</span> <span class="o">=</span> <span class="n">new_experiment</span><span class="p">(</span>
+                    <span class="s2">&quot;automated_tuning&quot;</span><span class="p">,</span> <span class="n">sample_name</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">experiment_id</span> <span class="o">=</span> <span class="n">qcodes_experiment</span><span class="o">.</span><span class="n">exp_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">load_experiment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">experiment_id</span><span class="p">)</span>
+
+        <span class="n">initial_voltages</span> <span class="o">=</span> <span class="n">get_current_voltages</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">parameters_to_sweep</span>
+        <span class="p">)</span>
+
+        <span class="n">run_stage_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_setpoints</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measure</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">machine_learning_task</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_ml_result</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_machine_learning_result</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iterate</span><span class="p">:</span>
+            <span class="n">max_iterations</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">tuning_result</span> <span class="o">=</span> <span class="n">iterate_stage</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">parameters_to_sweep</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">safety_voltage_ranges</span><span class="p">,</span>
+            <span class="n">run_stage</span><span class="p">,</span>
+            <span class="n">run_stage_tasks</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conclude_iteration</span><span class="p">,</span>
+            <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_result</span><span class="p">,</span> <span class="n">plot_result</span><span class="p">),</span>
+            <span class="n">max_iterations</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">set_voltages</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="o">.</span><span class="n">parameters_to_sweep</span><span class="p">,</span>
+            <span class="n">initial_voltages</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">tuning_result</span><span class="o">.</span><span class="n">db_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_name</span>
+        <span class="n">tuning_result</span><span class="o">.</span><span class="n">db_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="o">.</span><span class="n">db_folder</span>
+
+        <span class="k">return</span> <span class="n">tuning_result</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

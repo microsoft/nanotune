@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.tuningstages.chargediagram_tasks &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.tuningstages.chargediagram_tasks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.tuningstages.chargediagram_tasks</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021 Jana Darulova</span>
+<span class="c1">#</span>
+<span class="c1"># This software is released under the MIT License.</span>
+<span class="c1"># https://opensource.org/licenses/MIT</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.fit.dotfit</span> <span class="kn">import</span> <span class="n">DotFit</span>
+<span class="kn">from</span> <span class="nn">nanotune.tuningstages.settings</span> <span class="kn">import</span> <span class="n">Classifiers</span>
+
+<span class="n">DotClassifierOutcome</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span>
+    <span class="s2">&quot;DotClassifierOutcome&quot;</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;singledot&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="s2">&quot;doubledot&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="s2">&quot;dotregime&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">DOT_LABEL_MAPPING</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;dot_mapping&quot;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="segment_dot_data"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.segment_dot_data">[docs]</a><span class="k">def</span> <span class="nf">segment_dot_data</span><span class="p">(</span>
+    <span class="n">run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">segment_db_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">segment_db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">segment_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Divides a 2D measurement into segments of segment_size x segment_size</span>
+<span class="sd">    in Volt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        run_id: QCoDeS data run ID.</span>
+<span class="sd">        db_name: Name of database containg dataset.</span>
+<span class="sd">        db_folder: Path to folder containing db_name.</span>
+<span class="sd">        segment_db_name: Name of database where data segments should be saved.</span>
+<span class="sd">        segment_db_folder: Path to folder containing segment_db_name.</span>
+<span class="sd">        segment_size: Voltage interval the segments should span in each</span>
+<span class="sd">            dimension.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Dictionary mapping run IDs of segmented data to the voltages</span>
+<span class="sd">            ranges they span:</span>
+<span class="sd">            dot_segments = {&lt;run_id&gt;: {voltage_ranges: [(), ()]}}.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">segment_db_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">segment_db_name</span> <span class="o">=</span> <span class="s2">&quot;segmented_&quot;</span> <span class="o">+</span> <span class="n">db_name</span>
+
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">DotFit</span><span class="p">(</span>
+        <span class="n">run_id</span><span class="p">,</span>
+        <span class="n">db_name</span><span class="p">,</span>
+        <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">,</span>
+        <span class="n">segment_size</span><span class="o">=</span><span class="n">segment_size</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dot_segments</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">save_segmented_data_return_info</span><span class="p">(</span>
+        <span class="n">segment_db_name</span><span class="p">,</span>
+        <span class="n">segment_db_folder</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dot_segments</span></div>
+
+
+<div class="viewcode-block" id="classify_dot_segments"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.classify_dot_segments">[docs]</a><span class="k">def</span> <span class="nf">classify_dot_segments</span><span class="p">(</span>
+    <span class="n">classifiers</span><span class="p">:</span> <span class="n">Classifiers</span><span class="p">,</span>
+    <span class="n">run_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]:</span>
+    <span class="sd">&quot;&quot;&quot;Classifies several datasets holding charge diagrams, e.g. previously</span>
+<span class="sd">    segmented dot data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        classifiers: Pre-trained classifiers predicting single and double dot</span>
+<span class="sd">            quality and dotregime.</span>
+<span class="sd">        run_ids: QCoDeS data run IDs.</span>
+<span class="sd">        db_name: Name of database where datasets are saved.</span>
+<span class="sd">        db_folder: Path to folder containing segment_db_name.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Mapping run IDs onto a dict holding the respective classification</span>
+<span class="sd">            result of all classifiers passed. For example:</span>
+<span class="sd">            clf_result = {&lt;run_id&gt;: {&#39;singledot&#39;: True, &#39;doubledot&#39;: False,</span>
+<span class="sd">            &#39;dotregime&#39;: False}}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">nt</span><span class="o">.</span><span class="n">switch_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="p">):</span>
+        <span class="n">clf_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">data_id</span> <span class="ow">in</span> <span class="n">run_ids</span><span class="p">:</span>
+            <span class="n">clf_result</span><span class="p">[</span><span class="n">data_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">clf_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;singledot&#39;</span><span class="p">,</span> <span class="s1">&#39;doubledot&#39;</span><span class="p">,</span> <span class="s1">&#39;dotregime&#39;</span><span class="p">]:</span>
+                <span class="n">classifier</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">classifiers</span><span class="p">,</span> <span class="n">clf_type</span><span class="p">)</span>
+                <span class="n">clf_result</span><span class="p">[</span><span class="n">data_id</span><span class="p">][</span><span class="n">clf_type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
+                        <span class="n">data_id</span><span class="p">,</span>
+                        <span class="n">db_name</span><span class="p">,</span>
+                        <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clf_result</span></div>
+
+
+<div class="viewcode-block" id="get_dot_segment_regimes"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.get_dot_segment_regimes">[docs]</a><span class="k">def</span> <span class="nf">get_dot_segment_regimes</span><span class="p">(</span>
+    <span class="n">dot_segments_classification_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+    <span class="n">determine_regime</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span> <span class="nb">int</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Takes the classification results of several datasets, merging the</span>
+<span class="sd">    predictions of several classifiers into a single regime indicator. The</span>
+<span class="sd">    decision about how predictions is unified is implented in</span>
+<span class="sd">    ``resolve_regime``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dot_segments_classification_result: Classification predictions of</span>
+<span class="sd">            datasets. Each run_id maps onto a dictionary holding multiple</span>
+<span class="sd">            prediction outcomes.</span>
+<span class="sd">        determine_regime: Function merging several classification outcomes into</span>
+<span class="sd">            a single regime indicator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Mapping run_ids on a single regime indicator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">segment_regimes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">data_id</span><span class="p">,</span> <span class="n">clf_result</span> <span class="ow">in</span> <span class="n">dot_segments_classification_result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="n">determine_regime</span><span class="p">(</span><span class="n">clf_result</span><span class="p">)</span>
+        <span class="n">segment_regimes</span><span class="p">[</span><span class="n">data_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">regime</span>
+
+    <span class="k">return</span> <span class="n">segment_regimes</span></div>
+
+
+<div class="viewcode-block" id="determine_dot_regime"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.determine_dot_regime">[docs]</a><span class="k">def</span> <span class="nf">determine_dot_regime</span><span class="p">(</span>
+    <span class="n">classification_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Determines the dot regime based on the classification outcome of</span>
+<span class="sd">    single and double dot quality and dot regime predictions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        classification_result: Single and double dot quality, and dotregime</span>
+<span class="sd">            predictions of a single dataset. Required items are &#39;singledot&#39;,</span>
+<span class="sd">            &#39;doubledot&#39; and &#39;dotregime&#39; keys mapping onto their respective</span>
+<span class="sd">            classifiers.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Regime indicator, according to the regime mapping defined in</span>
+<span class="sd">            nt.config[&quot;core&quot;][&quot;dot_mapping&quot;].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">clfs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">,</span> <span class="s2">&quot;doubledot&quot;</span><span class="p">,</span> <span class="s2">&quot;dotregime&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">clf</span> <span class="ow">in</span> <span class="n">classification_result</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">clfs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Classification outcome missing, unable to determine dot regime&quot;</span><span class="p">)</span>
+
+    <span class="n">good_single</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">classification_result</span><span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">])</span>
+    <span class="n">good_double</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">classification_result</span><span class="p">[</span><span class="s2">&quot;doubledot&quot;</span><span class="p">])</span>
+    <span class="n">dotregime</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">classification_result</span><span class="p">[</span><span class="s2">&quot;dotregime&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">good_single</span> <span class="ow">and</span> <span class="n">good_double</span><span class="p">:</span>
+        <span class="c1"># good single and good double dot</span>
+        <span class="k">if</span> <span class="n">dotregime</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;doubledot&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">good_single</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">good_double</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dotregime</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;doubledot&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">good_single</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">good_double</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">good_single</span> <span class="ow">and</span> <span class="n">good_double</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="s2">&quot;doubledot&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to resolve dot regime.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">regime</span></div>
+
+
+<div class="viewcode-block" id="translate_dot_regime"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.translate_dot_regime">[docs]</a><span class="k">def</span> <span class="nf">translate_dot_regime</span><span class="p">(</span>
+    <span class="n">regime</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Takes an integer regime indicator and returns the corresponding charge</span>
+<span class="sd">    state and quality as a string and boolean respectively. Uses the dot</span>
+<span class="sd">    regime mapping defined in nt.config[&quot;core&quot;][&quot;dot_mapping&quot;].</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        regime: Dot regime indicator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Charge state, e.g. &#39;singledot&#39;.</span>
+<span class="sd">        bool: quality.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rev_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">str_regime</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;singledot&quot;</span><span class="p">,</span> <span class="s2">&quot;doubledot&quot;</span><span class="p">]:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="n">str_regime</span><span class="p">]</span>
+        <span class="n">rev_mapping</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">str_regime</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">rev_mapping</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">str_regime</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rev_mapping</span><span class="p">[</span><span class="n">regime</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="verify_dot_classification"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.verify_dot_classification">[docs]</a><span class="k">def</span> <span class="nf">verify_dot_classification</span><span class="p">(</span>
+    <span class="n">target_regime</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">regimes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Verifies if the target regime has been found.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target_regime: E.g. &#39;doubledot&#39;.</span>
+<span class="sd">        regimes: List of regimes (int indicators) found within a diagram.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether or not the target regime has been found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">good_found</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">DOT_LABEL_MAPPING</span><span class="p">[</span><span class="n">target_regime</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">regimes</span><span class="p">:</span>
+        <span class="n">good_found</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">good_found</span></div>
+
+
+<div class="viewcode-block" id="conclude_dot_classification"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.conclude_dot_classification">[docs]</a><span class="k">def</span> <span class="nf">conclude_dot_classification</span><span class="p">(</span>
+    <span class="n">target_charge_state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dot_segments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">verify_classification_outcome</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">interpret_single_outcome</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Determines the charge state and quality of a charge diagram based on</span>
+<span class="sd">    classification outcomes of its segments/sub-measurements.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target_charge_state: Target charge state</span>
+<span class="sd">        dot_segments: Dictionary mapping run_ids of dot segments onto their</span>
+<span class="sd">            predicted regime.</span>
+<span class="sd">        verify_classification_outcome: Function checking whether the target</span>
+<span class="sd">            regime has been found.</span>
+<span class="sd">        interpret_single_outcome: Interprets the classification result (int) to</span>
+<span class="sd">            return a string and bool indicating the charge state and quality.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Charge state, e.g. singledot.</span>
+<span class="sd">        bool: quality.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dot_segment_vals</span> <span class="o">=</span> <span class="n">dot_segments</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">regimes</span> <span class="o">=</span> <span class="p">[</span><span class="n">seg</span><span class="p">[</span><span class="s2">&quot;predicted_regime&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">dot_segment_vals</span><span class="p">]</span>
+    <span class="n">good_found</span> <span class="o">=</span> <span class="n">verify_classification_outcome</span><span class="p">(</span><span class="n">target_charge_state</span><span class="p">,</span> <span class="n">regimes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">good_found</span><span class="p">:</span>
+        <span class="n">regime</span> <span class="o">=</span> <span class="n">target_charge_state</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">majority_vote</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">regimes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">regimes</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+        <span class="n">regime</span><span class="p">,</span> <span class="n">quality</span> <span class="o">=</span> <span class="n">interpret_single_outcome</span><span class="p">(</span><span class="n">majority_vote</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">regime</span><span class="p">,</span> <span class="n">quality</span></div>
+
+
+<div class="viewcode-block" id="get_range_directives_chargediagram"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.get_range_directives_chargediagram">[docs]</a><span class="k">def</span> <span class="nf">get_range_directives_chargediagram</span><span class="p">(</span>
+    <span class="n">fit_range_update_directives</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">current_valid_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">safety_voltage_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Determines voltage range directives to update ranges for a subsequent</span>
+<span class="sd">    tuning stage iteration. It checks if the voltage range update directives</span>
+<span class="sd">    determined previously, e.g by a fit class, can be carried out based on the</span>
+<span class="sd">    supplied safety ranges.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fit_range_update_directives: Directives determined previously, such as</span>
+<span class="sd">            during fitting.</span>
+<span class="sd">        current_valid_ranges: Voltage range swept at previous iteration.</span>
+<span class="sd">        safety_voltage_ranges: Safety range of gate/voltage parameter swept.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: Range update directives, e.g. &#39;x more negative&#39;.</span>
+<span class="sd">        list: Issues encountered, e.g. &#39;positive safety voltage reached&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">issues</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">range_update_directives</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s2">&quot;x more negative&quot;</span> <span class="ow">in</span> <span class="n">fit_range_update_directives</span><span class="p">:</span>
+        <span class="n">d_n</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">d_n</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">:</span>
+            <span class="n">range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more negative&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x reached negative voltage limit&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;x more positive&quot;</span> <span class="ow">in</span> <span class="n">fit_range_update_directives</span><span class="p">:</span>
+        <span class="n">d_p</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">d_p</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">:</span>
+            <span class="n">range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more positive&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x reached positive voltage limit&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;y more negative&quot;</span> <span class="ow">in</span> <span class="n">fit_range_update_directives</span><span class="p">:</span>
+        <span class="n">d_n</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">d_n</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">:</span>
+            <span class="n">range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y more negative&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y reached negative voltage limit&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;y more positive&quot;</span> <span class="ow">in</span> <span class="n">fit_range_update_directives</span><span class="p">:</span>
+        <span class="n">d_p</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">d_p</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">:</span>
+            <span class="n">range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y more positive&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y reached positive voltage limit&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">range_update_directives</span><span class="p">,</span> <span class="n">issues</span></div>
+
+
+<div class="viewcode-block" id="get_new_chargediagram_ranges"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.get_new_chargediagram_ranges">[docs]</a><span class="k">def</span> <span class="nf">get_new_chargediagram_ranges</span><span class="p">(</span>
+    <span class="n">current_valid_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">safety_voltage_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">range_update_directives</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">range_change_settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Determines new voltage ranges for a subsequent tuning stage</span>
+<span class="sd">    iteration. Ranges are shifted based on ``range_update_directives`` and</span>
+<span class="sd">    ``range_change_settings``, and using ``get_new_range``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        current_valid_ranges: Current voltage ranges.</span>
+<span class="sd">        safety_voltage_ranges: List of safety ranges.</span>
+<span class="sd">        range_update_directives: List of range update directives.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple: New voltage range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_valid_ranges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">range_change_settings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">range_change_settings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;relative_range_change&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+            <span class="s2">&quot;min_change&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="s2">&quot;max_change&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">all_range_update_directives</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;x more negative&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x more positive&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;y more negative&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;y more positive&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="c1"># new_ranges = copy.deepcopy(current_valid_ranges)</span>
+    <span class="n">new_range_x</span> <span class="o">=</span> <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">new_range_y</span> <span class="o">=</span> <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">directive</span> <span class="ow">in</span> <span class="n">range_update_directives</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">directive</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_range_update_directives</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;ChargeDiagram: Unknown action.&quot;</span> \
+                <span class="s2">&quot;Cannot update measurement setting&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;x more negative&quot;</span> <span class="ow">in</span> <span class="n">range_update_directives</span><span class="p">:</span>
+        <span class="n">new_range_x</span> <span class="o">=</span> <span class="n">get_new_range</span><span class="p">(</span>
+            <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">range_change_settings</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;x more positive&quot;</span> <span class="ow">in</span> <span class="n">range_update_directives</span><span class="p">:</span>
+        <span class="n">new_range_x</span> <span class="o">=</span> <span class="n">get_new_range</span><span class="p">(</span>
+            <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">range_change_settings</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;y more negative&quot;</span> <span class="ow">in</span> <span class="n">range_update_directives</span><span class="p">:</span>
+        <span class="n">new_range_y</span> <span class="o">=</span> <span class="n">get_new_range</span><span class="p">(</span>
+            <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">range_change_settings</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;y more positive&quot;</span> <span class="ow">in</span> <span class="n">range_update_directives</span><span class="p">:</span>
+        <span class="n">new_range_y</span> <span class="o">=</span> <span class="n">get_new_range</span><span class="p">(</span>
+            <span class="n">current_valid_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">safety_voltage_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">range_change_settings</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;ChargeDiagram: Unknown range update directive.&quot;</span> \
+            <span class="s2">&quot;Cannot update measurement setting&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">new_range_x</span><span class="p">,</span> <span class="n">new_range_y</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_new_range"><a class="viewcode-back" href="../../../api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.get_new_range">[docs]</a><span class="k">def</span> <span class="nf">get_new_range</span><span class="p">(</span>
+    <span class="n">current_valid_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">safety_voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">relative_range_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">min_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">max_change</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Determines a new voltage range, to be measured in a subsequent tuning</span>
+<span class="sd">    stage iteration. The range is shifted to more positive or negative values</span>
+<span class="sd">    depending on ``direction``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        current_valid_range: Current voltage ranges.</span>
+<span class="sd">        safety_voltage_range: List of safety ranges.</span>
+<span class="sd">        direction: Range update directive, either &#39;positive&#39; or &#39;negative&#39;.</span>
+<span class="sd">        relative_range_change: Relative voltage shift, in percent of current</span>
+<span class="sd">            valid ranges.</span>
+<span class="sd">        min_change: Minimum range change in Volt. New ranges will be shifted by</span>
+<span class="sd">            at least this voltage difference.</span>
+<span class="sd">        max_change: Maximum range change in Volt. New ranges will be shifted by</span>
+<span class="sd">            at most this voltage difference.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: New voltage range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">new_min</span><span class="p">,</span> <span class="n">new_max</span> <span class="o">=</span> <span class="n">current_valid_range</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">diff</span> <span class="o">*=</span> <span class="n">relative_range_change</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">max_change</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">min_change</span><span class="p">)</span>
+        <span class="n">new_min</span><span class="p">,</span> <span class="n">new_max</span> <span class="o">=</span> <span class="n">new_min</span> <span class="o">-</span> <span class="n">diff</span><span class="p">,</span> <span class="n">new_max</span> <span class="o">-</span> <span class="n">diff</span>
+
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_valid_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">safety_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">diff</span> <span class="o">*=</span> <span class="n">relative_range_change</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">max_change</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">min_change</span><span class="p">)</span>
+        <span class="n">new_min</span><span class="p">,</span> <span class="n">new_max</span> <span class="o">=</span> <span class="n">new_min</span> <span class="o">+</span> <span class="n">diff</span><span class="p">,</span> <span class="n">new_max</span> <span class="o">+</span> <span class="n">diff</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Unknown range update direction.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">new_min</span><span class="p">,</span> <span class="n">new_max</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

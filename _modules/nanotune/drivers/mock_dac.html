@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.drivers.mock_dac &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.drivers.mock_dac</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.drivers.mock_dac</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021 Jana Darulova</span>
+<span class="c1">#</span>
+<span class="c1"># This software is released under the MIT License.</span>
+<span class="c1"># https://opensource.org/licenses/MIT</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">qcodes</span> <span class="kn">import</span> <span class="n">validators</span> <span class="k">as</span> <span class="n">vals</span>
+<span class="kn">from</span> <span class="nn">nanotune.drivers.dac_interface</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DACChannelInterface</span><span class="p">,</span> <span class="n">DACInterface</span><span class="p">,</span>
+    <span class="n">RelayState</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MockDACChannel"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel">[docs]</a><span class="k">class</span> <span class="nc">MockDACChannel</span><span class="p">(</span><span class="n">DACChannelInterface</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="s2">&quot;mock channel&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curr_voltage</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_voltage_limit</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_limit_rate</span> <span class="o">=</span> <span class="mf">0.2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_relay_state</span><span class="p">:</span> <span class="n">RelayState</span> <span class="o">=</span> <span class="n">RelayState</span><span class="o">.</span><span class="n">smc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waveform</span> <span class="o">=</span> <span class="s2">&quot;saw&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_amplitude</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> dc voltage&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_voltage</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_voltage_limit</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;amplitude&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> amplitude&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">set_amplitude</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_amplitude</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;frequency&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> frequency&quot;</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">set_frequency</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_frequency</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gettable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">settable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">supports_hardware_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="MockDACChannel.set_voltage"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curr_voltage</span> <span class="o">=</span> <span class="n">new_voltage</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_voltage"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curr_voltage</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_voltage_limit"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_limit">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limits</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">Numbers</span><span class="p">(</span><span class="o">*</span><span class="n">new_limits</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_voltage_limit"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_limit">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">vals</span><span class="o">.</span><span class="n">valid_values</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_voltage_inter_delay"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_inter_delay">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage_inter_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">inter_delay</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_voltage_inter_delay"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_inter_delay">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage_inter_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_inter_delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">inter_delay</span> <span class="o">=</span> <span class="n">new_inter_delay</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_voltage_post_delay"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_post_delay">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage_post_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">post_delay</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_voltage_post_delay"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_post_delay">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage_post_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_post_delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">post_delay</span> <span class="o">=</span> <span class="n">new_post_delay</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_voltage_step"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_step">[docs]</a>    <span class="k">def</span> <span class="nf">get_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">step</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_voltage_step"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">new_step</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_frequency"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">get_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_frequency"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">set_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span> <span class="o">=</span> <span class="n">new_frequency</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_offset"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_offset">[docs]</a>    <span class="k">def</span> <span class="nf">get_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_offset"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_offset">[docs]</a>    <span class="k">def</span> <span class="nf">set_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span> <span class="o">=</span> <span class="n">new_offset</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_amplitude"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_amplitude">[docs]</a>    <span class="k">def</span> <span class="nf">get_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amplitude</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_amplitude"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_amplitude">[docs]</a>    <span class="k">def</span> <span class="nf">set_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_amplitude</span> <span class="o">=</span> <span class="n">new_amplitude</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_relay_state"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_relay_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_relay_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RelayState</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relay_state</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_relay_state"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_relay_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_relay_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_relay_state</span><span class="p">:</span> <span class="n">RelayState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_relay_state</span> <span class="o">=</span> <span class="n">new_relay_state</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_ramp_rate"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_ramp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">set_ramp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_ramp_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ramp_rate</span> <span class="o">=</span> <span class="n">new_ramp_rate</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_ramp_rate"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_ramp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_ramp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ramp_rate</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_limit_rate"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_limit_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_limit_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_limit_rate</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_limit_rate"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_limit_rate">[docs]</a>    <span class="k">def</span> <span class="nf">set_limit_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limit_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_limit_rate</span> <span class="o">=</span> <span class="n">new_limit_rate</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_filter"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_filter">[docs]</a>    <span class="k">def</span> <span class="nf">get_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_filter"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_filter">[docs]</a>    <span class="k">def</span> <span class="nf">set_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span> <span class="o">=</span> <span class="n">filter_id</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.get_waveform"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.get_waveform">[docs]</a>    <span class="k">def</span> <span class="nf">get_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waveform</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.set_waveform"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.set_waveform">[docs]</a>    <span class="k">def</span> <span class="nf">set_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waveform</span> <span class="o">=</span> <span class="n">waveform</span></div>
+
+<div class="viewcode-block" id="MockDACChannel.ramp_voltage"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel.ramp_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">ramp_voltage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">target_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ramp_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="MockDAC"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDAC">[docs]</a><span class="k">class</span> <span class="nc">MockDAC</span><span class="p">(</span><span class="n">DACInterface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummy instrument with nt channels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">DACChannelClass</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">DACChannelClass</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MockDAC.run"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDAC.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running mock dac&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MockDAC.sync"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDAC.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;syncing mock dac&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

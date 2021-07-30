@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.device.device_channel" href="device_channel.html" />
+    <link rel="prev" title="nanotune.device" href="index.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.device</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.device.device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_channel.html">nanotune.device.device_channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_layout.html">nanotune.device.device_layout</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../device_tuner/index.html">nanotune.device_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tuningstages/index.html">nanotune.tuningstages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.device</a> &raquo;</li>
+        
+      <li>nanotune.device.device</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/device/device.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.device.device">
+<span id="nanotune-device-device"></span><h1>nanotune.device.device<a class="headerlink" href="#module-nanotune.device.device" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device.NormalizationConstants">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device.</span></span><span class="sig-name descname"><span class="pre">NormalizationConstants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transport</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(0.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(0.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(0.0,</span> <span class="pre">1.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device.html#NormalizationConstants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.NormalizationConstants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Container to hold normalization constant.</p>
+<p>They are the highest and
+lowest signals measured, corresponding to pinched-off and open signals.
+They are typically measured by setting all gates to their lowest allowed
+values to measure the lower bound, while the upper bound is measured with
+all gates set to their highest allowed voltages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transport</strong> – constants for DC transport.</p></li>
+<li><p><strong>sensing</strong> – constants for charge sensing (transport
+or other).</p></li>
+<li><p><strong>rf</strong> – constants for reflectometry measurements.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.NormalizationConstants.transport">
+<span class="sig-name descname"><span class="pre">transport</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">1.0)</span></em><a class="headerlink" href="#nanotune.device.device.NormalizationConstants.transport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.NormalizationConstants.sensing">
+<span class="sig-name descname"><span class="pre">sensing</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">1.0)</span></em><a class="headerlink" href="#nanotune.device.device.NormalizationConstants.sensing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.NormalizationConstants.rf">
+<span class="sig-name descname"><span class="pre">rf</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">(0.0,</span> <span class="pre">1.0)</span></em><a class="headerlink" href="#nanotune.device.device.NormalizationConstants.rf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.NormalizationConstants.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_constants</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#nanotune.device.device.NormalizationConstants" title="nanotune.device.device.NormalizationConstants"><span class="pre">nanotune.device.device.NormalizationConstants</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#NormalizationConstants.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.NormalizationConstants.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates normalization constant. Raises an error if input is not a
+dict or NormalizationConstants instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_constants</strong> – new normalization
+constants. If they don’t contain all constants, only those
+specified are updated with all other keeping their previous
+values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device.</span></span><span class="sig-name descname"><span class="pre">Readout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transport</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Readout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Readout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Container grouping readout of a device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transport</strong> – parameter to read out for DC transport.</p></li>
+<li><p><strong>sensing</strong> – parameter to read out for charge sensing
+(transport or other).</p></li>
+<li><p><strong>rf</strong> – parameter to read out for reflectometry
+measurements.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.transport">
+<span class="sig-name descname"><span class="pre">transport</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#nanotune.device.device.Readout.transport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.sensing">
+<span class="sig-name descname"><span class="pre">sensing</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#nanotune.device.device.Readout.sensing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.rf">
+<span class="sig-name descname"><span class="pre">rf</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#nanotune.device.device.Readout.rf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.available_readout">
+<span class="sig-name descname"><span class="pre">available_readout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Readout.available_readout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Readout.available_readout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets readout parameters which are not None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Dict</strong> – mapping string identifier, e.g. “transport” onto a QCoDeS
+GroupedParameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.grouped_parameter.GroupedParameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.delegate.grouped_parameter.GroupedParameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Readout.get_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Readout.get_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets list of parameters to read out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>list</strong> – list of those GroupedParameters which are not None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Readout.as_name_dict">
+<span class="sig-name descname"><span class="pre">as_name_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Readout.as_name_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Readout.as_name_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets readout parameter names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dict</strong> – mapping of string identifiers, e.g. ‘transport’ onto the
+GroupParameter’s full name (also string).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device.</span></span><span class="sig-name descname"><span class="pre">ReadoutMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device.html#ReadoutMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.ReadoutMethods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/enum.html#enum.Enum" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Enumerates readout methods used in nanotune.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods.transport">
+<span class="sig-name descname"><span class="pre">transport</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#nanotune.device.device.ReadoutMethods.transport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods.sensing">
+<span class="sig-name descname"><span class="pre">sensing</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#nanotune.device.device.ReadoutMethods.sensing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods.rf">
+<span class="sig-name descname"><span class="pre">rf</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#nanotune.device.device.ReadoutMethods.rf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods.list">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#ReadoutMethods.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.ReadoutMethods.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets attribute values as a list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.ReadoutMethods.names">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device.html#ReadoutMethods.names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.ReadoutMethods.names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets list of attribute names (strings).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device.Device">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device.</span></span><span class="sig-name descname"><span class="pre">Device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">station</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://qcodes.github.io/Qcodes/api/station.html#qcodes.station.Station" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.station.Station</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nanotune.device.device.ReadoutMethods" title="nanotune.device.device.ReadoutMethods"><span class="pre">nanotune.device.device.ReadoutMethods</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">ReadoutMethods.transport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_initial_values_on_load</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_constants</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#nanotune.device.device.NormalizationConstants" title="nanotune.device.device.NormalizationConstants"><span class="pre">nanotune.device.device.NormalizationConstants</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transition_voltages</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/delegate.html#qcodes.instrument.delegate.delegate_instrument.DelegateInstrument" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.delegate.delegate_instrument.DelegateInstrument</span></code></a></p>
+<p>Device abstraction with attributes and methods for (dot) tuning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – string identifier, used e.g. when saving tuning results.</p></li>
+<li><p><strong>readout</strong> – readout parameters. One QCoDeS GroupedParameter for
+each readout method (transport, sensing, rf).</p></li>
+<li><p><strong>gates</strong> – list of gates; instances of DeviceChannel</p></li>
+<li><p><strong>ohmics</strong> – list of ohmics; instances of DeviceChannel</p></li>
+<li><p><strong>gate&gt;</strong> (<em>&lt;each</em>) – each gate is added as an attribute with its name, eg.
+device.top_barrier.</p></li>
+<li><p><strong>ohmic&gt;</strong> (<em>&lt;each</em>) – each ohmic is added as an attribute with its name, eg.
+device.left_ohmic.</p></li>
+<li><p><strong>parameters</strong> – mapping parameter names onto parameters, of all
+parameters.</p></li>
+<li><p><strong>initial_valid_ranges</strong> – dict mapping gate IDs onto the gate’s
+initial valid ranges. This is a valid range known in advance,
+before any tuning happens. Defaults to the gate’s safety range if
+not specified.</p></li>
+<li><p><strong>transition_voltages</strong> – dict mapping gate IDs onto the gate’s
+transition voltage. This voltage is typically determined through a
+fit and can depend on the voltages of other gates.</p></li>
+<li><p><strong>current_valid_ranges</strong> – dict mapping gate IDs onto the gate’s
+current valid range. These ranges will most probably depend on
+voltaged of other gates and will be updated during tuning. These
+are the ranges which will be swept during measurements. They
+represent the voltage range in which interesting/desired features
+are expected.</p></li>
+<li><p><strong>main_readout_method</strong> – a ReadoutMethods item indicating
+which readout signal should be used for tuning decisions.
+It is added to static metadata.</p></li>
+<li><p><strong>normalization_constants</strong> – normalization
+constants keeping track of highest and lowest signals recorded for
+all specified readout methods. Required for correct classification
+and thus need to be updated when settings on measurement
+instruments change. They are saved to static metadata.</p></li>
+<li><p><strong>quality</strong> – quality of device, typically determined during
+characterization. Only good devices will be tuned.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.normalization_constants">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">normalization_constants</span></span><em class="property"><span class="pre">:</span> <span class="pre">nanotune.device.device.NormalizationConstants</span></em><a class="headerlink" href="#nanotune.device.device.Device.normalization_constants" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.main_readout_method">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">main_readout_method</span></span><em class="property"><span class="pre">:</span> <span class="pre">nanotune.device.device.ReadoutMethods</span></em><a class="headerlink" href="#nanotune.device.device.Device.main_readout_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.ground_gates">
+<span class="sig-name descname"><span class="pre">ground_gates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.ground_gates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.ground_gates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all gate relays to ground.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.float_ohmics">
+<span class="sig-name descname"><span class="pre">float_ohmics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.float_ohmics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.float_ohmics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all ohmic relays to float.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.get_gate_status">
+<span class="sig-name descname"><span class="pre">get_gate_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.get_gate_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.get_gate_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current voltages and valid ranges of all gates in a readable
+form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dict</strong> – mapping from gate labels to mapping with current valid ranges</p></li>
+<li><p><strong>and voltages. Example</strong></p></li>
+<li><p><strong>`{top_barrier</strong> – {current_valid_range: (-0.9, -0.7), voltage: -0.81}}`</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.all_gates_to_highest">
+<span class="sig-name descname"><span class="pre">all_gates_to_highest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.all_gates_to_highest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.all_gates_to_highest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all gates to their upper safety limit, the heighest allowed
+voltage. Voltages are ramped if <cite>gate.use_ramp</cite> is set to True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.all_gates_to_lowest">
+<span class="sig-name descname"><span class="pre">all_gates_to_lowest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.all_gates_to_lowest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.all_gates_to_lowest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all gates to their lower safety limit, the lowest allowed
+voltage. Voltages are ramped if <cite>gate.use_ramp</cite> is set to True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.rename_gate_identifier">
+<span class="sig-name descname"><span class="pre">rename_gate_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping_to_rename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.rename_gate_identifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.rename_gate_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames keys of mappings which are some gate identifier to gate
+IDs. Example: <cite>{‘top_barrier’: (-0.9, -0.7)}</cite> -&gt; <cite>{0: (-0.9, -0.7)}</cite>,
+where 0 is the top barrier’s gate ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mapping</strong> – mapping from either gate ID, gate label or DeviceChannel
+instance onto some data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mapping</strong> – mapping from gate ID onto the unchanged data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.initialize_channel_lists">
+<span class="sig-name descname"><span class="pre">initialize_channel_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels_input_mapping</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.initialize_channel_lists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.initialize_channel_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compiled gate and ohmics list as well as mapping between gate IDs
+and the respective DeviceChannel instances.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device.Device.get_gate_id">
+<span class="sig-name descname"><span class="pre">get_gate_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gate_identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device.html#Device.get_gate_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device.Device.get_gate_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="device_channel.html" class="btn btn-neutral float-right" title="nanotune.device.device_channel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="nanotune.device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

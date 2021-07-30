@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.tuningstages.tuningstage &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.tuningstages.gatecharacterization1d" href="gatecharacterization1d.html" />
+    <link rel="prev" title="nanotune.tuningstages" href="index.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../device/index.html">nanotune.device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../device_tuner/index.html">nanotune.device_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.tuningstages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.tuningstages.tuningstage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gatecharacterization1d.html">nanotune.tuningstages.gatecharacterization1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chargediagram.html">nanotune.tuningstages.chargediagram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="base_tasks.html">nanotune.tuningstages.base_tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gatecharacterization_tasks.html">nanotune.tuningstages.gatecharacterization_tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chargediagram_tasks.html">nanotune.tuningstages.chargediagram_tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="settings.html">nanotune.tuningstages.settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="take_data.html">nanotune.tuningstages.take_data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.tuningstages</a> &raquo;</li>
+        
+      <li>nanotune.tuningstages.tuningstage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/tuningstages/tuningstage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.tuningstages.tuningstage">
+<span id="nanotune-tuningstages-tuningstage"></span><h1>nanotune.tuningstages.tuningstage<a class="headerlink" href="#module-nanotune.tuningstages.tuningstage" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.tuningstages.tuningstage.</span></span><span class="sig-name descname"><span class="pre">TuningStage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="settings.html#nanotune.tuningstages.settings.DataSettings" title="nanotune.tuningstages.settings.DataSettings"><span class="pre">nanotune.tuningstages.settings.DataSettings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">setpoint_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="settings.html#nanotune.tuningstages.settings.SetpointSettings" title="nanotune.tuningstages.settings.SetpointSettings"><span class="pre">nanotune.tuningstages.settings.SetpointSettings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">readout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Readout" title="nanotune.device.device.Readout"><span class="pre">nanotune.device.device.Readout</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class implementing the common sequence of a tuning stage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage</strong> – String indicating which stage it implements, e.g.
+gatecharacterization.</p></li>
+<li><p><strong>data_settings</strong> – Dictionary with information about data, e.g. where it
+should be saved and how it should be normalized.
+Required fields are ‘db_name’, ‘db_folder’ and
+‘normalization_constants’.</p></li>
+<li><p><strong>setpoint_settings</strong> – Dictionary with information required to compute
+setpoints. Necessary keys are ‘current_valid_ranges’,
+‘safety_voltage_ranges’, ‘parameters_to_sweep’ and ‘voltage_precision’.</p></li>
+<li><p><strong>readout</strong> – Dictionary mapping string identifiers such as
+‘transport’ to QCoDeS parameters measuring/returning the desired
+quantity (e.g. current throught the device).</p></li>
+<li><p><strong>current_valid_ranges</strong> – List of voltages ranges (tuples of floats) to
+measure.</p></li>
+<li><p><strong>safety_voltage_ranges</strong> – List of satefy voltages ranges, i.e. safety
+limits within which gates don’t blow up.</p></li>
+<li><p><strong>fit_class</strong> – Abstract property, to be specified in child classes. It is
+the class that should perform the data fitting, e.g. PinchoffFit.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.fit_class">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">fit_class</span></span><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.fit_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be specified in child classes. It is the data fitting
+class should be used to perform a fit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.conclude_iteration">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">conclude_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tuning_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_iteration</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.conclude_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.conclude_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method checking if one iteration of a run_stage measurement cycle has
+been successful.</p>
+<p>An iteration of such a measurement cycle takes data,
+performs a machine learning task, verifies and saves the machine
+learning result. If a repetition of this cycle is supported, then
+<cite>conclude_iteration</cite> determines whether another iteration should take
+place and which voltage ranges need to be measured.
+Each child class needs to implement the body of this method, tailoring
+it to the respective tuning stage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tuning_result</strong> – Result of the last run_stage measurement cycle.</p></li>
+<li><p><strong>current_valid_ranges</strong> – Voltage ranges last swept.</p></li>
+<li><p><strong>safety_voltage_ranges</strong> – Safety voltage ranges, i.e. largest possible
+range that could be swept.</p></li>
+<li><p><strong>current_iteration</strong> – Number of current iteration.</p></li>
+<li><p><strong>max_n_iterations</strong> – Maximum number of iterations to perform before
+abandoning.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bool</strong> – Whether this is the last iteration and the stage is done/to be stopped.</p></li>
+<li><p><strong>list</strong> – New voltage ranges to sweep if the stage is not done.</p></li>
+<li><p><strong>list</strong> – List of strings indicating failure modes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.verify_machine_learning_result">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">verify_machine_learning_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.verify_machine_learning_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.verify_machine_learning_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies if the desired measurement quality or regime has been found.
+Needs to be implemented by child classed to account for the different
+regimes or measurements they are dealing with.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ml_result</strong> – Result returned by <code class="docutils literal notranslate"><span class="pre">machine_learning_task</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bool</strong> – Whether the desired outcome has been found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.machine_learning_task">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">machine_learning_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.machine_learning_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.machine_learning_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>The machine learning task to perform after a measurement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>run_id</strong> – QCoDeS data run ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.save_ml_result">
+<span class="sig-name descname"><span class="pre">save_ml_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.save_ml_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.save_ml_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the result returned by <code class="docutils literal notranslate"><span class="pre">`machine_learning_task`</span></code>: the
+extracted features are stored into metadata of the respective dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_id</strong> – QCoDeS data run ID.</p></li>
+<li><p><strong>ml_result</strong> – Result returned by <code class="docutils literal notranslate"><span class="pre">machine_learning_task</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.finish_early">
+<span class="sig-name descname"><span class="pre">finish_early</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.finish_early"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.finish_early" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the current data taking can be stopped. E.g. if the device
+is pinched off entirely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>current_output_dict</strong> – Dictionary mapping a string indicating the
+readout method to the respective value last measured.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bool</strong> – Whether the current data taking procedure can be stopped.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.compute_setpoints">
+<span class="sig-name descname"><span class="pre">compute_setpoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_valid_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.compute_setpoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.compute_setpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes setpoints for the next measurement. Unless this method is
+overwritten in a child class, linearly spaced setpoints are computed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>current_valid_ranges</strong> – Voltages ranges to sweep.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list</strong> – List of lists with setpoints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.show_result">
+<span class="sig-name descname"><span class="pre">show_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuning_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.show_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.show_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays tuning result and optionally plots the fitting result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_result</strong> – Bool indicating whether the data fit should be
+plotted.</p></li>
+<li><p><strong>current_id</strong> – QCoDeS data run ID.</p></li>
+<li><p><strong>tuning_result</strong> – Result of a tuning stage run.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.prepare_nt_metadata">
+<span class="sig-name descname"><span class="pre">prepare_nt_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.prepare_nt_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.prepare_nt_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up a metadata dictionary with fields known prior to a
+measurement set. Wraps <code class="docutils literal notranslate"><span class="pre">`prepare_metadata`</span></code> in .base_tasks.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dict</strong> – Metadata dict with fields known prior to a measurement filled
+in.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.measure">
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters_to_measure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setpoints</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes 1D or 2D data and saves relevant metadata into the dataset.
+Wraps <code class="docutils literal notranslate"><span class="pre">`take_data_add_metadata`</span></code> in .base_tasks.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>setpoints</strong> – Setpoints to measure.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>int</strong> – QCoDeS data run ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.tuningstages.tuningstage.TuningStage.run_stage">
+<span class="sig-name descname"><span class="pre">run_stage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/tuningstages/tuningstage.html#TuningStage.run_stage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.tuningstages.tuningstage.TuningStage.run_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs iterations of a basic measurement cycle of a tuning stage.</p>
+<p>It wraps <code class="docutils literal notranslate"><span class="pre">`iterate_stage`</span></code> in .base_tasks.py. One measurement cycle
+does the following subtasks:
+- computes setpoints
+- perform the actual measurement, i.e. take data
+- perform a machine learning task, e.g. classification
+- validate the machine learning result, e.g. check if a good regime was found
+- collect all information in a TuningResult instance.
+At each iteration, <code class="docutils literal notranslate"><span class="pre">`conclude_iteration`</span></code> check whether another
+measurement cycle will be performed.
+At the very end, <code class="docutils literal notranslate"><span class="pre">`clean_up`</span></code> does the desired post-measurement task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterate</strong> – </p></li>
+<li><p><strong>max_iterations</strong> – </p></li>
+<li><p><strong>plot_result</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>TuningResult</strong> – Tuning results of the last iteration, with the
+dataids field containing QCoDeS run IDs of all datasets
+measured.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="gatecharacterization1d.html" class="btn btn-neutral float-right" title="nanotune.tuningstages.gatecharacterization1d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="nanotune.tuningstages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

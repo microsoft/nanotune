@@ -1,0 +1,1557 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.model.capacitancemodel &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.model.capacitancemodel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.model.capacitancemodel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">inv</span><span class="p">,</span> <span class="n">multi_dot</span>
+<span class="kn">from</span> <span class="nn">qcodes</span> <span class="kn">import</span> <span class="n">ChannelList</span><span class="p">,</span> <span class="n">Instrument</span><span class="p">,</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="n">load_by_id</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.measurements</span> <span class="kn">import</span> <span class="n">Measurement</span>
+<span class="kn">from</span> <span class="nn">qcodes.tests.instrument_mocks</span> <span class="kn">import</span> <span class="n">DummyInstrument</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">gaussian_filter</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">resize</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+
+<span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
+<span class="kn">from</span> <span class="nn">nanotune.model.node</span> <span class="kn">import</span> <span class="n">Node</span>
+
+<span class="c1"># from qcodes.dataset.plotting import plot_by_id</span>
+<span class="c1"># from qcodes.dataset.data_export import reshape_2D_datas</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># TO DO: Add units with pint</span>
+<span class="c1"># import pint as pt</span>
+
+<span class="n">LABELS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">N_2D</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;standard_shapes&quot;</span><span class="p">][</span><span class="s2">&quot;2&quot;</span><span class="p">]</span>
+<span class="n">N_1D</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;standard_shapes&quot;</span><span class="p">][</span><span class="s2">&quot;1&quot;</span><span class="p">]</span>
+
+<span class="c1"># q = 1.60217662 * 10e-19</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mf">1.60217662</span>  <span class="c1"># * 10e-19</span>
+<span class="c1"># kb = 8.617330350 * 10−5</span>
+<span class="c1"># kb = 1.3806485279 * 1e-23</span>
+<span class="n">N_lmt_type</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+
+<span class="c1"># TODO: make variable names consistent. E.g: N/c_config/charge_configuration</span>
+<span class="c1"># TODO: check C_cc_off_diags. Initialised correctly?</span>
+
+
+<div class="viewcode-block" id="CapacitanceModel"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel">[docs]</a><span class="k">class</span> <span class="nc">CapacitanceModel</span><span class="p">(</span><span class="n">Instrument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Based on https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1</span>
+
+<span class="sd">    As in this paper, we call the two types of triple point &#39;electron&#39; and</span>
+<span class="sd">    &#39;hole&#39; triple points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">charge_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">voltage_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dot_handles</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># charge configuration</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">C_cc_off_diags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">C_cv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;capa_model_test.db&quot;</span><span class="p">,</span>
+        <span class="n">db_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span> <span class="o">=</span> <span class="n">db_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span> <span class="o">=</span> <span class="n">db_folder</span>
+
+        <span class="k">if</span> <span class="n">charge_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">charge_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">voltage_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">voltage_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">dot_handles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dot_handles</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">c_nodes</span> <span class="o">=</span> <span class="n">ChannelList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;charge_nodes&quot;</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">snapshotable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">v_nodes</span> <span class="o">=</span> <span class="n">ChannelList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;voltage_nodes&quot;</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">snapshotable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">nm</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="n">charge_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;chargenode</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;dot </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+                <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">node_type</span><span class="o">=</span><span class="s2">&quot;charge&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">c_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_submodule</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">nm</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="n">voltage_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;voltagenode</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">vl</span> <span class="o">+</span> <span class="s2">&quot; (V[</span><span class="si">{}</span><span class="s2">])&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+                <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">node_type</span><span class="o">=</span><span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">v_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_submodule</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_submodule</span><span class="p">(</span><span class="s2">&quot;charge_nodes&quot;</span><span class="p">,</span> <span class="n">c_nodes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_submodule</span><span class="p">(</span><span class="s2">&quot;voltage_nodes&quot;</span><span class="p">,</span> <span class="n">v_nodes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;dot_handles&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;main dot handles&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dot_handles</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_dot_handles</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">dot_handles</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;charge_node_mapping&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;charge node name mapping&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_charge_node_mapping</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_charge_node_mapping</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">charge_nodes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;charge configuration&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_N</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_N</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">N</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;V_v&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;voltage configuration&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_V_v</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_V_v</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">V_v</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_l</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_r</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># self.add_parameter(&#39;C_R&#39;,</span>
+        <span class="c1">#                    label=&#39;capacitance to right lead&#39;,</span>
+        <span class="c1">#                    unit=&#39;F&#39;,</span>
+        <span class="c1">#                    get_cmd=self._get_C_R,</span>
+        <span class="c1">#                    set_cmd=self._set_C_R,</span>
+        <span class="c1">#                    initial_value=0,</span>
+        <span class="c1">#                    )</span>
+
+        <span class="c1"># self.add_parameter(&#39;C_L&#39;,</span>
+        <span class="c1">#                    label=&#39;capacitance to left lead&#39;,</span>
+        <span class="c1">#                    unit=&#39;F&#39;,</span>
+        <span class="c1">#                    get_cmd=self._get_C_L,</span>
+        <span class="c1">#                    set_cmd=self._set_C_L,</span>
+        <span class="c1">#                    initial_value=0,</span>
+        <span class="c1">#                    )</span>
+
+        <span class="k">if</span> <span class="n">C_cv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">C_cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;C_cv&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;gate capacitances&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cv</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_C_cv</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">C_cv</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">charge_nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">charge_nodes</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">C_cc_off_diags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">C_cc_off_diags</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">off_diag_inx</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+                <span class="c1"># C_cc_off_diags.append([0.]*(off_diag_inx+1))</span>
+                <span class="n">C_cc_off_diags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;C_cc&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;dot capacitances&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_C_cc</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="n">C_cc_off_diags</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;C_R&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;capacitance to right lead&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_C_R</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_C_R</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="s2">&quot;C_L&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;capacitance to left lead&quot;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="n">get_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_C_L</span><span class="p">,</span>
+            <span class="n">set_cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_C_L</span><span class="p">,</span>
+            <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span> <span class="o">=</span> <span class="n">DummyInstrument</span><span class="p">(</span><span class="s2">&quot;dummy_lockin_&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">Station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_dot_handles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dot_handles</span>
+
+    <span class="k">def</span> <span class="nf">_set_dot_handles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dot_handles</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_get_charge_node_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_node_mapping</span>
+
+    <span class="k">def</span> <span class="nf">_set_charge_node_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_node_mapping</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_get_N</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">inn</span><span class="p">,</span> <span class="n">c_n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">[</span><span class="n">inn</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_n</span><span class="o">.</span><span class="n">n</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span>
+
+    <span class="k">def</span> <span class="nf">_set_N</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span><span class="o">.</span><span class="n">n</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_V_v</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">inn</span><span class="p">,</span> <span class="n">v_n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_V_v</span><span class="p">[</span><span class="n">inn</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_n</span><span class="o">.</span><span class="n">v</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_V_v</span>
+
+    <span class="k">def</span> <span class="nf">_set_V_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_V_v</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_C_cc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="c1"># Get diagonals: sum of all capacitances attached to it.</span>
+        <span class="n">current_C_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span><span class="p">)</span>
+        <span class="n">diagonals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc_diagonals</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">dot_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)):</span>
+            <span class="n">current_C_cc</span><span class="p">[</span><span class="n">dot_ind</span><span class="p">,</span> <span class="n">dot_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">diagonals</span><span class="p">[</span><span class="n">dot_ind</span><span class="p">,</span> <span class="n">dot_ind</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">=</span> <span class="n">current_C_cc</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span>
+
+    <span class="k">def</span> <span class="nf">_set_C_cc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">off_diagonals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)])</span>
+        <span class="c1"># print(C_cc)</span>
+        <span class="k">for</span> <span class="n">dinx</span><span class="p">,</span> <span class="n">diagonal</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">off_diagonals</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diagonal</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span> <span class="o">-</span> <span class="n">dinx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;CapacitanceModel: Unable to set C_cc. &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;Please specify off diagonals in a list of &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;lists: [[1st off diagonal], &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;[2nd off diagonal]]&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">dinx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="n">dinx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc_diagonals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_C_cc_diagonals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Here we assume that every dot is coupled to every other. This means</span>
+<span class="sd">        that if three or more dots are aligned the first will have a capacitive</span>
+<span class="sd">        coupling to the last. In the same manner, all dots are coupled to the</span>
+<span class="sd">        leads. Change if necessary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span>
+        <span class="n">C_cv_sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_C_cv</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># from other dots:</span>
+        <span class="n">off_diag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span><span class="p">))</span>
+        <span class="n">off_diag_sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">off_diag</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">diag</span> <span class="o">=</span> <span class="n">C_cv_sums</span> <span class="o">+</span> <span class="n">off_diag_sums</span>
+        <span class="n">diag</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_C_r</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_C_r</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">diag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_C_cv</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_cv</span>
+
+    <span class="k">def</span> <span class="nf">_set_C_cv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cv</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># update values in C_cc:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_C_R</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_r</span>
+
+    <span class="k">def</span> <span class="nf">_set_C_R</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_r</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting CapacitanceModel.C_R: &quot;</span> <span class="o">+</span> <span class="s2">&quot;Unable to update C_cc&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_C_L</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_l</span>
+
+    <span class="k">def</span> <span class="nf">_set_C_L</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_C_l</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting CapacitanceModel.C_L: &quot;</span> <span class="o">+</span> <span class="s2">&quot;Unable to update C_cc&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CapacitanceModel.snapshot_base"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.snapshot_base">[docs]</a>    <span class="k">def</span> <span class="nf">snapshot_base</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">params_to_skip_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+
+        <span class="n">snap</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">snapshot_base</span><span class="p">(</span><span class="n">update</span><span class="p">,</span> <span class="n">params_to_skip_update</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">snap</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.set_voltage"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.set_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">set_voltage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">n_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Convenience method to set voltages. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_type</span> <span class="o">==</span> <span class="s2">&quot;voltage&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">n_index</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">[</span><span class="n">n_index</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">n_type</span> <span class="o">==</span> <span class="s2">&quot;charge&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">n_index</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">[</span><span class="n">n_index</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unknown node type. Can not set voltage.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.set_capacitance"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.set_capacitance">[docs]</a>    <span class="k">def</span> <span class="nf">set_capacitance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">which_matrix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">indexes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Convenience function to set capacitances. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">which_matrix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cv&quot;</span><span class="p">,</span> <span class="s2">&quot;cc&quot;</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Unable to set capacitance. Unknown matrix,&quot;</span>
+                <span class="o">+</span> <span class="s1">&#39;choose either &quot;cv&quot; or &quot;cc&quot;.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">which_matrix</span> <span class="o">==</span> <span class="s2">&quot;cc&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;CapacitanceModel: Trying to set diagonals &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;of C_cc matrix which is not possible &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;directly. They are determined by other &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;capacitances of the model.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">C_cc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_cc</span><span class="p">()</span>
+            <span class="n">C_cc</span><span class="p">[</span><span class="n">indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">C_cc</span><span class="p">(</span><span class="n">C_cc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">which_matrix</span> <span class="o">==</span> <span class="s2">&quot;cv&quot;</span><span class="p">:</span>
+            <span class="n">C_cv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_cv</span><span class="p">()</span>
+            <span class="n">C_cv</span><span class="p">[</span><span class="n">indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">C_cv</span><span class="p">(</span><span class="n">C_cv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.set_Ccv_from_voltage_distance"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.set_Ccv_from_voltage_distance">[docs]</a>    <span class="k">def</span> <span class="nf">set_Ccv_from_voltage_distance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dV</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">dot_indx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formulas relating voltage differences to capacitance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">capa_val</span> <span class="o">=</span> <span class="o">-</span><span class="n">q</span> <span class="o">*</span> <span class="n">dV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_capacitance</span><span class="p">(</span><span class="s2">&quot;cv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">dot_indx</span><span class="p">,</span> <span class="n">v_node_idx</span><span class="p">],</span> <span class="n">capa_val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.set_Ccv_from_voltage_shift"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.set_Ccv_from_voltage_shift">[docs]</a>    <span class="k">def</span> <span class="nf">set_Ccv_from_voltage_shift</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx_swept</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">v_node_idx_wiggled</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dot_indx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dV_shift</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">dV_wiggle</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formulas relating voltage differences to capacitance</span>
+<span class="sd">        eq 30 in write up</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># capa_val =</span>
+        <span class="c1"># self.set_capacitance(&#39;cv&#39;, [dot_indx, v_node_idx], capa_val)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.set_Ccc_from_dV"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.set_Ccc_from_dV">[docs]</a>    <span class="k">def</span> <span class="nf">set_Ccc_from_dV</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dV</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">dot_indx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formulas relating voltage differences to capacitance</span>
+<span class="sd">        Symmetric matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># C_A = sum of all capacitances</span>
+
+        <span class="c1"># capa_val = - q * dV</span>
+        <span class="c1"># self.set_capacitance(&#39;cc&#39;)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.compute_energy"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.compute_energy">[docs]</a>    <span class="k">def</span> <span class="nf">compute_energy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Compute the total energy of dots &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N_self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N_self</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_self</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
+
+        <span class="n">C_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_cc</span><span class="p">())</span>
+        <span class="n">C_cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_cv</span><span class="p">())</span>
+
+        <span class="n">U</span> <span class="o">=</span> <span class="p">(</span><span class="n">q</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">N</span><span class="p">])</span>
+        <span class="n">U</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">V_v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">C_cv</span><span class="p">),</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">C_cv</span><span class="p">,</span> <span class="n">V_v</span><span class="p">])</span>
+        <span class="n">U</span> <span class="o">+=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">C_cv</span><span class="p">,</span> <span class="n">V_v</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">U</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.determine_N"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.determine_N">[docs]</a>    <span class="k">def</span> <span class="nf">determine_N</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine N by minimizing the energy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
+
+        <span class="n">eng_fct</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+            <span class="n">eng_fct</span><span class="p">,</span>
+            <span class="n">x0</span><span class="p">,</span>
+            <span class="c1">#    method=&#39;COBYLA&#39;,</span>
+            <span class="c1">#    method=&#39;Powell&#39;,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">c_config</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">n_dots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c_config</span><span class="p">)</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">c_configs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">current_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">c_config</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">append_energy</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">charge_stage</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">))</span>
+                <span class="n">c_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">)</span>
+
+        <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dots</span><span class="p">)</span>
+        <span class="c1"># Check if neighbouring ones have lower energy:</span>
+        <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
+            <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
+
+            <span class="n">append_energy</span><span class="p">(</span><span class="n">c_config</span> <span class="o">+</span> <span class="n">e_hat</span><span class="p">)</span>
+            <span class="n">append_energy</span><span class="p">(</span><span class="n">c_config</span> <span class="o">-</span> <span class="n">e_hat</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">other_dot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">other_dot</span> <span class="o">!=</span> <span class="n">dot_id</span><span class="p">:</span>
+                    <span class="n">e_hat_other</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">other_dot</span><span class="p">]</span>
+                    <span class="n">append_energy</span><span class="p">(</span><span class="n">c_config</span> <span class="o">+</span> <span class="n">e_hat</span> <span class="o">-</span> <span class="n">e_hat_other</span><span class="p">)</span>
+
+        <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">current_energy</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">indx</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">min_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">energies</span><span class="p">[</span><span class="n">indx</span><span class="p">])</span>
+            <span class="n">min_c_configs</span> <span class="o">=</span> <span class="n">c_configs</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+            <span class="n">c_config</span> <span class="o">=</span> <span class="n">min_c_configs</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">c_config</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.get_triplepoints"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.get_triplepoints">[docs]</a>    <span class="k">def</span> <span class="nf">get_triplepoints</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">N_limits</span><span class="p">:</span> <span class="n">N_lmt_type</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate triple points for charge configuration within N_limits</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            v_node_idx: Indexes of gates to sweep</span>
+<span class="sd">            N_limit: Min and max values of number of electrons in each dot,</span>
+<span class="sd">                     defining all charge configurations to consider</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            List of electron charge configurations (first array) and hole</span>
+<span class="sd">            triple points (second array).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">N_limits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;CapacitanceModel.get_triplepoints: &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Infeasible charge configuration supplied.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">c_configs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n_vals</span> <span class="ow">in</span> <span class="n">N_limits</span><span class="p">:</span>
+            <span class="n">c_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="n">c_configs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">c_configs</span><span class="p">)]</span>
+
+        <span class="n">coordinates_etp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c_configs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">)])</span>
+        <span class="n">coordinates_htp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c_configs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">)])</span>
+
+        <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">c_config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c_configs</span><span class="p">):</span>
+            <span class="c1"># setting M mostly for monitor purposes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">c_config</span><span class="p">))</span>
+            <span class="n">x_etp</span><span class="p">,</span> <span class="n">x_htp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_triplepoint</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c_config</span><span class="p">))</span>
+
+            <span class="n">coordinates_etp</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_etp</span>
+            <span class="n">coordinates_htp</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_htp</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates_etp</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates_htp</span><span class="p">),</span> <span class="n">c_configs</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.calculate_triplepoint"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.calculate_triplepoint">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_triplepoint</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine coordinates in voltage space of triple points</span>
+<span class="sd">        (electron and hole) for one charge configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            v_node_idx: Indexes of voltage nodes to be determined</span>
+<span class="sd">            N: Charge configuration, number of electrons in each dot.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Coordinates of electron (first array) and hole (second array)</span>
+<span class="sd">            triple points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">e_tp</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triplepoint_e</span><span class="p">,</span> <span class="n">v_node_idx</span><span class="o">=</span><span class="n">v_node_idx</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+        <span class="n">h_tp</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triplepoint_h</span><span class="p">,</span> <span class="n">v_node_idx</span><span class="o">=</span><span class="n">v_node_idx</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+        <span class="n">x_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">())[</span><span class="n">v_node_idx</span><span class="p">]</span>
+
+        <span class="n">x_etp</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">e_tp</span><span class="p">,</span> <span class="n">x_init</span><span class="p">)</span>
+        <span class="n">x_htp</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">h_tp</span><span class="p">,</span> <span class="n">x_init</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x_etp</span><span class="p">,</span> <span class="n">x_htp</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.triplepoint_e"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.triplepoint_e">[docs]</a>    <span class="k">def</span> <span class="nf">triplepoint_e</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_voltages</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate chemical potentials of all dots for charge configuration</span>
+<span class="sd">        N, corresponding to electron triple points. mu_j(N)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_voltages: values of new gate voltages, to be replaced in</span>
+<span class="sd">                          self.V_v. These are the values scipy.optimize.fsolve</span>
+<span class="sd">                          is solving for</span>
+<span class="sd">            v_node_idx: Voltages nodes indexes to which the values above</span>
+<span class="sd">                        correspond to.</span>
+<span class="sd">            N: Desired charge configuration, if none supplied self.N is taken.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
+
+        <span class="n">V_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">())</span>
+
+        <span class="c1"># V_v[v_node_idx, 0] = new_voltages</span>
+        <span class="n">V_v</span><span class="p">[</span><span class="n">v_node_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_voltages</span>
+
+        <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">)):</span>
+            <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">(</span><span class="n">dot_id</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span> <span class="o">+</span> <span class="n">e_hat</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.triplepoint_h"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.triplepoint_h">[docs]</a>    <span class="k">def</span> <span class="nf">triplepoint_h</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_voltages</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate chemical potentials of all dots for charge configuration</span>
+<span class="sd">        N, corresponding to hole triple points, mu_j(N + e_hat_i).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_voltages: values of new gate voltages, to be replaced in</span>
+<span class="sd">                          self.V_v. These are the values scipy.optimize.fsolve</span>
+<span class="sd">                          is solving for</span>
+<span class="sd">            v_node_idx: Voltages nodes indexes to which the values above</span>
+<span class="sd">                        correspond to.</span>
+<span class="sd">            N: Desired charge configuration, if none supplied self.N is taken.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">())</span>
+
+        <span class="n">V_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">())</span>
+        <span class="n">V_v</span><span class="p">[</span><span class="n">v_node_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_voltages</span>
+
+        <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">)):</span>
+            <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">other_dot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">other_dot</span> <span class="o">!=</span> <span class="n">dot_id</span><span class="p">:</span>
+                    <span class="n">e_hat_other</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">other_dot</span><span class="p">]</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">(</span><span class="n">dot_id</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span> <span class="o">+</span> <span class="n">e_hat_other</span> <span class="o">+</span> <span class="n">e_hat</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.print_triplepoints"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.print_triplepoints">[docs]</a>    <span class="k">def</span> <span class="nf">print_triplepoints</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">c_configs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span></div>
+        <span class="c1"># etps, htps, c_configs = qdot.get_triplepoints([2, 4], [[0, 3], [0, 3]])</span>
+        <span class="c1"># print(tabulate(zip(etps, htps, c_configs), [&#39;etps&#39;, &#39;htps&#39;, &#39;c_configs&#39;]))</span>
+
+<div class="viewcode-block" id="CapacitanceModel.mu"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.mu">[docs]</a>    <span class="k">def</span> <span class="nf">mu</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dot_indx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+        <span class="sd">&quot;&quot;&quot;The chemical potential of dot dot_id for a given charge and voltage</span>
+<span class="sd">        configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            N: Number of electrons in each dot</span>
+<span class="sd">            V_v: voltages node (gate) voltages</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            chemical potential value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">())</span>
+
+        <span class="n">C_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_cc</span><span class="p">())</span>
+        <span class="n">C_cv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_cv</span><span class="p">())</span>
+
+        <span class="n">e_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">e_hat</span><span class="p">[</span><span class="n">dot_indx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">pot</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">e_hat</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">e_hat</span><span class="p">])</span>
+        <span class="n">pot</span> <span class="o">+=</span> <span class="p">(</span><span class="n">q</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">e_hat</span><span class="p">])</span>
+        <span class="n">pot</span> <span class="o">+=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">multi_dot</span><span class="p">([</span><span class="n">e_hat</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="n">C_cc</span><span class="p">),</span> <span class="n">C_cv</span><span class="p">,</span> <span class="n">V_v</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">pot</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.sweep_voltages"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.sweep_voltages">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_voltages</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>  <span class="c1"># the one we want to sweep</span>
+        <span class="n">v_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">n_steps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">N_2D</span><span class="p">,</span>
+        <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">broaden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">add_noise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">kernel_widths</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">e_temp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-20</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_dot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">known_quality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">add_charge_jumps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">jump_freq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine signal peaks by computing the energy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">determine_N</span><span class="p">()</span>
+
+        <span class="n">voltage_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">n_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">voltage_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">v_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">n_steps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_steps</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">add_charge_jumps</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_steps</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="c1"># lam = np.random.uniform(0, 0.2, 1)  # 0.01</span>
+
+            <span class="c1"># print(&#39;lambda: {}&#39;.format(lam))</span>
+            <span class="n">trnsp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">poisson</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="n">jump_freq</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_steps</span><span class="p">)</span>
+            <span class="n">poisson</span><span class="p">[</span><span class="n">poisson</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">if</span> <span class="n">poisson</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">s</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">]</span> <span class="o">*=</span> <span class="n">s</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_steps</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ivx</span><span class="p">,</span> <span class="n">x_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">voltage_y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># N_old = self.determine_N()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_val</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ivy</span><span class="p">,</span> <span class="n">y_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_val</span><span class="p">)</span>
+                <span class="n">N_curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determine_N</span><span class="p">()</span>
+                <span class="n">n_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_curr</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                <span class="c1"># add charge jumps if desired:</span>
+                <span class="n">N_curr</span><span class="p">[</span><span class="n">n_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="n">ivx</span><span class="p">,</span> <span class="n">ivy</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="n">N_curr</span><span class="p">)</span>
+
+                <span class="n">n_degen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_degeneracies</span><span class="p">(</span>
+                    <span class="n">N_current</span><span class="o">=</span><span class="n">N_curr</span><span class="p">,</span>
+                    <span class="n">e_temp</span><span class="o">=</span><span class="n">e_temp</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">single_dot</span><span class="p">:</span>
+                    <span class="c1"># print(n_degen)</span>
+                    <span class="n">n_degen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_degen</span><span class="p">])</span>
+
+                <span class="n">signal</span><span class="p">[</span><span class="n">ivx</span><span class="p">,</span> <span class="n">ivy</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_degen</span> <span class="o">*</span> <span class="n">line_intensity</span>
+
+        <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">,</span> <span class="n">voltage_y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">broaden</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_widths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_noise</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">known_quality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">target_snr_db</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">quality</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">quality</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quality</span> <span class="o">=</span> <span class="n">known_quality</span>
+
+        <span class="k">if</span> <span class="n">single_dot</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;singledot&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="s2">&quot;doubledot&quot;</span>
+        <span class="n">dataid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_db</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">[</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">[</span><span class="n">v_node_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">v</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">voltage_x</span><span class="p">,</span> <span class="n">voltage_y</span><span class="p">],</span>
+            <span class="n">signal</span><span class="p">,</span>
+            <span class="n">nt_label</span><span class="o">=</span><span class="n">regime</span><span class="p">,</span>
+            <span class="n">quality</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataid</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.sweep_voltage"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.sweep_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_voltage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># the one we want to sweep</span>
+        <span class="n">v_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">N_1D</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">e_temp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-20</span><span class="p">,</span>
+        <span class="n">kernel_width</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+        <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use self.determine_N to detect charge transitions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_range</span><span class="p">))</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_steps</span><span class="p">)</span>
+
+        <span class="c1"># N_old = self.determine_N()</span>
+        <span class="c1"># print(N_old)</span>
+        <span class="n">voltage_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">v_range</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">v_range</span><span class="p">),</span> <span class="n">n_steps</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">v_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">,</span> <span class="n">v_val</span><span class="p">)</span>
+            <span class="n">N_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determine_N</span><span class="p">()</span>
+            <span class="c1"># print(N_current)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="n">N_current</span><span class="p">)</span>
+
+            <span class="n">n_degen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_degeneracies</span><span class="p">(</span>
+                <span class="n">N_current</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span>
+                <span class="n">e_temp</span><span class="o">=</span><span class="n">e_temp</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># print(n_degen)</span>
+
+            <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_degen</span> <span class="o">*</span> <span class="n">line_intensity</span>
+
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_width</span><span class="p">)</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+        <span class="n">dataid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_db</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">voltage_nodes</span><span class="p">[</span><span class="n">v_node_idx</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">],</span> <span class="p">[</span><span class="n">voltage_x</span><span class="p">],</span> <span class="n">signal</span><span class="p">,</span> <span class="n">nt_label</span><span class="o">=</span><span class="s2">&quot;clmboscs&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataid</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.get_number_of_degeneracies"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.get_number_of_degeneracies">[docs]</a>    <span class="k">def</span> <span class="nf">get_number_of_degeneracies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">N_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">e_temp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-21</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Excludes chareg states with negative number of charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_dots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">N_current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
+
+        <span class="n">current_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dots</span><span class="p">)</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">c_configs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">append_energy</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">charge_stage</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">))</span>
+                <span class="n">c_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">charge_stage</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
+            <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
+
+            <span class="n">append_energy</span><span class="p">(</span><span class="n">N_current</span> <span class="o">+</span> <span class="n">e_hat</span><span class="p">)</span>
+            <span class="n">append_energy</span><span class="p">(</span><span class="n">N_current</span> <span class="o">-</span> <span class="n">e_hat</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">other_dot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">other_dot</span> <span class="o">!=</span> <span class="n">dot_id</span><span class="p">:</span>
+                    <span class="n">e_hat_other</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">other_dot</span><span class="p">]</span>
+                    <span class="n">append_energy</span><span class="p">(</span><span class="n">N_current</span> <span class="o">+</span> <span class="n">e_hat</span> <span class="o">-</span> <span class="n">e_hat_other</span><span class="p">)</span>
+
+        <span class="n">current_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">current_energy</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">energies</span><span class="p">))</span>
+        <span class="n">dU</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">-</span> <span class="n">current_energy</span><span class="p">)</span>
+
+        <span class="n">n_degen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dU</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dU</span><span class="p">)),</span> <span class="n">atol</span><span class="o">=</span><span class="n">e_temp</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">n_degen</span></div>
+
+    <span class="k">def</span> <span class="nf">_make_it_real</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diagram</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">kernel_widths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the tickfigure diagram more real by convolving it with a</span>
+<span class="sd">        Gaussian. Currently for 2D diagrams only.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            diagram: The previously computed stickfigure diagram</span>
+<span class="sd">            kernel_width: Width of the Gaussian kernel.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Gaussian blurred diagram.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># d_shape = diagram.shape</span>
+        <span class="c1"># if len(d_shape) == 1:</span>
+        <span class="c1">#     kernel = sc.signal.gaussian(d_shape[0], kernel_widths[0])</span>
+        <span class="c1"># elif len(d_shape) == 2:</span>
+        <span class="c1">#     kernel = np.outer(sc.signal.gaussian(d_shape[0], kernel_widths[0]),</span>
+        <span class="c1">#                       sc.signal.gaussian(d_shape[1], kernel_widths[1]))</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     logger.error(&#39;CapacitanceModel._make_it_real: Unknown signal &#39; +</span>
+        <span class="c1">#                   &#39;shape.&#39;)</span>
+        <span class="c1">#     raise NotImplementedError</span>
+
+        <span class="c1"># return sc.signal.frequenciesconvolve(diagram, kernel, mode=&#39;same&#39;)</span>
+        <span class="n">org_shape</span> <span class="o">=</span> <span class="n">diagram</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># n_shape = [3*sh for sh in org_shape]</span>
+        <span class="c1"># diagram = resize(diagram, org_shape)</span>
+        <span class="n">diagram</span> <span class="o">=</span> <span class="n">gaussian_filter</span><span class="p">(</span>
+            <span class="n">diagram</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">kernel_widths</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">diagram</span><span class="p">,</span> <span class="n">org_shape</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_noise</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diagram</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add noise to charge diagram to match the desired signal to noise</span>
+<span class="sd">        ratio.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            diagram: Noise free diagram</span>
+<span class="sd">            target_snr_db: Target signal to noise ratio in dB</span>
+<span class="sd">        Return:</span>
+<span class="sd">            Noisy diagram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">d_shape</span> <span class="o">=</span> <span class="n">diagram</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">sig_mean_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">diagram</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">sig_avg_db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">sig_mean_power</span><span class="p">)</span>
+
+        <span class="n">noise_avg_db</span> <span class="o">=</span> <span class="n">sig_avg_db</span> <span class="o">-</span> <span class="n">target_snr_db</span>
+        <span class="n">noise_avg_power</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">noise_avg_db</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">mean_noise</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean_noise</span><span class="p">,</span> <span class="n">noise_avg_power</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">d_shape</span><span class="p">))</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">d_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">diagram</span> <span class="o">+</span> <span class="n">noise</span>
+
+    <span class="k">def</span> <span class="nf">_save_to_db</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">setpoints</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">nt_label</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">write_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot; Save data to database. Returns run id. &quot;&quot;&quot;</span>
+
+        <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Only 1D and 2D sweeps supported right now.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">meas</span> <span class="o">=</span> <span class="n">Measurement</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">setpoints</span><span class="o">=</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],))</span>
+
+            <span class="k">with</span> <span class="n">meas</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="k">as</span> <span class="n">datasaver</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x_indx</span><span class="p">,</span> <span class="n">x_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x_val</span><span class="p">)</span>
+                    <span class="n">datasaver</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_val</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">x_indx</span><span class="p">])</span>
+                    <span class="p">)</span>
+
+                <span class="n">dataid</span> <span class="o">=</span> <span class="n">datasaver</span><span class="o">.</span><span class="n">run_id</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">setpoints</span><span class="o">=</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">meas</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="k">as</span> <span class="n">datasaver</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x_indx</span><span class="p">,</span> <span class="n">x_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x_val</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">y_indx</span><span class="p">,</span> <span class="n">y_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">y_val</span><span class="p">)</span>
+                        <span class="c1"># qdot.voltage_nodes[2].v(x_val)</span>
+                        <span class="c1"># qdot.voltage_nodes[4].v(y_val)</span>
+                        <span class="n">datasaver</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_val</span><span class="p">),</span>
+                            <span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_val</span><span class="p">),</span>
+                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_lockin</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">x_indx</span><span class="p">,</span> <span class="n">y_indx</span><span class="p">]),</span>
+                        <span class="p">)</span>
+
+                <span class="n">dataid</span> <span class="o">=</span> <span class="n">datasaver</span><span class="o">.</span><span class="n">run_id</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_by_id</span><span class="p">(</span><span class="n">dataid</span><span class="p">)</span>
+
+        <span class="n">meta_add_on</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;meta_fields&quot;</span><span class="p">],</span> <span class="n">Any</span><span class="p">)</span>
+        <span class="n">meta_add_on</span><span class="p">[</span><span class="s2">&quot;device_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">nm</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="s2">&quot;transport&quot;</span><span class="p">,</span> <span class="s2">&quot;rf&quot;</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">meta_add_on</span><span class="p">[</span><span class="s2">&quot;normalization_constants&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nm</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">meta_tag</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta_add_on</span><span class="p">))</span>
+
+        <span class="n">current_label</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">LABELS</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">nt_label</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># and nt_label in LABELS:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">LABELS</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;CapacitanceModel: Invalid label.&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span>
+                <span class="n">current_label</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">current_label</span><span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quality</span>
+
+        <span class="c1"># print(&#39;data id {} current label: {} &#39;.format(dataid, current_label ))</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">current_label</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataid</span>
+
+<div class="viewcode-block" id="CapacitanceModel.determine_sweep_voltages"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.determine_sweep_voltages">[docs]</a>    <span class="k">def</span> <span class="nf">determine_sweep_voltages</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">v_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">N_limits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">N_lmt_type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine N by minimizing the energy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">N_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N_limits</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">())</span>  <span class="c1"># [(0, 1), (0, 1)]</span>
+
+        <span class="n">N_init</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">did</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_limits</span><span class="p">)):</span>
+            <span class="n">N_init</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">N_limits</span><span class="p">[</span><span class="n">did</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">eng_sub_fct</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">swept_voltages</span><span class="p">):</span>
+            <span class="n">curr_V</span> <span class="o">=</span> <span class="n">V_v</span>
+            <span class="k">for</span> <span class="n">iv</span><span class="p">,</span> <span class="n">v_to_sweep</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v_node_idx</span><span class="p">):</span>
+                <span class="n">curr_V</span><span class="p">[</span><span class="n">v_to_sweep</span><span class="p">]</span> <span class="o">=</span> <span class="n">swept_voltages</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">curr_V</span><span class="p">)</span>
+
+        <span class="n">eng_fct</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">eng_sub_fct</span><span class="p">,</span> <span class="n">N_init</span><span class="p">)</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">v_to_sweep</span> <span class="ow">in</span> <span class="n">v_node_idx</span><span class="p">:</span>
+            <span class="n">x0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">V_v</span><span class="p">[</span><span class="n">v_to_sweep</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+            <span class="n">eng_fct</span><span class="p">,</span>
+            <span class="n">x0</span><span class="p">,</span>
+            <span class="c1">#    method=&#39;COBYLA&#39;,</span>
+            <span class="c1">#    method=&#39;Powell&#39;,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">V_init_config</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+
+        <span class="n">N_stop</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">did</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_limits</span><span class="p">)):</span>
+            <span class="n">N_stop</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">N_limits</span><span class="p">[</span><span class="n">did</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># N_stop = [N_limits[0][1], N_limits[1][1]]</span>
+        <span class="n">eng_fct</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">eng_sub_fct</span><span class="p">,</span> <span class="n">N_stop</span><span class="p">)</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">V_init_config</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+            <span class="n">eng_fct</span><span class="p">,</span>
+            <span class="n">x0</span><span class="p">,</span>
+            <span class="c1">#    method=&#39;COBYLA&#39;,</span>
+            <span class="c1">#    method=&#39;Powell&#39;,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">V_stop_config</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+
+        <span class="n">V_limits</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">V_init_config</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">V_stop_config</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="p">[</span><span class="n">V_init_config</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">V_stop_config</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">V_limits</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.fit_data"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.fit_data">[docs]</a>    <span class="k">def</span> <span class="nf">fit_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ds_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">device_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;doubledot_2D&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># parameters to fit:</span>
+        <span class="c1">#         #         N.  LW.   LP.  C.  RP.  RW</span>
+        <span class="c1"># self.V_v([-1, -0.1, -4.2, -0.1, -0.5, -0.3])</span>
+
+        <span class="c1"># qdot.C_cc([[-8e-18]])</span>
+        <span class="c1"># #            N.        LW.     LP.      C.      RP.    RW</span>
+        <span class="c1"># qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A</span>
+        <span class="c1">#         [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">ds_id</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">err_func</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_fct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalized_volt</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="n">err</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_signal</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smooth_signal</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">err</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">least_squares</span><span class="p">(</span>
+            <span class="n">err_func</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_guess</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;trf&quot;</span><span class="p">,</span>
+            <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cauchy&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="n">ftol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">residuals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span></div></div>
+
+    <span class="c1"># def sweep_N(self,</span>
+    <span class="c1">#             v_node_idx: List[int],</span>
+    <span class="c1">#             N_ranges: List[List],</span>
+    <span class="c1">#             n_steps: Optional[List[int]] = [100, 100],</span>
+    <span class="c1">#             kernel_width: Optional[float] = 2,</span>
+    <span class="c1">#             target_snr_db: Optional[float] = 10,</span>
+    <span class="c1">#             line_intensity: Optional[float] = 1,</span>
+    <span class="c1">#             )-&gt; List[np.ndarray]:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Generate diagram showing charge configurations within N_ranges</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     (coordinates_etp,</span>
+    <span class="c1">#      coordinates_htp,</span>
+    <span class="c1">#      c_configs) = self.get_triplepoints(v_node_idx,</span>
+    <span class="c1">#                                         N_ranges)</span>
+
+    <span class="c1">#     # print(tabulate(zip(coordinates_etp, coordinates_htp, c_configs), [&#39;etps&#39;, &#39;htps&#39;, &#39;c_configs&#39;]))</span>
+
+    <span class="c1">#     slopes = self._get_voltage_spacings(v_node_idx)</span>
+    <span class="c1">#     tp_intensities = [2*line_intensity] * 3</span>
+    <span class="c1">#     lin_int = [line_intensity] * 3</span>
+    <span class="c1">#     xv, yv, diagram = self._generate_diagram([coordinates_etp,</span>
+    <span class="c1">#                                               coordinates_htp],</span>
+    <span class="c1">#                                              slopes,</span>
+    <span class="c1">#                                              kernel_width=kernel_width,</span>
+    <span class="c1">#                                              target_snr_db=target_snr_db,</span>
+    <span class="c1">#                                              line_intensities=lin_int,</span>
+    <span class="c1">#                                              tp_intensities=tp_intensities,</span>
+    <span class="c1">#                                              d_shape=n_steps)</span>
+
+    <span class="c1">#     dataid = self._save_to_db([self.voltage_nodes[v_node_idx[0]].v,</span>
+    <span class="c1">#                                self.voltage_nodes[v_node_idx[1]].v],</span>
+    <span class="c1">#                               [xv[0, :], yv[:, 0]], diagram,</span>
+    <span class="c1">#                               nt_label=&#39;doubledot&#39;)</span>
+
+    <span class="c1">#     return dataid</span>
+
+    <span class="c1"># def _generate_diagram(self,</span>
+    <span class="c1">#                     coordinates: List[np.ndarray],</span>
+    <span class="c1">#                     slopes: np.ndarray,</span>
+    <span class="c1">#                     tp_intensities: Optional[List] = [2., 2.],</span>
+    <span class="c1">#                     kernel_widths: Optional[float] = [3., 3.],</span>
+    <span class="c1">#                     line_intensities: Optional[List[float]] = [1., 1., 1.],</span>
+    <span class="c1">#                     target_snr_db: Optional[float] = 10.,</span>
+    <span class="c1">#                     d_shape: Optional[List] = [100, 100],</span>
+    <span class="c1">#                     ) -&gt; List[np.ndarray]:</span>
+    <span class="c1">#     &quot;&quot;&quot; Generate a diagram based on previously found tp locations</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         coordinates: List of numpy arrays, first one with coordinates</span>
+    <span class="c1">#             of electron triple points, second with hole triple points.</span>
+    <span class="c1">#             Order matters, it needs to be [e_tps, h_tps].</span>
+    <span class="c1">#         slopes: Three (dx, dy) pairs defining lines between hole and</span>
+    <span class="c1">#             electron triple points.</span>
+    <span class="c1">#         tp_intensities: Intensities to be used for each triple point type.</span>
+    <span class="c1">#         kernel_width: OWidth of the Gaussian kernel used to blur the image.</span>
+    <span class="c1">#         line_intensities: Intensities to be used for lines between triple</span>
+    <span class="c1">#             points.</span>
+    <span class="c1">#         target_snr_db: Desired signal to noise ratio.</span>
+    <span class="c1">#         d_shape: Number of points in each direction, diagram.shape</span>
+
+    <span class="c1">#     Return:</span>
+    <span class="c1">#         X and Y meshgrids and diagram. Plot the diagrams transpose if</span>
+    <span class="c1">#         using matplotlib.pylplot.pcolormesh.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     xv, yv, diagram = self._make_stickfigure(coordinates,</span>
+    <span class="c1">#                                             slopes,</span>
+    <span class="c1">#                                             tp_intensities=tp_intensities,</span>
+    <span class="c1">#                                             line_intensities=line_intensities,</span>
+    <span class="c1">#                                             d_shape=d_shape)</span>
+
+    <span class="c1">#     diagram = self._make_it_real(diagram, kernel_widths=kernel_widths)</span>
+    <span class="c1">#     diagram = self._add_noise(diagram, target_snr_db=target_snr_db)</span>
+
+    <span class="c1">#     return xv, yv, diagram</span>
+
+    <span class="c1"># def _get_voltage_spacings(self,</span>
+    <span class="c1">#                           v_node_idx: Sequence,</span>
+    <span class="c1">#                           ) -&gt; np.ndarray:</span>
+    <span class="c1">#     &quot;&quot;&quot; Determine vectors between triple points, to print the full</span>
+    <span class="c1">#     honecomb pattern on charge diagram.</span>
+    <span class="c1">#     We take the first three triple point pairs to get the three vectors</span>
+    <span class="c1">#     defining the honecomb pattern.</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         v_node_idx: Indexes of voltage nodes to be determined</span>
+
+    <span class="c1">#     Return:</span>
+    <span class="c1">#         Three vectors (dx, dy), corresponding to lines of a honeycomb</span>
+    <span class="c1">#         patterns.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+
+    <span class="c1">#     self.etp0, self.htp0 = self.calculate_triplepoint(v_node_idx,</span>
+    <span class="c1">#                                                       np.array([0, 0]))</span>
+    <span class="c1">#     self.etp1, self.htp1 = self.calculate_triplepoint(v_node_idx,</span>
+    <span class="c1">#                                                       np.array([0, 1]))</span>
+    <span class="c1">#     self.etp2, self.htp2 = self.calculate_triplepoint(v_node_idx,</span>
+    <span class="c1">#                                                       np.array([1, 0]))</span>
+    <span class="c1">#     # get slopes between tps</span>
+    <span class="c1">#     dv0 = self.etp0 - self.htp0</span>
+    <span class="c1">#     dv1 = self.etp1 - self.htp0</span>
+    <span class="c1">#     dv2 = self.etp2 - self.htp0</span>
+
+    <span class="c1">#     return np.array([dv0, dv1, dv2])  # * -1</span>
+
+    <span class="c1"># def _make_stickfigure(self,</span>
+    <span class="c1">#                     coordinates: List[np.ndarray],</span>
+    <span class="c1">#                     slopes: np.ndarray,</span>
+    <span class="c1">#                     margin_ratio: Optional[float] = 0.1,</span>
+    <span class="c1">#                     tp_intensities: Optional[List] = [2., 2.],</span>
+    <span class="c1">#                     line_intensities: Optional[List[float]] = [1., 1., 1.],</span>
+    <span class="c1">#                     d_shape: Optional[List] = [100, 100],</span>
+    <span class="c1">#                     ) -&gt; List[np.ndarray]:</span>
+    <span class="c1">#     &quot;&quot;&quot; Generate stick figure equivalent of the desired charge diagram.</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         coordinates: Coordinates of electron and hole coordinates. Order</span>
+    <span class="c1">#             matters! It has to be [e_tps, h_tps] and printing of lines</span>
+    <span class="c1">#             depend on it.</span>
+    <span class="c1">#         slopes: List of three (dx, dy) pairs, defining lines from hole to</span>
+    <span class="c1">#             electron triple points.</span>
+    <span class="c1">#         tp_intensities: Intensities to be used for each triple point type.</span>
+    <span class="c1">#         line_intensities: Intensities to be used for lines between triple</span>
+    <span class="c1">#             points.</span>
+
+    <span class="c1">#     Return:</span>
+    <span class="c1">#         X and Y meshgrid as well as stickfigure diagram.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # print(&#39;generating diagram with following coordinates: &#39;)</span>
+    <span class="c1">#     # print(coordinates)</span>
+
+    <span class="c1">#     coordinates = np.array(coordinates)</span>
+
+    <span class="c1">#     x_min = np.min(coordinates[:, :, 0])  # - dv_margin</span>
+    <span class="c1">#     x_max = np.max(coordinates[:, :, 0])  # + dv_margin</span>
+    <span class="c1">#     y_min = np.min(coordinates[:, :, 1])  # - dv_margin</span>
+    <span class="c1">#     y_max = np.max(coordinates[:, :, 1])  # + dv_margin</span>
+
+    <span class="c1">#     dv_margin_x = margin_ratio * abs(x_max-x_min)</span>
+    <span class="c1">#     dv_margin_y = margin_ratio * abs(y_max-y_min)</span>
+
+    <span class="c1">#     x_min -= dv_margin_x</span>
+    <span class="c1">#     x_max += dv_margin_x</span>
+    <span class="c1">#     y_min -= dv_margin_y</span>
+    <span class="c1">#     y_max += dv_margin_y</span>
+
+    <span class="c1">#     x = np.linspace(x_min, x_max, d_shape[0])</span>
+    <span class="c1">#     y = np.linspace(y_min, y_max, d_shape[1])</span>
+    <span class="c1">#     xv, yv = np.meshgrid(x, y)</span>
+
+    <span class="c1">#     dx = (x_max - x_min)/d_shape[0]</span>
+    <span class="c1">#     dy = (y_max - y_min)/d_shape[1]</span>
+
+    <span class="c1">#     diagram = np.zeros(d_shape)</span>
+
+    <span class="c1">#     def print_tp(coord: np.ndarray,</span>
+    <span class="c1">#                 intensity: float,</span>
+    <span class="c1">#                 ) -&gt; np.ndarray:</span>
+
+    <span class="c1">#         x_coord = int(round((coord[0]-x_min)/dx))</span>
+    <span class="c1">#         y_coord = int(round((coord[1]-y_min)/dy))</span>
+
+    <span class="c1">#         if (x_coord &lt; diagram.shape[0] and x_coord &gt;= 0 and</span>
+    <span class="c1">#             y_coord &lt; diagram.shape[1] and y_coord &gt;= 0):</span>
+    <span class="c1">#             diagram[x_coord, y_coord] = np.max([intensity,</span>
+    <span class="c1">#                                                 diagram[x_coord, y_coord]])</span>
+    <span class="c1">#         # else:</span>
+    <span class="c1">#         #     logger.warning(&#39;CapacitanceModel.make_stickfigure: Trying &#39; +</span>
+    <span class="c1">#         #                     &#39;to draw triple point outside of canvas.&#39;)</span>
+
+    <span class="c1">#     for ii, coords_per_type in enumerate(coordinates):</span>
+    <span class="c1">#         for c in coords_per_type:</span>
+    <span class="c1">#             print_tp(c, tp_intensities[ii])</span>
+
+    <span class="c1">#             if ii == 0:</span>
+    <span class="c1">#                 # to make sure we plot lines for left and bottom border</span>
+    <span class="c1">#                     # correctly we plot some lines twice:</span>
+    <span class="c1">#                 for ids, slope in enumerate(slopes):</span>
+    <span class="c1">#                     slope = -1*slope</span>
+    <span class="c1">#                     delta_x = slope[0]</span>
+    <span class="c1">#                     delta_y = slope[1]</span>
+
+    <span class="c1">#                     x0 = int(round((c[0]-x_min)/dx))</span>
+    <span class="c1">#                     y0 = int(round((c[1]-y_min)/dy))</span>
+    <span class="c1">#                     x1 = x0 + int(round(delta_x/dx))</span>
+    <span class="c1">#                     y1 = y0 + int(round(delta_y/dy))</span>
+
+    <span class="c1">#                     diagram = plot_line(x0, y0, x1, y1, diagram,</span>
+    <span class="c1">#                                         line_intensities[ids])</span>
+
+    <span class="c1">#             if ii == 1:</span>
+    <span class="c1">#                 for ids, slope in enumerate(slopes):</span>
+    <span class="c1">#                     delta_x = slope[0]</span>
+    <span class="c1">#                     delta_y = slope[1]</span>
+
+    <span class="c1">#                     x0 = int(round((c[0]-x_min)/dx))</span>
+    <span class="c1">#                     y0 = int(round((c[1]-y_min)/dy))</span>
+    <span class="c1">#                     x1 = x0 + int(round(delta_x/dx))</span>
+    <span class="c1">#                     y1 = y0 + int(round(delta_y/dy))</span>
+    <span class="c1">#                     diagram = plot_line(x0, y0, x1, y1, diagram,</span>
+    <span class="c1">#                                         line_intensities[ids])</span>
+
+    <span class="c1">#     # Print the first three triple point pairs with higher intensities</span>
+    <span class="c1">#     # for debugging purposes</span>
+    <span class="c1">#     print_tp(self.etp0, np.max(tp_intensities)*5)</span>
+    <span class="c1">#     print_tp(self.htp0, np.max(tp_intensities)*5)</span>
+    <span class="c1">#     print_tp(self.etp1, np.max(tp_intensities)*4)</span>
+    <span class="c1">#     print_tp(self.htp1, np.max(tp_intensities)*4)</span>
+    <span class="c1">#     print_tp(self.etp2, np.max(tp_intensities)*3)</span>
+    <span class="c1">#     print_tp(self.htp2, np.max(tp_intensities)*3)</span>
+
+    <span class="c1">#     return xv, yv, diagram</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device_channel &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.device.device_layout" href="device_layout.html" />
+    <link rel="prev" title="nanotune.device.device" href="device.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.device</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="device.html">nanotune.device.device</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.device.device_channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_layout.html">nanotune.device.device_layout</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../device_tuner/index.html">nanotune.device_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tuningstages/index.html">nanotune.tuningstages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.device</a> &raquo;</li>
+        
+      <li>nanotune.device.device_channel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/device/device_channel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.device.device_channel">
+<span id="nanotune-device-device-channel"></span><h1>nanotune.device.device_channel<a class="headerlink" href="#module-nanotune.device.device_channel" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device_channel.</span></span><span class="sig-name descname"><span class="pre">DeviceChannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://qcodes.github.io/Qcodes/api/station.html#qcodes.station.Station" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.station.Station</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/channel.html#qcodes.instrument.channel.InstrumentChannel" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.channel.InstrumentChannel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ohmic_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'device_channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(-</span> <span class="pre">3,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ramp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ramp_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voltage_step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device_channel.html#DeviceChannel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/channel.html#qcodes.instrument.channel.InstrumentChannel" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.channel.InstrumentChannel</span></code></a></p>
+<p>Class representing a channel of a device such as gate or ohmic.</p>
+<p>It emulates an existing intrument channel and adds convenience
+functionality for tuning. It implements its own voltage setting method
+which, for example, checks whether the value is within the safety range
+before starting to set anything - as opposed to qcodes. The emulated
+channel must be a channel of a subclass of
+<cite>nanotune.drivers.dac_interface.DACInterface</cite>. When setting a voltage,
+it can be either ramped or set, specified by the <cite>use_ramp</cite> parameter.
+A hardware ramp is performed if the underlying instrument channel
+supports it, which is indicated by the <cite>supports_hardware_ramp</cite>
+property. Otherwise QCoDeS’ software ramp using delay and step
+properties is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gate_id</strong> – Integer identifier of the gate with respect to the device
+layout. Not to be set if it is an ohmic.</p></li>
+<li><p><strong>ohmic_id</strong> – Integer identifier of the ohmic with respect to the
+device layout. Not to be set if it is a gate.</p></li>
+<li><p><strong>label</strong> – String identifier to be printed on plots.</p></li>
+<li><p><strong>safety_voltage_range</strong> – Range of voltages within which safe operation
+is guaranteed.</p></li>
+<li><p><strong>use_ramp</strong> – Whether voltages should be ramped.</p></li>
+<li><p><strong>ramp_rate</strong> – Rate at which voltages should be ramped. In V/s.</p></li>
+<li><p><strong>max_voltage_step</strong> – Maximum voltage difference to be applied in a
+single step. Note that this step does not apply when <cite>use_ramp</cite>
+is set to False.</p></li>
+<li><p><strong>post_delay</strong> – Delay to wait after a voltage is set, in seconds. If
+ramping in software (supports_hardware_ramp == False and
+use_ramp() == True and thus using QCoDeS’ delay and step
+parameter) and <cite>inter_delay</cite> is not set, then <cite>post_delay</cite> will
+be used.</p></li>
+<li><p><strong>inter_delay</strong> – Delay to wait between voltage setpoints, in seconds.
+If set to zero but <cite>post_delay</cite> is not zero, software ramp
+(supports_hardware_ramp == False and use_ramp() == True) will
+take the <cite>post_delay</cite> as delay between sets.</p></li>
+<li><p><strong>supports_hardware_ramp</strong> – Bool indicating whether under the
+underlying instrument channel supports voltage ramping in
+hardware.</p></li>
+<li><p><strong>relay_state</strong> – State of DAC relay, one of
+<cite>nanotune.dac_interface.RelayState</cite>’s members.</p></li>
+<li><p><strong>frequency</strong> – Frequency parameter, part of the AWG functionality of
+the underlying channel (if supported - as defined by the
+instance of DACInterface instance).</p></li>
+<li><p><strong>offset</strong> – Offset parameter, part of the AWG functionality of
+the underlying channel (if supported - as defined by the
+instance of DACInterface instance).</p></li>
+<li><p><strong>amplitude</strong> – Amplitude parameter, part of the AWG functionality of
+the underlying channel (if supported - as defined by the
+instance of DACInterface instance).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.gate_id">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">gate_id</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[int]</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.gate_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Device layout ID of a gate.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.ohmic_id">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ohmic_id</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[int]</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.ohmic_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Device layout ID of an ohmic.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.supports_hardware_ramp">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">supports_hardware_ramp</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.supports_hardware_ramp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indication whether the underlying instrument channel
+supports hardware ramp.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.post_delay">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">post_delay</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.post_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waiting time in seconds after a sequence of set operations.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.inter_delay">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">inter_delay</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.inter_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waiting time in seconds between set operations.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.max_voltage_step">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">max_voltage_step</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.max_voltage_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum voltage difference between consecutive voltage sets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.ground">
+<span class="sig-name descname"><span class="pre">ground</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_channel.html#DeviceChannel.ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.ground" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set relay state to ground.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.float_relay">
+<span class="sig-name descname"><span class="pre">float_relay</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_channel.html#DeviceChannel.float_relay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.float_relay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set relay state to float.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_channel.DeviceChannel.set_voltage">
+<span class="sig-name descname"><span class="pre">set_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device/device_channel.html#DeviceChannel.set_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_channel.DeviceChannel.set_voltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Voltage setter.</p>
+<p>It checks if the new value is within safety ranges
+before setting anything - as opposed to qcodes, which throws an error
+only once the safety range is reached.
+It ramps to the new value if ramping is enabled, using either software
+or hardware ramps - depending on <cite>supports_hardware_ramp</cite>. It’s a
+blocking ramp.
+:param new_value: New voltage value to set.
+:param tol: Tolerance in Volt. Used to check if ramp has finished.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="device_layout.html" class="btn btn-neutral float-right" title="nanotune.device.device_layout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="device.html" class="btn btn-neutral float-left" title="nanotune.device.device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

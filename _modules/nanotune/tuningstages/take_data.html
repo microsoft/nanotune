@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.tuningstages.take_data &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.tuningstages.take_data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.tuningstages.take_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.measurements</span> <span class="kn">import</span> <span class="n">Measurement</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="take_data"><a class="viewcode-back" href="../../../api/tuningstages/take_data.html#nanotune.tuningstages.take_data.take_data">[docs]</a><span class="k">def</span> <span class="nf">take_data</span><span class="p">(</span>
+    <span class="n">parameters_to_sweep</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">],</span>
+    <span class="n">parameters_to_measure</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">],</span>
+    <span class="n">setpoints</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">finish_early_check</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">do_at_inner_setpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metadata_addon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take 1D or 2D measurements with QCoDeS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parameters_to_sweep:</span>
+<span class="sd">        parameters_to_measure:</span>
+<span class="sd">        setpoints:</span>
+<span class="sd">        finish_early_check:</span>
+<span class="sd">        metadata_addon: string with tag under which it will be added</span>
+<span class="sd">            and metadata iself. To save some important metadata before</span>
+<span class="sd">            measuring.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int:</span>
+<span class="sd">        list: List of the number of points measured in each dimension. If the</span>
+<span class="sd">            measurement has been stopped early, these will differ from the</span>
+<span class="sd">            number of setpoints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">do_at_inner_setpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">do_at_inner_setpoint</span> <span class="o">=</span> <span class="n">do_nothing</span>
+    <span class="k">if</span> <span class="n">finish_early_check</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">finish_early_check</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">output</span><span class="p">:</span> <span class="kc">False</span>
+
+
+    <span class="n">meas</span> <span class="o">=</span> <span class="n">Measurement</span><span class="p">()</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">output_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">set_param</span> <span class="ow">in</span> <span class="n">parameters_to_sweep</span><span class="p">:</span>
+        <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">set_param</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">m_param</span> <span class="ow">in</span> <span class="n">parameters_to_measure</span><span class="p">:</span>
+        <span class="n">meas</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">m_param</span><span class="p">,</span> <span class="n">setpoints</span><span class="o">=</span><span class="n">parameters_to_sweep</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">m_param</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="n">m_param</span><span class="o">.</span><span class="n">full_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">with</span> <span class="n">meas</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="k">as</span> <span class="n">datasaver</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metadata_addon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">datasaver</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span>
+                <span class="n">metadata_addon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata_addon</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">set_point0</span> <span class="ow">in</span> <span class="n">setpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">set_point0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters_to_sweep</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">start_voltage</span> <span class="o">=</span> <span class="n">setpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">do_at_inner_setpoint</span><span class="p">((</span><span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">start_voltage</span><span class="p">))</span>
+                <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">start_voltage</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">set_point1</span> <span class="ow">in</span> <span class="n">setpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">set_point1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters_to_measure</span><span class="p">):</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                        <span class="n">output</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="n">output_dict</span><span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">full_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+                    <span class="n">paramx</span> <span class="o">=</span> <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span>
+                    <span class="n">paramy</span> <span class="o">=</span> <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span>
+                    <span class="n">datasaver</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">paramx</span><span class="p">,</span> <span class="n">set_point0</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">paramy</span><span class="p">,</span> <span class="n">set_point1</span><span class="p">),</span>
+                        <span class="o">*</span><span class="n">output</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                    <span class="p">)</span>
+                    <span class="n">done</span> <span class="o">=</span> <span class="n">finish_early_check</span><span class="p">(</span><span class="n">output_dict</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters_to_measure</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">output_dict</span><span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">full_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+                <span class="n">paramx</span> <span class="o">=</span> <span class="n">parameters_to_sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span>
+                <span class="n">datasaver</span><span class="o">.</span><span class="n">add_result</span><span class="p">((</span><span class="n">paramx</span><span class="p">,</span> <span class="n">set_point0</span><span class="p">),</span> <span class="o">*</span><span class="n">output</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="n">finish_early_check</span><span class="p">(</span><span class="n">output_dict</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">datasaver</span><span class="o">.</span><span class="n">run_id</span></div>
+
+
+<div class="viewcode-block" id="do_nothing"><a class="viewcode-back" href="../../../api/tuningstages/take_data.html#nanotune.tuningstages.take_data.do_nothing">[docs]</a><span class="k">def</span> <span class="nf">do_nothing</span><span class="p">(</span><span class="n">param_setpoint_input</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Default function used at inner setpoints in ```take_data```, not doing</span>
+<span class="sd">    anything.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ramp_to_setpoint"><a class="viewcode-back" href="../../../api/tuningstages/take_data.html#nanotune.tuningstages.take_data.ramp_to_setpoint">[docs]</a><span class="k">def</span> <span class="nf">ramp_to_setpoint</span><span class="p">(</span><span class="n">param_setpoint_input</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Ramps nanotune gates (or other instrument parameter with &#39;use_ramp&#39;</span>
+<span class="sd">    attribute)to a new setpoint. Sets `use_ramp` back to false after ramping.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        param_setpoint_input: Tuple of the QCoDeS parameter and its new</span>
+<span class="sd">        setpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">qcodes_parameter</span> <span class="o">=</span> <span class="n">param_setpoint_input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">voltage</span> <span class="o">=</span> <span class="n">param_setpoint_input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">qcodes_parameter</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">use_ramp</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">qcodes_parameter</span><span class="p">(</span><span class="n">voltage</span><span class="p">)</span>
+        <span class="n">qcodes_parameter</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">use_ramp</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to ramp to new voltage. It will be set.&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

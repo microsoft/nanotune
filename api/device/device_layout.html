@@ -1,0 +1,429 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device.device_layout &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.device_tuner" href="../device_tuner/index.html" />
+    <link rel="prev" title="nanotune.device.device_channel" href="device_channel.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.device</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="device.html">nanotune.device.device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_channel.html">nanotune.device.device_channel</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.device.device_layout</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../device_tuner/index.html">nanotune.device_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tuningstages/index.html">nanotune.tuningstages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.device</a> &raquo;</li>
+        
+      <li>nanotune.device.device_layout</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/device/device_layout.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.device.device_layout">
+<span id="nanotune-device-device-layout"></span><h1>nanotune.device.device_layout<a class="headerlink" href="#module-nanotune.device.device_layout" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device_layout.</span></span><span class="sig-name descname"><span class="pre">IDeviceLayout</span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABC" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Interface for device layout defining classes.</p>
+<p>Abstract class methods
+need to return gate IDs of gates fulfilling the function the method’s name
+suggests.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.helper_gate">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">helper_gate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.helper_gate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.helper_gate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <cite>gate_id</cite> of the additional gate such as a top barrier
+of a 2D layout or bottom gate below a 1D device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.barriers">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">barriers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.barriers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.barriers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of <cite>gate_id</cite> of barrier gates. E.g. left,
+central and right barrier. The order of gate IDs determines the
+order they are swept.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.plungers">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">plungers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.plungers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.plungers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of <cite>gate_id</cite> of plunger gates, such as
+left and right plunger. The order of gate IDs determines the
+order they are swept.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.outer_barriers">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">outer_barriers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.outer_barriers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.outer_barriers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of <cite>gate_id</cite> of outer barrier gates.
+The order of gate IDs determines the order they are swept.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.central_barrier">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">central_barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.central_barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.central_barrier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <cite>gate_id</cite> of the central barrier.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.IDeviceLayout.plunger_barrier_pairs">
+<em class="property"><span class="pre">abstract</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">plunger_barrier_pairs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#IDeviceLayout.plunger_barrier_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.IDeviceLayout.plunger_barrier_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples, where the first
+item of each tuple is a plunger and the second a barrier ID. These
+pairs belong to capacitiveley coupled plungers and barriers and
+indicated which barrier needs to be changed if a plunger reached
+its safety range when swept.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DataClassMixin">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device_layout.</span></span><span class="sig-name descname"><span class="pre">DataClassMixin</span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DataClassMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DataClassMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A dataclass mixin.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DeviceLayout">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device_layout.</span></span><span class="sig-name descname"><span class="pre">DeviceLayout</span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DeviceLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DeviceLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nanotune.device.device_layout.DataClassMixin" title="nanotune.device.device_layout.DataClassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.device.device_layout.DataClassMixin</span></code></a>, <a class="reference internal" href="#nanotune.device.device_layout.IDeviceLayout" title="nanotune.device.device_layout.IDeviceLayout"><code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.device.device_layout.IDeviceLayout</span></code></a></p>
+<p>An abstract data class.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device.device_layout.</span></span><span class="sig-name descname"><span class="pre">DoubleDotLayout</span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nanotune.device.device_layout.DeviceLayout" title="nanotune.device.device_layout.DeviceLayout"><code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.device.device_layout.DeviceLayout</span></code></a></p>
+<p>DeviceLayout subclass defining a 2D double dot layout. The attributes’
+values are the gates’ IDs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.top_barrier">
+<span class="sig-name descname"><span class="pre">top_barrier</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.top_barrier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.left_barrier">
+<span class="sig-name descname"><span class="pre">left_barrier</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.left_barrier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.left_plunger">
+<span class="sig-name descname"><span class="pre">left_plunger</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.left_plunger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.central_barrier_">
+<span class="sig-name descname"><span class="pre">central_barrier_</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.central_barrier_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.right_plunger">
+<span class="sig-name descname"><span class="pre">right_plunger</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.right_plunger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.right_barrier">
+<span class="sig-name descname"><span class="pre">right_barrier</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.right_barrier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.barriers">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">barriers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.barriers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.barriers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list with left, central and right barrier IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.plungers">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">plungers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.plungers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.plungers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list with left and right plunger IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.outer_barriers">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">outer_barriers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.outer_barriers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.outer_barriers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list with left and right barrier IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.plunger_barrier_pairs">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">plunger_barrier_pairs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.plunger_barrier_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.plunger_barrier_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples, where the left plunger forms a tuple with
+the left barrier and the right plunger with the right barrier. It
+indicates which barrier needs to be adjusted when a plunger reaches its
+safety range when swept.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>list</strong> – [(plunger ID, barrier ID)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.central_barrier">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">central_barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.central_barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.central_barrier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the central barrier’s gate ID.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device.device_layout.DoubleDotLayout.helper_gate">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">helper_gate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device/device_layout.html#DoubleDotLayout.helper_gate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device.device_layout.DoubleDotLayout.helper_gate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the top barrier’s gate ID.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../device_tuner/index.html" class="btn btn-neutral float-right" title="nanotune.device_tuner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="device_channel.html" class="btn btn-neutral float-left" title="nanotune.device.device_channel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

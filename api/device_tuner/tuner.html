@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device_tuner.tuner &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nanotune.device_tuner.characterizer" href="characterizer.html" />
+    <link rel="prev" title="nanotune.device_tuner" href="index.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">nanotune API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#nanotune-api">nanotune API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../classification/index.html">nanotune.classification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../configuration/index.html">nanotune.configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data/index.html">nanotune.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../device/index.html">nanotune.device</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">nanotune.device_tuner</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nanotune.device_tuner.tuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="characterizer.html">nanotune.device_tuner.characterizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dottuner.html">nanotune.device_tuner.dottuner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tuningreport.html">nanotune.device_tuner.tuningreport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tuningresult.html">nanotune.device_tuner.tuningresult</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../drivers/index.html">nanotune.drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fit/index.html">nanotune.fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math/index.html">nanotune.math</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../model/index.html">nanotune.model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tuningstages/index.html">nanotune.tuningstages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">nanotune API documentation</a> &raquo;</li>
+        
+          <li><a href="index.html">nanotune.device_tuner</a> &raquo;</li>
+        
+      <li>nanotune.device_tuner.tuner</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/api/device_tuner/tuner.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nanotune.device_tuner.tuner">
+<span id="nanotune-device-tuner-tuner"></span><h1>nanotune.device_tuner.tuner<a class="headerlink" href="#module-nanotune.device_tuner.tuner" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.set_back_voltages">
+<span class="sig-prename descclassname"><span class="pre">nanotune.device_tuner.tuner.</span></span><span class="sig-name descname"><span class="pre">set_back_voltages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gates</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#set_back_voltages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.set_back_voltages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager setting back gate voltages to their initial values. If
+gates need to be set in a specific
+order, then this order needs to be respected on the list ‘gates’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gates</strong> – List of DeviceChannels, i.e. gates of a Device.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>generator returning None</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.TuningHistory">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device_tuner.tuner.</span></span><span class="sig-name descname"><span class="pre">TuningHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">results:</span> <span class="pre">Dict[str</span></em>, <em class="sig-param"><span class="pre">nanotune.device_tuner.tuningresult.MeasurementHistory]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#TuningHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.TuningHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Container holding tuning results of several devices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results</strong> – Mapping device name to an instance of
+MeasurementHistory.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.TuningHistory.results">
+<span class="sig-name descname"><span class="pre">results</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory" title="nanotune.device_tuner.tuningresult.MeasurementHistory"><span class="pre">nanotune.device_tuner.tuningresult.MeasurementHistory</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nanotune.device_tuner.tuner.TuningHistory.results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.TuningHistory.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_result</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory" title="nanotune.device_tuner.tuningresult.MeasurementHistory"><span class="pre">nanotune.device_tuner.tuningresult.MeasurementHistory</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#TuningHistory.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.TuningHistory.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a tuning result - either an instance of TuningResult or
+MeasurementHistory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device_name</strong> – name of Device instance.</p></li>
+<li><p><strong>new_result</strong> – Either instance of
+TuningResult or MeasurementHistory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.device_tuner.tuner.</span></span><span class="sig-name descname"><span class="pre">Tuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings" title="nanotune.tuningstages.settings.DataSettings"><span class="pre">nanotune.tuningstages.settings.DataSettings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classifiers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../tuningstages/settings.html#nanotune.tuningstages.settings.Classifiers" title="nanotune.tuningstages.settings.Classifiers"><span class="pre">nanotune.tuningstages.settings.Classifiers</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">setpoint_settings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../tuningstages/settings.html#nanotune.tuningstages.settings.SetpointSettings" title="nanotune.tuningstages.settings.SetpointSettings"><span class="pre">nanotune.tuningstages.settings.SetpointSettings</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/base.html#qcodes.instrument.base.Instrument" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.base.Instrument</span></code></a></p>
+<p>Tuner base class. It implements common methods used in both device
+characterization and dot tuning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classifiers</strong> – a setting.Classifiers instance
+holding all required classifiers. Eg. pinchoff.</p></li>
+<li><p><strong>data_settings</strong> – A settings.DataSettings instance with
+data related information such as <cite>db_name</cite> and
+<cite>normalization_constants</cite>.</p></li>
+<li><p><strong>setpoint_settings</strong> – A settings.SetpointSettings
+instance with setpoint related information such as
+<cite>voltage_precision</cite>.</p></li>
+<li><p><strong>tuning_history</strong> – A TuningHistory instance holding all
+tuning results.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.setpoint_settings">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">setpoint_settings</span></span><em class="property"><span class="pre">:</span> <span class="pre">nanotune.tuningstages.settings.SetpointSettings</span></em><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.setpoint_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setpoint settings property.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.data_settings">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">data_settings</span></span><em class="property"><span class="pre">:</span> <span class="pre">nanotune.tuningstages.settings.DataSettings</span></em><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.data_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data settings property.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.update_normalization_constants">
+<span class="sig-name descname"><span class="pre">update_normalization_constants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.update_normalization_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.update_normalization_constants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Measures and sets normalization constants of a given device
+It gets the maximum and minimum signal for all
+readout methods in device.readout. It will first
+set all gate voltages to their most negative allowed values to record
+the minimal signal and then to their most positive allowed ones,
+measuring the maximum signal.
+The device is put back into state where it was before, with gates being
+set in the order they are listed in device.gates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> – the device to measure, an instance of nt.Device</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.characterize_gate">
+<span class="sig-name descname"><span class="pre">characterize_gate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.characterize_gate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.characterize_gate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Characterizes a single DeviceChannel/gate of a device. Other than
+the gate swept, it does not set any voltages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device to tune.</p></li>
+<li><p><strong>gate</strong> – DeviceChannel instance/the gate to
+characterize.</p></li>
+<li><p><strong>use_safety_voltage_ranges</strong> – whether or not the entire safe
+voltage range should be swept. If <cite>False</cite>, the gate’s
+<cite>current_valid_range</cite> will be used.</p></li>
+<li><p><strong>iterate</strong> – whether the gate should be characterized again over
+an extended voltage if a poor result is measured. Only makes
+sense if <cite>use_safety_voltage_ranges=False</cite>. The new ranges are
+determined based on the range update directives returned by
+PinchoffFit.</p></li>
+<li><p><strong>voltage_precision</strong> – optional voltage precision, i.e. the
+voltage difference between subsequent setpoints. If none given,
+the value in self.data_settings is taken. The optional input
+here can be used to temporarily overwrite the default value.</p></li>
+<li><p><strong>comment</strong> – optional string added to the tuning result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TuningResult</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.measure_initial_ranges_2D">
+<span class="sig-name descname"><span class="pre">measure_initial_ranges_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_to_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gates_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory" title="nanotune.device_tuner.tuningresult.MeasurementHistory"><span class="pre">nanotune.device_tuner.tuningresult.MeasurementHistory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.measure_initial_ranges_2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.measure_initial_ranges_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the initial valid voltage range of capacitively coupled
+gates - the range in which <cite>gate_to_set</cite> in combination with
+<cite>gates_to_sweep</cite> is able to deplete the electron gas nearby.
+Example: a 2DEG device with a top barrier, for which we wish to
+determine the range within which all relevant gates, here left, central
+and right barrier, pinch off. It can also be used to determine the
+range of a bottom gate beneath a 1D system.
+It executes <cite>get_pairwise_pinchoff</cite> twice: First it determines the least
+negative voltage of <cite>gate_to_set</cite> for which all <cite>gates_to_sweep</cite> pinch
+off by decreasing <cite>gate_to_set</cite> by <cite>voltage_step</cite> and characterizing
+all <cite>gates_to_sweep</cite>. It retains the gate which pinched off last and
+gets a pairwise pinchoff by setting this last gate to
+descresing voltages, characterizing <cite>gate_to_set</cite> at each value. The
+first time <cite>gate_to_set</cite> pinches off the <cite>low_voltage</cite>, or <cite>L</cite>, is
+retained as the upper range limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device to tune.</p></li>
+<li><p><strong>gate_to_set</strong> – DeviceChannel instance of the gate
+for which an initial valid range should be determined.</p></li>
+<li><p><strong>gates_to_sweep</strong> – DeviceChannel instances of the gates which
+couple to <cite>gate_to_set</cite> and thus affect its valid range.</p></li>
+<li><p><strong>voltage_step</strong> – Voltage difference between consecutive gate
+voltage sets, i.e. by how much e.g. <cite>gate_to_set</cite> will be
+decreased at each iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Tuple[float, float]</strong> – Valid range of <cite>gate_to_set</cite>.</p></li>
+<li><p><strong>MeasurementHistory</strong> – Collection of tuning results.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.get_pairwise_pinchoff">
+<span class="sig-name descname"><span class="pre">get_pairwise_pinchoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_to_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gates_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltages_to_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory" title="nanotune.device_tuner.tuningresult.MeasurementHistory"><span class="pre">nanotune.device_tuner.tuningresult.MeasurementHistory</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.get_pairwise_pinchoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.get_pairwise_pinchoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines voltage of <cite>gate_to_set</cite> at which all <cite>gates_to_sweep</cite>
+pinch off. Decreased <cite>gate_to_set</cite>’s voltage and characterizes those
+<cite>gates_to_sweep</cite> which have not pinched off at previous iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device to tune.</p></li>
+<li><p><strong>gate_to_set</strong> – DeviceChannel instance of the gate
+for which an initial valid range should be determined.</p></li>
+<li><p><strong>gates_to_sweep</strong> – DeviceChannel instances of the gates which
+couple to <cite>gate_to_set</cite> and thus affect its valid range.</p></li>
+<li><p><strong>voltages_to_set</strong> – sequence of voltages which <cite>gate_to_set</cite> is set
+and for which <cite>gates_to_sweep</cite> are characterized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>MeasurementHistory</strong></p></li>
+<li><p><strong>DeviceChannel</strong> – Gate to pinch off last (as voltage of <cite>gate_to_set</cite>
+is decreased).</p></li>
+<li><p><strong>float</strong> – voltage <cite>gate_to_set</cite> at which all <cite>gates_to_sweep</cite> pinched
+off.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.measurement_data_settings">
+<span class="sig-name descname"><span class="pre">measurement_data_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings" title="nanotune.tuningstages.settings.DataSettings"><span class="pre">nanotune.tuningstages.settings.DataSettings</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.measurement_data_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.measurement_data_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns data settings with device specific information, e.g.
+normalization constants added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> – device to tune.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>DataSettings</strong> – new data settings including normalization constants.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.measurement_setpoint_settings">
+<span class="sig-name descname"><span class="pre">measurement_setpoint_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://qcodes.github.io/Qcodes/api/parameters/parameter.html#qcodes.instrument.parameter.Parameter" title="(in QCoDeS v0.27.0+49.gf27aae53c)"><span class="pre">qcodes.instrument.parameter.Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../tuningstages/settings.html#nanotune.tuningstages.settings.SetpointSettings" title="nanotune.tuningstages.settings.SetpointSettings"><span class="pre">nanotune.tuningstages.settings.SetpointSettings</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.measurement_setpoint_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.measurement_setpoint_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns setpoint settings with updated <cite>parameters_to_sweep</cite>,
+<cite>ranges_to_sweep</cite>, <cite>safety_voltage_ranges</cite> and <cite>voltage_precision</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameters_to_sweep</strong> – List of QCoDeS
+parameters which will be swept.</p></li>
+<li><p><strong>ranges_to_sweep</strong> – List of voltage
+ranges, in the same order as <cite>parameters_to_sweep</cite>.</p></li>
+<li><p><strong>safety_voltage_ranges</strong> – List of safe
+voltage ranges, in the same order as <cite>parameters_to_sweep</cite>.</p></li>
+<li><p><strong>voltage_precision</strong> – optional float, voltage difference between
+setpoints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>SetpointSettings</strong> – updated setpoint settings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.Tuner.get_charge_diagram">
+<span class="sig-name descname"><span class="pre">get_charge_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../device/device.html#nanotune.device.device.Device" title="nanotune.device.device.Device"><span class="pre">nanotune.device.device.Device</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gates_to_sweep</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../device/device_channel.html#nanotune.device.device_channel.DeviceChannel" title="nanotune.device.device_channel.DeviceChannel"><span class="pre">nanotune.device.device_channel.DeviceChannel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_safety_voltage_ranges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult" title="nanotune.device_tuner.tuningresult.TuningResult"><span class="pre">nanotune.device_tuner.tuningresult.TuningResult</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#Tuner.get_charge_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.Tuner.get_charge_diagram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Measures a charge diagram by sweeping <cite>gates_to_sweep</cite>. The returned
+TuningResult instance also contains information about dot segments,
+such as their voltage sub-ranges and classification outcome
+(<cite>tuningresult.ml_result[‘dot_segments’]</cite>).
+The tuning results is added to tuner’s <cite>tuning_history</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> – device to tune.</p></li>
+<li><p><strong>gates_to_sweep</strong> – DeviceChannel instances
+of gates to sweep.</p></li>
+<li><p><strong>use_safety_voltage_ranges</strong> – whether entire safety voltage
+range should be swept. Current valid range is taken if not.
+Default is False.</p></li>
+<li><p><strong>iterate</strong> – whether subsequent diagrams with over extended
+ranges should be taken if the measurement is classified as poor/
+not the desired regime.</p></li>
+<li><p><strong>voltage_precision</strong> – optional float, voltage difference between
+setpoints. If none given,
+the value in self.data_settings is taken. The optional input
+here can be used to temporarily overwrite the default value.</p></li>
+<li><p><strong>comment</strong> – optional comment added to the tuning result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>TuningResult</strong> – tuning result including classification result and
+dot segment info (<cite>tuningresult.ml_result[‘dot_segments’]</cite>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nanotune.device_tuner.tuner.linear_voltage_steps">
+<span class="sig-prename descclassname"><span class="pre">nanotune.device_tuner.tuner.</span></span><span class="sig-name descname"><span class="pre">linear_voltage_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/device_tuner/tuner.html#linear_voltage_steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.device_tuner.tuner.linear_voltage_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns linearly spaced setpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voltage_range</strong> – interval within which setpoints
+should be computed.</p></li>
+<li><p><strong>voltage_step</strong> – voltage difference between setpoints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Sequence[float]</strong> – linearly spaced setpoints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="characterizer.html" class="btn btn-neutral float-right" title="nanotune.device_tuner.characterizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="nanotune.device_tuner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

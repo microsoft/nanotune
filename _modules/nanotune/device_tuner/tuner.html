@@ -1,0 +1,728 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>nanotune.device_tuner.tuner &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link href="../../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> nanotune
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.533.g81a2206
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../start/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview/index.html">What it does</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nanotune</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nanotune.device_tuner.tuner</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nanotune.device_tuner.tuner</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021 Jana Darulova</span>
+<span class="c1">#</span>
+<span class="c1"># This software is released under the MIT License.</span>
+<span class="c1"># https://opensource.org/licenses/MIT</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device</span> <span class="kn">import</span> <span class="n">Device</span><span class="p">,</span> <span class="n">NormalizationConstants</span>
+<span class="kn">from</span> <span class="nn">nanotune.device.device_channel</span> <span class="kn">import</span> <span class="n">DeviceChannel</span>
+<span class="kn">from</span> <span class="nn">nanotune.device_tuner.tuningresult</span> <span class="kn">import</span> <span class="n">MeasurementHistory</span><span class="p">,</span> <span class="n">TuningResult</span>
+<span class="kn">from</span> <span class="nn">nanotune.tuningstages.gatecharacterization1d</span> <span class="kn">import</span> <span class="n">GateCharacterization1D</span>
+<span class="kn">from</span> <span class="nn">nanotune.tuningstages.settings</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DataSettings</span><span class="p">,</span> <span class="n">SetpointSettings</span><span class="p">,</span>
+    <span class="n">Classifiers</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">nanotune.tuningstages.chargediagram</span> <span class="kn">import</span> <span class="n">ChargeDiagram</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="set_back_voltages"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.set_back_voltages">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">set_back_voltages</span><span class="p">(</span><span class="n">gates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Context manager setting back gate voltages to their initial values. If</span>
+<span class="sd">    gates need to be set in a specific</span>
+<span class="sd">    order, then this order needs to be respected on the list &#39;gates&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        gates: List of DeviceChannels, i.e. gates of a Device.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        generator returning None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">initial_voltages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="n">gates</span><span class="p">:</span>
+        <span class="n">initial_voltages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">())</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ig</span><span class="p">,</span> <span class="n">gate</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gates</span><span class="p">):</span>
+            <span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">initial_voltages</span><span class="p">[</span><span class="n">ig</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TuningHistory"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.TuningHistory">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TuningHistory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Container holding tuning results of several devices.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        results: Mapping device name to an instance of</span>
+<span class="sd">            MeasurementHistory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MeasurementHistory</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TuningHistory.update"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.TuningHistory.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">new_result</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TuningResult</span><span class="p">,</span> <span class="n">MeasurementHistory</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a tuning result - either an instance of TuningResult or</span>
+<span class="sd">        MeasurementHistory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name: name of Device instance.</span>
+<span class="sd">            new_result: Either instance of</span>
+<span class="sd">                TuningResult or MeasurementHistory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">device_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">MeasurementHistory</span><span class="p">(</span><span class="n">device_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_result</span><span class="p">,</span> <span class="n">MeasurementHistory</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_result</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_result</span><span class="p">,</span> <span class="n">TuningResult</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="n">new_result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Can not add result of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">new_result</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Tuner"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner">[docs]</a><span class="k">class</span> <span class="nc">Tuner</span><span class="p">(</span><span class="n">qc</span><span class="o">.</span><span class="n">Instrument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tuner base class. It implements common methods used in both device</span>
+<span class="sd">    characterization and dot tuning.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        classifiers: a setting.Classifiers instance</span>
+<span class="sd">            holding all required classifiers. Eg. pinchoff.</span>
+<span class="sd">        data_settings: A settings.DataSettings instance with</span>
+<span class="sd">            data related information such as `db_name` and</span>
+<span class="sd">            `normalization_constants`.</span>
+<span class="sd">        setpoint_settings: A settings.SetpointSettings</span>
+<span class="sd">            instance with setpoint related information such as</span>
+<span class="sd">            `voltage_precision`.</span>
+<span class="sd">        tuning_history: A TuningHistory instance holding all</span>
+<span class="sd">            tuning results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_settings</span><span class="p">:</span> <span class="n">DataSettings</span><span class="p">,</span>
+        <span class="n">classifiers</span><span class="p">:</span> <span class="n">Classifiers</span><span class="p">,</span>
+        <span class="n">setpoint_settings</span><span class="p">:</span> <span class="n">SetpointSettings</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span> <span class="o">=</span> <span class="n">classifiers</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span> <span class="o">=</span> <span class="n">data_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span> <span class="o">=</span> <span class="n">setpoint_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tuning_history</span><span class="p">:</span> <span class="n">TuningHistory</span> <span class="o">=</span> <span class="n">TuningHistory</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">setpoint_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SetpointSettings</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Setpoint settings property.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_settings</span>
+
+    <span class="nd">@setpoint_settings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">setpoint_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_settings</span><span class="p">:</span> <span class="n">SetpointSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Setpoint settings property setter. Overwrites all previous settings</span>
+<span class="sd">        and adds new ones to static metadata.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_settings (SetpointSettings): an SetpointSettings instance with</span>
+<span class="sd">                new settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_settings</span> <span class="o">=</span> <span class="n">new_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;setpoint_settings&#39;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">new_settings</span><span class="p">)})</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataSettings</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Data settings property.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_settings</span>
+
+    <span class="nd">@data_settings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">data_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_settings</span><span class="p">:</span> <span class="n">DataSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Data settings property setter. Overwrites all previous settings</span>
+<span class="sd">        and adds new ones to static metadata.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_settings: an DataSettings instance with</span>
+<span class="sd">                new settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_settings</span> <span class="o">=</span> <span class="n">new_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;data_settings&#39;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">new_settings</span><span class="p">)})</span>
+
+<div class="viewcode-block" id="Tuner.update_normalization_constants"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.update_normalization_constants">[docs]</a>    <span class="k">def</span> <span class="nf">update_normalization_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Measures and sets normalization constants of a given device</span>
+<span class="sd">        It gets the maximum and minimum signal for all</span>
+<span class="sd">        readout methods in device.readout. It will first</span>
+<span class="sd">        set all gate voltages to their most negative allowed values to record</span>
+<span class="sd">        the minimal signal and then to their most positive allowed ones,</span>
+<span class="sd">        measuring the maximum signal.</span>
+<span class="sd">        The device is put back into state where it was before, with gates being</span>
+<span class="sd">        set in the order they are listed in device.gates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: the device to measure, an instance of nt.Device</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">available_readout</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">readout</span><span class="o">.</span><span class="n">available_readout</span><span class="p">()</span>
+
+        <span class="n">normalization_constants</span> <span class="o">=</span> <span class="n">NormalizationConstants</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">set_back_voltages</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">gates</span><span class="p">):</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_lowest</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="n">available_readout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">normalization_constants</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span>
+                <span class="n">new_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">prev</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">normalization_constants</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">,</span> <span class="n">new_tuple</span><span class="p">)</span>
+
+            <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_highest</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="n">available_readout</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">normalization_constants</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span>
+                <span class="n">new_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">normalization_constants</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">,</span> <span class="n">new_tuple</span><span class="p">)</span>
+        <span class="n">device</span><span class="o">.</span><span class="n">normalization_constants</span> <span class="o">=</span> <span class="n">normalization_constants</span></div>
+
+<div class="viewcode-block" id="Tuner.characterize_gate"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.characterize_gate">[docs]</a>    <span class="k">def</span> <span class="nf">characterize_gate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gate</span><span class="p">:</span> <span class="n">DeviceChannel</span><span class="p">,</span>
+        <span class="n">use_safety_voltage_ranges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">iterate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">voltage_precision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TuningResult</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Characterizes a single DeviceChannel/gate of a device. Other than</span>
+<span class="sd">        the gate swept, it does not set any voltages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: device to tune.</span>
+<span class="sd">            gate: DeviceChannel instance/the gate to</span>
+<span class="sd">                characterize.</span>
+<span class="sd">            use_safety_voltage_ranges: whether or not the entire safe</span>
+<span class="sd">                voltage range should be swept. If `False`, the gate&#39;s</span>
+<span class="sd">                `current_valid_range` will be used.</span>
+<span class="sd">            iterate: whether the gate should be characterized again over</span>
+<span class="sd">                an extended voltage if a poor result is measured. Only makes</span>
+<span class="sd">                sense if `use_safety_voltage_ranges=False`. The new ranges are</span>
+<span class="sd">                determined based on the range update directives returned by</span>
+<span class="sd">                PinchoffFit.</span>
+<span class="sd">            voltage_precision: optional voltage precision, i.e. the</span>
+<span class="sd">                voltage difference between subsequent setpoints. If none given,</span>
+<span class="sd">                the value in self.data_settings is taken. The optional input</span>
+<span class="sd">                here can be used to temporarily overwrite the default value.</span>
+<span class="sd">            comment: optional string added to the tuning result.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            TuningResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">comment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Characterizing </span><span class="si">{</span><span class="n">gate</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">is_pinchoff_classifier</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No pinchoff classifier found.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_safety_voltage_ranges</span><span class="p">:</span>
+            <span class="n">v_range</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span>
+            <span class="n">iterate</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">v_range</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">()[</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span>
+
+        <span class="n">setpoint_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_setpoint_settings</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">voltage</span><span class="p">],</span> <span class="p">[</span><span class="n">v_range</span><span class="p">],</span> <span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()],</span>
+            <span class="n">voltage_precision</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">GateCharacterization1D</span><span class="p">(</span>
+            <span class="n">data_settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_data_settings</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">setpoint_settings</span><span class="o">=</span><span class="n">setpoint_settings</span><span class="p">,</span>
+            <span class="n">readout</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span>
+            <span class="n">classifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">pinchoff</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="p">)</span>
+        <span class="n">tuningresult</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">run_stage</span><span class="p">(</span><span class="n">iterate</span><span class="o">=</span><span class="n">iterate</span><span class="p">)</span>
+        <span class="n">tuningresult</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_gate_status</span><span class="p">()</span>
+        <span class="n">tuningresult</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tuning_history</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">tuningresult</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tuningresult</span></div>
+
+<div class="viewcode-block" id="Tuner.measure_initial_ranges_2D"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.measure_initial_ranges_2D">[docs]</a>    <span class="k">def</span> <span class="nf">measure_initial_ranges_2D</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gate_to_set</span><span class="p">:</span> <span class="n">DeviceChannel</span><span class="p">,</span>
+        <span class="n">gates_to_sweep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">],</span>
+        <span class="n">voltage_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">MeasurementHistory</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Estimates the initial valid voltage range of capacitively coupled</span>
+<span class="sd">        gates - the range in which `gate_to_set` in combination with</span>
+<span class="sd">        `gates_to_sweep` is able to deplete the electron gas nearby.</span>
+<span class="sd">        Example: a 2DEG device with a top barrier, for which we wish to</span>
+<span class="sd">        determine the range within which all relevant gates, here left, central</span>
+<span class="sd">        and right barrier, pinch off. It can also be used to determine the</span>
+<span class="sd">        range of a bottom gate beneath a 1D system.</span>
+<span class="sd">        It executes `get_pairwise_pinchoff` twice: First it determines the least</span>
+<span class="sd">        negative voltage of `gate_to_set` for which all `gates_to_sweep` pinch</span>
+<span class="sd">        off by decreasing `gate_to_set` by `voltage_step` and characterizing</span>
+<span class="sd">        all `gates_to_sweep`. It retains the gate which pinched off last and</span>
+<span class="sd">        gets a pairwise pinchoff by setting this last gate to</span>
+<span class="sd">        descresing voltages, characterizing `gate_to_set` at each value. The</span>
+<span class="sd">        first time `gate_to_set` pinches off the `low_voltage`, or `L`, is</span>
+<span class="sd">        retained as the upper range limit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: device to tune.</span>
+<span class="sd">            gate_to_set: DeviceChannel instance of the gate</span>
+<span class="sd">                for which an initial valid range should be determined.</span>
+<span class="sd">            gates_to_sweep: DeviceChannel instances of the gates which</span>
+<span class="sd">                couple to `gate_to_set` and thus affect its valid range.</span>
+<span class="sd">            voltage_step: Voltage difference between consecutive gate</span>
+<span class="sd">                voltage sets, i.e. by how much e.g. `gate_to_set` will be</span>
+<span class="sd">                decreased at each iteration.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float, float]: Valid range of `gate_to_set`.</span>
+<span class="sd">            MeasurementHistory: Collection of tuning results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">pinchoff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No pinchoff classifier.&quot;</span><span class="p">)</span>
+        <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_highest</span><span class="p">()</span>
+
+        <span class="n">v_steps</span> <span class="o">=</span> <span class="n">linear_voltage_steps</span><span class="p">(</span>
+            <span class="n">gate_to_set</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">(),</span> <span class="n">voltage_step</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">measurement_result</span><span class="p">,</span>
+         <span class="n">last_gate_to_pinchoff</span><span class="p">,</span>
+         <span class="n">last_voltage</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pairwise_pinchoff</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">gate_to_set</span><span class="p">,</span>
+            <span class="n">gates_to_sweep</span><span class="p">,</span>
+            <span class="n">v_steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">min_voltage</span> <span class="o">=</span> <span class="n">last_voltage</span>
+
+        <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_highest</span><span class="p">()</span>
+
+        <span class="c1"># Swap top_barrier and last barrier to pinch off agains it to</span>
+        <span class="c1"># determine opposite corner of valid voltage space.</span>
+        <span class="n">v_steps</span> <span class="o">=</span> <span class="n">linear_voltage_steps</span><span class="p">(</span>
+            <span class="n">last_gate_to_pinchoff</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">(),</span> <span class="n">voltage_step</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">measurement_result2</span><span class="p">,</span>
+         <span class="n">_</span><span class="p">,</span>
+         <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pairwise_pinchoff</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">last_gate_to_pinchoff</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">gate_to_set</span><span class="p">],</span>
+            <span class="n">v_steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># The line below is correct with max_voltage = ... &quot;low_voltage&quot;</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">measurement_result2</span><span class="o">.</span><span class="n">last_added</span><span class="o">.</span><span class="n">ml_result</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+        <span class="n">max_voltage</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;transport&quot;</span><span class="p">][</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">]</span>
+
+        <span class="n">measurement_result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">measurement_result2</span><span class="p">)</span>
+        <span class="n">device</span><span class="o">.</span><span class="n">all_gates_to_highest</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">min_voltage</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">),</span> <span class="n">measurement_result</span></div>
+
+<div class="viewcode-block" id="Tuner.get_pairwise_pinchoff"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.get_pairwise_pinchoff">[docs]</a>    <span class="k">def</span> <span class="nf">get_pairwise_pinchoff</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gate_to_set</span><span class="p">:</span> <span class="n">DeviceChannel</span><span class="p">,</span>
+        <span class="n">gates_to_sweep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">],</span>
+        <span class="n">voltages_to_set</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">MeasurementHistory</span><span class="p">,</span> <span class="n">DeviceChannel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Determines voltage of `gate_to_set` at which all `gates_to_sweep`</span>
+<span class="sd">        pinch off. Decreased `gate_to_set`&#39;s voltage and characterizes those</span>
+<span class="sd">        `gates_to_sweep` which have not pinched off at previous iterations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: device to tune.</span>
+<span class="sd">            gate_to_set: DeviceChannel instance of the gate</span>
+<span class="sd">                for which an initial valid range should be determined.</span>
+<span class="sd">            gates_to_sweep: DeviceChannel instances of the gates which</span>
+<span class="sd">                couple to `gate_to_set` and thus affect its valid range.</span>
+<span class="sd">            voltages_to_set: sequence of voltages which `gate_to_set` is set</span>
+<span class="sd">                and for which `gates_to_sweep` are characterized.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MeasurementHistory:</span>
+<span class="sd">            DeviceChannel: Gate to pinch off last (as voltage of `gate_to_set`</span>
+<span class="sd">                is decreased).</span>
+<span class="sd">            float: voltage `gate_to_set` at which all `gates_to_sweep` pinched</span>
+<span class="sd">                off.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">measurement_result</span> <span class="o">=</span> <span class="n">MeasurementHistory</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">layout_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">gate_id</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">]</span>
+        <span class="n">skip_gates</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">layout_ids</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">last_voltage</span> <span class="ow">in</span> <span class="n">voltages_to_set</span><span class="p">:</span>
+            <span class="n">gate_to_set</span><span class="o">.</span><span class="n">voltage</span><span class="p">(</span><span class="n">last_voltage</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_gates</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]:</span>
+                    <span class="n">sub_tuning_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterize_gate</span><span class="p">(</span>
+                        <span class="n">device</span><span class="p">,</span>
+                        <span class="n">gate</span><span class="p">,</span>
+                        <span class="n">use_safety_voltage_ranges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">comment</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Measuring initial range of </span><span class="si">{</span><span class="n">gate</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">                            with </span><span class="si">{</span><span class="n">gate_to_set</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">last_voltage</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">measurement_result</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="n">sub_tuning_result</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">sub_tuning_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                        <span class="n">skip_gates</span><span class="p">[</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">last_gate_to_pinchoff</span> <span class="o">=</span> <span class="n">gate</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">skip_gates</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">measurement_result</span><span class="p">,</span> <span class="n">last_gate_to_pinchoff</span><span class="p">,</span> <span class="n">last_voltage</span></div>
+
+<div class="viewcode-block" id="Tuner.measurement_data_settings"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.measurement_data_settings">[docs]</a>    <span class="k">def</span> <span class="nf">measurement_data_settings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataSettings</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns data settings with device specific information, e.g.</span>
+<span class="sd">        normalization constants added.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: device to tune.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataSettings: new data settings including normalization constants.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_datasettings</span> <span class="o">=</span> <span class="n">DataSettings</span><span class="p">(</span><span class="o">**</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_settings</span><span class="p">))</span>
+        <span class="n">norm_csts</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">normalization_constants</span>
+        <span class="n">new_datasettings</span><span class="o">.</span><span class="n">normalization_constants</span> <span class="o">=</span> <span class="n">norm_csts</span>
+        <span class="k">return</span> <span class="n">new_datasettings</span></div>
+
+<div class="viewcode-block" id="Tuner.measurement_setpoint_settings"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.measurement_setpoint_settings">[docs]</a>    <span class="k">def</span> <span class="nf">measurement_setpoint_settings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameters_to_sweep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">qc</span><span class="o">.</span><span class="n">Parameter</span><span class="p">],</span>
+        <span class="n">ranges_to_sweep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">safety_voltage_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+        <span class="n">voltage_precision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SetpointSettings</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns setpoint settings with updated `parameters_to_sweep`,</span>
+<span class="sd">        `ranges_to_sweep`, `safety_voltage_ranges` and `voltage_precision`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameters_to_sweep: List of QCoDeS</span>
+<span class="sd">                parameters which will be swept.</span>
+<span class="sd">            ranges_to_sweep: List of voltage</span>
+<span class="sd">                ranges, in the same order as `parameters_to_sweep`.</span>
+<span class="sd">            safety_voltage_ranges: List of safe</span>
+<span class="sd">                voltage ranges, in the same order as `parameters_to_sweep`.</span>
+<span class="sd">            voltage_precision: optional float, voltage difference between</span>
+<span class="sd">                setpoints.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SetpointSettings: updated setpoint settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_settings</span> <span class="o">=</span> <span class="n">SetpointSettings</span><span class="p">(</span><span class="o">**</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint_settings</span><span class="p">))</span>
+        <span class="n">new_settings</span><span class="o">.</span><span class="n">parameters_to_sweep</span> <span class="o">=</span> <span class="n">parameters_to_sweep</span>
+        <span class="n">new_settings</span><span class="o">.</span><span class="n">ranges_to_sweep</span> <span class="o">=</span> <span class="n">ranges_to_sweep</span>
+        <span class="n">new_settings</span><span class="o">.</span><span class="n">safety_voltage_ranges</span> <span class="o">=</span> <span class="n">safety_voltage_ranges</span>
+        <span class="k">if</span> <span class="n">voltage_precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_settings</span><span class="o">.</span><span class="n">voltage_precision</span> <span class="o">=</span> <span class="n">voltage_precision</span>
+        <span class="k">return</span> <span class="n">new_settings</span></div>
+
+
+<div class="viewcode-block" id="Tuner.get_charge_diagram"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.get_charge_diagram">[docs]</a>    <span class="k">def</span> <span class="nf">get_charge_diagram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
+        <span class="n">gates_to_sweep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DeviceChannel</span><span class="p">],</span>
+        <span class="n">use_safety_voltage_ranges</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">iterate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">voltage_precision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1">#0.02,</span>
+        <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TuningResult</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Measures a charge diagram by sweeping `gates_to_sweep`. The returned</span>
+<span class="sd">        TuningResult instance also contains information about dot segments,</span>
+<span class="sd">        such as their voltage sub-ranges and classification outcome</span>
+<span class="sd">        (`tuningresult.ml_result[&#39;dot_segments&#39;]`).</span>
+<span class="sd">        The tuning results is added to tuner&#39;s `tuning_history`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: device to tune.</span>
+<span class="sd">            gates_to_sweep: DeviceChannel instances</span>
+<span class="sd">                of gates to sweep.</span>
+<span class="sd">            use_safety_voltage_ranges: whether entire safety voltage</span>
+<span class="sd">                range should be swept. Current valid range is taken if not.</span>
+<span class="sd">                Default is False.</span>
+<span class="sd">            iterate: whether subsequent diagrams with over extended</span>
+<span class="sd">                ranges should be taken if the measurement is classified as poor/</span>
+<span class="sd">                not the desired regime.</span>
+<span class="sd">            voltage_precision: optional float, voltage difference between</span>
+<span class="sd">                setpoints. If none given,</span>
+<span class="sd">                the value in self.data_settings is taken. The optional input</span>
+<span class="sd">                here can be used to temporarily overwrite the default value.</span>
+<span class="sd">            comment: optional comment added to the tuning result.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TuningResult: tuning result including classification result and</span>
+<span class="sd">                dot segment info (`tuningresult.ml_result[&#39;dot_segments&#39;]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">comment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Taking charge diagram of </span><span class="si">{</span><span class="n">gates_to_sweep</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">is_dot_classifier</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not the right classifiers found for dots.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_safety_voltage_ranges</span><span class="p">:</span>
+            <span class="n">v_ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">]</span>
+            <span class="n">iterate</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">valid_ranges</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">current_valid_ranges</span><span class="p">()</span>
+            <span class="n">v_ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">valid_ranges</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">gate_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">]</span>
+
+        <span class="n">setpoint_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_setpoint_settings</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">voltage</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">],</span>
+                <span class="n">v_ranges</span><span class="p">,</span>
+                <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">safety_voltage_range</span><span class="p">()</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gates_to_sweep</span><span class="p">],</span>
+                <span class="n">voltage_precision</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">ChargeDiagram</span><span class="p">(</span>
+            <span class="n">data_settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_data_settings</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">setpoint_settings</span><span class="o">=</span><span class="n">setpoint_settings</span><span class="p">,</span>
+            <span class="n">readout</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">readout</span><span class="p">,</span>
+            <span class="n">classifiers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">tuningresult</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">run_stage</span><span class="p">(</span><span class="n">iterate</span><span class="o">=</span><span class="n">iterate</span><span class="p">)</span>
+        <span class="n">tuningresult</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_gate_status</span><span class="p">()</span>
+        <span class="n">tuningresult</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tuning_history</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">tuningresult</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ChargeDiagram stage finished: &quot;</span> \
+            <span class="sa">f</span><span class="s2">&quot;success: </span><span class="si">{</span><span class="n">tuningresult</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">, &quot;</span> \
+            <span class="sa">f</span><span class="s2">&quot;termination_reason: </span><span class="si">{</span><span class="n">tuningresult</span><span class="o">.</span><span class="n">termination_reasons</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">tuningresult</span></div></div>
+
+
+<div class="viewcode-block" id="linear_voltage_steps"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.linear_voltage_steps">[docs]</a><span class="k">def</span> <span class="nf">linear_voltage_steps</span><span class="p">(</span>
+    <span class="n">voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">voltage_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Returns linearly spaced setpoints.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        voltage_range: interval within which setpoints</span>
+<span class="sd">            should be computed.</span>
+<span class="sd">        voltage_step: voltage difference between setpoints.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Sequence[float]: linearly spaced setpoints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">voltage_step</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_steps</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Jana Darulova.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
