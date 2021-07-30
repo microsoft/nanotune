@@ -73,6 +73,7 @@ extensions = [
     # 'rinoh.frontend.sphinx'
 ]
 
+
 nitpicky = False
 
 # we allow most types from the typing modules to be used in
