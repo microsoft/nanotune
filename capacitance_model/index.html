@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Capacitance Model &mdash; nanotune 0+untagged.533.g81a2206 documentation</title>
+  <title>Capacitance Model &mdash; nanotune 0+untagged.534.ged9d9e7 documentation</title>
   
 
   
@@ -36,6 +36,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -69,7 +71,7 @@
             
             
               <div class="version">
-                0+untagged.533.g81a2206
+                0+untagged.534.ged9d9e7
               </div>
             
           
@@ -104,7 +106,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Capacitance Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Capacitance Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#double-quantum-dots">Double quantum dots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#charge-diagram">Charge diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-on-synthetic-data">Note on synthetic data</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -200,13 +207,295 @@
 </style>
 <div class="section" id="capacitance-model">
 <h1>Capacitance Model<a class="headerlink" href="#capacitance-model" title="Permalink to this headline">¶</a></h1>
-<p>The capacitance model:
-It simulated quantum dots as a system of capacitors connecting charge and
-voltages nodes, i.e. dots and gates respectively. Beside calculating integer
-number of charges on charge nodes, the model doesn’t involve any dot or
-material physics.</p>
-<p>Implementation of
-.. _thesis: <a class="reference external" href="https://www.research-collection.ethz.ch/handle/20.500.11850/473107">https://www.research-collection.ethz.ch/handle/20.500.11850/473107</a></p>
+<p>This section is an extraction from Jana’s <a class="reference external" href="https://doi.org/10.3929/ethz-b-000473107">thesis</a>.</p>
+<p>Quantum dots with weak coupling between dots and thus well localized charges
+can be modelled by the capacitance model, also referred to as the
+constant-interaction model (van der Wiel et al. 2002). The constant-interaction model
+is a classical description based on two assumptions (Hanson et al. 2007). First,
+the Coulomb interactions between electrons on dots and in reservoirs are
+parametrized by constant capacitances. Second, the single-particle energy-level
+spectrum is considered independent of electron interactions and the number of
+electrons, meaning that quantum mechanical energy spacings are not taken into
+account.</p>
+<p>The system of electrostatic gates, dots and reservoirs is represented by a
+system of conductors connected via resistors and capacitors. Albeit classical
+and simple, the capacitance model explains and qualitatively reproduces
+relevant transport features of gate-defined quantum dots.
+The following paragraphs are based van der Wiel et al. 2002 paper and discussions
+with John K. Gamble.</p>
+<p>The capacitance model is defined by a capacitance matrix <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>,
+whose elements <span class="math notranslate nohighlight">\(C_{ij}\)</span> are the capacitances between individual
+elements <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.
+We distinguish between two different types of elements, the charge and the
+voltage nodes, representing quantum dots and electrostatic gates respectively.
+Each node <span class="math notranslate nohighlight">\(i\)</span> is defined by its charge <span class="math notranslate nohighlight">\(Q_{i}\)</span> and electrical
+potential <span class="math notranslate nohighlight">\(V_{i}\)</span>. For simplicity, we write charges and potentials on
+all nodes of the system in vector notation. We denote charges on charge and
+voltages nodes by <span class="math notranslate nohighlight">\(\vec{Q_{c}}\)</span> and <span class="math notranslate nohighlight">\(\vec{Q_{v}}\)</span> respectively,
+and electrical potentials by <span class="math notranslate nohighlight">\(\vec{V}_{c}\)</span> and <span class="math notranslate nohighlight">\(\vec{V}_{v}\)</span>.
+The capacitance model allows to calculate potentials on voltage nodes
+resulting in the desired number of charges on charge nodes. We consider a
+system of <span class="math notranslate nohighlight">\(N_{c}\)</span> charge nodes and <span class="math notranslate nohighlight">\(N_{v}\)</span> voltage nodes.</p>
+<p>The capacitor connecting node <span class="math notranslate nohighlight">\(j\)</span> and node <span class="math notranslate nohighlight">\(k\)</span> has a
+capacitance <span class="math notranslate nohighlight">\(C_{jk}\)</span> and stores a charge <span class="math notranslate nohighlight">\(q_{jk}\)</span>. The total
+charge on node <span class="math notranslate nohighlight">\(j\)</span> is the sum of the charges of  all capacitors
+connected to it,</p>
+<div class="math notranslate nohighlight">
+\[Q_{j} = \sum_{k} q_{jk} = \sum_{k} C_{jk} (V_{j} - V_{k}).\]</div>
+<p>Using the vector notation for charges and electrical potentials introduced
+above, this relation can be expressed using the capacitance matrix,</p>
+<div class="math notranslate nohighlight" id="equation-fullcapa">
+<span class="eqno">(1)<a class="headerlink" href="#equation-fullcapa" title="Permalink to this equation">¶</a></span>\[\vec{Q} = \mathbf{C} \vec{V}.\]</div>
+<p>Distinguishing between charge and voltage node sub-systems, this relation
+becomes</p>
+<div class="math notranslate nohighlight" id="equation-capa-general">
+<span class="eqno">(2)<a class="headerlink" href="#equation-capa-general" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{pmatrix}
+   \vec{Q_{c}} \\
+   \vec{Q_{v}}
+\end{pmatrix} =
+\begin{pmatrix}
+   \mathbf{C_{cc}} &amp; \mathbf{C_{cv}} \\
+   \mathbf{C_{vc}} &amp; \mathbf{C_{vv}}
+\end{pmatrix}
+\begin{pmatrix}
+   \vec{V_{c}} \\
+   \vec{V}_{v}
+\end{pmatrix}.\end{split}\]</div>
+<p>Diagonal elements of the capacitance matrix, <span class="math notranslate nohighlight">\(C_{jj}\)</span>, are total
+capacitances of each node and carry the opposite sign of the matrix’s
+off-diagonal elements.
+The off-diagonal elements of <span class="math notranslate nohighlight">\(\mathbf{\mathbf{C_{cc}}}\)</span> are
+capacitances between charge nodes, while the off-diagonal elements of
+<span class="math notranslate nohighlight">\(\mathbf{\mathbf{C_{vv}}}\)</span> are capacitances between voltage nodes.
+The elements of <span class="math notranslate nohighlight">\(\mathbf{\mathbf{C_{cv}}}\)</span> are capacitances between
+voltage and charge nodes, and allow to calculate so-called virtual gate
+coefficients - useful knobs in semiconductor qubit experiments.</p>
+<p>The capacitance matrix allows to derive an expression of the charge nodes’
+electrochemical potential <span class="math notranslate nohighlight">\(\mu\)</span>, which is defined as the energy
+difference of two charge configurations and will be formally defined shortly.
+The total energy of a system of conductors defined by a capacitance matrix
+<span class="math notranslate nohighlight">\(\mathbf{C}\)</span> and voltages <span class="math notranslate nohighlight">\(\vec{V}\)</span> is given by</p>
+<div class="math notranslate nohighlight" id="equation-engen">
+<span class="eqno">(3)<a class="headerlink" href="#equation-engen" title="Permalink to this equation">¶</a></span>\[U = \frac{1}{2} \vec{V}^{T} \mathbf{C} \vec{V}.\]</div>
+<p>Using <a class="reference internal" href="#equation-capa-general">(2)</a>, we can express the charge nodes’ potentials
+<span class="math notranslate nohighlight">\(\vec{V}_{c}\)</span> as</p>
+<div class="math notranslate nohighlight" id="equation-vc">
+<span class="eqno">(4)<a class="headerlink" href="#equation-vc" title="Permalink to this equation">¶</a></span>\[\vec{V_{c}} = \mathbf{C}^{-1}_{cc} \left( \vec{Q_{c}} - \mathbf{C_{cv}} \vec{V}_{v} \right).\]</div>
+<p>Combining <a class="reference internal" href="#equation-vc">(4)</a> and <a class="reference internal" href="#equation-engen">(3)</a>, the energy reads</p>
+<div class="math notranslate nohighlight" id="equation-energy">
+<span class="eqno">(5)<a class="headerlink" href="#equation-energy" title="Permalink to this equation">¶</a></span>\[U = \frac{1}{2} \vec{Q_{c}}^{T} \mathbf{C^{-1}_{cc}} \vec{Q_{c}}
+   + \frac{1}{2} \vec{V^{T}_{v}} \mathbf{C_{vc}} \mathbf{C_{cc}^{-1} } \mathbf{C_{cv}} \vec{V}_{v}
+   - \vec{Q^{T}_{c}} \mathbf{C^{-1}_{cc}} \mathbf{C_{cv}} \vec{V}_{v}.\]</div>
+<p>We now assume that the number of charges on charge nodes <span class="math notranslate nohighlight">\(\vec{Q_{c}}\)</span>
+and potentials at voltages nodes <span class="math notranslate nohighlight">\(\vec{V}_{v}\)</span> to be known.
+In experiments, this assumption is valid in the few electron regime. We
+substitute the charge node charge vector by the corresponding a vector
+containing the number of electrons. Let</p>
+<div class="math notranslate nohighlight">
+\[\vec{N} = \frac{- \vec{Q}_{c}}{q},\]</div>
+<p>where <span class="math notranslate nohighlight">\(q\)</span> is the elementary charge.
+In general, the electrochemical potential is defined as the energy difference
+between the states  <span class="math notranslate nohighlight">\(\vec{N}\)</span> and  <span class="math notranslate nohighlight">\(\vec{N} + \hat{e}_{j}\)</span>,
+where  <span class="math notranslate nohighlight">\(\hat{e}_{j}\)</span> is a unit vector indicating an additional electron
+on charge node <span class="math notranslate nohighlight">\(j\)</span>.
+The electrochemical potential of a charge node <span class="math notranslate nohighlight">\(j\)</span> thus becomes</p>
+<div class="math notranslate nohighlight" id="equation-mu">
+<span class="eqno">(6)<a class="headerlink" href="#equation-mu" title="Permalink to this equation">¶</a></span>\[\mu_{j}(\vec{N}, \vec{V}_{v}) = U(\vec{N}, \vec{V}_{v}) - U( \vec{N} - \hat{e}_{j}, \vec{V}_{v}).\]</div>
+<p>Using this definition together with <a class="reference internal" href="#equation-energy">(5)</a> we obtain</p>
+<div class="math notranslate nohighlight" id="equation-potential">
+<span class="eqno">(7)<a class="headerlink" href="#equation-potential" title="Permalink to this equation">¶</a></span>\[\begin{split}\mu_{j}(\vec{N}, \vec{V}_{v}) &amp;= \frac{q^{2}}{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \vec{N} + q \vec{N}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v}
+                             - \frac{q^{2}}{2} \left( \vec{N} - \hat{e}_{j} \right)^{T}  \mathbf{C_{cc}^{-1}} \left( \vec{N} - \hat{e}_{j} \right)
+                             - q \left( \vec{N} - \hat{e}_{j} \right)^{T} \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v} \\
+                     &amp;= \frac{-q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+                             + q^{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+                             + q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v}.\end{split}\]</div>
+<p>For simplicity, we assume the electrochemical potentials of source and drain to
+be zero. This assumption is reasonable for cases when the bias between source
+and drain is infinitesimal.
+In this case, a current arises when the electrochemical potentials of all dots
+are zero and no energy is required to add another electron.
+There are two possible conditions for electrochemical potentials to be zero,
+for each dot and each charge configuration,</p>
+<div class="math notranslate nohighlight" id="equation-tp-cond-general">
+<span class="eqno">(8)<a class="headerlink" href="#equation-tp-cond-general" title="Permalink to this equation">¶</a></span>\[\begin{split}\mu_{j}{(\vec{N}, \vec{V}_{v})}  &amp;=0 \quad \forall j,    \Rightarrow \text{electron transport}\\
+\mu_{j}{(\vec{N} + \hat{e}_{j}, \vec{V}_{v})}  &amp;= 0 \quad \forall j.   \Rightarrow \text{hole transport},\end{split}\]</div>
+<p>Using the expression <span class="math notranslate nohighlight">\(\mu\)</span> in <a class="reference internal" href="#equation-potential">(7)</a>, these conditions become</p>
+<div class="math notranslate nohighlight" id="equation-tp-conditions">
+<span class="eqno">(9)<a class="headerlink" href="#equation-tp-conditions" title="Permalink to this equation">¶</a></span>\[\begin{split}\text{Electron:} \quad
+0 &amp;= - \frac{q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+   + q^{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+   + q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v} \quad \forall j, \\
+   \text{Hole:} \quad
+   0 &amp;= -\frac{q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+   + q^{2} \left( \vec{N} + \hat{e}_{j} \right)^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+   + q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v} \quad \forall j.\end{split}\]</div>
+<p>These equations can be used to either calculate potentials, i.e. gate voltage
+combinations, resulting in a particular charge configuration and hence
+determine voltages at which charge transitions occur, or to extract the
+capacitance matrix if enough charge transitions are known.
+However, a system of <span class="math notranslate nohighlight">\(N\)</span> nodes consists of  <span class="math notranslate nohighlight">\(N(N-1)/2\)</span>
+capacitors and thus requires <span class="math notranslate nohighlight">\(N(N-1)/2\)</span> many relations to fully
+determine <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>.</p>
+<div class="section" id="double-quantum-dots">
+<h2>Double quantum dots<a class="headerlink" href="#double-quantum-dots" title="Permalink to this headline">¶</a></h2>
+<p>We now consider the specific case of  two charge and six voltage nodes,
+representing common 2DEG device layouts  for semiconductor
+qubits.
+An illustration of the layout as well as the corresponding capacitance model
+are shown in <a class="reference internal" href="#fig-device-scheme"><span class="std std-numref">Fig. 11</span></a> and <a class="reference internal" href="#fig-capa-coupling-device2"><span class="std std-numref">Fig. 12</span></a>
+respectively. We denote the two
+charge nodes, i.e. dots, by capital letters <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> and
+voltages nodes, i.e. gates, by numerical Indices between 0 and 5.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-device-scheme"></span><a class="reference internal image-reference" href="../_images/quantum_dots-09.svg"><img alt="Schema double dot device." src="../_images/quantum_dots-09.svg" width="30.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Schema of a double dot device with six electrostatic gates.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id2">
+<span id="fig-capa-coupling-device2"></span><a class="reference internal image-reference" href="../_images/quantum_dots-08.svg"><img alt="Capacitive coupling between gate electrodes and dots of a 2D double dot device." src="../_images/quantum_dots-08.svg" width="40.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Capacitive coupling between gates and gates and dots of a double dot device
+with six electrostatic gates.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The capacitance sub-matrices of this system are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{C}_{cc} =
+\begin{bmatrix}
+   C_{A} &amp; C_{m} \\
+   C_{m} &amp; C_{B}
+\end{bmatrix},
+\quad
+\mathbf{C}_{cv}  =
+\begin{bmatrix}
+   C_{A0} &amp; C_{A1} &amp; C_{A2} &amp; C_{A3} &amp; C_{A4} &amp; C_{A5} \\
+   C_{B0} &amp; C_{B1} &amp; C_{B2} &amp; C_{B3} &amp; C_{B4} &amp; C_{B5}
+   \end{bmatrix},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_{m}\)</span> is the inter-dot capacitance.  <span class="math notranslate nohighlight">\(C_{A}\)</span> and
+<span class="math notranslate nohighlight">\(C_{B}\)</span> are the sum of all capacitances connected to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C_{A} &amp;= \sum_{k=0,..,5} C_{Ak} + C_{m} + C_{S} \nonumber \\
+C_{B} &amp;= \sum_{k=0,..,5} C_{Bk} + C_{m} + C_{D}.\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(C_{S}\)</span> and <span class="math notranslate nohighlight">\(C_{D}\)</span> are capacitances between <span class="math notranslate nohighlight">\(A\)</span> and
+source, and <span class="math notranslate nohighlight">\(B\)</span> and drain respectively.  These capacitances can be
+determined from measurements probing the charge states of the system.</p>
+</div>
+<div class="section" id="charge-diagram">
+<h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this headline">¶</a></h2>
+<p>The charge diagram, sometimes also called the charge stability diagram, is a
+two-dimensional measurement stepping over two gate voltages while probing the
+dots’ stable electron configurations. As introduced above, charge transitions
+of a double quantum dot form hexagonal domains. The shape and dimensions of
+these domains depend, among others, on the capacitive coupling between gates
+and dots.</p>
+<div class="figure align-center" id="id3">
+<span id="fig-charge-diagrams-a"></span><a class="reference internal image-reference" href="../_images/quantum_dots-12.svg"><img alt="" src="../_images/quantum_dots-12.svg" width="35.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Characteristic honeycomb pattern of moderately coupled quantum dots. The
+two types of triple points are marked by red and blue dots.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id4">
+<span id="fig-charge-diagrams-b"></span><a class="reference internal image-reference" href="../_images/quantum_dots-15.svg"><img alt="" src="../_images/quantum_dots-15.svg" width="35.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 14 </span><span class="caption-text">Electron and hole triple points. The terminology originates from the fact
+that transport through the reservoir-dots system can be viewed as either
+electron or hole tunnelling events. At triple points marked in blue, an
+electron is tunnelling counter-clockwise, while at the triple points
+marked in red a hole is tunnelling clock-wise.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id5">
+<span id="fig-charge-diagrams-c"></span><a class="reference internal image-reference" href="../_images/quantum_dots-10.svg"><img alt="" src="../_images/quantum_dots-10.svg" width="35.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 15 </span><span class="caption-text">Charge diagram of a double quantum dot with a vanishing inter-dot
+capacitance and capacitive coupling to distant plungers.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id6">
+<span id="fig-charge-diagrams-d"></span><a class="reference internal image-reference" href="../_images/quantum_dots-11.svg"><img alt="" src="../_images/quantum_dots-11.svg" width="35.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 16 </span><span class="caption-text">Charge diagram of a double quantum dot with a vanishing inter-dot
+capacitance but non-zero coupling to distant plungers, also referred to
+as cross-talk between gates.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>For double quantum dots, the two general conditions of transport to occurs is
+given by <a class="reference internal" href="#equation-tp-cond-general">(8)</a> and result in charge degeneracy points called
+triple points. We here assume that the voltage difference between source and
+drain is infinitesimal and thus negligible in our derivation. Triple points
+come in two flavours, which are often viewed as hole and electron transfer
+processes and illustrated in  <a class="reference internal" href="#fig-charge-diagrams-b"><span class="std std-numref">Fig. 14</span></a>.
+The lower left triple point can be viewed as electrons tunnelling
+counter-clockwise, while the upper right as a hole tunnelling clockwise.
+In this picture, the double dot system cycles through the following charge
+states voltage combinations:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\text{Electrons:} \quad  &amp; (N_{A}, N_{B}) \rightarrow (N_{A}+1, N_{B}) \rightarrow (N_{A}, N_{B}+1) \rightarrow (N_{A}, N_{B})  \nonumber\\\text{Holes:} \quad  &amp; (N_{A}+1, N_{B}+1) \rightarrow (N_{A}+1, N_{B}) \rightarrow (N_{A}, N_{B}+1) \rightarrow (N_{A}+1, N_{B}+1)\end{aligned}\end{align} \]</div>
+<p>The dimensions and shape of the honeycomb cells depend on the strength of the
+capacitive coupling between dots and gates.  <a class="reference internal" href="#fig-charge-diagrams-c"><span class="std std-numref">Fig. 15</span></a>
+shows a diagram of a system where each plunger tunes a single dot only.
+This is sometimes referred to as a system with no cross-capacitances,
+meaning that the capacitive coupling between dots and distant gates is
+negligible.  <a class="reference internal" href="#fig-charge-diagrams-d"><span class="std std-numref">Fig. 16</span></a> shows a more
+realistic scenario, where both plunger gates are coupled to each dot,
+resulting in inclined charge transitions. In both of these examples, the
+inter-dot capacitance is negligible, which results in a vanishing spacing
+between triple points.</p>
+<div class="figure align-center" id="id7">
+<span id="fig-honey-spacing"></span><a class="reference internal image-reference" href="../_images/quantum_dots-16.svg"><img alt="" src="../_images/quantum_dots-16.svg" width="35.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 17 </span><span class="caption-text">Honeycomb pattern with relevant voltage spacings. The geometry of a
+honeycomb cell is directly related to the capacity coupling between dots
+and gates.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>Let us assume the reservoirs’ electrochemical potentials to be zero and that
+one varies a single voltage <span class="math notranslate nohighlight">\(\Delta_{k}\)</span> of a gate <span class="math notranslate nohighlight">\(k\)</span>  to measure
+two triple points of the same kind (electron or hole). Both triple points occur
+when the electrochemical potentials of the respective charge configurations
+vanish, and thus</p>
+<div class="math notranslate nohighlight" id="equation-electron-dv">
+<span class="eqno">(10)<a class="headerlink" href="#equation-electron-dv" title="Permalink to this equation">¶</a></span>\[\mu_{j}(\vec{N}, \vec{V}_{v}) = \mu_{j}(\vec{N}+\hat{e}_j, \vec{V}_{v} + \Delta_{jk} \hat{e}_{k}), \quad \forall j, \forall k.\]</div>
+<p>Using the expression of the electrochemical potential in <a class="reference internal" href="#equation-potential">(7)</a>, we
+can relate distances in voltage space to capacitive couplings between dots
+and gates. Specifically, we obtain that</p>
+<div class="math notranslate nohighlight" id="equation-first-rel">
+<span class="eqno">(11)<a class="headerlink" href="#equation-first-rel" title="Permalink to this equation">¶</a></span>\[\Delta_{jk} = \frac{-q}{C_{jk}}.\]</div>
+<p>As a concrete example, the double-dot system’s two plunger gate voltages
+<span class="math notranslate nohighlight">\(V_{2}\)</span> and <span class="math notranslate nohighlight">\(V_{4}\)</span> are varied while  all other voltages fixed are
+kept fixed.
+For clarity, we omit fixed voltages and express the dots’ charge vector
+explicitly. In this notation, <a class="reference internal" href="#equation-electron-dv">(10)</a> for the double dot system reads</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\mu_{A}(N_{A}, N_{B}; V_{2}, V_{4})  &amp; = \mu_{A}(N_{A}+1, N_{B}; V_{2}+\Delta_{2}, V_{4}) \nonumber\\\mu_{B}(N_{A}, N_{B}; V_{2}, V_{4})  &amp; = \mu_{B}(N_{A}, N_{B}+1; V_{2}, V_{4}+\Delta_{4}).\end{aligned}\end{align} \]</div>
+<p>The voltage spacings are related to the dot-gate capacitances by</p>
+<div class="math notranslate nohighlight">
+\[\Delta_{A2}  = \frac{-q}{C_{A2}}, \quad \Delta_{B4} = \frac{-q}{C_{B4}}\]</div>
+<p>and  illustrated in  <a class="reference internal" href="#fig-honey-spacing"><span class="std std-numref">Fig. 17</span></a>. These relations allow to
+determine two entries of the capacitance matrix <span class="math notranslate nohighlight">\(\mathbf{C_{cv}}\)</span>.
+The condition relating electron to hole triple points reads</p>
+<div class="math notranslate nohighlight">
+\[\mu_{j}(\vec{N}, \vec{V}_{v}) = \mu_{j}(\vec{N} + \hat{e}_{l}, \vec{V}_{v} + \Delta^{m}_{jlk} \hat{e}_{k}), \quad \forall j,l, k, \quad l \neq j.\]</div>
+<p>Again, using <a class="reference internal" href="#equation-potential">(7)</a>, we are able to relate capacitances to voltage
+spacings as follows,</p>
+<div class="math notranslate nohighlight" id="equation-second-rel">
+<span class="eqno">(12)<a class="headerlink" href="#equation-second-rel" title="Permalink to this equation">¶</a></span>\[\Delta_{jlk}^{m} = \frac{-q (\mathbf{C^{-1}_{cc}})_{lj}}{(\mathbf{C_{cc}^{-1}}\mathbf{C_{cv}})_{jk}}.\]</div>
+<p>In our specific double-dot case with all fixed voltages omitted, we obtain</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}\mu_{A}(N_{A}, N_{B}; V_{2}, V_{4})  = \mu_{A}(N_{A}, N_{B}+1; V_{2}+\Delta_{AB2}^{m}, V_{4}) \nonumber \\\end{split}\\\mu_{B}(N_{A}, N_{B}; V_{2}, V_{4})  = \mu_{B}(N_{A}+1, N_{B}; V_{2}, V_{4}+\Delta_{BA4}^{m}),\end{aligned}\end{align} \]</div>
+<p>such that</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\Delta_{AB2}^{m} = \frac{q C_{m}}{C_{B}C_{A2} - C_{m}C_{B2}}\\\Delta_{BA4}^{m} = \frac{q C_{m}}{C_{A}C_{B4} - C_{m}C_{A4}}\end{aligned}\end{align} \]</div>
+<p>Note that these equations are the same as in Ref.[vanderWiel]_, but with
+<span class="math notranslate nohighlight">\(C_{B2} \neq 0\)</span> and  <span class="math notranslate nohighlight">\(C_{A4} \neq 0\)</span>.
+With an appropriate series of two-dimensional measurements sweeping over
+distinct gate combinations, these equations allow to extract the entries of
+both <span class="math notranslate nohighlight">\(\mathbf{C_{cv}}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{C_{cc}}\)</span>.</p>
+</div>
+<div class="section" id="note-on-synthetic-data">
+<h2>Note on synthetic data<a class="headerlink" href="#note-on-synthetic-data" title="Permalink to this headline">¶</a></h2>
+<p>The model described above was used to generate one part of the synthetic dataset
+used in <a class="reference external" href="https://iopscience.iop.org/article/10.1088/2632-2153/ac104c">Darulova et al. 2021</a>.
+The general problem with synthetic data or simple models such as the one above is
+that their ability to reproduce real device behavior is limited. Here fro example,
+only two out of many possible double dot states are covered. The situation is better for single dots as they are a lot
+simpler and diagonal lines is (almost) all there is for good versions of this regime.
+The biggest shortcoming of the model is that it only generates
+well-defined dots, without a suitable way to reproduce ‘poor’ regimes or regimes
+where the dots are not well defined. They don’t allow to test tuning sequences aiming to
+tune away from poor or no-dot regimes.
+What the current implementation does allow however, is to sweep arbitrary
+gates of an N-dot system. It thus reproduces gate cross-talk, which manifests
+itself in the shift of transport features if gate voltages of a nearby gate is changed.</p>
+</div>
 </div>
 
 
