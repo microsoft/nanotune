@@ -1,4 +1,6 @@
 
+.. _capa_model:
+
 Capacitance Model
 =================
 
