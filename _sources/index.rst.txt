@@ -8,7 +8,6 @@ Documentation
 .. toctree::
    :maxdepth: 4
 
-   start/index
    overview/index
    quantum_dots/index
    device/index

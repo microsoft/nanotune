@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>What it does &mdash; nanotune 0+untagged.534.ged9d9e7 documentation</title>
+  <title>Overview &mdash; nanotune 0+untagged.535.gcb159c9 documentation</title>
   
 
   
@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Quantum Dots" href="../quantum_dots/index.html" />
-    <link rel="prev" title="Getting Started" href="../start/index.html" />
+    <link rel="prev" title="Documentation" href="../index.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.534.ged9d9e7
+                0+untagged.535.gcb159c9
               </div>
             
           
@@ -95,9 +95,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../start/index.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">What it does</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#data-flow">Data flow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tuning-workflow">Tuning workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
@@ -158,7 +158,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>What it does</li>
+      <li>Overview</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -201,42 +201,104 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="what-it-does">
-<h1>What it does<a class="headerlink" href="#what-it-does" title="Permalink to this headline">¶</a></h1>
-<p>Nanotune was implemented as part of a PhD project initializing gate-defined quantum dots without human interaction and no pre-measured input. It automates typical manual measurements and replaces the experimenter’s quality and charge state assessment by supervised machine learning.
-Hard-coding the tuning logic, the implemented dot-tuning sequence can be thought of, in a very simplified way, as a for-loop with a couple of if-statements.
-It only requires
-Bonding scheme/routing (i.e. which DAC channel corresponds to which gate),
-device layout (i.e. number and arrangement of gates),
-safety voltage ranges (i.e. which voltages can be applied without damaging the device) ,
-setup specific noise floor (to ensure noise is not mistaken for an open regime in pre-calibration steps).</p>
-<div class="figure align-center" id="fig-workflow">
-<a class="reference internal image-reference" href="../_images/workflow_small_1.png"><img alt="Tuning workflow overview." src="../_images/workflow_small_1.png" style="width: 40.0%;" /></a>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Nanotune was implemented as part of a PhD project with the goal to initialize
+gate-defined quantum dots without human interaction and no pre-measured input.
+It automates
+typical manual measurements and replaces the experimenter’s quality and charge
+state assessment by supervised machine learning. In a very simplified way,
+the implemented dot-tuning sequence can be thought of as a
+for-loop with a couple of if-statements which hard code the tuning logic.
+Being based on QCoDeS, Nanotune extends the data acquisition software by
+adding  automated tuning procedures which use machine learning models
+implemented in scikit-learn or tensorflow.
+For successful autonomous tuning, only the following, minimal input is required:</p>
+<ul class="simple">
+<li><p>bonding scheme/routing, i.e. which DAC channel corresponds to which gate,</p></li>
+<li><p>device layout, i.e. number and arrangement of gates,</p></li>
+<li><p>safety voltage ranges, i.e. which voltages can be applied without damaging the device,</p></li>
+<li><p>setup specific noise floor - to ensure noise is not mistaken for an open
+regime in pre-calibration steps.</p></li>
+</ul>
+<p>The dot-tuning sequence was demonstrated on double quantum dots formed in a
+GaAs two-dimensional electron gas, however no assumptions about the material
+were made. The gate layout of the devices used consist of
+six gates: four so-called barriers and two plungers, shown in figure
+<a class="reference internal" href="#fig-dev-scheme"><span class="std std-numref">Fig. 1</span></a>.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-dev-scheme"></span><a class="reference internal image-reference" href="../_images/quantum_dots-09.svg"><img alt="Double dot device schema." src="../_images/quantum_dots-09.svg" width="30.0%" /></a>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Gate layout of the device used to demonstrate autonomous tuning. <cite>A</cite> and <cite>B</cite>
+represent dots.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
-<p>The dot-tuning sequence was demonstrated on double quantum dots formed in a GaAs two-dimensional electron gas, however no assumptions about the material were made. The gate layout of the devices used, shown on the right, consist of six gates: four so-called barriers and two plungers.
-Barrier gates typically create potential wells, defining tunnel resistances between dots and reservoirs, while plungers are used to adjust the electrochemical potential of a dot, changing the number of electrons if desired.
-Except for the top barrier, the tuning is identical to the tuning of quantum dots formed in nanowires. All measurements were taken in DC transport, i.e. measuring current through the device, but can be replaced by sensing techniques without difficulties.</p>
-<p>The dot-initialization workflow consists of two pre-calibration, one characterization and one tuning step, as outlined in the flowchart on the right. A gate leakage test and initial quality assessment ensure that devices are ‘alive’, meaning that voltages can be set and the current through the device is above the specified noise floor. The characterization step identifies devices that are fully functional, which is defined as all gates being able to deplete the electron gas nearby, also referred to as pinching off.
-Similar to a manual approach, each gate is characterized individually by stepping over its safety range while measuring the current through the device. The desired feature, a sharp current dip reaching zero, is confirmed by a binary classifier trained with experimental data. Only if traces of all gates show a good pinch-off, a device is tuned.</p>
-<p>The subsequent dot-tuning sequence is able to tune into either the single and double dot regime, with the only difference being the voltage value set to the central barrier. To form a double dot, a more negative value is required than for the single dot regime.
-Specifically, the dot-tuning process consists of a sequence of one- and two-dimensional measurements, referred to as gate characterizations and charge diagrams respectively. Each measurement is assessed by a binary classifier to determine quality and, in the case of a charge diagram, the charge state (i.e. single vs double dot).
-Gate characterizations are used to determine each gate’s ‘active’ voltage range. An active voltage range, also called current_valid_range, is the range within which we expect the desired charge state to occur. A sequence of faster, one-dimensional measurements is an efficient way to narrow down the large parameter space before proceeding with more time consuming, two-dimensional measurements. Due to capacitive coupling, active ranges need to be updated each time the voltage of a nearby gate is changed.
-Once all gates are characterized and barriers set to a value within their active range, the plungers are swept to measure a charge diagram. Note that the top barrier is set first and that the remaining tuning sequence is the same as for nanowires.
-Depending on the classification outcome of the charge diagram as well as additional checks assessing whether the device is in an open, closed or intermediate transport regime, gate voltages are adjusted. The precise sequence of measurements is shown in the second flow diagram on the right.</p>
-<p>The main modules implementing the dot-tuning are the Device, DeviceTuner, TuningStage, DataFit and Classifier classes. As illustrated in the diagram below, these classes work together as follows:
-A subclass of a TuningStage, currently either GateCharacterization1D or ChargeDiagram, is responsible for taking data and verifying whether the result is satisfying. To do the latter, a fit is performed via one of the DataFit subclasses and either the extracted feature vector or the entire measurement is classified. GateCharacterization1D uses a PinchoffFit, while ChargeDiagram relies on DotFit for fitting.
-The DeviceTuner class implements the tuning sequence itself by combining instances of TuningStages with a hard-coded decision logic leading to a dot being formed. There are two DeviceTuner subclasses, a Characterizer performing the a device characterization and a DotTuner.
-The DeviceTuner acts on an instance of a Device class, which represents the physical device including a list of gates, ohmics, gate layout and readout methods.</p>
-<div class="figure align-center" id="fig-algorithm">
-<a class="reference internal image-reference" href="../_images/algorithm_dot_tuning.svg"><img alt="Dot tuning algorithm implemented in nanotune." src="../_images/algorithm_dot_tuning.svg" width="50.0%" /></a>
+<p>Barrier gates typically create potential wells between them, defining tunnel resistances
+between dots and reservoirs. Plungers are used to adjust the
+electrochemical potential of a dot, changing the number of electrons if desired.
+Except for the top barrier, the tuning is identical to the tuning of quantum
+dots formed in 1D systems such as nanowires. All measurements were taken in
+DC transport, i.e. measuring current through the device. This readout method
+can be replaced by sensing technique easily.</p>
+<div class="section" id="tuning-workflow">
+<h2>Tuning workflow<a class="headerlink" href="#tuning-workflow" title="Permalink to this headline">¶</a></h2>
+<p>The dot-initialization workflow consists of two pre-calibration, one
+characterization and one tuning step, as outlined in the flowchart pictured in
+figure <a class="reference internal" href="#fig-workflow"><span class="std std-numref">Fig. 2</span></a>.</p>
+<div class="figure align-center" id="id2">
+<span id="fig-workflow"></span><a class="reference internal image-reference" href="../_images/workflow_small_1.png"><img alt="Tuning workflow overview." src="../_images/workflow_small_1.png" style="width: 44.0%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Device tuning workflow.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
-<div class="section" id="data-flow">
-<h2>Data flow<a class="headerlink" href="#data-flow" title="Permalink to this headline">¶</a></h2>
-<p>Nanotune extends QCoDeS functionalities of a data acquisition software by adding  automated tuning procedures which use machine learning models implemented in scikit-learn or tensorflow.</p>
-<p>The diagram illustrates the data and instruction flow of quantum measurements.
-The dotted ellipses indicates which stages are covered by QCoDeS or nanotune. QCoDeS provides an interface to room-temperature instruments (i.e. drivers) and tools to take and save measurements. Nanotune extends this functionality by automating common procedures encountered during quantum dot initialization. Supervised machine learning models replace the experimenter’s assessment of a measurement outcome.</p>
-<p>Nanotune’s TuningStage subclasses, which are responsible for data acquisition and part of a tuning sequence of DeviceTuner class, use QCoDeS’  measurement context manager to take measurements. The data and metadata is saved via qc.Dataset to a SQLite database. In the current case, measurements are linearly spaced one- and two-dimensional traces, called GateCharacterization1D and ChargeDiagram respectively.
-Once measured, the data is loaded into nanotune’s dataset, where it is postprocessed, e.g. normalized with constants which were previously measured and saved to metadata. If required, Fourier frequencies or filtered data is computed as well. Next, the DataFit classes fit the data to extract features (example: slope and amplitude of a pinchoff-curve) or determine the device’s transport regime (i.e. open, intermediate or closed, depending on current strength). Either the extracted feature vector or entire measurement is passed to the classifier for quality or charge state prediction. Based on the outcome, a decision about subsequent tuning is made.</p>
+<p>A gate leakage test and initial quality assessment ensure that devices
+are ‘alive’, meaning that voltages can be set and the current through the
+device is above the specified noise floor. The characterization step
+identifies devices that are fully functional, which is defined as all gates
+being able to deplete the electron gas nearby, also referred to as pinching off.
+Similar to a manual approach, each gate is characterized individually by
+stepping over its safety range while measuring the current through the device.
+The desired feature, a sharp current dip reaching zero, is confirmed by a
+binary classifier trained with experimental data. Only if traces of all gates
+show a good pinch-off, a device is tuned.</p>
+<p>The subsequent dot-tuning sequence is able to tune into either the single and
+double dot regime, with the main difference being the voltage value set to the
+central barrier. To form a double dot, a more negative value (when tuning in
+depletetion mode) is required than for the single dot regime.
+Specifically, the dot-tuning process consists of a sequence of one- and
+two-dimensional measurements, referred to as gate characterizations and
+charge diagrams respectively. Each measurement is assessed by a binary
+classifier to determine quality and, in the case of a charge diagram, the
+charge state (i.e. single vs double dot).
+Gate characterizations are used to determine each gate’s ‘active’ voltage
+range. An active voltage range, also called <cite>current_valid_range</cite>, is the
+range within which we expect the desired charge state to occur. A sequence of
+faster, one-dimensional measurements is an efficient way to narrow down the
+large parameter space before proceeding with more time consuming,
+two-dimensional measurements. Due to capacitive coupling, active ranges need
+to be updated each time the voltage of a nearby gate is changed.
+Once all gates are characterized and barriers set to a value within their
+active range, the plungers are swept to measure a charge diagram. Note that
+the top barrier is set first and that the remaining tuning sequence is the
+same as for 1D systems.
+Depending on the classification outcome of the charge diagram as well as
+additional checks assessing whether the device is in an open, closed or
+intermediate transport regime, gate voltages are adjusted. The precise
+sequence of measurements is discussed in <a class="reference internal" href="../tuning/index.html#tuning"><span class="std std-ref">Tuning</span></a>.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The main modules implementing the dot-tuning are the <cite>Device</cite>, <cite>Tuner</cite>,
+<cite>TuningStage</cite>, <cite>DataFit</cite> and <cite>Classifier</cite> classes. These classes work together as follows:
+A subclass of <cite>TuningStage</cite>, currently either <cite>GateCharacterization1D</cite> or
+<cite>ChargeDiagram</cite>, is responsible for taking data and verifying whether the
+result is satisfying. To do the latter, a fit is performed via one of the
+<cite>DataFit</cite> subclasses and either the extracted feature vector or the entire
+measurement is classified. <cite>GateCharacterization1D</cite> uses <cite>PinchoffFit</cite>, while
+<cite>ChargeDiagram</cite> relies on <cite>DotFit</cite> for fitting.
+The <cite>Tuner</cite> classes implement the tuning sequence itself by combining
+instances of <cite>TuningStages</cite> with a hard-coded decision logic forming either one
+or two dots. There are two <cite>Tuner</cite> subclasses, a <cite>Characterizer</cite> performing
+the a device characterization and a <cite>DotTuner</cite>.
+A <cite>Tuner</cite> class acts on an instance of a <cite>Device</cite> class, which represents the
+physical device including a list of gates, ohmics, gate layout and readout
+methods.</p>
 </div>
 </div>
 
@@ -247,7 +309,7 @@ Once measured, the data is loaded into nanotune’s dataset, where it is postpro
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="../quantum_dots/index.html" class="btn btn-neutral float-right" title="Quantum Dots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../start/index.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
