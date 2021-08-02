@@ -974,7 +974,7 @@ class CapacitanceModel(Instrument):
     def _make_it_real(
         self,
         diagram: np.ndarray,
-        kernel_widths: Sequence[float] = [3.0, 3.0],
+        kernel_widths: Union[float, Sequence[float]] = [3.0, 3.0],
     ) -> np.ndarray:
         """Uses a Gaussian filter to broaden a stickfigure diagram.
 
@@ -989,7 +989,7 @@ class CapacitanceModel(Instrument):
         """
         org_shape = diagram.shape
         diagram = gaussian_filter(
-            diagram, sigma=kernel_widths[0], mode="constant", truncate=1
+            diagram, sigma=kernel_widths, mode="constant", truncate=1
         )
 
         return resize(diagram, org_shape)
