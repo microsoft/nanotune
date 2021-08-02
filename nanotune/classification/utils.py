@@ -240,7 +240,7 @@ def _load_good_and_poor(
     all_data = all_data[p]
     all_labels = all_labels[p]
 
-    all_labels = keras.utils.to_categorical(all_labels)
+    all_labels = to_categorical(all_labels)
 
     return all_data, all_labels
 
@@ -882,3 +882,19 @@ def format_float(x):
 
 def format_time(x):
     return "{0:.4f}".format(x)
+
+
+def to_categorical(labels, num_classes=None):
+    labels = np.array(labels, dtype='int')
+    input_shape = labels.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
+        input_shape = tuple(input_shape[:-1])
+    labels = labels.ravel()
+    if not num_classes:
+        num_classes = np.max(labels) + 1
+    n = labels.shape[0]
+    categorical = np.zeros((n, num_classes))
+    categorical[np.arange(n), labels] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical
