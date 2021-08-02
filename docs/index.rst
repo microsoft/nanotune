@@ -13,9 +13,9 @@ Documentation
 
    overview/index
    quantum_dots/index
+   tuning/index
    device/index
    drivers/index
-   tuning/index
    data/index
    fit/index
    classification/index
