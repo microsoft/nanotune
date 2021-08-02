@@ -191,7 +191,7 @@ class PinchoffFit(DataFit):
 
             fit_gradient = np.gradient(temp_sig, temp_v)
             relevant_idx = np.argmax(fit_gradient)
-            self._transition_signal_index[read_meth] = relevant_idx  # type: ignore
+            self._transition_signal_index[read_meth] = relevant_idx
 
             self._transition_signal[read_meth] = temp_sig[relevant_idx]
             self._transition_voltage[read_meth] = temp_v[relevant_idx]

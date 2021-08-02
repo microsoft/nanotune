@@ -45,7 +45,7 @@ def random_crop(
     y_start = np.random.randint(np.floor(original_image.shape[1] / 2), size=1)
     y_range = np.random.randint(y_start + 20, original_image.shape[1], size=1)
 
-    res = resize(original_image[x_start:x_range, y_start:y_range], (50, 50))  # type: ignore
+    res = resize(original_image[x_start:x_range, y_start:y_range], (50, 50))
     return res
 
 
