@@ -9,7 +9,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from tensorflow import keras
 
 import nanotune as nt
 from nanotune.classification.classifier import (DEFAULT_CLF_PARAMETERS,
@@ -24,108 +23,6 @@ metric_mapping = {
     "average_precision_recall": "precision recall",
     "brier_score_loss": "Brier loss",
 }
-
-
-def qf_model(
-    input_shape: Tuple[int, int, int, int],
-    learning_rate: float = 0.001,
-) -> keras.Sequential:
-
-    model = keras.Sequential()
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2), strides=2))
-    model.add(keras.layers.Flatten())
-
-    model.add(keras.layers.Dense(1024, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(512, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(128, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(2, activation="softmax"))
-
-    model.compile(
-        loss=keras.losses.mean_squared_error,  # categorical_crossentropy,
-        optimizer=keras.optimizers.Adam(lr=learning_rate),
-        metrics=["accuracy"],
-    )
-
-    return model
-
-
-def my_model(
-    input_shape: Tuple[int, int, int, int],
-    learning_rate: float = 0.001,
-) -> keras.Sequential:
-    """ """
-    model = keras.Sequential()
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(
-        keras.layers.Conv2D(
-            64,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2), strides=2))
-    model.add(keras.layers.Flatten())
-
-    model.add(keras.layers.Dense(1024, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(512, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(128, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(2, activation="softmax"))
-
-    model.compile(
-        loss=keras.losses.mean_squared_error,  # categorical_crossentropy,
-        optimizer=keras.optimizers.Adam(lr=learning_rate),
-        metrics=["accuracy"],
-    )
-
-    return model
 
 
 def load_syn_data(
