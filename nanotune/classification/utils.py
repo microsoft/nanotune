@@ -299,7 +299,7 @@ def _load_data(
         data = data[p]
         labels = labels[p]
 
-    labels = keras.utils.to_categorical(labels)
+    labels = to_categorical(labels)
 
     return data, labels
 
