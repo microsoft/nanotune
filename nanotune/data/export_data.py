@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import scipy.fft as fp
@@ -69,7 +69,7 @@ def prep_data(
     dataset: nt.Dataset,
     category: str,
     flip_data: bool = False
-) -> np.array:
+) -> List[List[List[float]]]:
     """
     Remove nans, normalize by normalization_constants and reshape into
     target shape
@@ -137,18 +137,18 @@ def prep_data(
         )
 
         index = nt.config["core"]["data_types"]["signal"]
-        condensed_data[index, 0, :] = data_resized
+        condensed_data[index, 0, :] = data_resized.tolist()
 
         index = nt.config["core"]["data_types"]["frequencies"]
-        condensed_data[index, 0, :] = frequencies_resized
+        condensed_data[index, 0, :] = frequencies_resized.tolist()
 
         index = nt.config["core"]["data_types"]["gradient"]
-        condensed_data[index, 0, :] = gradient_resized
+        condensed_data[index, 0, :] = gradient_resized.tolist()
 
         index = nt.config["core"]["data_types"]["features"]
         condensed_data[index, 0, :] = features
 
-        condensed_data_all.append(condensed_data)
+        condensed_data_all.append(condensed_data.tolist())
 
     return condensed_data_all
 

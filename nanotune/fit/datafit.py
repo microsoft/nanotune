@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from sqlite3 import OperationalError
 from typing import Any, Dict, List, Optional, Tuple
-
+import numpy.typing as npt
 import matplotlib
 import numpy as np
 import xarray as xr
@@ -73,7 +73,7 @@ class DataFit(ABC, Dataset):
         readout_method: str = "transport",
         delta_v: float = 0.05,
         use_raw_data: bool = False,
-    ) -> np.array:
+    ) -> npt.NDArray[np.float64]:
         """"""
         if self.dimensions[readout_method] != 2:
             logger.error("get_edge method not implemented for 1D data.")

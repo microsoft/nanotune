@@ -2,7 +2,7 @@ import copy
 import logging
 import os
 from typing import Dict, List, Optional, Tuple
-
+import numpy.typing as npt
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
@@ -107,7 +107,7 @@ class PinchoffFit(DataFit):
              initial_guess) = self.compute_initial_guess(readout_method=r_meth)
             smooth_signal = self.filtered_data[r_meth].values
 
-            def err_func(p: List[float]) -> np.ndarray:
+            def err_func(p: List[float]) -> npt.NDArray[np.float64]:
                 err = self.fit_function(self._normalized_voltage, p)
                 err = (err - smooth_signal) / lg.norm(smooth_signal)
                 return err
@@ -191,7 +191,7 @@ class PinchoffFit(DataFit):
 
             fit_gradient = np.gradient(temp_sig, temp_v)
             relevant_idx = np.argmax(fit_gradient)
-            self._transition_signal_index[read_meth] = relevant_idx
+            self._transition_signal_index[read_meth] = relevant_idx  # type: ignore
 
             self._transition_signal[read_meth] = temp_sig[relevant_idx]
             self._transition_voltage[read_meth] = temp_v[relevant_idx]
@@ -238,7 +238,10 @@ class PinchoffFit(DataFit):
 
         return bounds, initial_guess
 
-    def fit_function(self, v: np.ndarray, params: List[float]) -> np.ndarray:
+    def fit_function(self,
+        v: npt.NDArray[np.float64],
+        params: List[float],
+    ) -> npt.NDArray[np.float64]:
         """
         Function we use to fit pinch off curves.
 

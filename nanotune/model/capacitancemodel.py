@@ -1,6 +1,7 @@
 import logging
 from functools import partial
 from typing import List, Optional, Union, Dict, Tuple, Sequence, Any
+import numpy.typing as npt
 import numpy as np
 import scipy as sc
 import itertools
@@ -104,18 +105,17 @@ class CapacitanceModel(Instrument):
             db_name (str): Name of database to store synthetic data.
             db_folder (str): Path to folder where database is located.
         """
-
-        self.db_name = db_name
-        self.db_folder = db_folder
-        self._c_l = 0.0
-        self._c_r = 0.0
-        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)])
-
         if charge_nodes is None:
             charge_nodes = {}
 
         if voltage_nodes is None:
             voltage_nodes = {}
+
+        self.db_name = db_name
+        self.db_folder = db_folder
+        self._c_l = 0.0
+        self._c_r = 0.0
+        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)]).tolist()
 
         super().__init__(name)
 
@@ -150,15 +150,15 @@ class CapacitanceModel(Instrument):
         self.add_submodule("voltage_nodes", v_nodes)
 
         if C_cv is None:
-            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)])
+            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)]).tolist()
 
         if C_cc_off_diags is None:
             C_cc_off_diags = []
             for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
-                C_cc_off_diags.append([0.0])
+                C_cc_off_diags.append([0.0])  # type: ignore
 
         if N is None:
-            N = np.zeros(len(self.charge_nodes))
+            N = [0] * len(self.charge_nodes)
         self.add_parameter(
             "N",
             label="charge configuration",
@@ -169,7 +169,7 @@ class CapacitanceModel(Instrument):
         )
 
         if V_v is None:
-            V_v = np.zeros(len(self.voltage_nodes))
+            V_v = [0] * len(self.voltage_nodes)
         self.add_parameter(
             "V_v",
             label="voltage configuration",
@@ -333,16 +333,18 @@ class CapacitanceModel(Instrument):
         """
         if N is None:
             N_self = self.N()
-            N = np.array(N_self).reshape(len(N_self), 1)
+            N_np = np.array(N_self).reshape(len(N_self), 1)
+        else:
+            N_np = np.array(N).reshape(len(N), 1)
         if V_v is None:
             V_v = self.V_v()
 
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
 
-        U = (elem_charge ** 2) / 2 * multi_dot([N, inv(C_cc), N])
+        U = (elem_charge ** 2) / 2 * multi_dot([N_np, inv(C_cc), N_np])
         U += 1 / 2 * multi_dot([V_v, np.transpose(C_cv), inv(C_cc), C_cv, V_v])
-        U += elem_charge * multi_dot([N, inv(C_cc), C_cv, V_v])
+        U += elem_charge * multi_dot([N_np, inv(C_cc), C_cv, V_v])
 
         return abs(U)
 
@@ -379,7 +381,7 @@ class CapacitanceModel(Instrument):
         current_energy = self.compute_energy(N=c_config, V_v=V_v)
 
         def append_energy(charge_stage: Sequence[int]) -> None:
-            charge_stage[charge_stage < 0] = 0
+            charge_stage[charge_stage < 0] = 0  # type: ignore
             energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
             c_configs.append(charge_stage)
 
@@ -409,7 +411,8 @@ class CapacitanceModel(Instrument):
         self,
         voltage_node_idx: Sequence[int],
         N_limits: N_lmt_type,
-    ) -> Tuple[np.ndarray, np.ndarray, List[List[int]]]:
+    ) -> Tuple[
+            npt.NDArray[np.float64], npt.NDArray[np.float64], List[List[int]]]:
         """Calculates triple points for charge configuration within N_limits
 
         Args:
@@ -442,7 +445,7 @@ class CapacitanceModel(Instrument):
             # setting M mostly for monitor purposes
             self.N(list(c_config))
             x_etp, x_htp = self.calculate_triplepoints(
-                voltage_node_idx, np.array(c_config)
+                voltage_node_idx, c_config
             )
 
             coordinates_etp[ic] = x_etp
@@ -454,7 +457,7 @@ class CapacitanceModel(Instrument):
         self,
         voltage_node_idx: Sequence[int],
         N: Sequence[int],
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """Determines coordinates in voltage space of triple points
         (electron and hole) for a single charge configuration.
 
@@ -490,7 +493,7 @@ class CapacitanceModel(Instrument):
         new_voltages: Sequence[float],
         voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Calculates mu_j(N): chemical potentials of all charge nodes for given
         charge configuration N and corresponding to electron triple points.
 
@@ -508,7 +511,7 @@ class CapacitanceModel(Instrument):
         if N is None:
             N = self.N()
 
-        V_v = np.array(self.V_v())
+        V_v = self.V_v()
         V_v[voltage_node_idx] = new_voltages
 
         I_mat = np.eye(len(N))
@@ -518,15 +521,14 @@ class CapacitanceModel(Instrument):
             e_hat = I_mat[dot_id]
             out.append(self.mu(dot_id, N=N + e_hat, V_v=V_v))
 
-        out = np.array(out).flatten()
-        return out
+        return np.array(out).flatten()
 
     def mu_hole_triplepoints(
         self,
         new_voltages: Sequence[float],
         voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Calculates mu_j(N + e_hat_i): chemical potentials of all charge nodes
             for given charge configuration N and corresponding to hole triple
             points.
@@ -541,8 +543,8 @@ class CapacitanceModel(Instrument):
         """
 
         if N is None:
-            N = np.array(self.N())
-        V_v = np.array(self.V_v())
+            N = self.N()
+        V_v = self.V_v()
         V_v[voltage_node_idx] = new_voltages
 
         I_mat = np.eye(len(N))
@@ -557,8 +559,7 @@ class CapacitanceModel(Instrument):
                         self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v)
                     )
 
-        out = np.array(out).flatten()
-        return out
+        return np.array(out).flatten()
 
     def mu(
         self,
@@ -585,20 +586,24 @@ class CapacitanceModel(Instrument):
         """
 
         if N is None:
-            N = np.array(self.N())
+            N_np = np.array(self.N())
+        else:
+            N_np = np.array(N)
 
         if V_v is None:
-            V_v = np.array(self.V_v())
+            V_v_np = np.array(self.V_v())
+        else:
+            V_v_np = np.array(V_v)
 
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
 
-        e_hat = np.zeros(len(N)).astype(int)
+        e_hat = np.zeros(len(N_np)).astype(int)
         e_hat[dot_indx] = 1
 
         pot = -(elem_charge ** 2) / 2 * multi_dot([e_hat, inv(C_cc), e_hat])
-        pot += (elem_charge ** 2) * multi_dot([N, inv(C_cc), e_hat])
-        pot += elem_charge * multi_dot([e_hat, inv(C_cc), C_cv, V_v])
+        pot += (elem_charge ** 2) * multi_dot([N_np, inv(C_cc), e_hat])
+        pot += elem_charge * multi_dot([e_hat, inv(C_cc), C_cv, V_v_np])
 
         return pot
 
@@ -712,7 +717,7 @@ class CapacitanceModel(Instrument):
         dataid = self._save_to_db(
             [self.voltage_nodes[voltage_node_idx[0]].v,
              self.voltage_nodes[voltage_node_idx[1]].v],
-            [voltage_x, voltage_y],
+            [voltage_x.tolist(), voltage_y.tolist()],
             signal,
             nt_label=[known_regime],
             quality=quality,
@@ -778,7 +783,7 @@ class CapacitanceModel(Instrument):
 
         dataid = self._save_to_db(
             [self.voltage_nodes[voltage_node_idx].v],
-            [voltage_x],
+            [voltage_x.tolist()],
             signal,
             nt_label=["coulomboscillation"],
         )
@@ -792,7 +797,7 @@ class CapacitanceModel(Instrument):
         bias_range: Tuple[float, float],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """ """
 
         self.set_voltage(voltage_node_idx, np.min(voltage_range))
@@ -816,7 +821,6 @@ class CapacitanceModel(Instrument):
                 N_current=N_current,
                 how_many=1,
             )
-            dU = abs(dU)
             for ib, b_val in enumerate(bias_steps):
                 if (dU <= abs(b_val)).any():
                     signal[iv, ib] = line_intensity
@@ -827,7 +831,7 @@ class CapacitanceModel(Instrument):
                     signal[iv, ib] = 0
 
                     N_plus_one = copy.deepcopy(N_current)
-                    N_plus_one[0] += 1.
+                    N_plus_one[0] = N_plus_one[0] + 1.  # type: ignore
                     add_rate = self.get_co_tunneling_rate(
                         b_val,
                         self.mu(0, N=N_current),
@@ -923,7 +927,7 @@ class CapacitanceModel(Instrument):
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
         how_many: int = 3,
-    ) -> int:
+    ) -> List[float]:
         """
         """
 
@@ -969,13 +973,13 @@ class CapacitanceModel(Instrument):
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
-        return dU[dU != 0]
+        return dU[dU != 0].tolist()
 
     def _make_it_real(
         self,
-        diagram: np.ndarray,
+        diagram: npt.NDArray[np.float64],
         kernel_widths: Union[float, Sequence[float]] = [3.0, 3.0],
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Uses a Gaussian filter to broaden a stickfigure diagram.
 
         Args:
@@ -996,9 +1000,9 @@ class CapacitanceModel(Instrument):
 
     def _add_noise(
         self,
-        diagram: np.ndarray,
+        diagram: npt.NDArray[np.float64],
         target_snr_db: float = 10.0,
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         """Adds normally distributed random noise to a diagram to match the
         desired signal to noise ratio.
 
@@ -1027,7 +1031,7 @@ class CapacitanceModel(Instrument):
         self,
         parameters: Sequence[Parameter],
         setpoints: Sequence[Sequence[float]],
-        data: np.ndarray,
+        data: npt.NDArray[np.float64],
         nt_label: Sequence[str],
         quality: int = 1,
     ) -> Union[None, int]:
@@ -1089,7 +1093,9 @@ class CapacitanceModel(Instrument):
 
         ds = load_by_id(dataid)
 
-        meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], None)
+        meta_add_on: Dict[str, Any] = dict.fromkeys(
+            nt.config["core"]["meta_fields"], None
+        )
         meta_add_on["device_name"] = self.name
         nm = dict.fromkeys(["transport", "rf"], (0, 1))
         meta_add_on["normalization_constants"] = nm
@@ -1175,7 +1181,7 @@ class CapacitanceModel(Instrument):
         )
         V_stop_config = res.x
 
-        return list(zip(V_init_config, V_stop_config))
+        return list(zip([V_init_config, V_stop_config]))  # type: ignore
 
     def _get_N(self) -> List[int]:
         """ QCoDeS parameter getter for charge configuration N. """
@@ -1233,7 +1239,7 @@ class CapacitanceModel(Instrument):
         self._C_cc += self._get_C_cc_diagonals()
         self._C_cc = self._C_cc.tolist()
 
-    def _get_C_cc_diagonals(self) -> np.ndarray:
+    def _get_C_cc_diagonals(self) -> npt.NDArray[np.float64]:
         """Getter for diagonal values of dot capacitance matrix C_cc.
         We assume that every dot is coupled to every other, meaning that
         that if three or more dots are aligned the first will have a capacitive

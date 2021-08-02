@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-
+import numpy.typing as npt
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fftpack as fp
@@ -18,7 +18,7 @@ def generate_one_f_noise(
     how_many: int = 20000,
     save_to_file: bool = True,
     filename: Optional[str] = None,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     fx_1d = fp.frequenciesshift(fp.frequenciesfreq(1000, d=0.02))
 
@@ -85,7 +85,7 @@ def generate_white_noise(
     how_many: int = 20000,
     save_to_file: bool = True,
     filename: Optional[str] = None,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     condensed_data_all = np.empty(
         [len(nt.config["core"]["data_types"]) - 1, 0, np.prod(N_2D)]
@@ -125,7 +125,7 @@ def generate_current_drop(
     how_many: int = 20000,
     save_to_file: bool = True,
     filename: Optional[str] = None,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     condensed_data_all = np.empty(
         [len(nt.config["core"]["data_types"]) - 1, 0, np.prod(N_2D)]
@@ -177,7 +177,7 @@ def generate_random_telegraph_noise(
     how_many: int = 20000,
     save_to_file: bool = True,
     filename: Optional[str] = None,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     condensed_data_all = np.empty(
         [len(nt.config["core"]["data_types"]) - 1, 0, np.prod(N_2D)]
@@ -250,7 +250,7 @@ def generate_random_blobs(
     n_blobs: int = 15,
     stdx: Optional[List[float]] = None,
     stdy: Optional[List[float]] = None,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     if stdx is None:
         stdx = [0.3, 0.8]
@@ -275,8 +275,8 @@ def generate_random_blobs(
                 y,
                 mx=np.random.uniform(-1, 1, 1),
                 my=np.random.uniform(-1, 1, 1),
-                sx=np.random.uniform(*stdx, 1),
-                sy=np.random.uniform(*stdy, 1),
+                sx=np.random.uniform(*stdx, 1),  # type: ignore
+                sy=np.random.uniform(*stdy, 1),  # type: ignore
             )
         z = (z - np.min(z)) / (np.max(z) - np.min(z))
 

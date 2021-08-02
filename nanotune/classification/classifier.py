@@ -3,7 +3,7 @@ import logging
 import os
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
-
+import numpy.typing as npt
 import matplotlib.pyplot as plt
 import numpy as np
 from prettytable import PrettyTable
@@ -185,7 +185,7 @@ class Classifier:
         file_paths: List[str],
         data_types: List[str],
         file_fractions: Optional[List[float]] = [1.0],
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
         """
         Load data from file and separate data from labels
         """
@@ -257,9 +257,9 @@ class Classifier:
 
     def separate_data(
         self,
-        data: np.ndarray,
-        labels: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        data: npt.NDArray[np.float64],
+        labels: npt.NDArray[np.int64],
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
         """
         Extract sub data depending on which labels we would like to predict
         """
@@ -280,12 +280,13 @@ class Classifier:
 
     def train(
         self,
-        data: Optional[np.ndarray] = None,
-        labels: Optional[np.ndarray] = None,
+        data: Optional[npt.NDArray[np.float64]] = None,
+        labels: Optional[npt.NDArray[np.int64]] = None,
     ) -> None:
         """"""
         if data is None:
             data = self.original_data
+        if labels is None:
             labels = self.labels
         (data_to_use, labels_to_use) = self.select_equal_populations(data, labels)
 
@@ -294,11 +295,12 @@ class Classifier:
 
     def prep_data(
         self,
-        train_data: Optional[np.ndarray] = None,
-        test_data: Optional[np.ndarray] = None,
+        train_data: Optional[npt.NDArray[np.float64]] = None,
+        test_data: Optional[npt.NDArray[np.float64]] = None,
         perform_pca: Optional[bool] = False,
         scale_pc: Optional[bool] = False,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[Optional[npt.NDArray[np.float64]],
+            Optional[npt.NDArray[np.float64]]]:
         """
         scale and extract principle components
         """
@@ -318,9 +320,9 @@ class Classifier:
 
     def select_equal_populations(
         self,
-        data: np.ndarray,
-        labels: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        data: npt.NDArray[np.float64],
+        labels: npt.NDArray[np.int64],
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
         """
         Make sure we have 50% of one and 50% of other population
         """
@@ -346,9 +348,10 @@ class Classifier:
 
     def split_data(
         self,
-        data: np.ndarray,
-        labels: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        data: npt.NDArray[np.float64],
+        labels: npt.NDArray[np.int64],
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64],
+            npt.NDArray[np.int64], npt.NDArray[np.int64]]:
 
         (train_data, test_data, train_labels, test_labels) = train_test_split(
             data, labels, test_size=self.test_size, random_state=0
@@ -358,9 +361,10 @@ class Classifier:
 
     def scale_raw_data(
         self,
-        train_data: Optional[np.ndarray] = None,
-        test_data: Optional[np.ndarray] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        train_data: Optional[npt.NDArray[np.float64]] = None,
+        test_data: Optional[npt.NDArray[np.float64]] = None,
+    ) -> Tuple[Optional[npt.NDArray[np.float64]],
+            Optional[npt.NDArray[np.float64]]]:
         """"""
         if train_data is not None:
             self.raw_scaler = StandardScaler()
@@ -378,9 +382,10 @@ class Classifier:
 
     def scale_compressed_data(
         self,
-        train_data: Optional[np.ndarray] = None,
-        test_data: Optional[np.ndarray] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        train_data: Optional[npt.NDArray[np.float64]] = None,
+        test_data: Optional[npt.NDArray[np.float64]] = None,
+    ) -> Tuple[Optional[npt.NDArray[np.float64]],
+            Optional[npt.NDArray[np.float64]]]:
         """"""
         if train_data is not None:
             self.compressed_scaler = StandardScaler()
@@ -401,9 +406,10 @@ class Classifier:
 
     def get_principle_components(
         self,
-        train_data: Optional[np.ndarray] = None,
-        test_data: Optional[np.ndarray] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        train_data: Optional[npt.NDArray[np.float64]] = None,
+        test_data: Optional[npt.NDArray[np.float64]] = None,
+    ) -> Tuple[Optional[npt.NDArray[np.float64]],
+            Optional[npt.NDArray[np.float64]]]:
         """"""
         if train_data is not None:
             self.pca = PCA(self.retained_variance)
@@ -419,7 +425,10 @@ class Classifier:
 
         return train_data, test_data
 
-    def score(self, test_data: np.ndarray, test_labels: np.ndarray) -> float:
+    def score(self,
+        test_data: npt.NDArray[np.float64],
+        test_labels: npt.NDArray[np.float64],
+    ) -> float:
         """"""
         self.clf_score = self.clf.score(test_data, test_labels)
         return self.clf_score
@@ -429,7 +438,7 @@ class Classifier:
         dataid: int,
         db_name: str,
         db_folder: Optional[str] = None,
-    ) -> np.ndarray:
+    ) -> List[Any]:
         """"""
         if db_folder is None:
             db_folder = nt.config["db_folder"]
@@ -449,10 +458,10 @@ class Classifier:
 
                 if data_type == "features":
                     to_append[to_append == nt.config["core"]["fill_value"]] = np.nan
-                    to_append = to_append[:, np.isfinite(to_append).any(axis=0)]
+                    to_append = to_append[:, np.isfinite(to_append).any(axis=0)]  # type: ignore
 
                     try:
-                        to_append = to_append[:, self.feature_indexes]
+                        to_append = to_append[:, self.feature_indexes]  # type: ignore
                     except IndexError:
                         logger.warning(
                             "Some data in {} ".format(dataid)
@@ -465,7 +474,7 @@ class Classifier:
 
                 relevant_data = np.append(relevant_data, to_append, axis=1)
 
-            _, relevant_data = self.prep_data(test_data=relevant_data)
+            _, relevant_data = self.prep_data(test_data=relevant_data)  # type: ignore
 
             predictions.append(self.clf.predict(relevant_data))
 
@@ -606,7 +615,7 @@ class Classifier:
                 test_data, test_labels
             )
 
-            _, test_data = self.prep_data(test_data=test_data)
+            _, test_data = self.prep_data(test_data=test_data) # type: ignore
             probas = self.clf.predict_proba(test_data)
 
             # Compute ROC curve and area the curve
@@ -729,7 +738,7 @@ class Classifier:
         n_supp_train: Optional[int] = None,
         perform_pca: bool = False,
         scale_pc: bool = False,
-    ) -> Tuple[Dict[str, Dict[str, Any]], np.ndarray]:
+    ) -> Tuple[Dict[str, Dict[str, Any]], npt.NDArray[np.float64]]:
         """"""
         if n_iter is None:
             n_iter = DEFAULT_N_ITER[self.category]
@@ -753,14 +762,14 @@ class Classifier:
 
             mask = [1] * n_supp_train
             mask = mask + [0] * (train_data_addon.shape[0] - n_supp_train)
-            mask = np.array(mask, dtype=bool)
-            np.random.shuffle(mask)
+            mask_np = np.array(mask, dtype=bool)
+            np.random.shuffle(mask_np)
 
-            train_data_addon = train_data_addon[mask]
-            train_labels_addon = train_labels_addon[mask]
+            train_data_addon = train_data_addon[mask_np]
+            train_labels_addon = train_labels_addon[mask_np]
         else:
-            train_data_addon = None
-            train_labels_addon = None
+            train_data_addon = None  # type: ignore
+            train_labels_addon = None  # type: ignore
 
         for curr_iter in range(n_iter):
             start_time_inner = time.time()
@@ -815,7 +824,7 @@ class Classifier:
             conf_matrix.append(confusion_matrix(test_labels, pred_labels))
 
         elapsed_time = (time.time() - start_time) / n_iter
-        conf_matrix = np.array(conf_matrix)
+        conf_matrix_np: npt.NDArray[np.float64] = np.array(conf_matrix)
 
         info_dict: Dict[str, Any] = {
             "n_iter": n_iter,
@@ -845,8 +854,8 @@ class Classifier:
             }
 
         info_dict["confusion_matrix"] = {
-            "std": np.std(conf_matrix, axis=0).tolist(),
-            "mean": np.mean(conf_matrix, axis=0).tolist(),
+            "std": np.std(conf_matrix_np, axis=0).tolist(),
+            "mean": np.mean(conf_matrix_np, axis=0).tolist(),
         }
 
         if save_to_file:

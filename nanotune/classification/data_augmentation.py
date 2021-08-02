@@ -1,6 +1,6 @@
 import os
 from typing import Callable, List, Optional, Tuple
-
+import numpy.typing as npt
 import numpy as np
 import scipy.fftpack as fp
 import scipy.signal as sg
@@ -9,21 +9,21 @@ from skimage.transform import AffineTransform, resize, rotate, warp
 
 import nanotune as nt
 
-transf_type = Callable[[np.ndarray], np.ndarray]
+transf_type = Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]]
 
 
 def shear(
-    original_image: np.ndarray,
+    original_image: npt.NDArray[np.float64],
     rotation: Optional[float] = None,
     shear: Optional[float] = None,
     translation: Optional[Tuple[float, float]] = None,
     scale: Optional[Tuple[float, float]] = None,
-) -> np.array:
+) -> npt.NDArray[np.float64]:
 
     if rotation is None:
-        rotation = 0.4 * np.random.rand(1)
+        rotation = 0.4 * np.random.rand(1)[0]
     if shear is None:
-        shear = 0.4 * np.random.rand(1)
+        shear = 0.4 * np.random.rand(1)[0]
 
     original_shape = original_image.shape
     tform = AffineTransform(
@@ -37,28 +37,28 @@ def shear(
 
 
 def random_crop(
-    original_image: np.ndarray,
-    blurr: Optional[bool] = False,
-) -> np.ndarray:
-    x_start = int(np.random.randint(original_image.shape[0] / 2, size=1))
-    x_range = int(np.random.randint(x_start + 20, original_image.shape[0], size=1))
+    original_image: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
+    x_start = np.random.randint(np.floor(original_image.shape[0] / 2), size=1)
+    x_range = np.random.randint(x_start + 20, original_image.shape[0], size=1)
 
-    y_start = int(np.random.randint(original_image.shape[1] / 2, size=1))
-    y_range = int(np.random.randint(y_start + 20, original_image.shape[1], size=1))
+    y_start = np.random.randint(np.floor(original_image.shape[1] / 2), size=1)
+    y_range = np.random.randint(y_start + 20, original_image.shape[1], size=1)
 
-    return resize(original_image[x_start:x_range, y_start:y_range], (50, 50))
+    res = resize(original_image[x_start:x_range, y_start:y_range], (50, 50))  # type: ignore
+    return res
 
 
 def random_rotation(
-    original_image: np.ndarray,
-) -> np.ndarray:
+    original_image: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
     angle = 360 * np.random.rand(1)
     return rotate(original_image, angle)
 
 
 def random_flip(
-    original_image: np.ndarray,
-) -> np.ndarray:
+    original_image: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
     if np.random.randint(0, 2, 1):
         # horizontal
         return original_image[:, ::-1]
@@ -68,16 +68,16 @@ def random_flip(
 
 
 def no_transformation(
-    original_image: np.ndarray,
-) -> np.ndarray:
+    original_image: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
     return original_image
 
 
 def random_transformation(
-    original_image: np.ndarray,
+    original_image: npt.NDArray[np.float64],
     transformations: Optional[List[transf_type]] = None,
     single: bool = True,
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """ """
     if transformations is None:
         transformations = [
@@ -99,7 +99,7 @@ def random_transformation(
 
 
 def save_augmented_data(
-    original_raw_data: np.ndarray,
+    original_raw_data: npt.NDArray[np.float64],
     new_path: str,
     new_filename: str,
     mult_factor: int,
