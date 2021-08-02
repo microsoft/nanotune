@@ -7,7 +7,3 @@ Label
 
 .. automodule:: nanotune.labelling.labellingtool
    :members:
-
-
-
-

@@ -7,4 +7,3 @@ Classification
 
 .. automodule:: nanotune.classification.classifier
    :members:
-

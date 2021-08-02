@@ -7,6 +7,3 @@ Model
 
 .. automodule:: nanotune.capacitance_model
    :members:
-
-
-
