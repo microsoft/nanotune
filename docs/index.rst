@@ -1,7 +1,4 @@
 
-.. automodule:: nanotune
-    :members:
-
 .. title:: Home
 
 

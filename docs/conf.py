@@ -59,7 +59,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'sphinx_rtd_theme',
     # 'sphinx.ext.autodoc',
     # 'sphinx.ext.doctest',
     # 'sphinx.ext.intersphinx',
@@ -94,12 +95,21 @@ nitpick_ignore = [('py:class', 'Optional'), ('py:class', 'Union'),
                   ('py:class', 'builtins.AssertionError'),
                   ('py:exc', 'visa.VisaIOError')]
 
+<<<<<<< HEAD
 napoleon_include_special_with_doc = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = True
+=======
+napoleon_include_special_with_doc = True
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+>>>>>>> b846b5fc5e27e98312e079495ddd954a6d200222
 napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
