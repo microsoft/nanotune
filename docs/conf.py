@@ -59,7 +59,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'sphinx_rtd_theme',
     # 'sphinx.ext.autodoc',
     # 'sphinx.ext.doctest',
     # 'sphinx.ext.intersphinx',
