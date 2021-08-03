@@ -18,7 +18,7 @@ from enum import Enum
 class VoltageChangeDirection(Enum):
     """Direction in which gate voltages can be changes.
 
-    Attributes:
+    Parameters:
         positive (0): increase voltage.
         negative (1): decrease voltage.
     """
@@ -29,7 +29,7 @@ class VoltageChangeDirection(Enum):
 class DeviceState(Enum):
     """Possible device states.
 
-    Attributes:
+    Parameters:
         pinchedoff (0): pinched off, no measurable current through the device.
         opencurrent (1): open regime, high current through the device (possibly
             no or few gates set to small voltages.)
@@ -49,7 +49,7 @@ class DeviceState(Enum):
 class RangeChangeSetting:
     """Settings defining how voltage ranges should be updated when needed.
 
-    Attributes:
+    Parameters:
         relative_range_change (float): percentage of previous range of how much
             the new range should differ/be moved towards either positive or
             negative values.
@@ -67,12 +67,12 @@ class RangeChangeSetting:
 class DotTuner(Tuner):
     """`Tuner` sub-class with dot tuning procedures.
 
-    Attributes:
+    Parameters:
         classifiers (Classifiers): a setting.Classifiers instance
             holding all required classifiers. Eg. pinchoff.
         data_settings (DataSettings): A settings.DataSettings instance with
             data related information such as `db_name` and
-            `normalization_constants'.
+            `normalization_constants`.
         setpoint_settings (SetpointSettings): A settings.SetpointSettings
             instance with setpoint related information such as
             `voltage_precision`.
@@ -354,7 +354,7 @@ class DotTuner(Tuner):
             device_layout (DeviceLayout): device layout, e.g. DoubleDotLayout.
             barrier_changes (Dict[int, VoltageChangeDirection]): voltage change
                 directions for barriers. Maps gate IDs into
-                `VoltageChangeDirection`s.
+                `VoltageChangeDirection`.
         """
         new_v_change_dir = self.update_voltages_based_on_directives(
             device, barrier_changes,
@@ -815,7 +815,7 @@ class DotTuner(Tuner):
         voltage_changes: Dict[int, VoltageChangeDirection],
         range_change_setting: RangeChangeSetting = RangeChangeSetting(),
     ) -> Optional[VoltageChangeDirection]:
-        """Updates voltages based on `VoltageChangeDirection`s.
+        """Updates voltages based on `VoltageChangeDirection`.
         Mainly used to update top or outer barriers. In case of outer barriers
         reaching limits, there is only one other gate (helper gate) to change.
         Returning only one direction is sufficient. In the current algorithm, it
@@ -873,7 +873,7 @@ class DotTuner(Tuner):
             Optional[Dict[int, VoltageChangeDirection]]: if required (plunger
                 range updates were not successful), the required changes to be
                 applied to barrier voltages are returned. If a dict is returned,
-                it maps gate ID onto `VoltageChangeDirection`s. The new
+                it maps gate ID onto `VoltageChangeDirection`. The new
                 direction is None if new ranges have been set successfully.
         """
         if not isinstance(plunger_barrier_pairs, List):

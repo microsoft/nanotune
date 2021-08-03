@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class TuningStage(metaclass=ABCMeta):
     """Base class implementing the common sequence of a tuning stage.
 
-    Attributes:
+    Parameters:
         stage: String indicating which stage it implements, e.g.
             gatecharacterization.
         data_settings: Dictionary with information about data, e.g. where it
@@ -95,10 +95,12 @@ class TuningStage(metaclass=ABCMeta):
         max_n_iterations: int,
     ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
-        been successful. An iteration of such a measurement cycle takes data,
+        been successful.
+
+        An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
         learning result. If a repetition of this cycle is supported, then
-        ``conclude_iteration`` determines whether another iteration should take
+        `conclude_iteration` determines whether another iteration should take
         place and which voltage ranges need to be measured.
         Each child class needs to implement the body of this method, tailoring
         it to the respective tuning stage.
@@ -113,10 +115,10 @@ class TuningStage(metaclass=ABCMeta):
                 abandoning.
 
         Returns:
-            bool: Whether this is the last iteration and the stage is done/to
-                be stopped.
+            bool: Whether this is the last iteration and the stage is done/to be stopped.
             list: New voltage ranges to sweep if the stage is not done.
             list: List of strings indicating failure modes.
+
         """
 
     @abstractmethod
@@ -279,15 +281,14 @@ class TuningStage(metaclass=ABCMeta):
         plot_result: bool = True,
     ) -> TuningResult:
         """Performs iterations of a basic measurement cycle of a tuning stage.
+
         It wraps ```iterate_stage``` in .base_tasks.py. One measurement cycle
         does the following subtasks:
         - computes setpoints
         - perform the actual measurement, i.e. take data
         - perform a machine learning task, e.g. classification
-        - validate the machine learning result, e.g. check if a good regime was
-            found
+        - validate the machine learning result, e.g. check if a good regime was found
         - collect all information in a TuningResult instance.
-
         At each iteration, ```conclude_iteration``` check whether another
         measurement cycle will be performed.
         At the very end, ```clean_up``` does the desired post-measurement task.

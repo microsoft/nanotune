@@ -292,7 +292,7 @@ def prepare_metadata(
     """
     nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
     nt_meta["normalization_constants"] = asdict(normalization_constants)
-    nt_meta["git_hash"] = nt.git_hash
+    nt_meta["version"] = nt.version
     nt_meta["device_name"] = device_name
     readout_dict = readout_methods.as_name_dict()
     nt_meta["readout_methods"] = readout_dict
@@ -362,9 +362,8 @@ def get_elapsed_time(
             '$minutes' and $'seconds' as substrings.
 
     Returns:
-        float: Elapsed time in seconds,
-        str: Formatted string indicating the elapsed time in hours, minutes and
-            seconds.
+        float: Elapsed time in seconds.
+        str: Formatted string indicating the elapsed time in hours, minutes and seconds.
     """
 
     elapsed_time = round(float(end_time - start_time), 2)
@@ -491,14 +490,15 @@ def run_stage(
     save_machine_learning_result: Callable[[int, Any], None],
     validate_result: Callable[[Any], bool],
 ) -> TuningResult:
-    """Executes basic tasks of a tuning stage using functions supplied as
+    """Executes basic tasks of a tuning stage.
+
+    It uses the following functions supplied as
     input:
-        - computes setpoints
-        - perform the actual measurement, i.e. take data
-        - perform a machine learning task, e.g. classification
-        - validate the machine learning result, e.g. check if a good regime was
-            found
-        - collect all information in a TuningResult instance.
+    - computes setpoints
+    - perform the actual measurement, i.e. take data
+    - perform a machine learning task, e.g. classification
+    - validate the machine learning result, e.g. check if a good regime was found
+    - collect all information in a TuningResult instance.
     It does not set back voltages to initial values.
 
     Args:

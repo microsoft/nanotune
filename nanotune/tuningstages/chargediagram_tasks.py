@@ -47,11 +47,7 @@ def segment_dot_data(
     Returns:
         dict: Dictionary mapping run IDs of segmented data to the voltages
             ranges they span:
-            dot_segments = {
-                <run_id>: {
-                    'voltage_ranges': [(), ()],
-                }
-            }.
+            dot_segments = {<run_id>: {voltage_ranges: [(), ()]}}.
 
     """
 
@@ -91,13 +87,8 @@ def classify_dot_segments(
     Returns:
         dict: Mapping run IDs onto a dict holding the respective classification
             result of all classifiers passed. For example:
-            clf_result = {
-                <run_id>: {
-                    'singledot': True,
-                    'doubledot': False,
-                    'dotregime': False,
-                }
-            }.
+            clf_result = {<run_id>: {'singledot': True, 'doubledot': False,
+            'dotregime': False}}.
     """
 
     if db_folder is None:
@@ -132,14 +123,7 @@ def get_dot_segment_regimes(
     Args:
         dot_segments_classification_result: Classification predictions of
             datasets. Each run_id maps onto a dictionary holding multiple
-            prediction outcomes, e.g.
-            dot_segments_classification_result = {
-                <run_id>: {
-                    'singledot': True,
-                    'doubledot': False,
-                    'dotregime': False,
-                }
-            }.
+            prediction outcomes.
         determine_regime: Function merging several classification outcomes into
             a single regime indicator.
 
@@ -259,20 +243,16 @@ def conclude_dot_classification(
     Args:
         target_charge_state: Target charge state
         dot_segments: Dictionary mapping run_ids of dot segments onto their
-            predicted regime:
-            dot_segments= {
-                    <run_id>: {
-                        'predicted_regime': int,
-                        }
-                    }
+            predicted regime.
         verify_classification_outcome: Function checking whether the target
             regime has been found.
         interpret_single_outcome: Interprets the classification result (int) to
             return a string and bool indicating the charge state and quality.
 
     Returns:
-        str: Charge state, e.g. 'singledot'.
+        str: Charge state, e.g. singledot.
         bool: quality.
+
     """
 
     dot_segment_vals = dot_segments.values()

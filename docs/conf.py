@@ -19,7 +19,7 @@ import nanotune
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../../'))
-sys.path.insert(0, os.path.abspath('../../../qcodes'))
+sys.path.insert(0, os.path.abspath('../../../nanotune'))
 sys.setrecursionlimit(1500)
 
 
@@ -59,7 +59,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'sphinx_rtd_theme',
     # 'sphinx.ext.autodoc',
     # 'sphinx.ext.doctest',
     # 'sphinx.ext.intersphinx',
@@ -73,7 +74,44 @@ extensions = [
     # 'rinoh.frontend.sphinx'
 ]
 
+nitpicky = False
+
+# we allow most types from the typing modules to be used in
+# docstrings even if they don't resolve
+nitpick_ignore = [('py:class', 'Optional'), ('py:class', 'Union'),
+                  ('py:class', 'Any'), ('py:class', 'Tuple'),
+                  ('py:class', 'List'), ('py:class', 'Sequence'),
+                  ('py:class', 'Iterable'), ('py:class', 'Type'),
+                  # These are some types currently in use
+                  # in docstrings not actually defined anywhere
+                  ('py:class', 'io_manager'), ('py:class', 'chan_type'),
+                  ('py:class', 'SD_Wave'), ('py:class', 'array'),
+                  # External types that for some reason or the other
+                  # don't resolve.
+                  ('py:class', 'json.encoder.JSONEncoder'),
+                  ('py:attr', 'broadbean.sequence.fs_schmema'),
+                  ('py:class', 'SPI_rack'),
+                  ('py:class', 'unittest.case.TestCase'),
+                  ('py:class', 'builtins.AssertionError'),
+                  ('py:exc', 'visa.VisaIOError')]
+
 napoleon_include_special_with_doc = True
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_preprocess_types = False
+napoleon_type_aliases = None
+napoleon_attr_annotations = True
+
+napoleon_custom_sections = [('Returns', 'params_style')]
 
 # autodoc_mock_imports = ['numpy', 'jsonschema',  'ruamel_yaml',
 #                          #'qcodes', 'qcodes.dataset',
@@ -226,7 +264,6 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'py': ('https://pylib.readthedocs.io/en/stable/', None),
-    'pyvisa': ('https://pyvisa.readthedocs.io/en/master/', None),
     'IPython': ('https://ipython.readthedocs.io/en/stable/', None),
     'qcodes': ('https://qcodes.github.io/Qcodes/', None),
 }
@@ -257,4 +294,6 @@ numfig = True
 # Use this kernel instead of the one stored in the notebook metadata:
 nbsphinx_kernel_name = 'python3'
 # always execute notebooks.
-nbsphinx_execute = 'always'
+nbsphinx_execute = 'never'
+
+nbsphinx_allow_errors = True

@@ -25,18 +25,21 @@ ChannelsType = Optional[
 
 @dataclass
 class NormalizationConstants:
-    """Container to hold normalization constant. They are the highest and
+    """Container to hold normalization constant.
+
+    They are the highest and
     lowest signals measured, corresponding to pinched-off and open signals.
     They are typically measured by setting all gates to their lowest allowed
     values to measure the lower bound, while the upper bound is measured with
     all gates set to their highest allowed voltages.
 
-    Attributes:
+    Parameters:
         transport: constants for DC transport.
         sensing: constants for charge sensing (transport
             or other).
         rf: constants for reflectometry measurements.
     """
+
     transport: Tuple[float, float] = (0., 1.)
     sensing: Tuple[float, float] = (0., 1.)
     rf: Tuple[float, float] = (0., 1.)
@@ -77,7 +80,7 @@ class NormalizationConstants:
 class Readout:
     """Container grouping readout of a device.
 
-    Attributes:
+    Parameters:
         transport: parameter to read out for DC transport.
         sensing: parameter to read out for charge sensing
             (transport or other).
@@ -145,7 +148,7 @@ class ReadoutMethods(Enum):
 class Device(DelegateInstrument):
     """Device abstraction with attributes and methods for (dot) tuning.
 
-    Attributes:
+    Parameters:
         name: string identifier, used e.g. when saving tuning results.
         readout: readout parameters. One QCoDeS GroupedParameter for
             each readout method (transport, sensing, rf).
@@ -180,16 +183,8 @@ class Device(DelegateInstrument):
             instruments change. They are saved to static metadata.
         quality: quality of device, typically determined during
             characterization. Only good devices will be tuned.
-
-    Main methods:
-        ground_gates: grounds all gates.
-        float_ohmics: sets relay of all ohmics to float.
-        get_gate_status: returns dict mapping gate labels onto another dict
-            with their current valid range and current voltage.
-        all_gates_to_highest: sets all gates to their upper safety limit.
-        all_gates_to_lowest: sets all gates to their lower safety limit.
-        get_gate_id: returns ID of a gate based on either the gate or its label.
     """
+
     def __init__(
         self,
         name: str,
@@ -425,13 +420,7 @@ class Device(DelegateInstrument):
         Returns:
             dict: mapping from gate labels to mapping with current valid ranges
             and voltages. Example:
-            ```
-            {top_barrier: {
-                current_valid_range: (-0.9, -0.7),
-                voltage: -0.81,
-                }
-            }
-            ```
+            `{top_barrier: {current_valid_range: (-0.9, -0.7), voltage: -0.81}}`
         """
         current_gate_status: Dict[
             str, Dict[str, Union[Tuple[float, float], float]]

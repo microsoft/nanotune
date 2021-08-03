@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class TuningResult:
     """Container to hold tuning result data
 
-    Attributes:
+    Parameters:
         stage (str): the tuning stage, e.g. 'chargediagram'. Can be any string,
             not necessarily a nt.tuningstage.
         success (bool): whether the stage terminated successfully
@@ -33,10 +33,6 @@ class TuningResult:
         comment (str): Optional string if there is anything to say about the
             tuning.
         timestamp (str): time stamp when the stage finished.
-
-    Methods:
-        to_dict: Export tuning results to dictionary
-        to_json: Export tuning results to JSON
     """
 
     stage: str
@@ -73,17 +69,10 @@ class MeasurementHistory:
     instance. Results are saved in a dictionary mapping string indentifiers to
     TuningResult instances.
 
-    Attributes:
+    Parameters:
         device_name (str): Name of device tuned.
         tuningresults (dict): Dictionary mapping string identifiers to
             instances of TuningResults.
-
-    Methods:
-        add_tuningresult(new_tuningresult, identifier=None): Add another
-            result. If no identifier is specified,
-            new_tuningresult.name + '_' + new_tuningresult.guids[-1] is used.
-        to_dict: Export all tuning results to a dictionary.
-        to_json: Export all tuning results to JSON formatted string.
     """
 
     def __init__(
