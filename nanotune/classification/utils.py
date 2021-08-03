@@ -884,6 +884,7 @@ def format_float(x):
 def format_time(x):
     return "{0:.4f}".format(x)
 
+
 def to_categorical(labels, num_classes=None):
     labels = np.array(labels, dtype='int')
     input_shape = labels.shape
