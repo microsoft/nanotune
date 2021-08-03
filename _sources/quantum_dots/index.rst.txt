@@ -36,7 +36,7 @@ Dots in a two-dimensional heterostructure (2DEG)
 .. figure:: ./quantum_dots-18.svg
    :alt: A 2DEG heterostructure
    :align: center
-   :width: 50.0%
+   :width: 45.0%
 
    GaAs/AlGaAs heterostructure hosting a double quantum dot. Mobile electrons
    from the thin silicon donor layer are attracted by the lower energy arising
@@ -151,6 +151,7 @@ multiple electrons to occupy the same energy level and transport is suppressed.
     Electron transport via resonant tunnelling occurs from source to drain when
     both dot energy levels are within the bias window.
 
+
 .. _fig_2d_hop_forbidden:
 .. figure:: ./quantum_dots-06.svg
     :alt: Electron transport of double dot: energy levels not aligned.
@@ -170,6 +171,7 @@ multiple electrons to occupy the same energy level and transport is suppressed.
 
     Schema of a so-called charge diagram showing the charge
     transition pattern of a double dot.
+
 .. _fig_chargediag_explained:
 .. figure:: ./quantum_dots-04.svg
     :alt:
@@ -180,7 +182,6 @@ multiple electrons to occupy the same energy level and transport is suppressed.
     voltages and monitoring current from source to drain. Four types of charge
     transitions are observed, exchanging charges between dots, a dot and its
     adjacent reservoir, or allowing a current to flow from source to drain.
-
 
 Transport features of dots with well-localized and weakly coupled charges can
 be explained and qualitatively reproduced by the classical capacitance model,
