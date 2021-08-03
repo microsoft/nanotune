@@ -91,19 +91,19 @@ class CapacitanceModel(Instrument):
         Constructor of CapacitanceModel class.
 
         Args:
-            name (str): Name identifier to be passed to qc.Instrument
-            charge_nodes (dict): Dictionary with charge nodes of the model,
+            name: Name identifier to be passed to qc.Instrument
+            charge_nodes: Dictionary with charge nodes of the model,
                 mapping integer node IDs to string labels.
-            voltage_nodes (dict): Dictionary with voltage nodes of the model,
+            voltage_nodes: Dictionary with voltage nodes of the model,
                 mapping integer node IDs to string labels.
-            N (list): Initial charge configuration, i.e. number of charges on
+            N: Initial charge configuration, i.e. number of charges on
                 each dot. Index of entry corresponds to charge node layout ID.
-            V_v (list): Voltages to set on voltage nodes. Index of entry
+            V_v: Voltages to set on voltage nodes. Index of entry
                 corresponds to charge node layout ID.
-            C_cc_off_diags (list): Capacitances between charge nodes.
-            C_cv (list): Capacitances between charge and voltage nodes.
-            db_name (str): Name of database to store synthetic data.
-            db_folder (str): Path to folder where database is located.
+            C_cc_off_diags: Capacitances between charge nodes.
+            C_cv: Capacitances between charge and voltage nodes.
+            db_name: Name of database to store synthetic data.
+            db_folder: Path to folder where database is located.
         """
         if charge_nodes is None:
             charge_nodes = {}
@@ -236,9 +236,9 @@ class CapacitanceModel(Instrument):
         """Convenience method to set voltages.
 
         Args:
-            n_index (int): Index of node to set.
-            value (float): Value to set.
-            node_type (str): Which node type to set, either 'voltage' or
+            n_index: Index of node to set.
+            value: Value to set.
+            node_type: Which node type to set, either 'voltage' or
                 'charge'.
         """
         if node_type == "voltage":
@@ -260,10 +260,10 @@ class CapacitanceModel(Instrument):
         """Convenience function to set capacitances.
 
         Args:
-            which_matrix (str): String identifier of matrix to set.
+            which_matrix: String identifier of matrix to set.
                 Either 'cv' or 'cc'.
-            indices (list): Indices of capacitances within the matrix.
-            value (float): Capacitance value to set.
+            indices: Indices of capacitances within the matrix.
+            value: Capacitance value to set.
         """
         if which_matrix not in ["cv", "cc"]:
             logger.error(
@@ -294,13 +294,13 @@ class CapacitanceModel(Instrument):
         dV: float,
         charge_node_idx: int,
     ) -> None:
-        """Implements formular relating voltage differences to capacitances
+        """Implements relation between voltage differences and capacitances
         between charge and voltage nodes.
 
         Args:
-            voltage_node_idx (int): Voltage node index.
-            dV (float): Voltage difference between two charge transitions.
-            charge_node_idx (int): Charge node index.
+            voltage_node_idx: Voltage node index.
+            dV: Voltage difference between two charge transitions.
+            charge_node_idx: Charge node index.
         """
         capa_val = -elem_charge * dV
         self.set_capacitance(
@@ -314,19 +314,12 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """Compute the total energy of the system using:
-
-        ..math::
-
-            U = \frac{1}{2} \vec{Q_{c}}^{T} \mathbf{C^{-1}_{cc}} \vec{Q_{c}}
-            + \frac{1}{2} \vec{V^{T}_{v}} \mathbf{C_{vc}} \mathbf{C_{cc}^{-1} } \mathbf{C_{cv}} \vec{V}_{v}
-            - \vec{Q^{T}_{c}} \mathbf{C^{-1}_{cc}} \mathbf{C_{cv}} \vec{V}_{v}.
-
+        """Compute the total energy of the system.
 
         Args:
-            N (list): charge configuration, i.e. number of charges on each
+            N: charge configuration, i.e. number of charges on each
                 charge node.
-            V_v (list): Voltages to set on voltages nodes.
+            V_v: Voltages to set on voltages nodes.
 
         Returns:
             float: energy of the system
@@ -355,7 +348,7 @@ class CapacitanceModel(Instrument):
         """Determines N by minimizing the total energy of the system.
 
         Args:
-            V_v (list): Voltages to set on voltages nodes.
+            V_v: Voltages to set on voltages nodes.
 
         Returns:
             list: Charge state, i.e. number of electrons on each charge node.
@@ -462,8 +455,8 @@ class CapacitanceModel(Instrument):
         (electron and hole) for a single charge configuration.
 
         Args:
-            voltage_node_idx (list): Indices of voltage nodes to be determined
-            N (list): Charge configuration, number of electrons of each charge
+            voltage_node_idx: Indices of voltage nodes to be determined
+            N: Charge configuration, number of electrons of each charge
                 node.
 
         Return:
@@ -498,10 +491,10 @@ class CapacitanceModel(Instrument):
         charge configuration N and corresponding to electron triple points.
 
         Args:
-            new_voltages (list): Voltages to set on voltage nodes.
-            voltage_node_idx (list): Voltage node indices to which the values
+            new_voltages: Voltages to set on voltage nodes.
+            voltage_node_idx: Voltage node indices to which the values
                 in new_voltages correspond to.
-            N (list): Desired charge configuration, optional. If none supplied
+            N: Desired charge configuration, optional. If none supplied
                 self.N() is taken.
 
         Returns:
@@ -534,10 +527,10 @@ class CapacitanceModel(Instrument):
             points.
 
         Args:
-            new_voltages (list): values of new gate voltages, to be replaced in
+            new_voltages: values of new gate voltages, to be replaced in
                 self.V_v. These are the values scipy.optimize.fsolve is solving
                 for
-            voltage_node_idx (list): Voltages nodes indices to which the values
+            voltage_node_idx: Voltages nodes indices to which the values
                 above correspond to.
             N: Desired charge configuration, if none supplied self.N() is taken.
         """
@@ -568,21 +561,15 @@ class CapacitanceModel(Instrument):
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
         """Calculates chemical potential of a specific charge node for a given
-        charge and voltage configuration. Using:
-
-        .. math::
-
-            \mu_{j}(\vec{N}, \vec{V}_{v})  = \frac{-q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
-				+ q^{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
-				+ q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v}.
+        charge and voltage configuration.
 
         Args:
-            N (list): Charge configuration, i.e. the number of electrons on each
+            N: Charge configuration, i.e. the number of electrons on each
                 charge node.
             V_v: Voltages to set on (all) voltage nodes.
 
         Returns:
-            np.array: Chemical potential.
+            float: Chemical potential.
         """
 
         if N is None:
@@ -630,22 +617,22 @@ class CapacitanceModel(Instrument):
         The diagram is saved into .db using QCoDeS.
 
         Args:
-            voltage_node_idx (list): Voltage node indices to sweep.
-            voltage_ranges (list): Voltage ranges to sweep.
-            n_steps (list): Number of steps of the measurement.
-            line_intensity (float): Multiplication factor of number of
+            voltage_node_idx: Voltage node indices to sweep.
+            voltage_ranges: Voltage ranges to sweep.
+            n_steps: Number of steps of the measurement.
+            line_intensity: Multiplication factor of number of
                 degeneracies, resulting in the desired peak hight before
                 normalization.
-            kernel_widths (list): Sigmas of Gaussian filter used for broadening
+            kernel_widths: Sigmas of Gaussian filter used for broadening
                 of charge transitions.
-            target_snr_db (float): Target signal-to-noise ratio used to
+            target_snr_db: Target signal-to-noise ratio used to
                 calculate amplitude of random normal noise.
-            e_temp (float): Electron temperature, used as absolute tolerance in
+            e_temp: Electron temperature, used as absolute tolerance in
                 energy at which two charge states count as degenerate.
-            known_regime (str): Label to be saved in metadata.
-            known_quality (str): Quality to be saved in metadata.
-            add_charge_jumps (bool): Whether or not to add random charge jumps.
-            jump_freq (float): Average frequency at which optional charge jumps
+            known_regime: Label to be saved in metadata.
+            known_quality: Quality to be saved in metadata.
+            add_charge_jumps: Whether or not to add random charge jumps.
+            jump_freq: Average frequency at which optional charge jumps
                 should occur.
 
         Returns:
@@ -742,17 +729,17 @@ class CapacitanceModel(Instrument):
         The diagram is saved into .db using QCoDeS.
 
         Args:
-            voltage_node_idx (int): Voltage node indices to sweep.
-            voltage_ranges (list): Voltage ranges to sweep.
-            n_steps (int): Number of steps of the measurement.
-            line_intensity (float): Multiplication factor of number of
+            voltage_node_idx: Voltage node indices to sweep.
+            voltage_ranges: Voltage ranges to sweep.
+            n_steps: Number of steps of the measurement.
+            line_intensity: Multiplication factor of number of
                 degeneracies, resulting in the desired peak hight before
                 normalization.
-            e_temp (float): Electron temperature, used as absolute tolerance in
+            e_temp: Electron temperature, used as absolute tolerance in
                 energy at which two charge states count as degenerate.
-            known_quality (str): Quality to be saved in metadata.
-            add_charge_jumps (bool): Whether or not to add random charge jumps.
-            jump_freq (float): Average frequency at which optional charge jumps
+            known_quality: Quality to be saved in metadata.
+            add_charge_jumps: Whether or not to add random charge jumps.
+            jump_freq: Average frequency at which optional charge jumps
                 should occur.
 
         Returns:
@@ -983,7 +970,7 @@ class CapacitanceModel(Instrument):
         """Uses a Gaussian filter to broaden a stickfigure diagram.
 
         Args:
-            diagram (np.ndarray): The previously computed stickfigure diagram
+            diagram: The previously computed stickfigure diagram
             kernel_width (list, float): Width of the Gaussian kernel. Can be a
                 single number or list of the same length as the diagram's
                 dimensions.
@@ -1007,8 +994,8 @@ class CapacitanceModel(Instrument):
         desired signal to noise ratio.
 
         Args:
-            diagram (np.ndarray): Noise free diagram
-            target_snr_db (float): Target signal to noise ratio in dB
+            diagram: Noise free diagram
+            target_snr_db: Target signal to noise ratio in dB
 
         Return:
             np.ndarray: Diagram with normally distributed random noise added.
@@ -1038,12 +1025,12 @@ class CapacitanceModel(Instrument):
         """Save data to a database using QCoDeS.
 
         Args:
-            parameters (list): List of QCoDeS parameters to register for
+            parameters: List of QCoDeS parameters to register for
                 measurement.
-            setpoints (list): List of setpoints, i.e. voltage values.
-            data (np.ndarray): The measurement to save.
-            nt_label (list): List of machine learning/nanotune labels to save.
-            quality (int): The measurement's quality, to be saved as metadata.
+            setpoints: List of setpoints, i.e. voltage values.
+            data: The measurement to save.
+            nt_label: List of machine learning/nanotune labels to save.
+            quality: The measurement's quality, to be saved as metadata.
 
         Returns:
             int: QCoDeS data run id.
@@ -1127,16 +1114,14 @@ class CapacitanceModel(Instrument):
         """Determines voltages to sweep to measure specific charge transitions.
 
         Args:
-            voltage_node_idx (list): Indices of voltages nodes to sweep.
-            V_v (list): Voltage configuration of all gates.
+            voltage_node_idx: Indices of voltages nodes to sweep.
+            V_v: Voltage configuration of all gates.
             N_limits: Charge configuration ranges to measure. E.g. for a double
-                dot to sweep over empty dots to both having 3 electrons:
-                [(0, 3), (0, 3)]
+                dot to sweep over empty dots to both having 3 electrons: [(0, 3), (0, 3)]
 
         Returns:
             list: Nested list of voltages limits to sweep. Example double dot:
-                [[gate1_min_voltage, gate1_max_voltage],
-                 [gate2_min_voltage, gate2_max_voltage]]
+                [[gate1_min_voltage, gate1_max_voltage], [gate2_min_voltage, gate2_max_voltage]]
         """
         if V_v is None:
             V_v = self.V_v()
