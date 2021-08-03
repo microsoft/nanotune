@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Device &mdash; nanotune 0+untagged.536.gc6079a4 documentation</title>
+  <title>Device Abstraction &mdash; nanotune 0+untagged.591.gb846b5f documentation</title>
   
 
   
@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Drivers" href="../drivers/index.html" />
-    <link rel="prev" title="Quantum Dots" href="../quantum_dots/index.html" />
+    <link rel="prev" title="Tuning" href="../tuning/tuning.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.536.gc6079a4
+                0+untagged.591.gb846b5f
               </div>
             
           
@@ -97,9 +97,14 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Device</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tuning/index.html">Tuning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Device Abstraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#devicechannel">DeviceChannel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devicelayout">DeviceLayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Device</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
@@ -154,7 +159,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Device</li>
+      <li>Device Abstraction</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -197,12 +202,20 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="device">
-<h1>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h1>
-<p>An instance of a nt.Device class represents the physical device/sample to be
+<div class="section" id="device-abstraction">
+<span id="device"></span><h1>Device Abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="devicechannel">
+<h2>DeviceChannel<a class="headerlink" href="#devicechannel" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="devicelayout">
+<h2>DeviceLayout<a class="headerlink" href="#devicelayout" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id1">
+<h2>Device<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>An instance of a <cite>Device</cite> class represents the physical device or sample to be
 tuned. Rather than being a collection of instruments and instrument parameters,
 it should be thought of as a container keeping track of the dot-initialization
-process. Beside lists of gates and ohmics, a nt.Device contains information
+process. Beside lists of gates and ohmics, a <cite>Device</cite> contains information
 about how it should be read out (readout_methods dictionary) and how gates
 are arranged (device_type string). For the hard-coded tuning logic approach,
 knowledge about the gate layout is required and specified as a list of gate
@@ -212,11 +225,11 @@ layouts are defined in the configuration file, e.g. “doubledot_2D”:
 “right_plunger”, “right_barrier”].
 The class also has a convenience methods manipulating all gates collectively,
 which are used for initialization, resetting and normalization constant
-measurements. Normalization constants, a nt.Device parameter, need to be
+measurements. Normalization constants, a <cite>Device</cite> parameter, need to be
 measured before a measurement by recording the noise floor and open device
 signal, e.g. max current when all gates are at their highest allowed voltages.
 They are required for data normalization before fitting and classification.</p>
-<p>A nt.Gate is a wrapper around a voltage parameter of a DAC channel with added
+<p>A <cite>DeviceChannel</cite> is a wrapper around a voltage parameter of a DAC channel with added
 tuning functionalities. It contains attributes keeping track in which range
 each gate is expected to be ‘active’ (current_valid_range), at which voltage
 it is expected to pinch off (transition_voltage), the maximum voltage jump
@@ -226,6 +239,7 @@ New voltages are ramped to if specified by the use_ramp parameter, either
 using a hardware ramp or QCoDeS’ software ramps specified by inter_delay.
 The layout_id parameter is the gate’s index in the device layout list.</p>
 </div>
+</div>
 
 
            </div>
@@ -234,7 +248,7 @@ The layout_id parameter is the gate’s index in the device layout list.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="../drivers/index.html" class="btn btn-neutral float-right" title="Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../quantum_dots/index.html" class="btn btn-neutral float-left" title="Quantum Dots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tuning/tuning.html" class="btn btn-neutral float-left" title="Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

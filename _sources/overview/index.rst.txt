@@ -111,5 +111,3 @@ the a device characterization and a `DotTuner`.
 A `Tuner` class acts on an instance of a `Device` class, which represents the
 physical device including a list of gates, ohmics, gate layout and readout
 methods.
-
-
