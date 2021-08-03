@@ -2,7 +2,7 @@ import copy
 import json
 import logging
 from typing import Any, Dict, List, Optional, Tuple
-
+import numpy.typing as npt
 import numpy as np
 import qcodes as qc
 from qcodes.dataset.data_set import DataSet
@@ -233,7 +233,10 @@ class Dataset:
 
         self.data = self.data.rename(new_names_all)
 
-    def _normalize_data(self, signal: np.ndarray, signal_type) -> np.ndarray:
+    def _normalize_data(self,
+        signal: npt.NDArray[np.float64],
+        signal_type,
+    ) -> npt.NDArray[np.float64]:
         """"""
         minv = self.normalization_constants[signal_type][0]
         maxv = self.normalization_constants[signal_type][1]

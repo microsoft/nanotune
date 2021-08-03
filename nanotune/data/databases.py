@@ -143,6 +143,9 @@ def set_database(
         db_name += ".db"
     nt.config["db_name"] = db_name
     db_path = os.path.join(db_folder, db_name)
+    if not os.path.isfile(db_path):
+        nt.new_database(db_name, db_folder)
+
     qc.config["core"]["db_location"] = db_path
 
     # check if label columns exist, create if not

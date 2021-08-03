@@ -4,12 +4,12 @@ import json
 import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
+import numpy.typing as npt
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from tensorflow import keras
 
 import nanotune as nt
 from nanotune.classification.classifier import (DEFAULT_CLF_PARAMETERS,
@@ -26,113 +26,11 @@ metric_mapping = {
 }
 
 
-def qf_model(
-    input_shape: Tuple[int, int, int, int],
-    learning_rate: float = 0.001,
-) -> keras.Sequential:
-
-    model = keras.Sequential()
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2), strides=2))
-    model.add(keras.layers.Flatten())
-
-    model.add(keras.layers.Dense(1024, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(512, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(128, activation="relu"))
-    model.add(keras.layers.Dropout(0.4))
-
-    model.add(keras.layers.Dense(2, activation="softmax"))
-
-    model.compile(
-        loss=keras.losses.mean_squared_error,  # categorical_crossentropy,
-        optimizer=keras.optimizers.Adam(lr=learning_rate),
-        metrics=["accuracy"],
-    )
-
-    return model
-
-
-def my_model(
-    input_shape: Tuple[int, int, int, int],
-    learning_rate: float = 0.001,
-) -> keras.Sequential:
-    """ """
-    model = keras.Sequential()
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(
-        keras.layers.Conv2D(
-            32,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(
-        keras.layers.Conv2D(
-            64,
-            kernel_size=(3, 3),
-            activation="relu",
-            input_shape=input_shape,
-            data_format="channels_last",
-            padding="same",
-        )
-    )
-
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2), strides=2))
-    model.add(keras.layers.Flatten())
-
-    model.add(keras.layers.Dense(1024, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(512, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(128, activation="relu"))
-    model.add(keras.layers.Dropout(0.5))
-
-    model.add(keras.layers.Dense(2, activation="softmax"))
-
-    model.compile(
-        loss=keras.losses.mean_squared_error,  # categorical_crossentropy,
-        optimizer=keras.optimizers.Adam(lr=learning_rate),
-        metrics=["accuracy"],
-    )
-
-    return model
-
-
 def load_syn_data(
     data_files: Optional[Dict[str, List[str]]] = None,
     data_types: Optional[List[str]] = None,
     for_CNN: bool = True,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """"""
     if data_files is None:
         # data_files = {
@@ -198,7 +96,7 @@ def load_exp_data(
     data_files: Optional[Dict[str, List[str]]] = None,
     data_types: Optional[List[str]] = None,
     for_CNN: bool = True,
-) -> List[Tuple[np.ndarray, np.ndarray]]:
+) -> List[Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]]:
     """"""
     if data_files is None:
         # data_files = {
@@ -303,7 +201,7 @@ def load_exp_data(
 def _load_good_and_poor(
     filenames: List[str],
     data_types: Optional[List[str]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """"""
     if data_types is None:
         data_types = ["signal"]
@@ -343,7 +241,7 @@ def _load_good_and_poor(
     all_data = all_data[p]
     all_labels = all_labels[p]
 
-    all_labels = keras.utils.to_categorical(all_labels)
+    all_labels = to_categorical(all_labels)
 
     return all_data, all_labels
 
@@ -354,7 +252,7 @@ def _load_data(
     data_types: Optional[List[str]] = None,
     shuffle: bool = True,
     relevant_labels: Optional[List[int]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """
     Load data from multiple data files but do it seperaterly to ensure
     'select_equal_populations' won't accidentially
@@ -402,15 +300,15 @@ def _load_data(
         data = data[p]
         labels = labels[p]
 
-    labels = keras.utils.to_categorical(labels)
+    labels = to_categorical(labels)
 
     return data, labels
 
 
 def select_equal_populations(
-    data: np.ndarray,
-    labels: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+    data: npt.NDArray[np.float64],
+    labels: npt.NDArray[np.int64],
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """
     Make sure we have 50% of one and 50% of other population
     """
@@ -985,3 +883,19 @@ def format_float(x):
 
 def format_time(x):
     return "{0:.4f}".format(x)
+
+
+def to_categorical(labels, num_classes=None):
+    labels = np.array(labels, dtype='int')
+    input_shape = labels.shape
+    if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
+        input_shape = tuple(input_shape[:-1])
+    labels = labels.ravel()
+    if not num_classes:
+        num_classes = np.max(labels) + 1
+    n = labels.shape[0]
+    categorical = np.zeros((n, num_classes))
+    categorical[np.arange(n), labels] = 1
+    output_shape = input_shape + (num_classes,)
+    categorical = np.reshape(categorical, output_shape)
+    return categorical

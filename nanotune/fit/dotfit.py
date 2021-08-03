@@ -6,7 +6,7 @@ import os
 from itertools import combinations
 from math import floor
 from typing import Any, Dict, List, Optional, Tuple, Union
-
+import numpy.typing as npt
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,7 +71,7 @@ class DotFit(DataFit):
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
 
-        self.triple_points: Optional[Dict[str, np.ndarray]] = None
+        self.triple_points: Optional[Dict[str, List[float]]] = None
 
     @property
     def range_update_directives(self) -> List[str]:
@@ -226,7 +226,7 @@ class DotFit(DataFit):
                     unit=original_params[1].unit,
                     paramtype="array",
                 )
-                result: List[List[Tuple[str, np.ndarray]]] = []
+                result: List[List[Tuple[str, npt.NDArray[np.float64]]]] = []
                 ranges: List[Tuple[float, float]] = []
                 m_params = [str(it) for it in list(segment.data_vars)]
                 for ip, param_name in enumerate(m_params):
@@ -332,10 +332,10 @@ class DotFit(DataFit):
                             x_val = v_x[ind[1]]
                             y_val = v_y[ind[0]]
                             coordinates.append([x_val, y_val])
-                coordinates = np.array(coordinates)
+                coordinates_np: npt.NDArray[np.float64] = np.array(coordinates)
 
                 # calculate distances between points, all to all
-                all_combos = combinations(coordinates, 2)
+                all_combos = combinations(coordinates_np, 2)
                 distances = [get_point_distances(*combo) for combo in all_combos]
                 distances_arr = np.asarray(distances)
 

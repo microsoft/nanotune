@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import Dict, List, Optional, Tuple
-
+import numpy.typing as npt
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fftpack as fp
@@ -29,7 +29,7 @@ def load_noise(
     number_of_samples: int,
     files: Optional[Dict[str, str]] = None,
     folder: Optional[str] = None,
-) -> np.ndarray:
+) -> Dict[str, npt.NDArray[np.float64]]:
     """
     Note: complex numbers are cast into floats here, might need to fix this
     of frequencies do not give desired result
@@ -71,13 +71,13 @@ def load_noise(
 
 
 def add_noise(
-    original_data: np.ndarray,
+    original_data: npt.NDArray[np.float64],
     noise_types: List[str],
     max_strength: List[float],
     n_samples: Optional[int] = None,
     in_current: bool = True,
     min_strength: Optional[List[float]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """ """
     assert len(noise_types) == len(max_strength)
 
@@ -163,9 +163,9 @@ def add_noise(
 
 
 def add_random_charge_shifts(
-    original_data: np.ndarray,
+    original_data: npt.NDArray[np.float64],
     number_of_samples: int,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """ """
     data = np.copy(original_data)
     data_idx = np.random.choice(

@@ -122,7 +122,7 @@ def test_prep_data_return_shape(nt_dataset_pinchoff, tmp_path):
     ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
     shape = tuple(nt.config["core"]["standard_shapes"]["1"])
 
-    condensed_data = prep_data(ds, "pinchoff")[0]
+    condensed_data = np.array(prep_data(ds, "pinchoff")[0])
 
     assert len(ds.power_spectrum) > 0
     index = nt.config["core"]["data_types"]["signal"]
@@ -158,7 +158,7 @@ def test_prep_data_normalization(nt_dataset_pinchoff, tmp_path):
 
 def test_prep_data_return_data(nt_dataset_pinchoff, tmp_path):
     ds = nt.Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
-    condensed_data = prep_data(ds, "pinchoff")[0]
+    condensed_data = np.array(prep_data(ds, "pinchoff")[0])
 
     shape = tuple(nt.config["core"]["standard_shapes"]["1"])
 

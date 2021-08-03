@@ -494,7 +494,7 @@ class Tuner(qc.Instrument):
 def linear_voltage_steps(
     voltage_range: Sequence[float],
     voltage_step: float,
-) -> Sequence[float]:
+) -> List[float]:
     """Returns linearly spaced setpoints.
 
     Args:
@@ -506,4 +506,4 @@ def linear_voltage_steps(
         Sequence[float]: linearly spaced setpoints.
     """
     n_steps = int(abs(voltage_range[0] - voltage_range[1]) / voltage_step)
-    return np.linspace(voltage_range[1], voltage_range[0], n_steps)
+    return np.linspace(voltage_range[1], voltage_range[0], n_steps).tolist()

@@ -1,54 +1,78 @@
+import logging
+from functools import partial
+from typing import List, Optional, Union, Dict, Tuple, Sequence, Any
+import numpy.typing as npt
+import numpy as np
+import scipy as sc
 import itertools
 import json
 import logging
-from functools import partial
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+import copy
 
-import matplotlib.pyplot as plt
-import numpy as np
-import qcodes as qc
-import scipy as sc
-from numpy.linalg import inv, multi_dot
-from qcodes import ChannelList, Instrument, Parameter
-from qcodes.dataset.experiment_container import load_by_id
+from numpy.linalg import inv
+from numpy.linalg import multi_dot
+
+from skimage.transform import resize
+from scipy.ndimage import gaussian_filter
+
+from qcodes import Instrument, ChannelList, Parameter
 from qcodes.dataset.measurements import Measurement
 from qcodes.tests.instrument_mocks import DummyInstrument
-from scipy.ndimage import gaussian_filter
-from skimage.transform import resize
-from tabulate import tabulate
+from qcodes.dataset.experiment_container import load_by_id
 
 import nanotune as nt
 from nanotune.model.node import Node
-
-# from qcodes.dataset.plotting import plot_by_id
-# from qcodes.dataset.data_export import reshape_2D_datas
-
-
 logger = logging.getLogger(__name__)
-
-# TO DO: Add units with pint
-# import pint as pt
 
 LABELS = list(dict(nt.config["core"]["labels"]).keys())
 N_2D = nt.config["core"]["standard_shapes"]["2"]
 N_1D = nt.config["core"]["standard_shapes"]["1"]
-
-# q = 1.60217662 * 10e-19
-q = 1.60217662  # * 10e-19
-# kb = 8.617330350 * 10−5
-# kb = 1.3806485279 * 1e-23
+# elem_charge = 1.60217662 * 10e-19
+elem_charge = 1
 N_lmt_type = Sequence[Tuple[int, int]]
-
-# TODO: make variable names consistent. E.g: N/c_config/charge_configuration
-# TODO: check C_cc_off_diags. Initialised correctly?
 
 
 class CapacitanceModel(Instrument):
     """
-    Based on https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1
+    Implementation of a general capacitance model an arbitrary number of dots
+    and gates. Simulating weakly coupled quantum dots with well localised
+    charges, it is a classical description based on two assumptions: (1)
+    Coulomb interactions between electrons on dots and in reservoirs are
+    parametrised by constant capacitances. (2) The single-particle energy-level
+    spectrum is considered independent of electron interactions and the number
+    of electrons, meaning that quantum mechanical energy spacings are not taken
+    into account.
+    The system of electrostatic gates, dots and reservoirs is represented by a
+    system of conductors connected via resistors and capacitors
 
-    As in this paper, we call the two types of triple point 'electron' and
-    'hole' triple points.
+    Being based on
+    https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1,
+    the implementation uses the same terminology including charge and
+    voltage nodes, representing quantum dots and electrostatic gates
+    respectively, and electron and hole triple points.
+
+    The capacitor connecting node :math:`j` and node :math:`k` has a
+    capacitance :math:`C_{jk}` and stores a charge :math:`q_{jk}`.
+    We distinguish between charge and voltage sub-systems, and thus their
+    respective sub-matrices:
+
+    .. math::
+        :nowrap:
+
+        \mathbf{C} := \\begin{pmatrix}
+            \\mathbf{C_{cc}} & \\mathbf{C_{cv}} \\\
+            \\mathbf{C_{vc}} & \\mathbf{C_{vv}}
+        \\end{pmatrix}
+
+    Diagonal elements of the capacitance matrix, :math:`C_{jj}`, are total
+    capacitances of each node and carry the opposite sign of the matrix's
+    off-diagonal elements. The off-diagonal elements of
+    :math:`\mathbf{\mathbf{C_{cc}}}` are capacitances between charge nodes,
+    while the off-diagonal elements of :math:`\mathbf{\mathbf{C_{vv}}}` are
+    capacitances between voltage nodes. The elements of
+    :math:`\mathbf{\mathbf{C_{cv}}}` are capacitances between voltage and
+    charge nodes, and allow to calculate so-called virtual gate coefficients -
+    useful knobs in semiconductor qubit experiments.
     """
 
     def __init__(
@@ -56,7 +80,6 @@ class CapacitanceModel(Instrument):
         name: str,
         charge_nodes: Optional[Dict[int, str]] = None,
         voltage_nodes: Optional[Dict[int, str]] = None,
-        dot_handles: Optional[Dict[int, str]] = None,
         N: Optional[Sequence[int]] = None,  # charge configuration
         V_v: Optional[Sequence[float]] = None,
         C_cc_off_diags: Optional[Sequence[float]] = None,
@@ -64,18 +87,35 @@ class CapacitanceModel(Instrument):
         db_name: str = "capa_model_test.db",
         db_folder: str = nt.config["db_folder"],
     ) -> None:
+        """
+        Constructor of CapacitanceModel class.
 
-        self.db_name = db_name
-        self.db_folder = db_folder
-
+        Args:
+            name (str): Name identifier to be passed to qc.Instrument
+            charge_nodes (dict): Dictionary with charge nodes of the model,
+                mapping integer node IDs to string labels.
+            voltage_nodes (dict): Dictionary with voltage nodes of the model,
+                mapping integer node IDs to string labels.
+            N (list): Initial charge configuration, i.e. number of charges on
+                each dot. Index of entry corresponds to charge node layout ID.
+            V_v (list): Voltages to set on voltage nodes. Index of entry
+                corresponds to charge node layout ID.
+            C_cc_off_diags (list): Capacitances between charge nodes.
+            C_cv (list): Capacitances between charge and voltage nodes.
+            db_name (str): Name of database to store synthetic data.
+            db_folder (str): Path to folder where database is located.
+        """
         if charge_nodes is None:
             charge_nodes = {}
 
         if voltage_nodes is None:
             voltage_nodes = {}
 
-        if dot_handles is None:
-            dot_handles = {}
+        self.db_name = db_name
+        self.db_folder = db_folder
+        self._c_l = 0.0
+        self._c_r = 0.0
+        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)]).tolist()
 
         super().__init__(name)
 
@@ -109,27 +149,16 @@ class CapacitanceModel(Instrument):
         self.add_submodule("charge_nodes", c_nodes)
         self.add_submodule("voltage_nodes", v_nodes)
 
-        self.add_parameter(
-            "dot_handles",
-            label="main dot handles",
-            unit=None,
-            get_cmd=self._get_dot_handles,
-            set_cmd=self._set_dot_handles,
-            initial_value=dot_handles,
-        )
+        if C_cv is None:
+            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)]).tolist()
 
-        self.add_parameter(
-            "charge_node_mapping",
-            label="charge node name mapping",
-            unit=None,
-            get_cmd=self._get_charge_node_mapping,
-            set_cmd=self._set_charge_node_mapping,
-            initial_value=charge_nodes,
-        )
+        if C_cc_off_diags is None:
+            C_cc_off_diags = []
+            for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
+                C_cc_off_diags.append([0.0])  # type: ignore
 
         if N is None:
-            N = np.zeros(len(self.charge_nodes))
-
+            N = [0] * len(self.charge_nodes)
         self.add_parameter(
             "N",
             label="charge configuration",
@@ -140,7 +169,7 @@ class CapacitanceModel(Instrument):
         )
 
         if V_v is None:
-            V_v = np.zeros(len(self.voltage_nodes))
+            V_v = [0] * len(self.voltage_nodes)
         self.add_parameter(
             "V_v",
             label="voltage configuration",
@@ -149,26 +178,7 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_V_v,
             initial_value=V_v,
         )
-        self._C_l = 0.0
-        self._C_r = 0.0
-        # self.add_parameter('C_R',
-        #                    label='capacitance to right lead',
-        #                    unit='F',
-        #                    get_cmd=self._get_C_R,
-        #                    set_cmd=self._set_C_R,
-        #                    initial_value=0,
-        #                    )
 
-        # self.add_parameter('C_L',
-        #                    label='capacitance to left lead',
-        #                    unit='F',
-        #                    get_cmd=self._get_C_L,
-        #                    set_cmd=self._set_C_L,
-        #                    initial_value=0,
-        #                    )
-
-        if C_cv is None:
-            C_cv = np.zeros([len(self.charge_nodes), len(self.voltage_nodes)])
         self.add_parameter(
             "C_cv",
             label="gate capacitances",
@@ -177,13 +187,6 @@ class CapacitanceModel(Instrument):
             set_cmd=self._set_C_cv,
             initial_value=C_cv,
         )
-
-        self._C_cc = np.zeros([len(charge_nodes), len(charge_nodes)])
-        if C_cc_off_diags is None:
-            C_cc_off_diags = []
-            for off_diag_inx in reversed(range(len(self.charge_nodes) - 1)):
-                # C_cc_off_diags.append([0.]*(off_diag_inx+1))
-                C_cc_off_diags.append(0.0)
 
         self.add_parameter(
             "C_cc",
@@ -195,165 +198,73 @@ class CapacitanceModel(Instrument):
         )
 
         self.add_parameter(
-            "C_R",
+            "c_r",
             label="capacitance to right lead",
             unit="F",
-            get_cmd=self._get_C_R,
-            set_cmd=self._set_C_R,
+            get_cmd=self._get_c_r,
+            set_cmd=self._set_c_r,
             initial_value=0,
         )
 
         self.add_parameter(
-            "C_L",
+            "c_l",
             label="capacitance to left lead",
             unit="F",
-            get_cmd=self._get_C_L,
-            set_cmd=self._set_C_L,
+            get_cmd=self._get_c_l,
+            set_cmd=self._set_c_l,
             initial_value=0,
         )
-
-        self.dummy_lockin = DummyInstrument("dummy_lockin_" + name, gates=["R"])
-        self.station = qc.Station(self, self.dummy_lockin)
-
-    def _get_dot_handles(self) -> Dict[int, str]:
-        return self._dot_handles
-
-    def _set_dot_handles(self, value: Dict[int, str]):
-        self._dot_handles = value
-
-    def _get_charge_node_mapping(self) -> Dict[int, str]:
-        return self._charge_node_mapping
-
-    def _set_charge_node_mapping(self, value: Dict[int, str]):
-        self._charge_node_mapping = value
-
-    def _get_N(self) -> List[int]:
-        for inn, c_n in enumerate(self.charge_nodes):
-            self._N[inn] = c_n.n()
-        return self._N
-
-    def _set_N(self, value: List[int]):
-        value = list(value)
-        self._N = value
-        for iv, val in enumerate(value):
-            self.charge_nodes[iv].n(int(val))
-
-    def _get_V_v(self) -> List[float]:
-        for inn, v_n in enumerate(self.voltage_nodes):
-            self._V_v[inn] = v_n.v()
-        return self._V_v
-
-    def _set_V_v(self, value: List[float]):
-        value = list(value)
-        self._V_v = value
-        for iv, val in enumerate(value):
-            self.voltage_nodes[iv].v(val)
-
-    def _get_C_cc(self) -> List[List[float]]:
-        # Get diagonals: sum of all capacitances attached to it.
-        current_C_cc = np.array(self._C_cc)
-        diagonals = self._get_C_cc_diagonals()
-        for dot_ind in range(len(self.charge_nodes)):
-            current_C_cc[dot_ind, dot_ind] = diagonals[dot_ind, dot_ind]
-
-        self._C_cc = current_C_cc.tolist()
-        return self._C_cc
-
-    def _set_C_cc(self, off_diagonals: List[List[float]]):
-
-        self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
-        # print(C_cc)
-        for dinx, diagonal in enumerate(off_diagonals):
-            if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
-                logger.error(
-                    "CapacitanceModel: Unable to set C_cc. "
-                    + "Please specify off diagonals in a list of "
-                    + "lists: [[1st off diagonal], "
-                    + "[2nd off diagonal]]"
-                )
-            self._C_cc += np.diag(diagonal, k=dinx + 1)
-            self._C_cc += np.diag(diagonal, k=-dinx - 1)
-
-        self._C_cc += self._get_C_cc_diagonals()
-        self._C_cc = self._C_cc.tolist()
-
-    def _get_C_cc_diagonals(self) -> np.ndarray:
-        """
-        Here we assume that every dot is coupled to every other. This means
-        that if three or more dots are aligned the first will have a capacitive
-        coupling to the last. In the same manner, all dots are coupled to the
-        leads. Change if necessary.
-        """
-        self._C_cc
-        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
-        # from other dots:
-        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
-        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
-
-        diag = C_cv_sums + off_diag_sums
-        diag += np.absolute(self._C_r) + np.absolute(self._C_r)
-
-        return np.diag(diag)
-
-    def _get_C_cv(self) -> List[List[float]]:
-        return self._C_cv
-
-    def _set_C_cv(self, value: List[List[float]]):
-        self._C_cv = value
-        # update values in C_cc:
-        _ = self._get_C_cc()
-
-    def _get_C_R(self) -> float:
-        return self._C_r
-
-    def _set_C_R(self, value: float):
-        self._C_r = value
-        try:
-            _ = self._get_C_cc()
-        except Exception:
-            logger.warning("Setting CapacitanceModel.C_R: " + "Unable to update C_cc")
-
-    def _get_C_L(self) -> float:
-        return self._C_l
-
-    def _set_C_L(self, value: float):
-        self._C_l = value
-        try:
-            _ = self._get_C_cc()
-        except Exception:
-            logger.warning("Setting CapacitanceModel.C_L: " + "Unable to update C_cc")
 
     def snapshot_base(
         self,
         update: Optional[bool] = True,
         params_to_skip_update: Optional[Sequence[str]] = None,
     ) -> Dict[Any, Any]:
+        """
+        Pass on QCoDeS snapshot.
+        """
 
         snap = super().snapshot_base(update, params_to_skip_update)
-
         return snap
 
     def set_voltage(
         self,
         n_index: int,
         value: float,
-        n_type: str = "voltage",
+        node_type: str = "voltage",
     ) -> None:
-        """ Convenience method to set voltages. """
-        if n_type == "voltage":
+        """Convenience method to set voltages.
+
+        Args:
+            n_index (int): Index of node to set.
+            value (float): Value to set.
+            node_type (str): Which node type to set, either 'voltage' or
+                'charge'.
+        """
+        if node_type == "voltage":
             assert n_index >= 0 and n_index < len(self.voltage_nodes)
             self.voltage_nodes[n_index].v(value)
-        elif n_type == "charge":
+        elif node_type == "charge":
             assert n_index >= 0 and n_index < len(self.charge_nodes)
             self.charge_nodes[n_index].v(value)
         else:
-            logger.error("Unknown node type. Can not set voltage.")
+            logger.error("Unknown node type. Cannot set voltage.")
             raise NotImplementedError
 
     def set_capacitance(
-        self, which_matrix: str, indexes: List[int], value: float
+        self,
+        which_matrix: str,
+        indices: List[int],
+        value: float,
     ) -> None:
-        """ Convenience function to set capacitances. """
+        """Convenience function to set capacitances.
+
+        Args:
+            which_matrix (str): String identifier of matrix to set.
+                Either 'cv' or 'cc'.
+            indices (list): Indices of capacitances within the matrix.
+            value (float): Capacitance value to set.
+        """
         if which_matrix not in ["cv", "cc"]:
             logger.error(
                 "Unable to set capacitance. Unknown matrix,"
@@ -361,7 +272,7 @@ class CapacitanceModel(Instrument):
             )
 
         if which_matrix == "cc":
-            if indexes[0] == indexes[1]:
+            if indices[0] == indices[1]:
                 logger.error(
                     "CapacitanceModel: Trying to set diagonals "
                     + "of C_cc matrix which is not possible "
@@ -369,77 +280,71 @@ class CapacitanceModel(Instrument):
                     + "capacitances of the model."
                 )
             C_cc = self.C_cc()
-            C_cc[indexes[0]][indexes[1]] = value
+            C_cc[indices[0]][indices[1]] = value
             self.C_cc(C_cc)
 
         if which_matrix == "cv":
             C_cv = self.C_cv()
-            C_cv[indexes[0]][indexes[1]] = value
+            C_cv[indices[0]][indices[1]] = value
             self.C_cv(C_cv)
 
     def set_Ccv_from_voltage_distance(
         self,
-        v_node_idx: int,
+        voltage_node_idx: int,
         dV: float,
-        dot_indx: int,
+        charge_node_idx: int,
     ) -> None:
-        """
-        Formulas relating voltage differences to capacitance
-        """
-        capa_val = -q * dV
-        self.set_capacitance("cv", [dot_indx, v_node_idx], capa_val)
+        """Implements formular relating voltage differences to capacitances
+        between charge and voltage nodes.
 
-    def set_Ccv_from_voltage_shift(
-        self,
-        v_node_idx_swept: int,
-        v_node_idx_wiggled: int,
-        dot_indx: int,
-        dV_shift: float,
-        dV_wiggle: float,
-    ) -> None:
+        Args:
+            voltage_node_idx (int): Voltage node index.
+            dV (float): Voltage difference between two charge transitions.
+            charge_node_idx (int): Charge node index.
         """
-        Formulas relating voltage differences to capacitance
-        eq 30 in write up
-        """
-
-        # capa_val =
-        # self.set_capacitance('cv', [dot_indx, v_node_idx], capa_val)
-        raise NotImplementedError
-
-    def set_Ccc_from_dV(
-        self,
-        v_node_idx: int,
-        dV: float,
-        dot_indx: int,
-    ) -> None:
-        """
-        Formulas relating voltage differences to capacitance
-        Symmetric matrix
-        """
-        # C_A = sum of all capacitances
-
-        # capa_val = - q * dV
-        # self.set_capacitance('cc')
-        raise NotImplementedError
+        capa_val = -elem_charge * dV
+        self.set_capacitance(
+            "cv",
+            [charge_node_idx, voltage_node_idx],
+            capa_val,
+        )
 
     def compute_energy(
         self,
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """ Compute the total energy of dots """
+        """Compute the total energy of the system using:
+
+        ..math::
+
+            U = \frac{1}{2} \vec{Q_{c}}^{T} \mathbf{C^{-1}_{cc}} \vec{Q_{c}}
+            + \frac{1}{2} \vec{V^{T}_{v}} \mathbf{C_{vc}} \mathbf{C_{cc}^{-1} } \mathbf{C_{cv}} \vec{V}_{v}
+            - \vec{Q^{T}_{c}} \mathbf{C^{-1}_{cc}} \mathbf{C_{cv}} \vec{V}_{v}.
+
+
+        Args:
+            N (list): charge configuration, i.e. number of charges on each
+                charge node.
+            V_v (list): Voltages to set on voltages nodes.
+
+        Returns:
+            float: energy of the system
+        """
         if N is None:
             N_self = self.N()
-            N = np.array(N_self).reshape(len(N_self), 1)
+            N_np = np.array(N_self).reshape(len(N_self), 1)
+        else:
+            N_np = np.array(N).reshape(len(N), 1)
         if V_v is None:
             V_v = self.V_v()
 
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
 
-        U = (q ** 2) / 2 * multi_dot([N, inv(C_cc), N])
+        U = (elem_charge ** 2) / 2 * multi_dot([N_np, inv(C_cc), N_np])
         U += 1 / 2 * multi_dot([V_v, np.transpose(C_cv), inv(C_cc), C_cv, V_v])
-        U += q * multi_dot([N, inv(C_cc), C_cv, V_v])
+        U += elem_charge * multi_dot([N_np, inv(C_cc), C_cv, V_v])
 
         return abs(U)
 
@@ -447,8 +352,13 @@ class CapacitanceModel(Instrument):
         self,
         V_v: Optional[Sequence[float]] = None,
     ) -> List[int]:
-        """
-        Determine N by minimizing the energy
+        """Determines N by minimizing the total energy of the system.
+
+        Args:
+            V_v (list): Voltages to set on voltages nodes.
+
+        Returns:
+            list: Charge state, i.e. number of electrons on each charge node.
         """
         if V_v is None:
             V_v = self.V_v()
@@ -459,8 +369,6 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -473,47 +381,49 @@ class CapacitanceModel(Instrument):
         current_energy = self.compute_energy(N=c_config, V_v=V_v)
 
         def append_energy(charge_stage: Sequence[int]) -> None:
-            if not np.any(np.array(charge_stage) < 0):
-                energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
-                c_configs.append(charge_stage)
+            charge_stage[charge_stage < 0] = 0  # type: ignore
+            energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
+            c_configs.append(charge_stage)
 
-        I = np.eye(n_dots)
+        I_mat = np.eye(n_dots)
         # Check if neighbouring ones have lower energy:
         for dot_id in range(n_dots):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
 
             append_energy(c_config + e_hat)
             append_energy(c_config - e_hat)
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
+                    e_hat_other = I_mat[other_dot]
                     append_energy(c_config + e_hat - e_hat_other)
 
         indx = np.where(np.array(energies) < np.array(current_energy))[0]
         if indx.size > 0:
-            min_indx = np.argmin(energies[indx])
-            min_c_configs = c_configs[indx]
+            min_indx = np.argmin(np.array(energies)[indx.astype(int)])
+            min_c_configs = np.array(c_configs)[indx.astype(int)]
             c_config = min_c_configs[min_indx]
 
+        c_config[c_config < 0] = 0
         return c_config.tolist()
 
     def get_triplepoints(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N_limits: N_lmt_type,
-    ) -> Tuple[np.ndarray, np.ndarray, List[List[int]]]:
-        """Calculate triple points for charge configuration within N_limits
+    ) -> Tuple[
+            npt.NDArray[np.float64], npt.NDArray[np.float64], List[List[int]]]:
+        """Calculates triple points for charge configuration within N_limits
 
         Args:
-            v_node_idx: Indexes of gates to sweep
+            voltage_node_idx: indices of gates to sweep
             N_limit: Min and max values of number of electrons in each dot,
                      defining all charge configurations to consider
 
         Return:
-            List of electron charge configurations (first array) and hole
-            triple points (second array).
-
+            np.array: Coordinates of electron triple points
+            np.array: Coordinates of hole triple points
+            list: List of electron charge configurations
         """
 
         if len(N_limits) > len(self.N()):
@@ -528,128 +438,128 @@ class CapacitanceModel(Instrument):
 
         c_configs = [list(item) for item in itertools.product(*c_configs)]
 
-        coordinates_etp = np.empty([len(c_configs), len(v_node_idx)])
-        coordinates_htp = np.empty([len(c_configs), len(v_node_idx)])
+        coordinates_etp = np.empty([len(c_configs), len(voltage_node_idx)])
+        coordinates_htp = np.empty([len(c_configs), len(voltage_node_idx)])
 
         for ic, c_config in enumerate(c_configs):
             # setting M mostly for monitor purposes
             self.N(list(c_config))
-            x_etp, x_htp = self.calculate_triplepoint(v_node_idx, np.array(c_config))
+            x_etp, x_htp = self.calculate_triplepoints(
+                voltage_node_idx, c_config
+            )
 
             coordinates_etp[ic] = x_etp
             coordinates_htp[ic] = x_htp
 
         return np.array(coordinates_etp), np.array(coordinates_htp), c_configs
 
-    def calculate_triplepoint(
+    def calculate_triplepoints(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Sequence[int],
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Determine coordinates in voltage space of triple points
-        (electron and hole) for one charge configuration.
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Determines coordinates in voltage space of triple points
+        (electron and hole) for a single charge configuration.
 
         Args:
-            v_node_idx: Indexes of voltage nodes to be determined
-            N: Charge configuration, number of electrons in each dot.
+            voltage_node_idx (list): Indices of voltage nodes to be determined
+            N (list): Charge configuration, number of electrons of each charge
+                node.
 
         Return:
-            Coordinates of electron (first array) and hole (second array)
-            triple points.
+            np.array: Coordinates of electron triple points.
+            np.array: Coordinates of hole triple points.
         """
-        e_tp = partial(self.triplepoint_e, v_node_idx=v_node_idx, N=N)
+        e_tp = partial(
+            self.mu_electron_triplepoints,
+            voltage_node_idx=voltage_node_idx,
+            N=N,
+        )
+        h_tp = partial(
+            self.mu_hole_triplepoints,
+            voltage_node_idx=voltage_node_idx,
+            N=N,
+        )
 
-        h_tp = partial(self.triplepoint_h, v_node_idx=v_node_idx, N=N)
-
-        x_init = np.array(self.V_v())[v_node_idx]
+        x_init = np.array(self.V_v())[voltage_node_idx]
 
         x_etp = sc.optimize.fsolve(e_tp, x_init)
         x_htp = sc.optimize.fsolve(h_tp, x_init)
 
         return x_etp, x_htp
 
-    def triplepoint_e(
+    def mu_electron_triplepoints(
         self,
         new_voltages: Sequence[float],
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
-    ) -> np.ndarray:
-        """Calculate chemical potentials of all dots for charge configuration
-        N, corresponding to electron triple points. mu_j(N)
+    ) -> npt.NDArray[np.float64]:
+        """Calculates mu_j(N): chemical potentials of all charge nodes for given
+        charge configuration N and corresponding to electron triple points.
 
         Args:
-            new_voltages: values of new gate voltages, to be replaced in
-                          self.V_v. These are the values scipy.optimize.fsolve
-                          is solving for
-            v_node_idx: Voltages nodes indexes to which the values above
-                        correspond to.
-            N: Desired charge configuration, if none supplied self.N is taken.
+            new_voltages (list): Voltages to set on voltage nodes.
+            voltage_node_idx (list): Voltage node indices to which the values
+                in new_voltages correspond to.
+            N (list): Desired charge configuration, optional. If none supplied
+                self.N() is taken.
+
+        Returns:
+            np.array: Chemical potentials of electron triple points
+                corresponding to electron triple points.
         """
         if N is None:
             N = self.N()
 
-        V_v = np.array(self.V_v())
+        V_v = self.V_v()
+        V_v[voltage_node_idx] = new_voltages
 
-        # V_v[v_node_idx, 0] = new_voltages
-        V_v[v_node_idx] = new_voltages
-
-        I = np.eye(len(N))
+        I_mat = np.eye(len(N))
 
         out = []
         for dot_id in range(len(N)):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
             out.append(self.mu(dot_id, N=N + e_hat, V_v=V_v))
 
-        out = np.array(out).flatten()
-        return out
+        return np.array(out).flatten()
 
-    def triplepoint_h(
+    def mu_hole_triplepoints(
         self,
         new_voltages: Sequence[float],
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
-    ) -> np.ndarray:
-        """Calculate chemical potentials of all dots for charge configuration
-        N, corresponding to hole triple points, mu_j(N + e_hat_i).
+    ) -> npt.NDArray[np.float64]:
+        """Calculates mu_j(N + e_hat_i): chemical potentials of all charge nodes
+            for given charge configuration N and corresponding to hole triple
+            points.
 
         Args:
-            new_voltages: values of new gate voltages, to be replaced in
-                          self.V_v. These are the values scipy.optimize.fsolve
-                          is solving for
-            v_node_idx: Voltages nodes indexes to which the values above
-                        correspond to.
-            N: Desired charge configuration, if none supplied self.N is taken.
+            new_voltages (list): values of new gate voltages, to be replaced in
+                self.V_v. These are the values scipy.optimize.fsolve is solving
+                for
+            voltage_node_idx (list): Voltages nodes indices to which the values
+                above correspond to.
+            N: Desired charge configuration, if none supplied self.N() is taken.
         """
 
         if N is None:
-            N = np.array(self.N())
+            N = self.N()
+        V_v = self.V_v()
+        V_v[voltage_node_idx] = new_voltages
 
-        V_v = np.array(self.V_v())
-        V_v[v_node_idx] = new_voltages
-
-        I = np.eye(len(N))
-
+        I_mat = np.eye(len(N))
         out = []
 
         for dot_id in range(len(N)):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
             for other_dot in range(len(N)):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
-                    out.append(self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v))
+                    e_hat_other = I_mat[other_dot]
+                    out.append(
+                        self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v)
+                    )
 
-        out = np.array(out).flatten()
-        return out
-
-    def print_triplepoints(
-        self,
-        v_node_idx: Sequence[int],
-        c_configs: Sequence[int],
-    ) -> None:
-        """"""
-        # etps, htps, c_configs = qdot.get_triplepoints([2, 4], [[0, 3], [0, 3]])
-        # print(tabulate(zip(etps, htps, c_configs), ['etps', 'htps', 'c_configs']))
+        return np.array(out).flatten()
 
     def mu(
         self,
@@ -657,72 +567,105 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
+        """Calculates chemical potential of a specific charge node for a given
+        charge and voltage configuration. Using:
 
-        """The chemical potential of dot dot_id for a given charge and voltage
-        configuration.
+        .. math::
+
+            \mu_{j}(\vec{N}, \vec{V}_{v})  = \frac{-q^{2}}{2} \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+				+ q^{2} \vec{N}^{T}  \mathbf{C_{cc}^{-1}} \hat{e}_{j}
+				+ q \hat{e}_{j}^{T}  \mathbf{C_{cc}^{-1}}  \mathbf{C_{cv}} \vec{V}_{v}.
 
         Args:
-            N: Number of electrons in each dot
-            V_v: voltages node (gate) voltages
+            N (list): Charge configuration, i.e. the number of electrons on each
+                charge node.
+            V_v: Voltages to set on (all) voltage nodes.
 
         Returns:
-            chemical potential value
+            np.array: Chemical potential.
         """
 
         if N is None:
-            N = np.array(self.N())
+            N_np = np.array(self.N())
+        else:
+            N_np = np.array(N)
 
         if V_v is None:
-            V_v = np.array(self.V_v())
+            V_v_np = np.array(self.V_v())
+        else:
+            V_v_np = np.array(V_v)
 
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
 
-        e_hat = np.zeros(len(N)).astype(int)
+        e_hat = np.zeros(len(N_np)).astype(int)
         e_hat[dot_indx] = 1
 
-        pot = -(q ** 2) / 2 * multi_dot([e_hat, inv(C_cc), e_hat])
-        pot += (q ** 2) * multi_dot([N, inv(C_cc), e_hat])
-        pot += q * multi_dot([e_hat, inv(C_cc), C_cv, V_v])
+        pot = -(elem_charge ** 2) / 2 * multi_dot([e_hat, inv(C_cc), e_hat])
+        pot += (elem_charge ** 2) * multi_dot([N_np, inv(C_cc), e_hat])
+        pot += elem_charge * multi_dot([e_hat, inv(C_cc), C_cv, V_v_np])
 
         return pot
 
     def sweep_voltages(
         self,
-        v_node_idx: Sequence[int],  # the one we want to sweep
-        v_ranges: Sequence[Tuple[float, float]],
+        voltage_node_idx: Sequence[int],  # the one we want to sweep
+        voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
         broaden: bool = True,
         add_noise: bool = True,
         kernel_widths: Tuple[float, float] = (1.0, 1.0),
-        target_snr_db: float = 10,
-        e_temp: float = 1e-20,
+        target_snr_db: float = 100,
         normalize: bool = True,
-        single_dot: bool = False,
+        known_regime: str = 'doubledot',
         known_quality: Optional[int] = None,
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
     ) -> Optional[int]:
-        """
-        Determine signal peaks by computing the energy
-        """
-        self.set_voltage(v_node_idx[0], np.min(v_ranges[0]))
-        self.set_voltage(v_node_idx[1], np.min(v_ranges[1]))
-        self.determine_N()
+        """Sweep two voltage nodes to measure a charge diagram. Determines
+        charge transitions by computing the number of degeneracies using
+        get_number_of_degeneracies. Applies a Gaussien filter to broaden
+        transitions and adds random normal noise and optionally charge jumps.
+        The diagram is saved into .db using QCoDeS.
 
-        voltage_x = np.linspace(np.min(v_ranges[0]), np.max(v_ranges[0]), n_steps[0])
+        Args:
+            voltage_node_idx (list): Voltage node indices to sweep.
+            voltage_ranges (list): Voltage ranges to sweep.
+            n_steps (list): Number of steps of the measurement.
+            line_intensity (float): Multiplication factor of number of
+                degeneracies, resulting in the desired peak hight before
+                normalization.
+            kernel_widths (list): Sigmas of Gaussian filter used for broadening
+                of charge transitions.
+            target_snr_db (float): Target signal-to-noise ratio used to
+                calculate amplitude of random normal noise.
+            e_temp (float): Electron temperature, used as absolute tolerance in
+                energy at which two charge states count as degenerate.
+            known_regime (str): Label to be saved in metadata.
+            known_quality (str): Quality to be saved in metadata.
+            add_charge_jumps (bool): Whether or not to add random charge jumps.
+            jump_freq (float): Average frequency at which optional charge jumps
+                should occur.
 
-        voltage_y = np.linspace(np.min(v_ranges[1]), np.max(v_ranges[1]), n_steps[1])
+        Returns:
+            int: QCoDeS data run ID
+        """
+        self.set_voltage(voltage_node_idx[0], np.min(voltage_ranges[0]))
+        self.set_voltage(voltage_node_idx[1], np.min(voltage_ranges[1]))
+
+        voltage_x = np.linspace(
+            np.min(voltage_ranges[0]), np.max(voltage_ranges[0]), n_steps[0]
+        )
+
+        voltage_y = np.linspace(
+            np.min(voltage_ranges[1]), np.max(voltage_ranges[1]), n_steps[1]
+        )
         signal = np.zeros(n_steps)
 
         if add_charge_jumps:
-            x = np.ones(n_steps)
+            additional_charges = np.ones(n_steps)
             s = 1
-            # lam = np.random.uniform(0, 0.2, 1)  # 0.01
-
-            # print('lambda: {}'.format(lam))
-            trnsp = np.random.randint(2, size=1)
 
             poisson = np.random.poisson(lam=jump_freq, size=n_steps)
             poisson[poisson > 1] = 1
@@ -730,35 +673,31 @@ class CapacitanceModel(Instrument):
                 for iy in range(n_steps[1]):
                     if poisson[ix, iy] == 1:
                         s *= -1
-                    x[ix, iy] *= s
-            x = np.array(x)
-            x = (x + 1) / 2
+                    additional_charges[ix, iy] *= s
+            additional_charges = np.array(additional_charges)
+            additional_charges = (additional_charges + 1) / 2
         else:
-            x = np.zeros(n_steps)
+            additional_charges = np.zeros(n_steps)
 
         for ivx, x_val in enumerate(voltage_x):
-            self.set_voltage(v_node_idx[1], voltage_y[0])
-            # N_old = self.determine_N()
-            self.set_voltage(v_node_idx[0], x_val)
+            self.set_voltage(voltage_node_idx[1], voltage_y[0])
+            self.set_voltage(voltage_node_idx[0], x_val)
+
             for ivy, y_val in enumerate(voltage_y):
-                self.set_voltage(v_node_idx[1], y_val)
+                self.set_voltage(voltage_node_idx[1], y_val)
+
                 N_curr = self.determine_N()
                 n_idx = int(np.random.randint(len(N_curr), size=1))
-                # add charge jumps if desired:
-                N_curr[n_idx] += x[ivx, ivy]
+                N_curr[n_idx] += additional_charges[ivx, ivy]
                 self.N(N_curr)
 
-                n_degen = self.get_number_of_degeneracies(
+                dU = self.get_energy_differences_to_adjacent_charge_states(
                     N_current=N_curr,
-                    e_temp=e_temp,
                 )
-                if single_dot:
-                    # print(n_degen)
-                    n_degen = np.min([1, n_degen])
+                signal[ivx, ivy] = np.sum(np.reciprocal(dU)) * line_intensity
 
-                signal[ivx, ivy] = n_degen * line_intensity
+        signal = (signal - np.mean(signal))
 
-        xm, ym = np.meshgrid(voltage_x, voltage_y)
         if broaden:
             signal = self._make_it_real(signal, kernel_widths=kernel_widths)
         if add_noise:
@@ -775,15 +714,12 @@ class CapacitanceModel(Instrument):
         else:
             quality = known_quality
 
-        if single_dot:
-            regime = "singledot"
-        else:
-            regime = "doubledot"
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx[0]].v, self.voltage_nodes[v_node_idx[1]].v],
-            [voltage_x, voltage_y],
+            [self.voltage_nodes[voltage_node_idx[0]].v,
+             self.voltage_nodes[voltage_node_idx[1]].v],
+            [voltage_x.tolist(), voltage_y.tolist()],
             signal,
-            nt_label=regime,
+            nt_label=[known_regime],
             quality=quality,
         )
 
@@ -791,38 +727,54 @@ class CapacitanceModel(Instrument):
 
     def sweep_voltage(
         self,
-        v_node_idx: int,  # the one we want to sweep
-        v_range: Sequence[float],
+        voltage_node_idx: int,  # the one we want to sweep
+        voltage_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
-        e_temp: float = 1e-20,
         kernel_width: Sequence[float] = [1.0],
-        target_snr_db: float = 10.0,
+        target_snr_db: float = 100.0,
         normalize: bool = True,
     ) -> Optional[int]:
+        """Sweep one voltage to measure Coulomb oscillations. Determines
+        charge transitions by computing the number of degeneracies using
+        get_number_of_degeneracies. Applies a Gaussien filter to broaden
+        transitions and adds random normal noise and optionally charge jumps.
+        The diagram is saved into .db using QCoDeS.
+
+        Args:
+            voltage_node_idx (int): Voltage node indices to sweep.
+            voltage_ranges (list): Voltage ranges to sweep.
+            n_steps (int): Number of steps of the measurement.
+            line_intensity (float): Multiplication factor of number of
+                degeneracies, resulting in the desired peak hight before
+                normalization.
+            e_temp (float): Electron temperature, used as absolute tolerance in
+                energy at which two charge states count as degenerate.
+            known_quality (str): Quality to be saved in metadata.
+            add_charge_jumps (bool): Whether or not to add random charge jumps.
+            jump_freq (float): Average frequency at which optional charge jumps
+                should occur.
+
+        Returns:
+            int: QCoDeS data run ID.
         """
-        Use self.determine_N to detect charge transitions
-        """
-        self.set_voltage(v_node_idx, np.min(v_range))
+        self.set_voltage(voltage_node_idx, np.min(voltage_range))
         signal = np.zeros(n_steps)
 
-        # N_old = self.determine_N()
-        # print(N_old)
-        voltage_x = np.linspace(np.min(v_range), np.max(v_range), n_steps)
+        voltage_x = np.linspace(
+            np.min(voltage_range), np.max(voltage_range), n_steps
+        )
         for iv, v_val in enumerate(voltage_x):
-            self.set_voltage(v_node_idx, v_val)
+            self.set_voltage(voltage_node_idx, v_val)
             N_current = self.determine_N()
-            # print(N_current)
             self.N(N_current)
 
-            n_degen = self.get_number_of_degeneracies(
+            dU = self.get_energy_differences_to_adjacent_charge_states(
                 N_current=N_current,
-                e_temp=e_temp,
             )
-            # print(n_degen)
+            signal[iv] = np.sum(np.reciprocal(dU)) * line_intensity
 
-            signal[iv] = n_degen * line_intensity
-
+        signal = (signal - np.mean(signal))
         signal = self._make_it_real(signal, kernel_widths=kernel_width)
         signal = self._add_noise(signal, target_snr_db=target_snr_db)
 
@@ -830,105 +782,236 @@ class CapacitanceModel(Instrument):
             signal = signal / np.max(signal)
 
         dataid = self._save_to_db(
-            [self.voltage_nodes[v_node_idx].v], [voltage_x], signal, nt_label="clmboscs"
+            [self.voltage_nodes[voltage_node_idx].v],
+            [voltage_x.tolist()],
+            signal,
+            nt_label=["coulomboscillation"],
         )
 
         return dataid
 
-    def get_number_of_degeneracies(
+    def sweep_bias_and_voltage(
+        self,
+        voltage_node_idx: int,  # the one we want to sweep
+        voltage_range: Sequence[float],
+        bias_range: Tuple[float, float],
+        n_steps: Sequence[int] = N_2D,
+        line_intensity: float = 1.0,
+    ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """ """
+
+        self.set_voltage(voltage_node_idx, np.min(voltage_range))
+
+        voltage_x = np.linspace(
+            np.min(voltage_range), np.max(voltage_range), n_steps[0]
+        )
+
+        bias_steps = np.linspace(
+            np.min(bias_range), np.max(bias_range), n_steps[1]
+        )
+        signal = np.zeros(n_steps)
+        co_tunn = np.zeros(n_steps)
+
+        for iv, v_val in enumerate(voltage_x):
+            self.set_voltage(voltage_node_idx, v_val)
+            N_current = self.determine_N()
+            self.N(N_current)
+
+            dU = self.get_energy_differences_to_excited_charge_states(
+                N_current=N_current,
+                how_many=1,
+            )
+            for ib, b_val in enumerate(bias_steps):
+                if (dU <= abs(b_val)).any():
+                    signal[iv, ib] = line_intensity
+                    engs_in_bias = dU[dU <= abs(b_val)]
+        #             signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity
+                    signal[iv, ib] = len(engs_in_bias) * line_intensity
+                else:
+                    signal[iv, ib] = 0
+
+                    N_plus_one = copy.deepcopy(N_current)
+                    N_plus_one[0] = N_plus_one[0] + 1.  # type: ignore
+                    add_rate = self.get_co_tunneling_rate(
+                        b_val,
+                        self.mu(0, N=N_current),
+                        self.mu(0, N=N_plus_one),
+                    )
+                    co_tunn[iv, ib] += add_rate
+
+        signal = (signal - np.mean(signal))/np.std(signal)
+        co_tunn = (co_tunn - np.mean(co_tunn))/np.std(co_tunn)
+
+        return signal, co_tunn
+
+    def get_co_tunneling_rate(
+        self,
+        bias: float,
+        mu_n: float,
+        mu_n_plus_one: float,
+        source_rate_N: float = 0.3,
+        source_rate_N_plus_one: float = 0.2,
+        drain_rate_N: float = 0.3,
+        drain_rate_N_plus_one: float = 0.2,
+        h_bar: float = 1,
+    ) -> float:
+
+        mu_source = bias
+        mu_drain = 0
+
+        first_term = (source_rate_N * drain_rate_N)
+        first_term /= ((mu_drain - mu_n)*(mu_source - mu_n))
+        second_term = (source_rate_N_plus_one * drain_rate_N_plus_one)
+        second_term /= ((mu_drain - mu_n_plus_one)*(mu_source - mu_n_plus_one))
+        third_term = np.log((mu_n_plus_one - mu_drain)/(mu_drain - mu_n))
+        third_term -= np.log((mu_n_plus_one - mu_source)/(mu_source - mu_n))
+        third_term /= ((mu_n_plus_one - mu_n) * (mu_source - mu_drain))
+
+        co_tunneling_rate = 2 * np.pi/h_bar * (first_term + second_term) * bias
+        co_tunneling_rate += third_term
+
+        return co_tunneling_rate
+
+    def get_energy_differences_to_adjacent_charge_states(
         self,
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
-        e_temp: float = 1e-21,
     ) -> int:
         """
-        Excludes chareg states with negative number of charges
         """
+
         n_dots = len(self.charge_nodes)
 
         if N_current is None:
             N_current = self.N()
+        else:
+            self.N(N_current)
 
         if V_v is None:
             V_v = self.V_v()
+        else:
+            self.V_v(V_v)
 
-        current_energy = self.compute_energy(N=N_current, V_v=V_v)
-        I = np.eye(n_dots)
+        I_mat = np.eye(n_dots)
         energies = []
-        c_configs = []
-
-        def append_energy(charge_stage):
-            if not np.any(np.array(charge_stage) < 0):
-                energies.append(self.compute_energy(N=charge_stage, V_v=V_v))
-                c_configs.append(charge_stage)
 
         for dot_id in range(n_dots):
-            e_hat = I[dot_id]
+            e_hat = I_mat[dot_id]
 
-            append_energy(N_current + e_hat)
-            append_energy(N_current - e_hat)
+            charge_state = N_current + e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            charge_state = N_current - e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
 
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
-                    e_hat_other = I[other_dot]
-                    append_energy(N_current + e_hat - e_hat_other)
+                    e_hat_other = I_mat[other_dot]
+                    charge_state = N_current + e_hat - e_hat_other
+                    charge_state[charge_state < 0] = 0
+                    energies.append(
+                        self.compute_energy(
+                            N=charge_state, V_v=V_v,
+                        )
+                    )
 
-        current_energy = np.array([current_energy] * len(energies))
+        current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
-        n_degen = np.sum(np.isclose(dU, np.zeros(len(dU)), atol=e_temp).astype(int))
+        return dU[dU != 0]
 
-        return n_degen
+    def get_energy_differences_to_excited_charge_states(
+        self,
+        N_current: Optional[Sequence[int]] = None,
+        V_v: Optional[Sequence[float]] = None,
+        how_many: int = 3,
+    ) -> List[float]:
+        """
+        """
+
+        n_dots = len(self.charge_nodes)
+
+        if N_current is None:
+            N_current = self.N()
+        else:
+            self.N(N_current)
+
+        if V_v is None:
+            V_v = self.V_v()
+        else:
+            self.V_v(V_v)
+
+        I_mat = np.eye(n_dots)
+        energies = []
+
+        for dot_id in range(n_dots):
+            e_hat = I_mat[dot_id]
+
+            for add_e in range(how_many):
+                charge_state = N_current + (add_e+1)*e_hat
+                charge_state[charge_state < 0] = 0
+                energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            charge_state = N_current - e_hat
+            charge_state[charge_state < 0] = 0
+            energies.append(self.compute_energy(N=charge_state, V_v=V_v))
+
+            for other_dot in range(n_dots):
+                if other_dot != dot_id:
+                    e_hat_other = I_mat[other_dot]
+                    for add_e in range(how_many):
+                        charge_state = N_current + (add_e+1)*e_hat - e_hat_other
+                        charge_state[charge_state < 0] = 0
+                        energies.append(
+                            self.compute_energy(
+                                N=charge_state, V_v=V_v,
+                            )
+                        )
+
+        current_energy = self.compute_energy(N=N_current, V_v=V_v)
+        dU = abs(np.array(energies) - current_energy)
+
+        return dU[dU != 0].tolist()
 
     def _make_it_real(
         self,
-        diagram: np.ndarray,
-        kernel_widths: Sequence[float] = [3.0, 3.0],
-    ) -> np.ndarray:
-        """Make the tickfigure diagram more real by convolving it with a
-        Gaussian. Currently for 2D diagrams only.
+        diagram: npt.NDArray[np.float64],
+        kernel_widths: Union[float, Sequence[float]] = [3.0, 3.0],
+    ) -> npt.NDArray[np.float64]:
+        """Uses a Gaussian filter to broaden a stickfigure diagram.
 
         Args:
-            diagram: The previously computed stickfigure diagram
-            kernel_width: Width of the Gaussian kernel.
+            diagram (np.ndarray): The previously computed stickfigure diagram
+            kernel_width (list, float): Width of the Gaussian kernel. Can be a
+                single number or list of the same length as the diagram's
+                dimensions.
 
         Return:
-            Gaussian blurred diagram.
+            np.ndarray: Gaussian blurred diagram.
         """
-        # d_shape = diagram.shape
-        # if len(d_shape) == 1:
-        #     kernel = sc.signal.gaussian(d_shape[0], kernel_widths[0])
-        # elif len(d_shape) == 2:
-        #     kernel = np.outer(sc.signal.gaussian(d_shape[0], kernel_widths[0]),
-        #                       sc.signal.gaussian(d_shape[1], kernel_widths[1]))
-        # else:
-        #     logger.error('CapacitanceModel._make_it_real: Unknown signal ' +
-        #                   'shape.')
-        #     raise NotImplementedError
-
-        # return sc.signal.frequenciesconvolve(diagram, kernel, mode='same')
         org_shape = diagram.shape
-        # n_shape = [3*sh for sh in org_shape]
-        # diagram = resize(diagram, org_shape)
         diagram = gaussian_filter(
-            diagram, sigma=kernel_widths[0], mode="constant", truncate=1
+            diagram, sigma=kernel_widths, mode="constant", truncate=1
         )
 
         return resize(diagram, org_shape)
 
     def _add_noise(
         self,
-        diagram: np.ndarray,
+        diagram: npt.NDArray[np.float64],
         target_snr_db: float = 10.0,
-    ) -> np.ndarray:
-        """Add noise to charge diagram to match the desired signal to noise
-        ratio.
+    ) -> npt.NDArray[np.float64]:
+        """Adds normally distributed random noise to a diagram to match the
+        desired signal to noise ratio.
 
         Args:
-            diagram: Noise free diagram
-            target_snr_db: Target signal to noise ratio in dB
+            diagram (np.ndarray): Noise free diagram
+            target_snr_db (float): Target signal to noise ratio in dB
+
         Return:
-            Noisy diagram
+            np.ndarray: Diagram with normally distributed random noise added.
         """
 
         d_shape = diagram.shape
@@ -948,15 +1031,27 @@ class CapacitanceModel(Instrument):
         self,
         parameters: Sequence[Parameter],
         setpoints: Sequence[Sequence[float]],
-        data: np.ndarray,
+        data: npt.NDArray[np.float64],
         nt_label: Sequence[str],
         quality: int = 1,
-        write_period: int = 10,
     ) -> Union[None, int]:
-        """ Save data to database. Returns run id. """
+        """Save data to a database using QCoDeS.
 
-        nt.set_database(self.db_name, self.db_folder)
+        Args:
+            parameters (list): List of QCoDeS parameters to register for
+                measurement.
+            setpoints (list): List of setpoints, i.e. voltage values.
+            data (np.ndarray): The measurement to save.
+            nt_label (list): List of machine learning/nanotune labels to save.
+            quality (int): The measurement's quality, to be saved as metadata.
 
+        Returns:
+            int: QCoDeS data run id.
+        """
+        # TODO: Save the data as arrays and remove for loops. To be updated to
+        # new QCoDeS data formats
+
+        dummy_lockin = DummyInstrument("dummy_lockin", gates=["R"])
         if len(parameters) not in [1, 2]:
             logger.error("Only 1D and 2D sweeps supported right now.")
             return None
@@ -965,13 +1060,13 @@ class CapacitanceModel(Instrument):
 
         if len(parameters) == 1:
             meas.register_parameter(parameters[0])
-            meas.register_parameter(self.dummy_lockin.R, setpoints=(parameters[0],))
+            meas.register_parameter(dummy_lockin.R, setpoints=(parameters[0],))
 
             with meas.run() as datasaver:
                 for x_indx, x_val in enumerate(setpoints[0]):
                     parameters[0](x_val)
                     datasaver.add_result(
-                        (parameters[0], x_val), (self.dummy_lockin.R, data[x_indx])
+                        (parameters[0], x_val), (dummy_lockin.R, data[x_indx])
                     )
 
                 dataid = datasaver.run_id
@@ -980,7 +1075,7 @@ class CapacitanceModel(Instrument):
             meas.register_parameter(parameters[0])
             meas.register_parameter(parameters[1])
             meas.register_parameter(
-                self.dummy_lockin.R, setpoints=(parameters[0], parameters[1])
+                dummy_lockin.R, setpoints=(parameters[0], parameters[1])
             )
 
             with meas.run() as datasaver:
@@ -988,19 +1083,19 @@ class CapacitanceModel(Instrument):
                     parameters[0](x_val)
                     for y_indx, y_val in enumerate(setpoints[1]):
                         parameters[1](y_val)
-                        # qdot.voltage_nodes[2].v(x_val)
-                        # qdot.voltage_nodes[4].v(y_val)
                         datasaver.add_result(
                             (parameters[0], x_val),
                             (parameters[1], y_val),
-                            (self.dummy_lockin.R, data[x_indx, y_indx]),
+                            (dummy_lockin.R, data[x_indx, y_indx]),
                         )
 
                 dataid = datasaver.run_id
 
         ds = load_by_id(dataid)
 
-        meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], Any)
+        meta_add_on: Dict[str, Any] = dict.fromkeys(
+            nt.config["core"]["meta_fields"], None
+        )
         meta_add_on["device_name"] = self.name
         nm = dict.fromkeys(["transport", "rf"], (0, 1))
         meta_add_on["normalization_constants"] = nm
@@ -1009,33 +1104,44 @@ class CapacitanceModel(Instrument):
 
         current_label = dict.fromkeys(LABELS, 0)
         for label in nt_label:
-            if label is not None:  # and nt_label in LABELS:
+            if label is not None:
                 if label not in LABELS:
-                    logger.error("CapacitanceModel: Invalid label.")
-                    print(label)
+                    logger.error(f"CapacitanceModel: Invalid label: {label}")
                     raise ValueError
                 current_label[label] = 1
                 current_label["good"] = quality
 
-        # print('data id {} current label: {} '.format(dataid, current_label ))
         for label, value in current_label.items():
             ds.add_metadata(label, value)
+
+        dummy_lockin.close()
 
         return dataid
 
     def determine_sweep_voltages(
         self,
-        v_node_idx: Sequence[int],
+        voltage_node_idx: Sequence[int],
         V_v: Optional[Sequence[float]] = None,
         N_limits: Optional[N_lmt_type] = None,
     ) -> List[List[float]]:
-        """
-        Determine N by minimizing the energy
+        """Determines voltages to sweep to measure specific charge transitions.
+
+        Args:
+            voltage_node_idx (list): Indices of voltages nodes to sweep.
+            V_v (list): Voltage configuration of all gates.
+            N_limits: Charge configuration ranges to measure. E.g. for a double
+                dot to sweep over empty dots to both having 3 electrons:
+                [(0, 3), (0, 3)]
+
+        Returns:
+            list: Nested list of voltages limits to sweep. Example double dot:
+                [[gate1_min_voltage, gate1_max_voltage],
+                 [gate2_min_voltage, gate2_max_voltage]]
         """
         if V_v is None:
             V_v = self.V_v()
         if N_limits is None:
-            N_limits = [(0, 1)] * len(self.N())  # [(0, 1), (0, 1)]
+            N_limits = [(0, 1)] * len(self.N())
 
         N_init = []
         for did in range(len(N_limits)):
@@ -1043,19 +1149,17 @@ class CapacitanceModel(Instrument):
 
         def eng_sub_fct(N, swept_voltages):
             curr_V = V_v
-            for iv, v_to_sweep in enumerate(v_node_idx):
+            for iv, v_to_sweep in enumerate(voltage_node_idx):
                 curr_V[v_to_sweep] = swept_voltages[iv]
             return self.compute_energy(N=N, V_v=curr_V)
 
         eng_fct = partial(eng_sub_fct, N_init)
         x0 = []
-        for v_to_sweep in v_node_idx:
+        for v_to_sweep in voltage_node_idx:
             x0.append(V_v[v_to_sweep])
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
@@ -1065,7 +1169,6 @@ class CapacitanceModel(Instrument):
         for did in range(len(N_limits)):
             N_stop.append(N_limits[did][1])
 
-        # N_stop = [N_limits[0][1], N_limits[1][1]]
         eng_fct = partial(eng_sub_fct, N_stop)
 
         x0 = V_init_config
@@ -1073,266 +1176,130 @@ class CapacitanceModel(Instrument):
         res = sc.optimize.minimize(
             eng_fct,
             x0,
-            #    method='COBYLA',
-            #    method='Powell',
             method="Nelder-Mead",
             tol=1e-4,
         )
         V_stop_config = res.x
 
-        V_limits = [
-            [V_init_config[0], V_stop_config[0]],
-            [V_init_config[1], V_stop_config[1]],
-        ]
+        return list(zip([V_init_config, V_stop_config]))  # type: ignore
 
-        return V_limits
+    def _get_N(self) -> List[int]:
+        """ QCoDeS parameter getter for charge configuration N. """
+        for inn, c_n in enumerate(self.charge_nodes):
+            self._N[inn] = c_n.n()
+        return self._N
 
-    def fit_data(
-        self,
-        ds_id: int,
-        db_name: str,
-        device_type: str = "doubledot_2D",
-    ) -> None:
-        # """
-        # parameters to fit:
-        #         #         N.  LW.   LP.  C.  RP.  RW
-        # self.V_v([-1, -0.1, -4.2, -0.1, -0.5, -0.3])
+    def _set_N(self, value: List[int]):
+        """ QCoDeS parameter setter for charge configuration N. """
+        value = list(value)
+        self._N = value
+        for iv, val in enumerate(value):
+            self.charge_nodes[iv].n(int(val))
 
-        # qdot.C_cc([[-8e-18]])
-        # #            N.        LW.     LP.      C.      RP.    RW
-        # qdot.C_cv([[-0.5e-18, -1e-18, -5e-18, -1e-18, -0.1e-18, -0.1e-18],     #  A
-        #         [-0.5e-18, -0.1e-18, -1e-18, -2e-18, -9e-18, -2e-18]])    #  B
-        # """
-        nt.Dataset(ds_id, db_name)
+    def _get_V_v(self) -> List[float]:
+        """ QCoDeS parameter getter for voltage configuration V_v. """
+        for inn, v_n in enumerate(self.voltage_nodes):
+            self._V_v[inn] = v_n.v()
+        return self._V_v
 
-        def err_func(p: Sequence[float]) -> np.ndarray:
-            err = self.fit_fct(self.normalized_volt, p)
-            err = (err - self.smooth_signal) / np.linalg.norm(self.smooth_signal)
-            return err
+    def _set_V_v(self, value: List[float]):
+        """ QCoDeS parameter setter for voltage configuration V_v. """
+        value = list(value)
+        self._V_v = value
+        for iv, val in enumerate(value):
+            self.voltage_nodes[iv].v(val)
 
-        result = sc.optimize.least_squares(
-            err_func,
-            self.initial_guess,
-            method="trf",
-            loss="cauchy",
-            verbose=0,
-            bounds=self.bounds,
-            gtol=1e-15,
-            ftol=1e-15,
-            xtol=1e-15,
-        )
+    def _get_C_cc(self) -> List[List[float]]:
+        """ QCoDeS parameter getter for dot capacitance matrix C_cc. Diagonals
+        of C_cc is the sum of all capacitances connected to the respective
+        charge node, calculated in _get_C_cc_diagonals.
+        """
+        current_C_cc = np.array(self._C_cc)
+        diagonals = self._get_C_cc_diagonals()
+        for dot_ind in range(len(self.charge_nodes)):
+            current_C_cc[dot_ind, dot_ind] = diagonals[dot_ind, dot_ind]
 
-        self.residuals = np.linalg.norm(result.fun)
+        self._C_cc = current_C_cc.tolist()
+        return self._C_cc
 
-    # def sweep_N(self,
-    #             v_node_idx: List[int],
-    #             N_ranges: List[List],
-    #             n_steps: Optional[List[int]] = [100, 100],
-    #             kernel_width: Optional[float] = 2,
-    #             target_snr_db: Optional[float] = 10,
-    #             line_intensity: Optional[float] = 1,
-    #             )-> List[np.ndarray]:
-    #     """
-    #     Generate diagram showing charge configurations within N_ranges
-    #     """
-    #     (coordinates_etp,
-    #      coordinates_htp,
-    #      c_configs) = self.get_triplepoints(v_node_idx,
-    #                                         N_ranges)
+    def _set_C_cc(self, off_diagonals: List[List[float]]):
+        """ QCoDeS parameter setter for dot capacitance matrix C_cc. """
+        self._C_cc = np.zeros([len(self.charge_nodes), len(self.charge_nodes)])
+        for dinx, diagonal in enumerate(off_diagonals):
+            if len(diagonal) != (len(self.charge_nodes) - dinx - 1):
+                logger.error(
+                    "CapacitanceModel: Unable to set C_cc. "
+                    + "Please specify off diagonals in a list of "
+                    + "lists: [[1st off diagonal], "
+                    + "[2nd off diagonal]]"
+                )
+            self._C_cc += np.diag(diagonal, k=dinx + 1)
+            self._C_cc += np.diag(diagonal, k=-dinx - 1)
 
-    #     # print(tabulate(zip(coordinates_etp, coordinates_htp, c_configs), ['etps', 'htps', 'c_configs']))
+        self._C_cc += self._get_C_cc_diagonals()
+        self._C_cc = self._C_cc.tolist()
 
-    #     slopes = self._get_voltage_spacings(v_node_idx)
-    #     tp_intensities = [2*line_intensity] * 3
-    #     lin_int = [line_intensity] * 3
-    #     xv, yv, diagram = self._generate_diagram([coordinates_etp,
-    #                                               coordinates_htp],
-    #                                              slopes,
-    #                                              kernel_width=kernel_width,
-    #                                              target_snr_db=target_snr_db,
-    #                                              line_intensities=lin_int,
-    #                                              tp_intensities=tp_intensities,
-    #                                              d_shape=n_steps)
+    def _get_C_cc_diagonals(self) -> npt.NDArray[np.float64]:
+        """Getter for diagonal values of dot capacitance matrix C_cc.
+        We assume that every dot is coupled to every other, meaning that
+        that if three or more dots are aligned the first will have a capacitive
+        coupling to the last. In the same manner, all dots are coupled to the
+        leads. Change if necessary.
+        """
+        C_cv_sums = np.sum(np.absolute(np.array(self._C_cv)), axis=1)
+        # from other dots:
+        off_diag = self._C_cc - np.diag(np.diag(self._C_cc))
+        off_diag_sums = np.sum(np.absolute(off_diag), axis=1)
 
-    #     dataid = self._save_to_db([self.voltage_nodes[v_node_idx[0]].v,
-    #                                self.voltage_nodes[v_node_idx[1]].v],
-    #                               [xv[0, :], yv[:, 0]], diagram,
-    #                               nt_label='doubledot')
+        diag = C_cv_sums + off_diag_sums
+        diag += np.absolute(self._c_r) + np.absolute(self._c_r)
 
-    #     return dataid
+        return np.diag(diag)
 
-    # def _generate_diagram(self,
-    #                     coordinates: List[np.ndarray],
-    #                     slopes: np.ndarray,
-    #                     tp_intensities: Optional[List] = [2., 2.],
-    #                     kernel_widths: Optional[float] = [3., 3.],
-    #                     line_intensities: Optional[List[float]] = [1., 1., 1.],
-    #                     target_snr_db: Optional[float] = 10.,
-    #                     d_shape: Optional[List] = [100, 100],
-    #                     ) -> List[np.ndarray]:
-    #     """ Generate a diagram based on previously found tp locations
+    def _get_C_cv(self) -> List[List[float]]:
+        """ QCoDeS parameter getter for dot capacitance matrix C_cv. """
+        return self._C_cv
 
-    #     Args:
-    #         coordinates: List of numpy arrays, first one with coordinates
-    #             of electron triple points, second with hole triple points.
-    #             Order matters, it needs to be [e_tps, h_tps].
-    #         slopes: Three (dx, dy) pairs defining lines between hole and
-    #             electron triple points.
-    #         tp_intensities: Intensities to be used for each triple point type.
-    #         kernel_width: OWidth of the Gaussian kernel used to blur the image.
-    #         line_intensities: Intensities to be used for lines between triple
-    #             points.
-    #         target_snr_db: Desired signal to noise ratio.
-    #         d_shape: Number of points in each direction, diagram.shape
+    def _set_C_cv(self, value: List[List[float]]):
+        """ QCoDeS parameter setter for dot capacitance matrix C_cv. Updates dot
+        capacitance matrix C_cc as its diagonals depend on C_cv
+        """
+        self._C_cv = value
+        _ = self._get_C_cc()
 
-    #     Return:
-    #         X and Y meshgrids and diagram. Plot the diagrams transpose if
-    #         using matplotlib.pylplot.pcolormesh.
-    #     """
-    #     xv, yv, diagram = self._make_stickfigure(coordinates,
-    #                                             slopes,
-    #                                             tp_intensities=tp_intensities,
-    #                                             line_intensities=line_intensities,
-    #                                             d_shape=d_shape)
+    def _get_c_r(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance R(right). """
+        return self._c_r
 
-    #     diagram = self._make_it_real(diagram, kernel_widths=kernel_widths)
-    #     diagram = self._add_noise(diagram, target_snr_db=target_snr_db)
+    def _set_c_r(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance R(right). Updates dot
+        capacitance matrix C_cc as its diagonals depend on c_r
+        """
+        self._c_r = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.c_r: Unable to update C_cc"
+            )
+            pass
 
-    #     return xv, yv, diagram
+    def _get_c_l(self) -> float:
+        """ QCoDeS parameter getter for lead capacitance L(eft). """
+        return self._c_l
 
-    # def _get_voltage_spacings(self,
-    #                           v_node_idx: Sequence,
-    #                           ) -> np.ndarray:
-    #     """ Determine vectors between triple points, to print the full
-    #     honecomb pattern on charge diagram.
-    #     We take the first three triple point pairs to get the three vectors
-    #     defining the honecomb pattern.
+    def _set_c_l(self, value: float):
+        """ QCoDeS parameter setter for lead capacitance L(eft). Updates dot
+        capacitance matrix C_cc as its diagonals depend on c_l
+        """
+        self._c_l = value
+        try:
+            _ = self._get_C_cc()
+        except Exception:
+            logger.warning(
+                "Setting CapacitanceModel.c_l: Unable to update C_cc"
+            )
+            pass
 
-    #     Args:
-    #         v_node_idx: Indexes of voltage nodes to be determined
-
-    #     Return:
-    #         Three vectors (dx, dy), corresponding to lines of a honeycomb
-    #         patterns.
-    #     """
-
-    #     self.etp0, self.htp0 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([0, 0]))
-    #     self.etp1, self.htp1 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([0, 1]))
-    #     self.etp2, self.htp2 = self.calculate_triplepoint(v_node_idx,
-    #                                                       np.array([1, 0]))
-    #     # get slopes between tps
-    #     dv0 = self.etp0 - self.htp0
-    #     dv1 = self.etp1 - self.htp0
-    #     dv2 = self.etp2 - self.htp0
-
-    #     return np.array([dv0, dv1, dv2])  # * -1
-
-    # def _make_stickfigure(self,
-    #                     coordinates: List[np.ndarray],
-    #                     slopes: np.ndarray,
-    #                     margin_ratio: Optional[float] = 0.1,
-    #                     tp_intensities: Optional[List] = [2., 2.],
-    #                     line_intensities: Optional[List[float]] = [1., 1., 1.],
-    #                     d_shape: Optional[List] = [100, 100],
-    #                     ) -> List[np.ndarray]:
-    #     """ Generate stick figure equivalent of the desired charge diagram.
-
-    #     Args:
-    #         coordinates: Coordinates of electron and hole coordinates. Order
-    #             matters! It has to be [e_tps, h_tps] and printing of lines
-    #             depend on it.
-    #         slopes: List of three (dx, dy) pairs, defining lines from hole to
-    #             electron triple points.
-    #         tp_intensities: Intensities to be used for each triple point type.
-    #         line_intensities: Intensities to be used for lines between triple
-    #             points.
-
-    #     Return:
-    #         X and Y meshgrid as well as stickfigure diagram.
-    #     """
-    #     # print('generating diagram with following coordinates: ')
-    #     # print(coordinates)
-
-    #     coordinates = np.array(coordinates)
-
-    #     x_min = np.min(coordinates[:, :, 0])  # - dv_margin
-    #     x_max = np.max(coordinates[:, :, 0])  # + dv_margin
-    #     y_min = np.min(coordinates[:, :, 1])  # - dv_margin
-    #     y_max = np.max(coordinates[:, :, 1])  # + dv_margin
-
-    #     dv_margin_x = margin_ratio * abs(x_max-x_min)
-    #     dv_margin_y = margin_ratio * abs(y_max-y_min)
-
-    #     x_min -= dv_margin_x
-    #     x_max += dv_margin_x
-    #     y_min -= dv_margin_y
-    #     y_max += dv_margin_y
-
-    #     x = np.linspace(x_min, x_max, d_shape[0])
-    #     y = np.linspace(y_min, y_max, d_shape[1])
-    #     xv, yv = np.meshgrid(x, y)
-
-    #     dx = (x_max - x_min)/d_shape[0]
-    #     dy = (y_max - y_min)/d_shape[1]
-
-    #     diagram = np.zeros(d_shape)
-
-    #     def print_tp(coord: np.ndarray,
-    #                 intensity: float,
-    #                 ) -> np.ndarray:
-
-    #         x_coord = int(round((coord[0]-x_min)/dx))
-    #         y_coord = int(round((coord[1]-y_min)/dy))
-
-    #         if (x_coord < diagram.shape[0] and x_coord >= 0 and
-    #             y_coord < diagram.shape[1] and y_coord >= 0):
-    #             diagram[x_coord, y_coord] = np.max([intensity,
-    #                                                 diagram[x_coord, y_coord]])
-    #         # else:
-    #         #     logger.warning('CapacitanceModel.make_stickfigure: Trying ' +
-    #         #                     'to draw triple point outside of canvas.')
-
-    #     for ii, coords_per_type in enumerate(coordinates):
-    #         for c in coords_per_type:
-    #             print_tp(c, tp_intensities[ii])
-
-    #             if ii == 0:
-    #                 # to make sure we plot lines for left and bottom border
-    #                     # correctly we plot some lines twice:
-    #                 for ids, slope in enumerate(slopes):
-    #                     slope = -1*slope
-    #                     delta_x = slope[0]
-    #                     delta_y = slope[1]
-
-    #                     x0 = int(round((c[0]-x_min)/dx))
-    #                     y0 = int(round((c[1]-y_min)/dy))
-    #                     x1 = x0 + int(round(delta_x/dx))
-    #                     y1 = y0 + int(round(delta_y/dy))
-
-    #                     diagram = plot_line(x0, y0, x1, y1, diagram,
-    #                                         line_intensities[ids])
-
-    #             if ii == 1:
-    #                 for ids, slope in enumerate(slopes):
-    #                     delta_x = slope[0]
-    #                     delta_y = slope[1]
-
-    #                     x0 = int(round((c[0]-x_min)/dx))
-    #                     y0 = int(round((c[1]-y_min)/dy))
-    #                     x1 = x0 + int(round(delta_x/dx))
-    #                     y1 = y0 + int(round(delta_y/dy))
-    #                     diagram = plot_line(x0, y0, x1, y1, diagram,
-    #                                         line_intensities[ids])
-
-    #     # Print the first three triple point pairs with higher intensities
-    #     # for debugging purposes
-    #     print_tp(self.etp0, np.max(tp_intensities)*5)
-    #     print_tp(self.htp0, np.max(tp_intensities)*5)
-    #     print_tp(self.etp1, np.max(tp_intensities)*4)
-    #     print_tp(self.htp1, np.max(tp_intensities)*4)
-    #     print_tp(self.etp2, np.max(tp_intensities)*3)
-    #     print_tp(self.htp2, np.max(tp_intensities)*3)
-
-    #     return xv, yv, diagram
+        self._C_cc += self._get_C_cc_diagonals()
+        self._C_cc = self._C_cc.tolist()

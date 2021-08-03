@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import optimize
 from scipy.stats import multivariate_normal
+import numpy.typing as npt
 
 
 def gaussian1D_fct(height: float, center: float, width: float):
@@ -49,11 +50,11 @@ def gaussian2D_fct(
     )
 
 
-def moments2D(data: np.ndarray):
-    # """
-    # Estimates initial guesses for fit paramters of a 2d gaussian.
-    # Use like this:
-    # step_fct_corner: 2d vector of data we want to fit
+def moments2D(data: npt.NDArray[np.float64]):
+    """
+    Estimates initial guesses for fit paramters of a 2d gaussian.
+    Use like this:
+    step_fct_corner: 2d vector of data we want to fit
 
     # params = moments(step_fct_corner)
     # errorfunction = lambda p: ravel(gaussian2D(*p)(Xin, Yin) -  step_fct_corner)
