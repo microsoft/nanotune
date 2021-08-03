@@ -1,4 +1,9 @@
 
+.. _drivers:
+
+Instruments & Interfaces
+========================
+
 Interfaces
 ----------
 

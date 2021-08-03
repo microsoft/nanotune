@@ -1,18 +1,18 @@
 .. _device:
 
-Device Abstraction
-==================
+Device
+======
 
-DeviceChannel
+Device channel
+--------------
+
+
+Device layout
 -------------
 
 
-DeviceLayout
-------------
-
-
-Device
-------
+Device abstract
+---------------
 
 An instance of a `Device` class represents the physical device or sample to be
 tuned. Rather than being a collection of instruments and instrument parameters,

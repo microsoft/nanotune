@@ -1,20 +1,13 @@
-======
-Tuning
-======
+.. _device_tuner:
 
-.. toctree::
-   :maxdepth: 2
-
-.. figure:: ../overview/workflow_small_1.png
-   :alt: Tuning workflow overview.
-   :align: center
-   :width: 45 %
-
-   Overview of tuning workflow.
+Device Tuner
+============
 
 
 Tuner
 -----
+
+The base class implements
 
 
 Characterizer
