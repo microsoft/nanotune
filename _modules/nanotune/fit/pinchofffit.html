@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.pinchofffit &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.fit.pinchofffit &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -176,7 +176,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">tick</span>
@@ -281,7 +281,7 @@
              <span class="n">initial_guess</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_initial_guess</span><span class="p">(</span><span class="n">readout_method</span><span class="o">=</span><span class="n">r_meth</span><span class="p">)</span>
             <span class="n">smooth_signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">r_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
-            <span class="k">def</span> <span class="nf">err_func</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">err_func</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
                 <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_voltage</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
                 <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="n">err</span> <span class="o">-</span> <span class="n">smooth_signal</span><span class="p">)</span> <span class="o">/</span> <span class="n">lg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">smooth_signal</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">err</span>
@@ -365,7 +365,7 @@
 
             <span class="n">fit_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">temp_sig</span><span class="p">,</span> <span class="n">temp_v</span><span class="p">)</span>
             <span class="n">relevant_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">fit_gradient</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevant_idx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevant_idx</span>  <span class="c1"># type: ignore</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_sig</span><span class="p">[</span><span class="n">relevant_idx</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transition_voltage</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_v</span><span class="p">[</span><span class="n">relevant_idx</span><span class="p">]</span></div>
@@ -412,7 +412,10 @@
 
         <span class="k">return</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">initial_guess</span></div>
 
-<div class="viewcode-block" id="PinchoffFit.fit_function"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.fit_function">[docs]</a>    <span class="k">def</span> <span class="nf">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="PinchoffFit.fit_function"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.fit_function">[docs]</a>    <span class="k">def</span> <span class="nf">fit_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">v</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function we use to fit pinch off curves.</span>
 

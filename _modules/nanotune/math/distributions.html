@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.math.distributions &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.math.distributions &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -178,7 +178,10 @@
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">uniform</span>
 
 
-<div class="viewcode-block" id="uniform_ND"><a class="viewcode-back" href="../../../api/math/distributions.html#nanotune.math.distributions.uniform_ND">[docs]</a><span class="k">def</span> <span class="nf">uniform_ND</span><span class="p">(</span><span class="n">limits</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">n_draw</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<div class="viewcode-block" id="uniform_ND"><a class="viewcode-back" href="../../../api/math/distributions.html#nanotune.math.distributions.uniform_ND">[docs]</a><span class="k">def</span> <span class="nf">uniform_ND</span><span class="p">(</span>
+    <span class="n">limits</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">n_draw</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    limits = [[limit_x1, limit_y1], [limit_x2, limit_y2]]</span>
 <span class="sd">    returns an array with uniformly sampled random variables</span>
@@ -194,7 +197,7 @@
         <span class="n">rv</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">-</span> <span class="n">lower</span><span class="p">)</span>
         <span class="n">rvars</span><span class="p">[:,</span> <span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">rv</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">n_draw</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">rvars</span></div>
+    <span class="k">return</span> <span class="n">rvars</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

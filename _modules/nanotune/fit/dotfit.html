@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -180,7 +180,7 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -245,7 +245,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_parameters</span> <span class="o">=</span> <span class="n">fit_parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segmented_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -400,7 +400,7 @@
                     <span class="n">unit</span><span class="o">=</span><span class="n">original_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
                     <span class="n">paramtype</span><span class="o">=</span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">ranges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">m_params</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)]</span>
                 <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">m_params</span><span class="p">):</span>
@@ -506,10 +506,10 @@
                             <span class="n">x_val</span> <span class="o">=</span> <span class="n">v_x</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
                             <span class="n">y_val</span> <span class="o">=</span> <span class="n">v_y</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
                             <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">])</span>
-                <span class="n">coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                <span class="n">coordinates_np</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
 
                 <span class="c1"># calculate distances between points, all to all</span>
-                <span class="n">all_combos</span> <span class="o">=</span> <span class="n">combinations</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">all_combos</span> <span class="o">=</span> <span class="n">combinations</span><span class="p">(</span><span class="n">coordinates_np</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_point_distances</span><span class="p">(</span><span class="o">*</span><span class="n">combo</span><span class="p">)</span> <span class="k">for</span> <span class="n">combo</span> <span class="ow">in</span> <span class="n">all_combos</span><span class="p">]</span>
                 <span class="n">distances_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
 

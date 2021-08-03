@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.device_tuner.tuner &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.device_tuner.tuner &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -668,7 +668,7 @@
 <div class="viewcode-block" id="linear_voltage_steps"><a class="viewcode-back" href="../../../api/device_tuner/tuner.html#nanotune.device_tuner.tuner.linear_voltage_steps">[docs]</a><span class="k">def</span> <span class="nf">linear_voltage_steps</span><span class="p">(</span>
     <span class="n">voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
     <span class="n">voltage_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Returns linearly spaced setpoints.</span>
 
 <span class="sd">    Args:</span>
@@ -680,7 +680,7 @@
 <span class="sd">        Sequence[float]: linearly spaced setpoints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">voltage_step</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_steps</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_steps</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.classification.data_augmentation &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.classification.data_augmentation &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -174,7 +174,7 @@
   <h1>Source code for nanotune.classification.data_augmentation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.fftpack</span> <span class="k">as</span> <span class="nn">fp</span>
 <span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">sg</span>
@@ -183,21 +183,21 @@
 
 <span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
 
-<span class="n">transf_type</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+<span class="n">transf_type</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span>
 
 
 <div class="viewcode-block" id="shear"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.shear">[docs]</a><span class="k">def</span> <span class="nf">shear</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">rotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">shear</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">translation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
 
     <span class="k">if</span> <span class="n">rotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">rotation</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rotation</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">shear</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">shear</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">shear</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">original_shape</span> <span class="o">=</span> <span class="n">original_image</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">tform</span> <span class="o">=</span> <span class="n">AffineTransform</span><span class="p">(</span>
@@ -211,28 +211,28 @@
 
 
 <div class="viewcode-block" id="random_crop"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.random_crop">[docs]</a><span class="k">def</span> <span class="nf">random_crop</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">blurr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="n">x_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">x_range</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">x_start</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+    <span class="n">x_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">x_start</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">y_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">y_range</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">y_start</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">y_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">y_start</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">original_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">original_image</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_range</span><span class="p">],</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span></div>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">original_image</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_range</span><span class="p">],</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="c1"># type: ignore</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 <div class="viewcode-block" id="random_rotation"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.random_rotation">[docs]</a><span class="k">def</span> <span class="nf">random_rotation</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
     <span class="n">angle</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rotate</span><span class="p">(</span><span class="n">original_image</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="random_flip"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.random_flip">[docs]</a><span class="k">def</span> <span class="nf">random_flip</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># horizontal</span>
         <span class="k">return</span> <span class="n">original_image</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -242,16 +242,16 @@
 
 
 <div class="viewcode-block" id="no_transformation"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.no_transformation">[docs]</a><span class="k">def</span> <span class="nf">no_transformation</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">original_image</span></div>
 
 
 <div class="viewcode-block" id="random_transformation"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.random_transformation">[docs]</a><span class="k">def</span> <span class="nf">random_transformation</span><span class="p">(</span>
-    <span class="n">original_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">original_image</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">transformations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">transf_type</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">single</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">transformations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">transformations</span> <span class="o">=</span> <span class="p">[</span>
@@ -273,7 +273,7 @@
 
 
 <div class="viewcode-block" id="save_augmented_data"><a class="viewcode-back" href="../../../api/classification/data_augmentation.html#nanotune.classification.data_augmentation.save_augmented_data">[docs]</a><span class="k">def</span> <span class="nf">save_augmented_data</span><span class="p">(</span>
-    <span class="n">original_raw_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">original_raw_data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
     <span class="n">new_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">new_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">mult_factor</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>

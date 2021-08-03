@@ -95,4 +95,3 @@ closed, depending on current strength). Either the extracted feature
 vector or entire measurement is passed to the classifier for quality or
 charge state prediction. Based on the outcome, a decision about
 subsequent tuning is made.
-

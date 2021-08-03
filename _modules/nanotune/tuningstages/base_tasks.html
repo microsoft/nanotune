@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.tuningstages.base_tasks &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.tuningstages.base_tasks &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -444,7 +444,7 @@
     <span class="k">for</span> <span class="n">c_range</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">c_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">n_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">delta</span> <span class="o">/</span> <span class="n">voltage_precision</span><span class="p">))</span>
-        <span class="n">setpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">c_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_points</span><span class="p">)</span>
+        <span class="n">setpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">c_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_points</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">setpoints_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">setpoints</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">setpoints_all</span></div>
 

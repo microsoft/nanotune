@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.data.dataset &mdash; nanotune 0+untagged.679.g7fa5863 documentation</title>
+  <title>nanotune.data.dataset &mdash; nanotune 0+untagged.705.g03a78c6 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.679.g7fa5863
+                0+untagged.705.g03a78c6
               </div>
             
           
@@ -176,7 +176,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
 <span class="kn">from</span> <span class="nn">qcodes.dataset.data_set</span> <span class="kn">import</span> <span class="n">DataSet</span>
@@ -407,7 +407,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_names_all</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_normalize_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">signal_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_normalize_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">signal_type</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
         <span class="n">minv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_constants</span><span class="p">[</span><span class="n">signal_type</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">maxv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_constants</span><span class="p">[</span><span class="n">signal_type</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
