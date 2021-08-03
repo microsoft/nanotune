@@ -1,5 +1,5 @@
-from nanotune.drivers.dac_interface import DACChannelInterface
-from typing import Optional, Tuple, Type
+from nanotune.drivers.dac_interface import DACChannelInterface, RelayState
+from typing import Optional, Tuple
 
 
 class DACChannelServer(DACChannelInterface):
@@ -26,7 +26,7 @@ class DACChannelServer(DACChannelInterface):
         self._voltage_limit = new_limits
 
     def get_voltage_limit(self) -> Tuple[float, float]:
-        self._voltage_limit
+        return self._voltage_limit
 
     def get_voltage_step(self) -> float:
         val = self.parent.send(self._get_msg("step"))
@@ -42,24 +42,24 @@ class DACChannelServer(DACChannelInterface):
     def set_frequency(self, new_frequency) -> None:
         self.parent.send(self._set_msg("frequency", new_frequency))
 
-    def set_offset(self, attr):
+    def get_offset(self) -> float:
         val = self.parent.send(self._get_msg("offset"))
         return float(self._parse_return(val))
 
-    def get_offset(self, new_offset) -> None:
+    def set_offset(self, new_offset) -> None:
         self.parent.send(self._set_msg("offset", new_offset))
 
-    def get_amplitude(self, attr) -> float:
+    def get_amplitude(self) -> float:
         val = self.parent.send(self._get_msg("amplitude"))
         return float(self._parse_return(val))
 
     def set_amplitude(self, new_amplitude) -> None:
         self.parent.send(self._set_msg("amplitude", new_amplitude))
 
-    def get_relay_state(self, attr) -> int:
+    def get_relay_state(self) -> RelayState:
         raise NotImplementedError
 
-    def set_relay_state(self, value) -> None:
+    def set_relay_state(self, new_state: RelayState):
         raise NotImplementedError
 
     def _get_msg(self, param) -> str:
