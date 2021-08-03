@@ -53,16 +53,6 @@ figure :numref:`fig_workflow`.
 .. figure:: ./workflow_small_1.png
     :alt: Tuning workflow overview.
     :align: center
-    :width: 50.0%
-
-The dot-initialization workflow consists of two pre-calibration, one
-characterization and one tuning step, as outlined in the flowchart pictured in
-figure :numref:`fig_workflow`.
-
-.. _fig_workflow:
-.. figure:: ./workflow_small_1.png
-    :alt: Tuning workflow overview.
-    :align: center
     :width: 44.0%
 
     Device tuning workflow.
