@@ -275,8 +275,8 @@ def generate_random_blobs(
                 y,
                 mx=np.random.uniform(-1, 1, 1),
                 my=np.random.uniform(-1, 1, 1),
-                sx=np.random.uniform(*stdx, 1),
-                sy=np.random.uniform(*stdy, 1),
+                sx=np.random.uniform(*stdx, 1),  # type: ignore
+                sy=np.random.uniform(*stdy, 1),  # type: ignore
             )
         z = (z - np.min(z)) / (np.max(z) - np.min(z))
 
