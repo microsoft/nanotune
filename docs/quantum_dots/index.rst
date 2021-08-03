@@ -97,11 +97,6 @@ source (S) and drain (D), illustrated in :numref:`fig_single_dot_model` and
 :numref:`fig_double_dot_model`. Here, the conducting island is coloured grey,
 while source and drain are shown in blue. Couplings between
 dots and reservoirs are modelled as a resistor in parallel to a capacitor.
-<<<<<<< HEAD
-=======
->>>>>>> Edit quantum dots
-=======
->>>>>>> b846b5fc5e27e98312e079495ddd954a6d200222
 
 .. _fig_single_dot_model:
 .. figure:: ./quantum_dots-19.svg
@@ -146,34 +141,6 @@ If the levels don't align, as in figure :numref:`fig_2d_hop_forbidden`, the dot
 is in the Coulomb blockade regime. Here, Coulomb repulsion between electrons prevents
 multiple electrons to occupy the same energy level and transport is suppressed.
 
-<<<<<<< HEAD
-.. _fig_single_dot_model:
-.. figure:: ./quantum_dots-19.svg
-   :alt: Simplified model of a single dot.
-   :align: center
-   :width: 45.0%
-
-   Schematic of a single dot, modelled as a conducting island connected via
-   tunnel junctions to source and drain reservoirs. A nearby plunger gate is
-   capacitively coupled to the dot and used to tune the its energy levels.
-
-.. _fig_double_dot_model:
-.. figure:: ./quantum_dots-20.svg
-   :alt: Simplified model of a double dot.
-   :align: center
-   :width: 45.0%
-
-   Schematic of a double dot, modelled as two conducting islands in series with
-   source and drain reservoirs, coupled by tunnel junctions.
-
-
-When a quantum dot is in the Coulomb blockade regime, transport through the
-dot-reservoir system only occurs when the dot's energy level :math:\epsilon
-falls between the energy levels of the reservoirs held at different bias
-potentials, also called the bias window.
-
-=======
->>>>>>> b846b5fc5e27e98312e079495ddd954a6d200222
 
 .. _fig_2d_hop_allowed:
 .. figure:: ./quantum_dots-07.svg
@@ -184,19 +151,10 @@ potentials, also called the bias window.
     Electron transport via resonant tunnelling occurs from source to drain when
     both dot energy levels are within the bias window.
 
-.. _fig_2d_hop_forbidden:
-.. figure:: ./quantum_dots-06.svg
-    :alt: Electron transport of double dot: energy levels not aligned.
-<<<<<<< HEAD
-
-    Electron transport via resonant tunnelling occurs from source to drain when
-    both dot energy levels are within the bias window.
 
 .. _fig_2d_hop_forbidden:
 .. figure:: ./quantum_dots-06.svg
     :alt: Electron transport of double dot: energy levels not aligned.
-=======
->>>>>>> b846b5fc5e27e98312e079495ddd954a6d200222
     :align: center
     :width: 45.0%
 
@@ -213,6 +171,7 @@ potentials, also called the bias window.
 
     Schema of a so-called charge diagram showing the charge
     transition pattern of a double dot.
+
 .. _fig_chargediag_explained:
 .. figure:: ./quantum_dots-04.svg
     :alt:
@@ -223,22 +182,6 @@ potentials, also called the bias window.
     voltages and monitoring current from source to drain. Four types of charge
     transitions are observed, exchanging charges between dots, a dot and its
     adjacent reservoir, or allowing a current to flow from source to drain.
-
-<<<<<<< HEAD
-    Schema of a so-called charge diagram showing the charge
-    transition pattern of a double dot.
-.. _fig_chargediag_explained:
-.. figure:: ./quantum_dots-04.svg
-    :alt:
-    :align: center
-    :width: 40.0%
-
-    Illustration of charge transitions measured by varying both plunger gate
-    voltages and monitoring current from source to drain. Four types of charge
-    transitions are observed, exchanging charges between dots, a dot and its
-    adjacent reservoir, or allowing a current to flow from source to drain.
-=======
->>>>>>> b846b5fc5e27e98312e079495ddd954a6d200222
 
 Transport features of dots with well-localized and weakly coupled charges can
 be explained and qualitatively reproduced by the classical capacitance model,
