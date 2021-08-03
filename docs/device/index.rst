@@ -41,4 +41,3 @@ and whether it should be ramped and ramping is supported by hardware.
 New voltages are ramped to if specified by the use_ramp parameter, either
 using a hardware ramp or QCoDeS' software ramps specified by inter_delay.
 The layout_id parameter is the gate's index in the device layout list.
-

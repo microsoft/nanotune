@@ -189,4 +189,3 @@ which represents gates, dots and reservoirs as conductors connected through
 resistors and capacitors. It also allows to capture the so-called gate
 cross-talk, i.e. the effect of capacitive couplings of all gates to each dot.
 The capacitance model is discussed in :ref:`capa_model`.
-
