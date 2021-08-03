@@ -4,7 +4,7 @@ from queue import Empty
 
 import sim
 from sim.data_providers import StaticDataProvider
-from sim.mock_devices import MockDoubleQuantumDot, Pin
+from sim.mock_devices import MockDoubleQuantumDot, MockPin
 from sim.simulation_scenario import (ActionGroup, SetDataProviderAction,
                                      SimulationScenario)
 
@@ -61,8 +61,8 @@ def test_typical_simulation_scenario():
 
     """Tests a typical scenario containing ActionGroups and leaf actions"""
 
-    o1 = Pin("O1")
-    o2 = Pin("O2")
+    o1 = MockPin("O1")
+    o2 = MockPin("O2")
 
     scenario = SimulationScenario(
         "typical scenario",
@@ -150,7 +150,7 @@ def test_dynamic_simulation_scenario():
     """ Tests running a scenario where steps are dynamically added """
     scenario = SimulationScenario("dynamic scenario")
 
-    o1 = Pin("o1")
+    o1 = MockPin("o1")
 
     # Test dynamically adding and running a single action
     scenario.append(

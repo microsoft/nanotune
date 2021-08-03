@@ -11,14 +11,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import qcodes as qc
-import scipy as sc
-import scipy.fftpack as fp
 import xarray as xr
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from numpy import linalg as lg
-from qcodes.dataset.data_set import res_type
-from qcodes.dataset.experiment_container import (load_by_id,
-                                                 load_last_experiment)
 from qcodes.dataset.measurements import Measurement
 from scipy.ndimage import measurements as scm
 from scipy.ndimage.filters import maximum_filter
@@ -28,18 +22,17 @@ import nanotune as nt
 from nanotune.data.dataset import default_coord_names
 from nanotune.data.plotting import default_plot_params
 from nanotune.fit.datafit import DataFit
-from nanotune.utils import format_axes
 
 logger = logging.getLogger(__name__)
 
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 default_dot_fit_parameters: Dict[str, Dict[str, Union[int, float]]] = {
-    "dc_current": {
+    "transport": {
         "noise_level": 0.02,
         "binary_neighborhood": 1,
         "distance_threshold": 0.05,
     },
-    "dc_sensor": {
+    "sensing": {
         "noise_level": 0.3,
         "binary_neighborhood": 2,
         "distance_threshold": 0.05,
@@ -52,10 +45,10 @@ class DotFit(DataFit):
         self,
         qc_run_id: int,
         db_name: str,
-        save_figures: bool = True,
         db_folder: Optional[str] = None,
         segment_size: float = 0.05,
-        signal_thresholds: List[float] = [0.004, 0.1],
+        noise_floor: float = 0.004,
+        dot_signal_threshold: float = 0.1,
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
         **kwargs,
     ) -> None:
@@ -73,7 +66,7 @@ class DotFit(DataFit):
             **kwargs,
         )
 
-        self.signal_thresholds = signal_thresholds
+        self.signal_thresholds = [noise_floor, dot_signal_threshold]
         self.segment_size = segment_size
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
@@ -83,7 +76,7 @@ class DotFit(DataFit):
     @property
     def range_update_directives(self) -> List[str]:
         """
-        signal_type: If more than one signal type (i.e dc, dc_sensor or rf)
+        signal_type: If more than one signal type (i.e dc, sensing or rf)
         have been measured, select which one to use to perform the edge
         analysis on. Use indexing and the order in which these signals have been
         measured.
@@ -158,7 +151,7 @@ class DotFit(DataFit):
             if n_x >= orig_shape_x / 10 or n_y >= orig_shape_x / 10:
                 logger.warning(f"Dotfit {self.guid}: Mesh resolution too low.")
 
-            n_mesh = [n_x, n_y]
+            n_mesh = [np.max([1, n_x]), np.max([1, n_y])]
             if not self.segmented_data:
                 empty = [xr.Dataset() for i in range(np.prod(n_mesh))]
                 self.segmented_data = empty
@@ -207,6 +200,7 @@ class DotFit(DataFit):
                 readout_method: {'range_x': (),
                                  'range_y': ()
                         }
+                voltage_ranges: [range_x, range_y],
                     }
         }
         """
@@ -216,7 +210,7 @@ class DotFit(DataFit):
         if not self.segmented_data:
             self.prepare_segmented_data(use_raw_data=True)
         if not os.path.isfile(os.path.join(segment_db_folder, segment_db_name)):
-            ds = load_by_id(self.qc_run_id)
+            ds = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
             nt.new_database(segment_db_name, db_folder=segment_db_folder)
             qc.new_experiment(f"segmented_{ds.exp_name}", sample_name=ds.sample_name)
 
@@ -336,25 +330,22 @@ class DotFit(DataFit):
                 coordinates = []
 
                 for peak_id in range(1, n_features + 1):
-                    indx = np.argwhere(labels == peak_id)[0]
+                    indx = np.argwhere(labels == peak_id)
                     if len(indx) == 0:
                         logger.error("No peak found.")
 
-                    if (
-                        indx[1] > 0
-                        and indx[1] < len(v_x) - 2
-                        and indx[0] > 0
-                        and indx[0] < len(v_y) - 2
-                    ):
-                        x_val = v_x[indx[1]]
-                        y_val = v_y[indx[0]]
-                        coordinates.append([x_val, y_val])
+                    else:
+                        for ind in indx:
+                            x_val = v_x[ind[1]]
+                            y_val = v_y[ind[0]]
+                            coordinates.append([x_val, y_val])
                 coordinates = np.array(coordinates)
 
                 # calculate distances between points, all to all
                 all_combos = combinations(coordinates, 2)
                 distances = [get_point_distances(*combo) for combo in all_combos]
                 distances_arr = np.asarray(distances)
+
                 relevant_indx = np.where(distances_arr[:, 0, 0] <= distance_threshold)[
                     0
                 ]

@@ -1,9 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple, Type
+from enum import Enum
 
 import qcodes as qc
 from qcodes.instrument.base import Instrument
 from qcodes.instrument.channel import ChannelList, InstrumentChannel
+
+
+class RelayState(Enum):
+    ground = 0
+    smc = 1
+    bus = 2
+    floating = 3
 
 
 class DACChannelInterface(InstrumentChannel, ABC):
@@ -21,47 +29,27 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def set_dc_voltage(self, new_voltage: float) -> None:
+    def set_voltage(self, new_voltage: float) -> None:
         pass
 
     @abstractmethod
-    def get_dc_voltage(self) -> float:
+    def get_voltage(self) -> float:
         pass
 
     @abstractmethod
-    def set_dc_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
+    def set_voltage_limit(self, new_limits: Tuple[float, float]) -> None:
         pass
 
     @abstractmethod
-    def get_inter_delay(self) -> float:
+    def get_voltage_limit(self) -> Tuple[float, float]:
         pass
 
     @abstractmethod
-    def set_inter_delay(self, new_inter_delay: float) -> None:
+    def get_voltage_step(self) -> float:
         pass
 
     @abstractmethod
-    def get_post_delay(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_post_delay(self, new_post_delay: float) -> None:
-        pass
-
-    @abstractmethod
-    def get_step(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_step(self, new_step: float) -> None:
-        pass
-
-    @abstractmethod
-    def get_label(self) -> str:
-        pass
-
-    @abstractmethod
-    def set_label(self, new_label: str) -> None:
+    def set_voltage_step(self, new_step: float) -> None:
         pass
 
     @abstractmethod
@@ -89,12 +77,13 @@ class DACChannelInterface(InstrumentChannel, ABC):
         pass
 
     @abstractmethod
-    def get_relay_state(self) -> str:
+    def get_relay_state(self) -> RelayState:
         pass
 
     @abstractmethod
-    def set_relay_state(self, value: str):
-        """ Needs to accept 'ground' TODO: add it as type hint """
+    def set_relay_state(self, new_state: RelayState):
+        """ """
+        pass
 
     @abstractmethod
     def ramp_voltage(self, target_voltage: float, ramp_rate: Optional[float] = None):
@@ -106,22 +95,6 @@ class DACChannelInterface(InstrumentChannel, ABC):
 
     @abstractmethod
     def get_ramp_rate(self) -> float:
-        pass
-
-    @abstractmethod
-    def get_limit_rate(self) -> float:
-        pass
-
-    @abstractmethod
-    def set_limit_rate(self, value: float):
-        pass
-
-    @abstractmethod
-    def get_filter(self) -> int:
-        pass
-
-    @abstractmethod
-    def set_filter(self, filter_id: int):
         pass
 
     @abstractmethod
@@ -140,11 +113,11 @@ class DACInterface(Instrument):
 
         channels = ChannelList(self, "Channels", DACChannelClass, snapshotable=False)
         for chan_id in range(0, 64):
-            chan_name = f"nt channel {chan_id}"
+            chan_name = f"ch{chan_id:02d}"
             channel = DACChannelClass(self, chan_name, chan_id)
             channels.append(channel)
             self.add_submodule(chan_name, channel)
-        self.add_submodule("nt_channels", channels)
+        self.add_submodule("channels", channels)
 
     @abstractmethod
     def run(self):

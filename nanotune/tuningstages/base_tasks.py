@@ -3,6 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 import copy
+from dataclasses import asdict
 import datetime
 import json
 import logging
@@ -18,46 +19,15 @@ import numpy as np
 import qcodes as qc
 from qcodes.dataset.experiment_container import load_by_id
 from qcodes.utils.helpers import NumpyJSONEncoder
-from typing_extensions import Literal, TypedDict
+from qcodes.instrument.parameter import _BaseParameter
 
 import nanotune as nt
 from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import NormalizationConstants, Readout
 from nanotune.fit.datafit import DataFit
 
 from .take_data import take_data
-
-SetpointSettingsDict = TypedDict(
-    "SetpointSettingsDict",
-    {
-        "parameters_to_sweep": List[qc.Parameter],
-        "current_valid_ranges": List[Tuple[float, float]],
-        "safety_voltage_ranges": List[Tuple[float, float]],
-        "voltage_precision": float,
-    },
-)
-DataSettingsDict = TypedDict(
-    "DataSettingsDict",
-    {
-        "db_name": str,
-        "db_folder": str,
-        "normalization_constants": Dict[str, Tuple[float, float]],
-        "segment_size": float,
-        "segment_db_name": str,
-        "segment_db_folder": str,
-    },
-    total=False,
-)
-ReadoutMethodsLiteral = Literal["dc_current", "dc_sensor", "rf"]
-ReadoutMethodsDict = TypedDict(
-    "ReadoutMethodsDict",
-    {
-        "dc_current": qc.Parameter,
-        "dc_sensor": qc.Parameter,
-        "rf": qc.Parameter,
-    },
-    total=False,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -250,9 +220,9 @@ def set_post_delay(
 
 
 def swap_range_limits_if_needed(
-    current_voltages: List[float],
-    current_valid_ranges: List[Tuple[float, float]],
-) -> List[Tuple[float, float]]:
+    current_voltages: Sequence[float],
+    current_valid_ranges: Sequence[Sequence[float]],
+) -> Sequence[Sequence[float]]:
     """Saw start and end points of a sweep depending on the current voltages set
     on gates. To save time and avoid unnecessary ramping.
     Order of current_voltages and current_valid_ranges has to match, i.e. the
@@ -268,21 +238,23 @@ def swap_range_limits_if_needed(
         list: Voltage ranges to sweep.
     """
 
-    new_ranges = copy.deepcopy(current_valid_ranges)
+    new_ranges = []
     for idx, c_range in enumerate(current_valid_ranges):
         diff1 = abs(c_range[1] - current_voltages[idx])
         diff2 = abs(c_range[0] - current_voltages[idx])
 
         if diff1 < diff2:
-            new_ranges[idx] = (c_range[1], c_range[0])
+            new_ranges.append((c_range[1], c_range[0]))
+        else:
+            new_ranges.append((c_range[0], c_range[1]))
 
     return new_ranges
 
 
 def compute_linear_setpoints(
-    ranges: List[Tuple[float, float]],
+    ranges: Sequence[Sequence[float]],
     voltage_precision: float,
-) -> List[List[float]]:
+) -> Sequence[Sequence[float]]:
     """Computes linear setpoints the number of points we based on a
     voltage_precision as opposed to a fixed number of points. Useful to ensure
     a minimum resolution required for ML purposes.
@@ -305,8 +277,8 @@ def compute_linear_setpoints(
 
 def prepare_metadata(
     device_name: str,
-    normalization_constants: Dict[str, Tuple[float, float]],
-    readout_methods: ReadoutMethodsDict,
+    normalization_constants: NormalizationConstants,
+    readout_methods: Readout,
 ) -> Dict[str, Any]:
     """Sets up a metadata dictionary with fields known prior to a measurement
     set.
@@ -319,11 +291,10 @@ def prepare_metadata(
         dict: Metadata dict with fields known prior to a measurement filled in.
     """
     nt_meta = dict.fromkeys(nt.config["core"]["meta_fields"])
-
-    nt_meta["normalization_constants"] = normalization_constants
+    nt_meta["normalization_constants"] = asdict(normalization_constants)
     nt_meta["git_hash"] = nt.git_hash
     nt_meta["device_name"] = device_name
-    readout_dict = {k: param.full_name for (k, param) in readout_methods.items()}  # type: ignore
+    readout_dict = readout_methods.as_name_dict()
     nt_meta["readout_methods"] = readout_dict
     nt_meta["features"] = {}
 
@@ -506,14 +477,14 @@ def take_data_add_metadata(
 
 def run_stage(
     stage: str,
-    parameters_to_sweep: List[qc.Parameter],
-    parameters_to_measure: List[qc.Parameter],
-    voltage_ranges: List[Tuple[float, float]],
+    parameters_to_sweep: Sequence[_BaseParameter],
+    parameters_to_measure: Sequence[_BaseParameter],
+    voltage_ranges: Sequence[Sequence[float]],
     compute_setpoint_task: Callable[
-        [List[Tuple[float, float]]], Sequence[Sequence[float]]
+        [Sequence[Sequence[float]]], Sequence[Sequence[float]]
     ],
     measure_task: Callable[
-        [List[qc.Parameter], List[qc.Parameter], Sequence[Sequence[float]]],
+        [Sequence[_BaseParameter], Sequence[_BaseParameter], Sequence[Sequence[float]]],
         int
     ],
     machine_learning_task: Callable[[int], Any],
@@ -531,7 +502,7 @@ def run_stage(
     It does not set back voltages to initial values.
 
     Args:
-        stage: Name/indentifier of the tuning stage.
+        stage: Name/identifier of the tuning stage.
         voltage_ranges: List of voltages ranges to sweep.
         compute_setpoint_task: Function computing setpoints.
         measure_task: Functions taking data.
@@ -545,14 +516,12 @@ def run_stage(
     Returns:
         TuningResult: Currently without db_name and db_folder set.
     """
-
     current_setpoints = compute_setpoint_task(voltage_ranges)
     current_id = measure_task(
         parameters_to_sweep,
         parameters_to_measure,
         current_setpoints,
     )
-
     ml_result = machine_learning_task(current_id)
     save_machine_learning_result(current_id, ml_result)
     success = validate_result(ml_result)
@@ -571,18 +540,18 @@ def run_stage(
 
 def iterate_stage(
     stage: str,
-    parameters_to_sweep: List[qc.Parameter],
-    parameters_to_measure: List[qc.Parameter],
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    parameters_to_sweep: Sequence[_BaseParameter],
+    parameters_to_measure: Sequence[_BaseParameter],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     run_stage: Callable[
         [
             str,
-            List[qc.Parameter],
-            List[qc.Parameter],
-            List[Tuple[float, float]],
-            Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-            Callable[[List[qc.Parameter], List[qc.Parameter],
+            Sequence[_BaseParameter],
+            Sequence[_BaseParameter],
+            Sequence[Sequence[float]],
+            Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
+            Callable[[Sequence[_BaseParameter], Sequence[_BaseParameter],
                        Sequence[Sequence[float]]], int],
             Callable[[int], Any],
             Callable[[int, Any], None],
@@ -591,8 +560,8 @@ def iterate_stage(
         TuningResult,
     ],
     run_stage_tasks: Tuple[
-        Callable[[List[Tuple[float, float]]], Sequence[Sequence[float]]],
-        Callable[[List[qc.Parameter], List[qc.Parameter],
+        Callable[[Sequence[Sequence[float]]], Sequence[Sequence[float]]],
+        Callable[[Sequence[_BaseParameter], Sequence[_BaseParameter],
                   Sequence[Sequence[float]]], int],
         Callable[[int], Any],
         Callable[[int, Any], None],
@@ -601,12 +570,12 @@ def iterate_stage(
     conclude_iteration: Callable[
         [
             TuningResult,
-            List[Tuple[float, float]],
-            List[Tuple[float, float]],
+            Sequence[Sequence[float]],
+            Sequence[Sequence[float]],
             int,
             int,
         ],
-        Tuple[bool, List[Tuple[float, float]], List[str]],
+        Tuple[bool, Sequence[Sequence[float]], List[str]],
     ],
     display_result: Callable[[int, TuningResult], None],
     max_n_iterations: int = 10,
@@ -639,11 +608,15 @@ def iterate_stage(
 
     while not done:
         current_iteration += 1
+        ranges_to_sweep = swap_range_limits_if_needed(
+            get_current_voltages(parameters_to_sweep),
+            current_valid_ranges,
+        )
         tuning_result = run_stage(
             stage,
             parameters_to_sweep,
             parameters_to_measure,
-            current_valid_ranges,
+            ranges_to_sweep,
             *run_stage_tasks,
         )
         run_ids += tuning_result.data_ids
@@ -666,19 +639,19 @@ def iterate_stage(
 
 def conclude_iteration_with_range_update(
     tuning_result: TuningResult,
-    current_valid_ranges: List[Tuple[float, float]],
-    safety_voltage_ranges: List[Tuple[float, float]],
+    current_valid_ranges: Sequence[Sequence[float]],
+    safety_voltage_ranges: Sequence[Sequence[float]],
     get_range_update_directives: Callable[
-        [int, List[Tuple[float, float]], List[Tuple[float, float]]],
+        [int, Sequence[Sequence[float]], Sequence[Sequence[float]]],
         Tuple[List[str], List[str]],
     ],
     get_new_current_ranges: Callable[
-        [List[Tuple[float, float]], List[Tuple[float, float]], List[str]],
-        List[Tuple[float, float]],
+        [Sequence[Sequence[float]], Sequence[Sequence[float]], List[str]],
+        Sequence[Sequence[float]],
     ],
     current_iteration: int,
     max_n_iterations: int,
-) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
     """Implements a conclude_iteration function for iterate_stage, which
     determines new voltage ranges if the last measurement was not successful.
 
@@ -696,7 +669,7 @@ def conclude_iteration_with_range_update(
 
     """
 
-    new_voltage_ranges: List[Tuple[float, float]] = []
+    new_voltage_ranges: Sequence[Sequence[float]] = []
     success = tuning_result.success
     if success:
         done = True
@@ -725,7 +698,7 @@ def conclude_iteration_with_range_update(
 
 
 def get_current_voltages(
-    parameters: List[qc.Parameter],
+    parameters: Sequence[_BaseParameter],
 ) -> List[float]:
     """Returns the values set to parameters in ``parameters``.
 
@@ -742,8 +715,8 @@ def get_current_voltages(
 
 
 def set_voltages(
-    parameters: List[qc.Parameter],
-    voltages_to_set: List[float],
+    parameters: Sequence[_BaseParameter],
+    voltages_to_set: Sequence[float],
 ) -> None:
     """Set voltages in ``voltages_to_set`` to voltage parameters in
     ``parameters``.
@@ -762,6 +735,7 @@ def get_fit_range_update_directives(
     run_id: int,
     db_name: str,
     db_folder: Optional[str],
+    **kwargs,
 ) -> List[str]:
     """Returns voltage range update directives determined from a fit.
 
@@ -780,5 +754,6 @@ def get_fit_range_update_directives(
         run_id,
         db_name,
         db_folder=db_folder,
+        **kwargs,
     )
     return fit.range_update_directives

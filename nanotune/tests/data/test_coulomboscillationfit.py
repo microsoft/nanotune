@@ -49,51 +49,44 @@ def test_coulomboscillationfit_fit_result(nt_dataset_coulomboscillation, tmp_pat
     co = CoulombOscillationFit(1, "temp.db", db_folder=str(tmp_path))
     fit_result = co.features
 
-    target_peak_loc_dc_current = [
+    target_peak_loc_transport = [
         -0.899159663865546,
         -0.798319327731092,
         -0.600840336134454,
     ]
-    target_peak_loc_dc_sensor = [
+    target_peak_loc_sensing = [
         -0.949579831932773,
         -0.848739495798319,
         -0.651260504201681,
     ]
 
-    assert [24, 48, 95] == sorted(fit_result["dc_current"]["peak_indx"])
-    assert [12, 36, 83] == sorted(fit_result["dc_sensor"]["peak_indx"])
+    assert [24, 48, 95] == sorted(fit_result["transport"]["peak_indx"])
+    assert [12, 36, 83] == sorted(fit_result["sensing"]["peak_indx"])
     for ii in range(3):
         assert math.isclose(
-            fit_result["dc_current"]["peak_locations"][ii],
-            target_peak_loc_dc_current[ii],
+            fit_result["transport"]["peak_locations"][ii],
+            target_peak_loc_transport[ii],
             rel_tol=rtol,
         )
         assert math.isclose(
-            fit_result["dc_sensor"]["peak_locations"][ii],
-            target_peak_loc_dc_sensor[ii],
+            fit_result["sensing"]["peak_locations"][ii],
+            target_peak_loc_sensing[ii],
             rel_tol=rtol,
         )
 
-    target_peak_dist_dc_current = [0.10084033613445398, 0.19747899159663806]
-    target_peak_dist_dc_sensor = [0.10084033613445398, 0.19747899159663795]
+    target_peak_dist_transport = [0.10084033613445398, 0.19747899159663806]
+    target_peak_dist_sensing = [0.10084033613445398, 0.19747899159663795]
     for ii in range(2):
         assert math.isclose(
-            fit_result["dc_current"]["peak_distances"][ii],
-            target_peak_dist_dc_current[ii],
+            fit_result["transport"]["peak_distances"][ii],
+            target_peak_dist_transport[ii],
             rel_tol=rtol,
         )
         assert math.isclose(
-            fit_result["dc_sensor"]["peak_distances"][ii],
-            target_peak_dist_dc_sensor[ii],
+            fit_result["sensing"]["peak_distances"][ii],
+            target_peak_dist_sensing[ii],
             rel_tol=rtol,
         )
-
-
-# def test_coulomboscillationfit_peak_distances(nt_dataset_coulomboscillation,
-#                                               tmp_path):
-#     co = CoulombOscillationFit(1, 'temp.db', db_folder=str(tmp_path))
-
-#     peak_distances = co.calculate_peak_distances()
 
 
 def test_coulomboscillationfit_plot(nt_dataset_coulomboscillation, tmp_path):

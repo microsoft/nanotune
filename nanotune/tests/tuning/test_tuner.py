@@ -1,121 +1,235 @@
 import copy
-
-import numpy as np
-import pytest
-
-import qcodes as qc
-import nanotune as nt
-from nanotune.device_tuner.tuner import (Tuner, set_back_valid_ranges,
-                                         set_back_voltages)
-from nanotune.device_tuner.tuningresult import TuningResult
 from nanotune.tests.mock_classifier import MockClassifer
+
+import pytest
+import matplotlib.pyplot as plt
+from dataclasses import asdict
+import nanotune as nt
+from nanotune.device_tuner.tuner import (TuningHistory, set_back_voltages,
+    linear_voltage_steps)
+from nanotune.device.device import NormalizationConstants
+from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.tuningstages.settings import Classifiers, DataSettings
 
 atol = 1e-05
 
 
 def test_set_back_voltages(gate_1, gate_2):
-    gate_1.dc_voltage(-0.8)
-    gate_2.dc_voltage(-0.9)
-    assert gate_1.dc_voltage() == -0.8
-    assert gate_2.dc_voltage() == -0.9
+    gate_1.voltage(-0.8)
+    gate_2.voltage(-0.9)
+    assert gate_1.voltage() == -0.8
+    assert gate_2.voltage() == -0.9
 
     with set_back_voltages([gate_1, gate_2]):
-        assert gate_1.dc_voltage() == -0.8
-        assert gate_2.dc_voltage() == -0.9
-        gate_1.dc_voltage(-0.5)
-        gate_2.dc_voltage(-0.4)
-        assert gate_1.dc_voltage() == -0.5
-        assert gate_2.dc_voltage() == -0.4
+        assert gate_1.voltage() == -0.8
+        assert gate_2.voltage() == -0.9
+        gate_1.voltage(-0.5)
+        gate_2.voltage(-0.4)
+        assert gate_1.voltage() == -0.5
+        assert gate_2.voltage() == -0.4
 
-    assert gate_1.dc_voltage() == -0.8
-    assert gate_2.dc_voltage() == -0.9
-
-
-def test_set_back_valid_ranges(gate_1, gate_2):
-    gate_1.current_valid_range([-0.8, -0.5])
-    gate_2.current_valid_range([-0.9, -0.4])
-    assert gate_1.current_valid_range() == [-0.8, -0.5]
-    assert gate_2.current_valid_range() == [-0.9, -0.4]
-
-    with set_back_valid_ranges([gate_1, gate_2]):
-        assert gate_1.current_valid_range() == [-0.8, -0.5]
-        assert gate_2.current_valid_range() == [-0.9, -0.4]
-        gate_1.current_valid_range([-0.3, -0.4])
-        gate_2.current_valid_range([-0.2, -0.1])
-        assert gate_1.current_valid_range() == [-0.3, -0.4]
-        assert gate_2.current_valid_range() == [-0.2, -0.1]
-
-    assert gate_1.current_valid_range() == [-0.8, -0.5]
-    assert gate_2.current_valid_range() == [-0.9, -0.4]
+    assert gate_1.voltage() == -0.8
+    assert gate_2.voltage() == -0.9
 
 
-def test_tuner_init_and_attributes(tuner_default_input, tmp_path):
-    tuner = Tuner(**tuner_default_input)
-    data_settings = copy.deepcopy(tuner.data_settings())
-    assert data_settings["db_name"] == "temp.db"
-    assert data_settings["db_folder"] == str(tmp_path)
-    assert data_settings["qc_experiment_id"] == 1
+def test_tuner_init_and_attributes(tuner, tmp_path):
+    assert tuner.data_settings.db_name == "temp.db"
+    assert tuner.data_settings.db_folder == str(tmp_path)
+    assert tuner.data_settings.experiment_id == None
 
-    new_data_settings = {"db_name": "other_temp.db"}
-    tuner.data_settings(new_data_settings)
+    assert tuner.tuning_history == TuningHistory()
+
+    new_data_settings = DataSettings(db_name="other_temp.db")
+    data_settings = DataSettings(**asdict(tuner.data_settings))
+    data_settings.normalization_constants = NormalizationConstants()
+
+    tuner.data_settings = new_data_settings
     data_settings.update(new_data_settings)
-    assert tuner.data_settings() == data_settings
+    assert tuner.data_settings == data_settings
 
-    assert tuner.setpoint_settings()["voltage_precision"] == 0.001
-
-    tuner.close()
+    assert tuner.setpoint_settings.voltage_precision == 0.001
 
 
-def test_update_normalization_constants(tuner_default_input, device_pinchoff, tmp_path):
+def test_update_normalization_constants(
+    tuner,
+    sim_device,
+    sim_scenario_device_characterization
+):
+    sim_scenario_device_characterization.run_next_step()
+    previous_constants = sim_device.normalization_constants
+    sim_device.normalization_constants = NormalizationConstants()
 
-    tuner = Tuner(**tuner_default_input)
-    device_pinchoff.normalization_constants({})
+    tuner.update_normalization_constants(sim_device)
+    updated_constants = sim_device.normalization_constants
 
-    tuner.update_normalization_constants(device_pinchoff)
-    updated_constants = device_pinchoff.normalization_constants()
-
-    assert np.allclose(updated_constants["dc_current"], [0.0, 1.2], atol=atol)
-    assert updated_constants["dc_sensor"] != updated_constants["dc_current"]
-    assert np.allclose(updated_constants["rf"], [0, 1], atol=atol)
-
-    tuner.close()
+    assert updated_constants.transport == previous_constants.transport
+    assert updated_constants.sensing == (0., 1.)
+    assert updated_constants.rf == (0., 1.)
 
 
-def test_characterize_gates(tuner_default_input, device_pinchoff):
-    tuner = Tuner(
-        **tuner_default_input,
+def test_characterize_gate(
+    tuner,
+    sim_device,
+    sim_scenario_device_characterization,
+    pinchoff_classifier,
+):
+    sim_scenario_device_characterization.run_next_step()
+    tuner.classifiers = Classifiers(pinchoff=pinchoff_classifier)
+
+    result = tuner.characterize_gate(
+        sim_device,
+        sim_device.left_barrier,
+        use_safety_voltage_ranges=True,
     )
-    tuner.classifiers = {"pinchoff": MockClassifer("pinchoff")}
-    result = tuner.characterize_gates(
-        [device_pinchoff.left_barrier, device_pinchoff.left_barrier]
+    assert isinstance(result, TuningResult)
+    assert result.status == sim_device.get_gate_status()
+    comment = f"Characterizing {sim_device.left_barrier}."
+    assert result.comment == comment
+
+    assert len(tuner.tuning_history.results[sim_device.name].tuningresults) == 1
+
+
+    sim_device.current_valid_ranges(
+        {sim_device.left_barrier.gate_id: (-0.2, 0)}
     )
-    gate_name = "characterization_" + device_pinchoff.left_barrier.name
-    assert gate_name in result.tuningresults.keys()
-    print(result)
-    tuningresult = result.tuningresults[gate_name]
-    assert isinstance(tuningresult, TuningResult)
-    assert tuningresult.success
-    tuner.close()
-
-
-def test_device_specific_settings(tuner_default_input, device_pinchoff):
-    tuner = Tuner(
-        **tuner_default_input,
+    result = tuner.characterize_gate(
+        sim_device,
+        sim_device.left_barrier,
+        use_safety_voltage_ranges=False,
+        comment = "first run",
+        iterate=False,
     )
-    original_setpoints = copy.deepcopy(tuner.setpoint_settings())
-    original_classifiers = copy.deepcopy(tuner.classifiers)
-    original_fit_options = copy.deepcopy(tuner.fit_options())
+    assert result.comment == "first run"
+    assert not result.success
 
-    assert "normalization_constants" not in tuner.data_settings().keys()
-    n_csts = {"dc_current": (-0.3, 1.2), "dc_sensor": (0.2, 0.8), "rf": (0, 1)}
-    device_pinchoff.normalization_constants(n_csts)
-    with tuner.device_specific_settings(device_pinchoff):
-        assert tuner.data_settings()["normalization_constants"] == n_csts
+    result = tuner.characterize_gate(
+        sim_device,
+        sim_device.left_barrier,
+        use_safety_voltage_ranges=False,
+        iterate=True,
+    )
+    assert result.success
+    assert len(result.data_ids) == 2
 
-        assert tuner.setpoint_settings() == original_setpoints
-        assert tuner.classifiers == original_classifiers
-        assert tuner.fit_options() == original_fit_options
+    with pytest.raises(KeyError):
+        tuner.classifiers = Classifiers()
+        _ = tuner.characterize_gate(
+            sim_device,
+            sim_device.left_barrier,
+            use_safety_voltage_ranges=True,
+        )
 
-    assert "normalization_constants" not in tuner.data_settings().keys()
 
-    tuner.close()
+def test_measurement_data_settings(
+    tuner,
+    sim_device,
+):
+    prev_settings = copy.deepcopy(tuner.data_settings)
+    new_data_settings = tuner.measurement_data_settings(sim_device)
+    assert prev_settings.normalization_constants != new_data_settings.normalization_constants
+    assert new_data_settings.normalization_constants == sim_device.normalization_constants
+
+
+def test_measurement_setpoint_settings(
+    tuner,
+    sim_device,
+):
+    prev_settings = copy.deepcopy(tuner.setpoint_settings)
+    new_settings = tuner.measurement_setpoint_settings(
+        [sim_device.left_barrier],
+        [[-2, 0]],
+        [[-3, 0]])
+    assert prev_settings != new_settings
+
+    assert new_settings.parameters_to_sweep == [sim_device.left_barrier]
+    assert new_settings.ranges_to_sweep == [[-2, 0]]
+    assert new_settings.safety_voltage_ranges == [[-3, 0]]
+
+
+def test_get_pairwise_pinchoff(
+    tuner,
+    sim_device_gatecharacterization2d,
+    pinchoff_classifier,
+):
+    tuner.classifiers = Classifiers(pinchoff=pinchoff_classifier)
+    gate_to_set = sim_device_gatecharacterization2d.left_plunger
+    gates_to_sweep = [sim_device_gatecharacterization2d.right_plunger]
+
+    v_steps = linear_voltage_steps(
+            [0, -2], 0.2)
+    (measurement_result,
+     last_gate_to_pinchoff,
+     last_voltage) = tuner.get_pairwise_pinchoff(
+        sim_device_gatecharacterization2d,
+        gate_to_set,
+        gates_to_sweep,
+        v_steps,
+    )
+    assert last_voltage == -0.44444444444444464
+    assert len(measurement_result.to_dict()) == 9
+    assert last_gate_to_pinchoff.full_name == gates_to_sweep[0].full_name
+
+
+def test_get_chargediagram(
+    tuner,
+    sim_device,
+    sim_scenario_dottuning,
+    tmp_path,
+):
+    sim_scenario_dottuning.run_next_step()
+    sim_scenario_dottuning.run_next_step()
+    sim_scenario_dottuning.run_next_step()
+    sim_scenario_dottuning.run_next_step()
+    sim_scenario_dottuning.run_next_step()
+    sim_scenario_dottuning.run_next_step()
+    tuner.classifiers = Classifiers(
+        singledot=MockClassifer('singledot'),
+        doubledot=MockClassifer('doubledot'),
+        dotregime=MockClassifer('doubledot')
+    )
+
+    sim_device.left_plunger.safety_voltage_range([-0.4, 0])
+    sim_device.right_plunger.safety_voltage_range([-0.44, 0])
+    meas_res = tuner.get_charge_diagram(
+            sim_device,
+            [sim_device.left_plunger, sim_device.right_plunger],
+            use_safety_voltage_ranges=True,
+            voltage_precision=0.005,
+        )
+    assert meas_res.status == sim_device.get_gate_status()
+    assert meas_res.comment == f"Taking charge diagram of {[sim_device.left_plunger, sim_device.right_plunger]}."
+    ds = nt.Dataset(meas_res.data_ids[-1], meas_res.db_name, db_folder=tmp_path)
+    x_range = [ds.data.voltage_x.values[0], ds.data.voltage_x.values[-1]]
+    y_range = [ds.data.voltage_y.values[0], ds.data.voltage_y.values[-1]]
+    assert len(ds.data.voltage_x.values) == 80
+
+    assert x_range == sim_device.left_plunger.safety_voltage_range()
+    assert y_range == sim_device.right_plunger.safety_voltage_range()
+    assert len(tuner.tuning_history.results[sim_device.name].tuningresults) == 1
+
+    sim_device.current_valid_ranges(
+    {
+        sim_device.left_plunger.gate_id: [-0.3, 0],
+        sim_device.right_plunger.gate_id: [-0.35, 0],
+    })
+    meas_res = tuner.get_charge_diagram(
+            sim_device,
+            [sim_device.left_plunger, sim_device.right_plunger],
+            use_safety_voltage_ranges=False,
+            voltage_precision=0.05,
+        )
+    ds = nt.Dataset(meas_res.data_ids[-1], meas_res.db_name, db_folder=tmp_path)
+    x_range = [ds.data.voltage_x.values[0], ds.data.voltage_x.values[-1]]
+    y_range = [ds.data.voltage_y.values[0], ds.data.voltage_y.values[-1]]
+
+    assert x_range == sim_device.current_valid_ranges()[sim_device.left_plunger.gate_id]
+    assert y_range == sim_device.current_valid_ranges()[sim_device.right_plunger.gate_id]
+
+
+    with pytest.raises(ValueError):
+        tuner.classifiers = Classifiers(pinchoff=MockClassifer('pinchoff'))
+        _ = tuner.get_charge_diagram(
+            sim_device,
+            [sim_device.left_plunger, sim_device.right_plunger],
+            use_safety_voltage_ranges=True,
+        )

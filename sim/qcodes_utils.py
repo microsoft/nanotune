@@ -51,3 +51,26 @@ def dump_db(db_path: str) -> None:
                 msg = [f"{p.label}({p.unit})" for p in dataset.get_parameters()]
                 params = ", ".join(msg)
                 print(f"{dataset.captured_run_id}: {dataset.exp_name} {params}")
+
+def enum_datasets(db_path):
+
+    # Some test code to get started
+    with QcodesDbConfig(db_path):
+
+        print("Path to DB      : {0}".format(db_path))
+
+        for exp in qc.experiments():
+            count = len(exp.data_sets())
+            print("Experiment name : {0}".format(exp.name))
+            print("dataset count   : {0}".format(count))
+            if (count):
+                print("first dataset   : {0}".format(exp.data_sets()[0].run_id))
+                last_id = exp.last_data_set().run_id
+                print("last dataset    : {0}".format(last_id))
+            print("")
+
+            for dataset in exp.data_sets():
+                msg = [f"{p.name} {p.type} : \"{p.label}\" ({p.unit})" for p in dataset.get_parameters()]
+                params = " || ".join(msg)
+                print(f"{dataset.captured_run_id}: {dataset.exp_name} {params}")
+                yield dataset

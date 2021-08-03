@@ -1000,7 +1000,7 @@ class CapacitanceModel(Instrument):
 
         meta_add_on = dict.fromkeys(nt.config["core"]["meta_fields"], Any)
         meta_add_on["device_name"] = self.name
-        nm = dict.fromkeys(["dc_current", "rf"], (0, 1))
+        nm = dict.fromkeys(["transport", "rf"], (0, 1))
         meta_add_on["normalization_constants"] = nm
 
         ds.add_metadata(nt.meta_tag, json.dumps(meta_add_on))

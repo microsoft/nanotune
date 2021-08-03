@@ -9,6 +9,7 @@ import pytest
 from functools import partial
 
 import nanotune as nt
+from nanotune.device.device import Readout, NormalizationConstants
 from nanotune.fit.pinchofffit import PinchoffFit
 from nanotune.tests.mock_classifier import MockClassifer
 from nanotune.tuningstages.base_tasks import *
@@ -72,34 +73,34 @@ def test_set_up_gates_for_measurement(gate_1, gate_2):
     gate_1.use_ramp(True)
     gate_2.use_ramp(True)
 
-    gate_1.dc_voltage(0)
-    gate_2.dc_voltage(0)
+    gate_1.voltage(0)
+    gate_2.voltage(0)
 
     with set_up_gates_for_measurement(
-        [gate_1.dc_voltage, gate_2.dc_voltage],
+        [gate_1.voltage, gate_2.voltage],
         setpoints,
     ) as setup:
         assert not gate_1.use_ramp()
         assert not gate_2.use_ramp()
 
-        assert gate_1.dc_voltage() == -0.2
-        assert gate_2.dc_voltage() == -0.1
+        assert gate_1.voltage() == -0.2
+        assert gate_2.voltage() == -0.1
 
     assert gate_1.use_ramp()
     assert gate_2.use_ramp()
 
 
 def test_set_post_delay(gate_1, gate_2):
-    gate_1.dc_voltage.post_delay = 0
-    gate_2.dc_voltage.post_delay = 0
+    gate_1.voltage.post_delay = 0
+    gate_2.voltage.post_delay = 0
 
-    set_post_delay([gate_1.dc_voltage, gate_2.dc_voltage], 0.2)
-    assert gate_1.dc_voltage.post_delay == 0.2
-    assert gate_2.dc_voltage.post_delay == 0.2
+    set_post_delay([gate_1.voltage, gate_2.voltage], 0.2)
+    assert gate_1.voltage.post_delay == 0.2
+    assert gate_2.voltage.post_delay == 0.2
 
-    set_post_delay([gate_1.dc_voltage, gate_2.dc_voltage], [0.1, 0.3])
-    assert gate_1.dc_voltage.post_delay == 0.1
-    assert gate_2.dc_voltage.post_delay == 0.3
+    set_post_delay([gate_1.voltage, gate_2.voltage], [0.1, 0.3])
+    assert gate_1.voltage.post_delay == 0.1
+    assert gate_2.voltage.post_delay == 0.3
 
 
 def test_swap_range_limits_if_needed():
@@ -121,14 +122,15 @@ def test_compute_linear_setpoints():
 def test_prepare_metadata(dummy_dmm):
     metadata = prepare_metadata(
         "test_device",
-        {"dc_current": (0, 1.2)},
-        {"dc_current": dummy_dmm.dac1},
+        NormalizationConstants(transport=(0, 1.2)),
+        Readout(transport=dummy_dmm.dac1),
     )
 
-    assert metadata["normalization_constants"] == {"dc_current": (0, 1.2)}
+    assert metadata["normalization_constants"] == {
+        "transport": (0, 1.2), "sensing": (0., 1.), "rf": (0., 1.)}
     assert metadata["device_name"] == "test_device"
     assert metadata["readout_methods"] == {
-        "dc_current": dummy_dmm.dac1.full_name}
+        "transport": dummy_dmm.dac1.full_name}
     assert "git_hash" in metadata.keys()
     assert "features" in metadata.keys()
 
@@ -139,11 +141,11 @@ def test_add_metadata_to_dict(dummy_dmm):
         meta_dict,
         {
             "features": {"amplitude": 0.2},
-            "readout_methods": {"dc_current": dummy_dmm.dac1},
+            "readout_methods": {"transport": dummy_dmm.dac1},
         },
     )
     assert new_dict["features"] == {"amplitude": 0.2}
-    assert new_dict["readout_methods"]["dc_current"] == dummy_dmm.dac1
+    assert new_dict["readout_methods"]["transport"] == dummy_dmm.dac1
 
 
 def test_save_metadata(qc_dataset_pinchoff, tmp_path):
@@ -198,16 +200,17 @@ def test_print_tuningstage_status(capsys):
 
 
 def test_take_data_add_metadata(gate_1, gate_2, dummy_dmm, experiment):
-
-    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    gate_1.max_voltage_step = 0.1
+    gate_2.max_voltage_step = 0.1
+    params_to_sweep = [gate_1.voltage, gate_2.voltage]
     params_to_measure = [dummy_dmm.dac1]
     setpoints = [
         list(np.linspace(-0.3, -0.1, 10)), list(np.linspace(-0.2, -0.1, 10)),
     ]
     pre_measurement_metadata = {
         'device_name': 'test_sample',
-        'normalization_constants': {'dc_current': [0, 1.2]},
-        'readout_methods': {'dc_current': dummy_dmm.dac1.full_name},
+        'normalization_constants': {'transport': [0, 1.2]},
+        'readout_methods': {'transport': dummy_dmm.dac1.full_name},
     }
     run_id = take_data_add_metadata(
         params_to_sweep,
@@ -222,13 +225,13 @@ def test_take_data_add_metadata(gate_1, gate_2, dummy_dmm, experiment):
 
     assert 'elapsed_time' in metadata
     assert metadata['device_name'] == 'test_sample'
-    assert metadata['normalization_constants']['dc_current'] == [0, 1.2]
-    assert metadata['readout_methods']['dc_current'] == dummy_dmm.dac1.full_name
+    assert metadata['normalization_constants']['transport'] == [0, 1.2]
+    assert metadata['readout_methods']['transport'] == dummy_dmm.dac1.full_name
 
 
 def test_run_stage(experiment, gate_1, gate_2, dummy_dmm):
 
-    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    params_to_sweep = [gate_1.voltage, gate_2.voltage]
     params_to_measure = [dummy_dmm.dac1]
     ml_result = {'regime': 'pinchoff', 'quality': True}
 
@@ -257,7 +260,7 @@ def test_run_stage(experiment, gate_1, gate_2, dummy_dmm):
 
 def test_iterate_stage(experiment, gate_1, gate_2, dummy_dmm):
 
-    params_to_sweep = [gate_1.dc_voltage, gate_2.dc_voltage]
+    params_to_sweep = [gate_1.voltage, gate_2.voltage]
     params_to_measure = [dummy_dmm.dac1]
     compute_setpoint_task = partial(
         compute_linear_setpoints, voltage_precision=0.1,
@@ -401,18 +404,18 @@ def test_conclude_iteration_with_range_update():
     assert termination_reasons == []
 
 def test_get_current_voltages(gate_1, gate_2):
-    gate_1.dc_voltage(-0.4)
-    gate_2.dc_voltage(-0.6)
-    voltages = get_current_voltages([gate_1.dc_voltage, gate_2.dc_voltage])
+    gate_1.voltage(-0.4)
+    gate_2.voltage(-0.6)
+    voltages = get_current_voltages([gate_1.voltage, gate_2.voltage])
     assert voltages == [-0.4, -0.6]
 
 def test_set_voltages(gate_1, gate_2):
-    gate_1.dc_voltage(-0.4)
-    gate_2.dc_voltage(-0.6)
+    gate_1.voltage(-0.4)
+    gate_2.voltage(-0.6)
 
-    set_voltages([gate_1.dc_voltage, gate_2.dc_voltage], [-0.5, -0.7])
-    assert gate_1.dc_voltage() == -0.5
-    assert gate_2.dc_voltage() == -0.7
+    set_voltages([gate_1.voltage, gate_2.voltage], [-0.5, -0.7])
+    assert gate_1.voltage() == -0.5
+    assert gate_2.voltage() == -0.7
 
 def test_get_fit_range_update_directives(db_real_pinchoff, tmp_path):
     directives = get_fit_range_update_directives(

@@ -12,10 +12,10 @@ class DACChannelServer(DACChannelInterface):
     def name(self) -> str:
         return self._name
 
-    def _set_dc_voltage(self, new_val):
+    def _set_voltage(self, new_val):
         self.parent.send(self._set_msg("voltage", new_val))
 
-    def _get_dc_voltage(self):
+    def _get_voltage(self):
         val = self.parent.send(self._get_msg("voltage"))
         return float(self._parse_return(val))
 

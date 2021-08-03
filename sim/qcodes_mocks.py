@@ -1,10 +1,14 @@
 #pylint: disable=too-many-arguments, too-many-locals
 from typing import cast
 from qcodes import Instrument, Parameter
+from qcodes.utils.validators import Numbers
 
 from sim.data_provider import IDataProvider
 from sim.mock_device import IMockDevice
-from sim.mock_devices import MockSingleQuantumDot, MockDoubleQuantumDot
+from sim.mock_devices import (
+    MockSingleQuantumDot,
+    MockDoubleQuantumDot,
+    MockFieldWithRamp )
 from sim.mock_pin import IMockPin
 
 
@@ -116,6 +120,12 @@ class MockDoubleQuantumDotInstrument(MockDeviceInstrument):
             sim_pin=mock.src,
         )
         self.add_parameter(
+            "top_barrier",
+            parameter_class=SimulationParameter,
+            unit="V",
+            sim_pin=mock.top_barrier,
+        )
+        self.add_parameter(
             "left_barrier",
             parameter_class=SimulationParameter,
             unit="V",
@@ -156,3 +166,47 @@ class MockDoubleQuantumDotInstrument(MockDeviceInstrument):
     def mock_device(self) -> MockDoubleQuantumDot:
         """ The mock device that this instrument is wrapping """
         return cast(MockDoubleQuantumDot, super().mock_device)
+
+
+class MockMagneticFieldInstrument(MockDeviceInstrument):
+    """ Mock instrument that wraps a MockFieldWithRamp device and provides field
+        ramping functionality """
+    def __init__(
+            self,
+            name : str = "MockMagneticFieldInstrument",
+            valid_range: Numbers = Numbers(min_value=-1.0, max_value=1.0),
+            ramp_rate : float = 0.1,
+            blocking : bool = False,
+            start_field: float = 0.0
+        ):
+        mock = MockFieldWithRamp(name, ramp_rate, blocking, start_field)
+        super().__init__(name, mock)
+
+        self.add_parameter(
+            "field",
+            parameter_class=SimulationParameter,
+            initial_value=start_field,
+            unit="T",
+            vals = valid_range,
+            sim_pin=mock.field,
+        )
+
+        self.add_parameter(
+            "ramp_rate",
+            parameter_class=SimulationParameter,
+            initial_value=ramp_rate,
+            unit="T/min",
+            sim_pin=mock.ramp_rate
+        )
+
+        self.add_parameter(
+            "block",
+            parameter_class=SimulationParameter,
+            initial_value = 1.0 if blocking else 0.0,
+            unit="truthy",
+            sim_pin=mock.ramp_rate
+        )
+
+    @property
+    def mock_device(self) -> MockFieldWithRamp:
+        return cast (MockFieldWithRamp, super().mock_device)

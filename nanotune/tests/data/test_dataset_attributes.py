@@ -38,18 +38,14 @@ def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
         getattr(ds, attr)
 
     assert ds.device_name == "test_device"
-    assert ds._normalization_constants["dc_current"] == [0, 2]
+    assert ds._normalization_constants["transport"] == [0, 2]
     assert ds._normalization_constants["rf"] == [0, 1]
-    assert ds._normalization_constants["dc_sensor"] == [-0.32, 3]
-    assert ds.readout_methods == {"dc_current": "current", "dc_sensor": "sensor"}
+    assert ds._normalization_constants["sensing"] == [-0.32, 3]
+    assert ds.readout_methods == {"transport": "current", "sensing": "sensor"}
     assert ds.qc_run_id == 1
     assert ds.db_name == "temp.db"
     assert ds.quality == 1
     assert set(ds.label) == {"doubledot"}
-    # Check if signal has been normalized
-    # ds.signal_raw: not normalized
-    # ds.signal: normalized and nans removed
-    # assert np.max(ds.signal[0]) <= 1
 
 
 def test_dataset_defaults_for_missing_metadata(
@@ -57,10 +53,10 @@ def test_dataset_defaults_for_missing_metadata(
 ):
     ds = Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
 
-    assert ds.normalization_constants["dc_current"] == [0, 1.4]
+    assert ds.normalization_constants["transport"] == [0, 1.4]
     assert ds.normalization_constants["rf"] == [0, 1]
-    assert ds.normalization_constants["dc_sensor"] == [0, 1]
-    assert ds.readout_methods == {"dc_current": "current", "dc_sensor": "sensor"}
+    assert ds.normalization_constants["sensing"] == [0, 1]
+    assert ds.readout_methods == {"transport": "current", "sensing": "sensor"}
     assert ds.device_name == "noname_device"
     assert ds.quality is None
     assert ds.label == ["doubledot"]
@@ -71,7 +67,7 @@ def test_dataset_property_getters(nt_dataset_pinchoff, tmp_path):
 
     assert ds._normalization_constants == ds.normalization_constants
     assert ds.features == {
-        "dc_current": {
+        "transport": {
             "amplitude": 0.6,
             "slope": 1000,
             "low_signal": 0,
@@ -83,7 +79,7 @@ def test_dataset_property_getters(nt_dataset_pinchoff, tmp_path):
             "high_voltage": -0.03,
             "transition_voltage": -0.05,
         },
-        "dc_sensor": {
+        "sensing": {
             "amplitude": 0.5,
             "slope": 800,
             "low_signal": 0,

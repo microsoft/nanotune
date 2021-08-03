@@ -20,8 +20,8 @@ def test_dataset_1ddata_loading(nt_dataset_pinchoff, tmp_path):
     ds = Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
 
     assert ds.exp_id == 1
-    assert ds.dimensions["dc_current"] == 1
-    assert ds.dimensions["dc_sensor"] == 1
+    assert ds.dimensions["transport"] == 1
+    assert ds.dimensions["sensing"] == 1
 
     assert len(ds.raw_data) == 2
     assert len(ds.data) == 2
@@ -34,12 +34,12 @@ def test_dataset_1ddata_loading(nt_dataset_pinchoff, tmp_path):
     sig = 0.6 * (1 + np.tanh(1000 * vx + 50))
     assert np.allclose(ds_sig, sig)
 
-    assert ds.get_plot_label("dc_current", 0) == "voltage x [V]"
-    assert ds.get_plot_label("dc_sensor", 0) == "voltage x [V]"
-    assert ds.get_plot_label("dc_current", 1) == "dc current [A]"
-    assert ds.get_plot_label("dc_sensor", 1) == "dc sensor [A]"
+    assert ds.get_plot_label("transport", 0) == "voltage x [V]"
+    assert ds.get_plot_label("sensing", 0) == "voltage x [V]"
+    assert ds.get_plot_label("transport", 1) == "transport [A]"
+    assert ds.get_plot_label("sensing", 1) == "sensing [A]"
     with pytest.raises(AssertionError):
-        ds.get_plot_label("dc_sensor", 2)
+        ds.get_plot_label("sensing", 2)
 
 
 # TODO: check raw_data to data conversion
@@ -49,8 +49,8 @@ def test_dataset_2ddata_loading(nt_dataset_doubledot, tmp_path):
     ds = Dataset(1, db_name="temp.db", db_folder=str(tmp_path))
 
     assert ds.exp_id == 1
-    assert ds.dimensions["dc_current"] == 2
-    assert ds.dimensions["dc_sensor"] == 2
+    assert ds.dimensions["transport"] == 2
+    assert ds.dimensions["sensing"] == 2
     assert len(ds.raw_data) == 2
     assert len(ds.data) == 2
 
@@ -68,12 +68,12 @@ def test_dataset_2ddata_loading(nt_dataset_doubledot, tmp_path):
     assert np.allclose(ds_sig, ddot.T)
     assert np.allclose(ds_sens, sensor.T)
 
-    assert ds.get_plot_label("dc_current", 0) == "voltage x [V]"
-    assert ds.get_plot_label("dc_sensor", 0) == "voltage x [V]"
-    assert ds.get_plot_label("dc_current", 1) == "voltage y [V]"
-    assert ds.get_plot_label("dc_sensor", 1) == "voltage y [V]"
-    assert ds.get_plot_label("dc_current", 2) == "dc current [A]"
-    assert ds.get_plot_label("dc_sensor", 2) == "dc sensor [A]"
+    assert ds.get_plot_label("transport", 0) == "voltage x [V]"
+    assert ds.get_plot_label("sensing", 0) == "voltage x [V]"
+    assert ds.get_plot_label("transport", 1) == "voltage y [V]"
+    assert ds.get_plot_label("sensing", 1) == "voltage y [V]"
+    assert ds.get_plot_label("transport", 2) == "transport [A]"
+    assert ds.get_plot_label("sensing", 2) == "sensing [A]"
 
 
 def test_dataset_normalisation(nt_dataset_pinchoff, tmp_path):
@@ -82,18 +82,12 @@ def test_dataset_normalisation(nt_dataset_pinchoff, tmp_path):
     v_x = np.linspace(-0.1, 0, 100)
     sig = 0.6 * (1 + np.tanh(1000 * v_x + 50))
 
-    norm_sig = ds._normalize_data(sig, "dc_current")
+    norm_sig = ds._normalize_data(sig, "transport")
     manually_normalized = sig / 1.2
 
     assert np.allclose(manually_normalized, norm_sig)
     assert np.max(norm_sig) <= 1.0
     assert np.min(norm_sig) >= 0.0
-
-
-# TODO: def test_dataset_missing_data()
-# if np.isnan(np.sum(signal)):
-#     imp = SimpleImputer(missing_values=np.nan, strategy='mean')
-#     signal = imp.fit_transform(signal)
 
 
 def test_dataset_1d_frequencies(nt_dataset_pinchoff, tmp_path):
@@ -106,8 +100,8 @@ def test_dataset_1d_frequencies(nt_dataset_pinchoff, tmp_path):
     with pytest.raises(KeyError):
         ds.power_spectrum["freq_y"]
 
-    ds_vx = ds.data["dc_current"][default_coord_names["voltage"][0]].values
-    ds_sig = ds.data["dc_current"].values
+    ds_vx = ds.data["transport"][default_coord_names["voltage"][0]].values
+    ds_sig = ds.data["transport"].values
 
     xv = np.unique(ds_vx)
     signal = ds_sig.copy()
@@ -118,8 +112,8 @@ def test_dataset_1d_frequencies(nt_dataset_pinchoff, tmp_path):
 
     fx = fp.fftshift(fp.fftfreq(frequencies_res.shape[0], d=xv[1] - xv[0]))
     coord_name = default_coord_names["frequency"][0]
-    ds_fx = ds.power_spectrum["dc_current"][coord_name].values
-    ds_freq = ds.power_spectrum["dc_current"].values
+    ds_fx = ds.power_spectrum["transport"][coord_name].values
+    ds_freq = ds.power_spectrum["transport"].values
 
     assert np.allclose(ds_fx, fx)
     assert np.allclose(ds_freq, frequencies_res)
@@ -131,9 +125,9 @@ def test_dataset_2d_frequencies(nt_dataset_doubledot, tmp_path):
     ds.compute_power_spectrum()
     assert len(ds.power_spectrum) == 2
 
-    ds_vx = ds.data["dc_current"][default_coord_names["voltage"][0]].values
-    ds_vy = ds.data["dc_current"][default_coord_names["voltage"][1]].values
-    ds_curr = ds.data["dc_current"].values.copy()
+    ds_vx = ds.data["transport"][default_coord_names["voltage"][0]].values
+    ds_vy = ds.data["transport"][default_coord_names["voltage"][1]].values
+    ds_curr = ds.data["transport"].values.copy()
 
     xv = np.unique(ds_vx)
     yv = np.unique(ds_vy)
@@ -150,10 +144,10 @@ def test_dataset_2d_frequencies(nt_dataset_doubledot, tmp_path):
     # fx, fy = np.meshgrid(fx_1d, fy_1d, indexing="ij")
     # frequencies_res = np.abs(frequencies_res)
     coord_name = default_coord_names["frequency"][0]
-    ds_fx = ds.power_spectrum["dc_current"][coord_name].values
+    ds_fx = ds.power_spectrum["transport"][coord_name].values
     coord_name = default_coord_names["frequency"][1]
-    ds_fy = ds.power_spectrum["dc_current"][coord_name].values
-    ds_freq = ds.power_spectrum["dc_current"].values
+    ds_fy = ds.power_spectrum["transport"][coord_name].values
+    ds_freq = ds.power_spectrum["transport"].values
 
     assert np.allclose(ds_fx, fx_1d)
     assert np.allclose(ds_fy, fy_1d)
@@ -165,8 +159,8 @@ def test_1D_prepare_filtered_data(nt_dataset_pinchoff, tmp_path):
     pf.prepare_filtered_data()
 
     assert len(pf.filtered_data) == len(pf.data)
-    assert pf.filtered_data.dc_current.shape == pf.data.dc_current.shape
+    assert pf.filtered_data.transport.shape == pf.data.transport.shape
     rtol = 1e-05
     assert not np.allclose(
-        pf.filtered_data.dc_sensor.values, pf.data.dc_sensor.values, rtol=rtol
+        pf.filtered_data.sensing.values, pf.data.sensing.values, rtol=rtol
     )

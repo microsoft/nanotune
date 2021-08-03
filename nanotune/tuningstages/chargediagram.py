@@ -1,21 +1,20 @@
 import logging
 from functools import partial
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Sequence
 
-import qcodes as qc
 from typing_extensions import TypedDict
 
-import nanotune as nt
-from nanotune.classification.classifier import Classifier
 from nanotune.device_tuner.tuningresult import TuningResult
+from nanotune.device.device import Readout
 from nanotune.fit.dotfit import DotFit
 from nanotune.tuningstages.tuningstage import TuningStage
+from nanotune.tuningstages.settings import (DataSettings, SetpointSettings,
+    Classifiers)
 
 from .base_tasks import (  # please update docstrings if import path changes
-    DataSettingsDict, ReadoutMethodsDict, ReadoutMethodsLiteral,
-    SetpointSettingsDict, conclude_iteration_with_range_update,
+    conclude_iteration_with_range_update,
     get_extracted_features, get_fit_range_update_directives)
-from .chargediagram_tasks import (DotClassifierDict, classify_dot_segments,
+from .chargediagram_tasks import (classify_dot_segments,
                                   conclude_dot_classification,
                                   determine_dot_regime,
                                   get_dot_segment_regimes,
@@ -54,12 +53,10 @@ class ChargeDiagram(TuningStage):
         setpoint_settings: Dictionary with information about how to compute
             setpoints. Required keys are 'parameters_to_sweep',
             'safety_voltages', 'current_valid_ranges' and 'voltage_precision'.
-        readout_methods: Dictionary mapping string identifiers such as
-            'dc_current' to QCoDeS parameters measuring/returning the desired
-            quantity (e.g. current throught the device).
+        readout:
         current_valid_ranges: List of voltages ranges (tuples of floats) to
             measure.
-        safety_ranges: List of satefy voltages ranges, i.e. safety limits within
+        safety_voltage_ranges: List of satefy voltages ranges, i.e. safety limits within
             the device stays alive.
         target_regime: String indicating the desired final charge state/dot
             regime.
@@ -75,10 +72,10 @@ class ChargeDiagram(TuningStage):
 
     def __init__(
         self,
-        data_settings: DataSettingsDict,
-        setpoint_settings: SetpointSettingsDict,
-        readout_methods: ReadoutMethodsDict,
-        classifiers: DotClassifierDict,
+        data_settings: DataSettings,
+        setpoint_settings: SetpointSettings,
+        readout: Readout,
+        classifiers: Classifiers,
         target_regime: str = "doubledot",
         range_change_settings: Optional[RangeChangeSettingsDict] = None,
     ) -> None:
@@ -93,10 +90,8 @@ class ChargeDiagram(TuningStage):
                 'normalization_constants', 'segment_size'.
             setpoint_settings: Dictionary with information required to compute
                 setpoints. Necessary keys are 'current_valid_ranges',
-                'safety_ranges', 'parameters_to_sweep' and 'voltage_precision'.
-            readout_methods: Dictionary mapping string identifiers such as
-                'dc_current' to QCoDeS parameters measuring/returning the
-                desired quantity (e.g. current throught the device).
+                'safety_voltage_ranges', 'parameters_to_sweep' and 'voltage_precision'.
+            readout:
             classifiers: Pre-trained classifiers predicting single and dot
                 quality, and the dotregime. String keys indicating the type of
                 classifier map onto the classifiers itself. Required keys are
@@ -108,24 +103,15 @@ class ChargeDiagram(TuningStage):
             sweep.
 
         """
-
-        if "segment_db_folder" not in data_settings.keys():
-            data_settings["segment_db_folder"] = nt.config["db_folder"]
-        if "segment_db_name" not in data_settings.keys():
-            seg_db_name = f'segmented_{nt.config["db_name"]}'
-            data_settings["segment_db_name"] = seg_db_name
-        if "normalization_constants" not in data_settings.keys():
-            logger.warning("No normalisation constants specified.")
-        if "segment_size" not in data_settings.keys():
-            data_settings["segment_size"] = 0.02
-            logger.warning("Setting default segment size of 0.2V.")
+        if data_settings.normalization_constants is None:
+            raise ValueError("No normalisation constant.")
 
         TuningStage.__init__(
             self,
             "chargediagram",
             data_settings,
             setpoint_settings,
-            readout_methods,
+            readout,
         )
         if range_change_settings is None:
             range_change_settings = {}  # type: ignore
@@ -143,11 +129,11 @@ class ChargeDiagram(TuningStage):
     def conclude_iteration(
         self,
         tuning_result: TuningResult,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
         current_iteration: int,
         max_n_iterations: int,
-    ) -> Tuple[bool, List[Tuple[float, float]], List[str]]:
+    ) -> Tuple[bool, Sequence[Sequence[float]], List[str]]:
         """Method checking if one iteration of a run_stage measurement cycle has
         been successful. An iteration of such a measurement cycle takes data,
         performs a machine learning task, verifies and saves the machine
@@ -232,18 +218,18 @@ class ChargeDiagram(TuningStage):
 
         dot_segments = segment_dot_data(
             run_id,
-            self.data_settings["db_name"],
-            self.data_settings["db_folder"],
-            self.data_settings["segment_db_name"],
-            self.data_settings["segment_db_folder"],
-            self.data_settings["segment_size"],
+            self.data_settings.db_name,
+            self.data_settings.db_folder,
+            self.data_settings.segment_db_name,
+            self.data_settings.segment_db_folder,
+            self.data_settings.segment_size,
         )
 
         classification_outcome = classify_dot_segments(
             self.classifiers,
             [run_id for run_id in dot_segments.keys()],
-            self.data_settings["segment_db_name"],
-            self.data_settings["segment_db_folder"],
+            self.data_settings.segment_db_name,
+            self.data_settings.segment_db_folder,
         )
         segment_regimes = get_dot_segment_regimes(
             classification_outcome,
@@ -265,8 +251,8 @@ class ChargeDiagram(TuningStage):
         ml_result["features"] = get_extracted_features(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
         )
 
         return ml_result
@@ -274,8 +260,8 @@ class ChargeDiagram(TuningStage):
     def get_range_update_directives(
         self,
         run_id: int,
-        current_valid_ranges: List[Tuple[float, float]],
-        safety_voltage_ranges: List[Tuple[float, float]],
+        current_valid_ranges: Sequence[Sequence[float]],
+        safety_voltage_ranges: Sequence[Sequence[float]],
     ) -> Tuple[List[str], List[str]]:
         """Determines directives indicating if the current voltage ranges need
         to be extended or shifted. It first gets these directives from the data
@@ -289,7 +275,7 @@ class ChargeDiagram(TuningStage):
         Args:
             run_id: QCoDeS data run ID.
             current_valid_ranges: Last voltage range swept.
-            safety_ranges: Safety range of gate swept.
+            safety_voltage_ranges: Safety range of gate swept.
 
         Returns:
             list: List with range update directives.
@@ -299,8 +285,10 @@ class ChargeDiagram(TuningStage):
         fit_range_update_directives = get_fit_range_update_directives(
             self.fit_class,
             run_id,
-            self.data_settings["db_name"],
-            db_folder=self.data_settings["db_folder"],
+            self.data_settings.db_name,
+            db_folder=self.data_settings.db_folder,
+            noise_floor=self.data_settings.noise_floor,
+            dot_signal_threshold=self.data_settings.dot_signal_threshold,
         )
         (range_update_directives, issues) = get_range_directives_chargediagram(
             fit_range_update_directives,
