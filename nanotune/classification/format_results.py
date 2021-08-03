@@ -3,7 +3,7 @@ import json
 import os
 import pprint
 from typing import Any, Dict, List, Optional
-
+import numpy.typing as npt
 import numpy as np
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -38,7 +38,10 @@ name_mapping: Dict[str, str] = {
 }
 
 
-def merge_lists(old_list: np.ndarray, new_list: np.ndarray):
+def merge_lists(
+    old_list: npt.NDArray[np.float64],
+    new_list: npt.NDArray[np.float64],
+):
     """"""
     # TODO: rename to reflect what it actually does.
     if old_list.shape[0] == 0:

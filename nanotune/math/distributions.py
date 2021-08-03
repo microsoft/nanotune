@@ -4,7 +4,10 @@ import numpy as np
 from scipy.stats import uniform
 
 
-def uniform_ND(limits: Sequence[Sequence[int]], n_draw: int) -> List[List[int]]:
+def uniform_ND(
+    limits: Sequence[Sequence[int]],
+    n_draw: int,
+) -> List[List[int]]:
     """
     limits = [[limit_x1, limit_y1],
               [limit_x2, limit_y2],
@@ -28,4 +31,4 @@ def uniform_ND(limits: Sequence[Sequence[int]], n_draw: int) -> List[List[int]]:
 
         rvars[:, d] = rv.rvs(n_draw)
 
-    return rvars
+    return rvars.tolist()

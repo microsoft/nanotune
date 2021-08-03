@@ -4,6 +4,7 @@ import json
 import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
+import numpy.typing as npt
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -29,7 +30,7 @@ def load_syn_data(
     data_files: Optional[Dict[str, List[str]]] = None,
     data_types: Optional[List[str]] = None,
     for_CNN: bool = True,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """"""
     if data_files is None:
         # data_files = {
@@ -95,7 +96,7 @@ def load_exp_data(
     data_files: Optional[Dict[str, List[str]]] = None,
     data_types: Optional[List[str]] = None,
     for_CNN: bool = True,
-) -> List[Tuple[np.ndarray, np.ndarray]]:
+) -> List[Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]]:
     """"""
     if data_files is None:
         # data_files = {
@@ -200,7 +201,7 @@ def load_exp_data(
 def _load_good_and_poor(
     filenames: List[str],
     data_types: Optional[List[str]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """"""
     if data_types is None:
         data_types = ["signal"]
@@ -251,7 +252,7 @@ def _load_data(
     data_types: Optional[List[str]] = None,
     shuffle: bool = True,
     relevant_labels: Optional[List[int]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """
     Load data from multiple data files but do it seperaterly to ensure
     'select_equal_populations' won't accidentially
@@ -305,9 +306,9 @@ def _load_data(
 
 
 def select_equal_populations(
-    data: np.ndarray,
-    labels: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+    data: npt.NDArray[np.float64],
+    labels: npt.NDArray[np.int64],
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
     """
     Make sure we have 50% of one and 50% of other population
     """

@@ -270,7 +270,7 @@ def compute_linear_setpoints(
     for c_range in ranges:
         delta = abs(c_range[1] - c_range[0])
         n_points = int(round(delta / voltage_precision))
-        setpoints = np.linspace(c_range[0], c_range[1], n_points)
+        setpoints = np.linspace(c_range[0], c_range[1], n_points).tolist()
         setpoints_all.append(setpoints)
     return setpoints_all
 

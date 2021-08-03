@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import optimize
 from scipy.stats import multivariate_normal
+import numpy.typing as npt
 
 
 def gaussian1D_fct(height: float, center: float, width: float):
@@ -49,7 +50,7 @@ def gaussian2D_fct(
     )
 
 
-def moments2D(data: np.ndarray):
+def moments2D(data: npt.NDArray[np.float64]):
     """
     Estimates initial guesses for fit paramters of a 2d gaussian.
     Use like this:
