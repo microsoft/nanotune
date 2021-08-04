@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Interfaces &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>Instruments &amp; Interfaces &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -99,9 +99,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tuning/index.html">Tuning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instruments &amp; Interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#interfaces">Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-instruments">Mock instruments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
@@ -156,7 +159,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Interfaces</li>
+      <li>Instruments &amp; Interfaces</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -199,25 +202,37 @@
     text-align: unset;
 }
 </style>
+<div class="section" id="instruments-interfaces">
+<span id="drivers"></span><h1>Instruments &amp; Interfaces<a class="headerlink" href="#instruments-interfaces" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="interfaces">
-<h1>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h1>
-<p>The <cite>DACChannelInterface</cite> and <cite>DACInterface</cite> are interfaces to a DAC instrument
-and its channels, so that any kind of instrument can be used with nanotune. The
-interfaces need to be subclassed and all
-abstract methods need to be implemented. These methods define how for example
-parameters of DAC channels are accessed and set. It is the <cite>DACInterface</cite> subclass
-that needs to be used in measurements.</p>
+<h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h2>
+<p>The idea of using interfaces between the hardware used and
+nanotune is to keep the automation code general enough and independent of the
+instruments. It is up to the user to specify the methods getting and setting
+parameters by sub-classing the provided interfaces. There are two of them:
+the <cite>DACInterface</cite>, for a DAC instrument, and <cite>DACChannelInterface</cite>, for the
+DAC channel. It is the <cite>DACInterface</cite> subclass that needs to be used in
+measurements and its channels passed to the init method of <cite>DeviceChannel</cite>.</p>
+<p>Specifically, <cite>DACInterface</cite> establishes that it channel list is called
+<cite>channels</cite> and each channel is referred to by <cite>chXY</cite>, where XY is a
+two-digit number with a leading zero for single digits.
+The <cite>DACChannelInterface</cite> defines the voltage to be set and gotten by <cite>set_voltage</cite>
+and <cite>get_voltage</cite> respectively, and for the channel number to be specified by
+the <cite>channel_id</cite> property. The user also has to supply information about whether
+the channel’s voltage can be ramped by using a software ramp, by implementing the
+<cite>supports_hardware_ramp</cite> property. Other setter and getter methods similar to the
+voltage one define the remaining functionalities.</p>
+<p>An example on how to use these interfaces are <cite>MockDACChannel</cite> and <cite>MockDAC</cite>,
+whose API documentation can be found in <a class="reference internal" href="../api/drivers/index.html#drivers-api"><span class="std std-ref">nanotune.drivers</span></a>.</p>
 </div>
 <div class="section" id="mock-instruments">
-<h1>Mock instruments<a class="headerlink" href="#mock-instruments" title="Permalink to this headline">¶</a></h1>
+<h2>Mock instruments<a class="headerlink" href="#mock-instruments" title="Permalink to this headline">¶</a></h2>
 <p><cite>MockDACChannel</cite>, <cite>MockDAC</cite>, as well as <cite>MockLockin</cite> and <cite>MockRF</cite> are primarily
-used in unit and functional tests. However, as stated above <cite>MockDACChannel</cite>
-and <cite>MockDAC</cite>
-show how to use <cite>DACChannelInterface</cite> and <cite>DACInterface</cite>.</p>
+used in unit and functional tests, but can also appear in offline demos.</p>
 </div>
 <div class="section" id="server-client-setup-for-dacs">
-<h1>Server-Client Setup for DACs<a class="headerlink" href="#server-client-setup-for-dacs" title="Permalink to this headline">¶</a></h1>
-<p>In QCoDeS it is currently not possible to connect to the same instrument from
+<h2>Server-Client Setup for DACs<a class="headerlink" href="#server-client-setup-for-dacs" title="Permalink to this headline">¶</a></h2>
+<p>In QCoDeS, it is currently not possible to connect to the same instrument from
 the same python kernel, i.e. jupyter notebook. Sometimes it is convenient to
 do exactly that, such as when measuring multiple devices in parallel.
 A server-client setup is one option to enable such naive parallelism. In such
@@ -228,6 +243,7 @@ The <cite>DACChannelServer</cite> and <cite>DACClient</cite> are examples of how
 message passing can be implemented. It should be taken more as an inspiration,
 knowing that it is currently untested. No guarantee that it will not
 blow up a device.</p>
+</div>
 </div>
 
 

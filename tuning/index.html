@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuning &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>Tuning &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tuningstages" href="tuningstages.html" />
+    <link rel="next" title="Manual tuning" href="manual_tuning.html" />
     <link rel="prev" title="Quantum Dots" href="../quantum_dots/index.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -98,14 +98,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuningstages.html">Tuningstages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tuning.html">Tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
@@ -205,13 +205,35 @@
 </style>
 <div class="section" id="tuning">
 <span id="id1"></span><h1>Tuning<a class="headerlink" href="#tuning" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="device_tuner.html#device-tuner"><span class="std std-ref">Device tuner</span></a> module implements the tuning outlined in the workflow diagram
+<a class="reference internal" href="../overview/index.html#fig-workflow"><span class="std std-numref">Fig. 2</span></a>. Device characterization and dot tuning are covered by
+two separate sub-classes of the <cite>Tuner</cite> base: <cite>Characterizer</cite> and <cite>DotTuner</cite>.
+A tuner class acts on an instance of <a class="reference internal" href="../device/index.html#device"><span class="std std-ref">Device Abstraction</span></a> to perform the tuning.
+Each of them uses two different types of <a class="reference internal" href="tuningstages.html#tuningstages"><span class="std std-ref">Tuningstages</span></a>, the
+<cite>GateCharacterization1D</cite> and <cite>ChargeDiagram</cite>, to take and analyse data. Tuning
+results are saved in an instance of a <cite>TuningHistory</cite>, relying on <cite>TuningResult</cite>
+and <cite>MeasurementHistory</cite>, all of which are described in <a class="reference internal" href="results_saving.html#results-saving"><span class="std std-ref">Results saving</span></a>.</p>
+<p><a class="reference internal" href="../_images/nw_dots-13.svg"><img alt="nw13" src="../_images/nw_dots-13.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-20.svg"><img alt="array" src="../_images/nw_dots-20.svg" width="8%" /></a> <a class="reference internal" href="../_images/nw_dots-06.svg"><img alt="nw06" src="../_images/nw_dots-06.svg" width="40%" /></a>   <a class="reference internal" href="../_images/nw_dots-08.svg"><img alt="labels" src="../_images/nw_dots-08.svg" width="15%" /></a></p>
+<p>The general goal of dot tuning illustrated on a nanowire: by setting voltages to
+all electrostatic gates, well-defined quantum dots can be formed.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tuningstages.html">Tuningstages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tuning.html">Tuning</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tuning.html#tuner">Tuner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tuning.html#characterizer">Characterizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tuning.html#dottuner">DotTuner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_tuner.html">Device tuner</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html#tuner">Tuner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html#characterizer">Characterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html#dot-tuner">Dot tuner</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tuningstages.html">Tuningstages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tuningstages.html#gate-characterization-1d">Gate characterization 1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tuningstages.html#charge-diagram">Charge diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="results_saving.html">Results saving</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html#tuningresult">TuningResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html#measurementhistory">MeasurementHistory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html#tuninghistory">TuningHistory</a></li>
 </ul>
 </li>
 </ul>
@@ -224,7 +246,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tuningstages.html" class="btn btn-neutral float-right" title="Tuningstages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="manual_tuning.html" class="btn btn-neutral float-right" title="Manual tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="../quantum_dots/index.html" class="btn btn-neutral float-left" title="Quantum Dots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

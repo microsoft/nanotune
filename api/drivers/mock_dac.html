@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.mock_dac &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>nanotune.drivers.mock_dac &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -99,9 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
@@ -244,27 +242,33 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.supports_hardware_ramp">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">supports_hardware_ramp</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.supports_hardware_ramp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Should indicate whether the channel’s voltage can be ramped by
+using a hardware ramp.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_voltage">
 <span class="sig-name descname"><span class="pre">set_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_voltage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The channel’s voltage setting method.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_voltage">
 <span class="sig-name descname"><span class="pre">get_voltage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The channel’s voltage getting method.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_voltage_limit">
 <span class="sig-name descname"><span class="pre">set_voltage_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_limits</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_voltage_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_limit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the safe min and max voltages of the channel.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_voltage_limit">
 <span class="sig-name descname"><span class="pre">get_voltage_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_voltage_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_limit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the safe min and max voltages of the channel.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_voltage_inter_delay">
@@ -289,62 +293,80 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_voltage_step">
 <span class="sig-name descname"><span class="pre">get_voltage_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_voltage_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_voltage_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the <cite>step</cite> attribute of the voltage parameter.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_voltage_step">
 <span class="sig-name descname"><span class="pre">set_voltage_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_voltage_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_voltage_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the <cite>step</cite> attribute of the voltage parameter.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_frequency">
 <span class="sig-name descname"><span class="pre">get_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_frequency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s frequency if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_frequency">
-<span class="sig-name descname"><span class="pre">set_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_frequency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">set_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the channel’s frequency if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_offset">
 <span class="sig-name descname"><span class="pre">get_offset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_offset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s waveform offset if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_offset">
 <span class="sig-name descname"><span class="pre">set_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_offset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_offset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s waveform offset if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_amplitude">
 <span class="sig-name descname"><span class="pre">get_amplitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_amplitude" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s waveform amplitude if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_amplitude">
 <span class="sig-name descname"><span class="pre">set_amplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_amplitude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_amplitude" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s waveform amplitude if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_relay_state">
 <span class="sig-name descname"><span class="pre">get_relay_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dac_interface.html#nanotune.drivers.dac_interface.RelayState" title="nanotune.drivers.dac_interface.RelayState"><span class="pre">nanotune.drivers.dac_interface.RelayState</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_relay_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_relay_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets’s the channel’s relay state. E.g. float, or grounded.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_relay_state">
 <span class="sig-name descname"><span class="pre">set_relay_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_relay_state</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="dac_interface.html#nanotune.drivers.dac_interface.RelayState" title="nanotune.drivers.dac_interface.RelayState"><span class="pre">nanotune.drivers.dac_interface.RelayState</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_relay_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_relay_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets’s the channel’s relay state. E.g. float, or grounded.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_ramp_rate">
 <span class="sig-name descname"><span class="pre">set_ramp_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_ramp_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_ramp_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_ramp_rate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s voltage ramp rate.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_ramp_rate">
 <span class="sig-name descname"><span class="pre">get_ramp_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_ramp_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_ramp_rate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get channel’s voltage ramp rate</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_limit_rate">
@@ -369,17 +391,21 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.get_waveform">
 <span class="sig-name descname"><span class="pre">get_waveform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.get_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.get_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get channel’s waveform if AWG functionalities are supported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.set_waveform">
 <span class="sig-name descname"><span class="pre">set_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.set_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.set_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set channel’s waveform if AWG functionalities are supported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDACChannel.ramp_voltage">
 <span class="sig-name descname"><span class="pre">ramp_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_voltage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ramp_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDACChannel.ramp_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDACChannel.ramp_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ramps the channel’s voltage to a target voltage at either a
+specified ramp rate or for example self.get_ramp_rate().</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -391,12 +417,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDAC.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDAC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDAC.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Starts waveforms if AWG functionalities are supported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.mock_dac.MockDAC.sync">
 <span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/mock_dac.html#MockDAC.sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.mock_dac.MockDAC.sync" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Syncs the instrument.</p>
+</dd></dl>
 
 </dd></dl>
 

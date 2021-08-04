@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -97,9 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tuning/index.html">Tuning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
@@ -176,12 +174,12 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
 <span class="kn">from</span> <span class="nn">qcodes.instrument.base</span> <span class="kn">import</span> <span class="n">Instrument</span>
 <span class="kn">from</span> <span class="nn">qcodes.instrument.channel</span> <span class="kn">import</span> <span class="n">ChannelList</span><span class="p">,</span> <span class="n">InstrumentChannel</span>
 
 
 <div class="viewcode-block" id="RelayState"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.RelayState">[docs]</a><span class="k">class</span> <span class="nc">RelayState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Possible relay states of a DAC channel.&quot;&quot;&quot;</span>
     <span class="n">ground</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">smc</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">bus</span> <span class="o">=</span> <span class="mi">2</span>
@@ -189,98 +187,149 @@
 
 
 <div class="viewcode-block" id="DACChannelInterface"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface">[docs]</a><span class="k">class</span> <span class="nc">DACChannelInterface</span><span class="p">(</span><span class="n">InstrumentChannel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A DAC channel interface. By inheriting from this class and implementing</span>
+<span class="sd">    all abstract methods, the user specifies how the DAC and its channels are</span>
+<span class="sd">    set or gotten. It allows to keep the rest of nanotune independent of the</span>
+<span class="sd">    instruments used.</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        channel_id: The number of the channel on the DAC instrument.</span>
+<span class="sd">        supports_hardware_ramp: whether the channel&#39;s voltage can be ramped by</span>
+<span class="sd">        using a hardware ramp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_channel_id</span> <span class="o">=</span> <span class="n">channel_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The channel number. E.g. for dac.ch04, channel_id = 4.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_id</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">supports_hardware_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Should indicate whether the channel&#39;s voltage can be ramped by</span>
+<span class="sd">        using a hardware ramp.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="DACChannelInterface.set_voltage"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The channel&#39;s voltage setting method.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_voltage"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The channel&#39;s voltage getting method.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_voltage_limit"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_limit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_voltage_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limits</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the safe min and max voltages of the channel.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_voltage_limit"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_limit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_voltage_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Gets the safe min and max voltages of the channel.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_voltage_step"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_step">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Gets the `step` attribute of the voltage parameter.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_voltage_step"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_step">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_voltage_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the `step` attribute of the voltage parameter.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_frequency"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_frequency">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Gets the channel&#39;s frequency if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_frequency"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_frequency">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">set_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">set_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the channel&#39;s frequency if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_offset"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_offset">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Gets the channel&#39;s waveform offset if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_offset"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_offset">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the channel&#39;s waveform offset if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_amplitude"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_amplitude">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Gets the channel&#39;s waveform amplitude if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_amplitude"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_amplitude">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the channel&#39;s waveform amplitude if the DAC supports AWG</span>
+<span class="sd">        functionalities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_relay_state"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_relay_state">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_relay_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RelayState</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Gets&#39;s the channel&#39;s relay state. E.g. float, or grounded.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_relay_state"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_relay_state">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_relay_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="n">RelayState</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets&#39;s the channel&#39;s relay state. E.g. float, or grounded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.ramp_voltage"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.ramp_voltage">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">ramp_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_voltage</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ramp_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ramps the channel&#39;s voltage to a target voltage at either a</span>
+<span class="sd">        specified ramp rate or for example self.get_ramp_rate().&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_ramp_rate"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_ramp_rate">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_ramp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the channel&#39;s voltage ramp rate.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_ramp_rate"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_ramp_rate">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_ramp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get channel&#39;s voltage ramp rate&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.get_waveform"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.get_waveform">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get channel&#39;s waveform if AWG functionalities are supported.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACChannelInterface.set_waveform"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACChannelInterface.set_waveform">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set channel&#39;s waveform if AWG functionalities are supported.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="DACInterface"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACInterface">[docs]</a><span class="k">class</span> <span class="nc">DACInterface</span><span class="p">(</span><span class="n">Instrument</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface for a DAC instrument defining the name of its channel list and</span>
+<span class="sd">    how each individual channel is called. Its subclass should be used in</span>
+<span class="sd">    measurements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">DACChannelClass</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DACChannelInterface</span><span class="p">]):</span>
         <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">DACChannelClass</span><span class="p">,</span> <span class="n">DACChannelInterface</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -295,10 +344,12 @@
 
 <div class="viewcode-block" id="DACInterface.run"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACInterface.run">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts waveforms if AWG functionalities are supported.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="DACInterface.sync"><a class="viewcode-back" href="../../../api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACInterface.sync">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Syncs the instrument.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>
 

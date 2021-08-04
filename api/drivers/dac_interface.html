@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -99,9 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tuning/index.html">Tuning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classification/index.html">Classification</a></li>
@@ -231,7 +229,7 @@
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.RelayState">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_interface.</span></span><span class="sig-name descname"><span class="pre">RelayState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#RelayState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.RelayState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/enum.html#enum.Enum" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
-<p>An enumeration.</p>
+<p>Possible relay states of a DAC channel.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.RelayState.ground">
 <span class="sig-name descname"><span class="pre">ground</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#nanotune.drivers.dac_interface.RelayState.ground" title="Permalink to this definition">¶</a></dt>
@@ -258,110 +256,149 @@
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_interface.</span></span><span class="sig-name descname"><span class="pre">DACChannelInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/channel.html#qcodes.instrument.channel.InstrumentChannel" title="(in QCoDeS v0.27.0+75.g278157520)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.channel.InstrumentChannel</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABC" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>A DAC channel interface. By inheriting from this class and implementing
+all abstract methods, the user specifies how the DAC and its channels are
+set or gotten. It allows to keep the rest of nanotune independent of the
+instruments used.</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>channel_id: The number of the channel on the DAC instrument.
+supports_hardware_ramp: whether the channel’s voltage can be ramped by
+using a hardware ramp.</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.channel_id">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">channel_id</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.channel_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The channel number. E.g. for dac.ch04, channel_id = 4.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.supports_hardware_ramp">
 <em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">supports_hardware_ramp</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.supports_hardware_ramp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Should indicate whether the channel’s voltage can be ramped by
+using a hardware ramp.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_voltage">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_voltage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The channel’s voltage setting method.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_voltage">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_voltage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The channel’s voltage getting method.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_limit">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_voltage_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_limits</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_voltage_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_limit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the safe min and max voltages of the channel.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_limit">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_voltage_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_voltage_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_limit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the safe min and max voltages of the channel.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_step">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_voltage_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_voltage_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_voltage_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the <cite>step</cite> attribute of the voltage parameter.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_step">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_voltage_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_voltage_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_voltage_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the <cite>step</cite> attribute of the voltage parameter.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_frequency">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_frequency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s frequency if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_frequency">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_frequency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the channel’s frequency if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_offset">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_offset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_offset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s waveform offset if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_offset">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_offset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s waveform offset if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_amplitude">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_amplitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_amplitude" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets the channel’s waveform amplitude if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_amplitude">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_amplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_amplitude" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s waveform amplitude if the DAC supports AWG
+functionalities.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_relay_state">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_relay_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nanotune.drivers.dac_interface.RelayState" title="nanotune.drivers.dac_interface.RelayState"><span class="pre">nanotune.drivers.dac_interface.RelayState</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_relay_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_relay_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Gets’s the channel’s relay state. E.g. float, or grounded.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_relay_state">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_relay_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#nanotune.drivers.dac_interface.RelayState" title="nanotune.drivers.dac_interface.RelayState"><span class="pre">nanotune.drivers.dac_interface.RelayState</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_relay_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_relay_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets’s the channel’s relay state. E.g. float, or grounded.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.ramp_voltage">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">ramp_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_voltage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ramp_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.ramp_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.ramp_voltage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ramps the channel’s voltage to a target voltage at either a
+specified ramp rate or for example self.get_ramp_rate().</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_ramp_rate">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_ramp_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_ramp_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_ramp_rate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the channel’s voltage ramp rate.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_ramp_rate">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_ramp_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_ramp_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_ramp_rate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get channel’s voltage ramp rate</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.get_waveform">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_waveform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.get_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.get_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get channel’s waveform if AWG functionalities are supported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface.set_waveform">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">set_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface.set_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface.set_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set channel’s waveform if AWG functionalities are supported.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -369,15 +406,20 @@
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACInterface">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_interface.</span></span><span class="sig-name descname"><span class="pre">DACInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DACChannelClass</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nanotune.drivers.dac_interface.DACChannelInterface" title="nanotune.drivers.dac_interface.DACChannelInterface"><span class="pre">nanotune.drivers.dac_interface.DACChannelInterface</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACInterface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/base.html#qcodes.instrument.base.Instrument" title="(in QCoDeS v0.27.0+75.g278157520)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.base.Instrument</span></code></a></p>
+<p>Interface for a DAC instrument defining the name of its channel list and
+how each individual channel is called. Its subclass should be used in
+measurements.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACInterface.run">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACInterface.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACInterface.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Starts waveforms if AWG functionalities are supported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACInterface.sync">
 <em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACInterface.sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACInterface.sync" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Syncs the instrument.</p>
+</dd></dl>
 
 </dd></dl>
 

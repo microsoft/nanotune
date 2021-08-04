@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuningstages &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>Tuningstages &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tuning" href="tuning.html" />
-    <link rel="prev" title="Tuning" href="index.html" />
+    <link rel="next" title="Results saving" href="results_saving.html" />
+    <link rel="prev" title="Device tuner" href="device_tuner.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -98,14 +98,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tuning</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Tuningstages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tuning.html">Tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tuningstages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gate-characterization-1d">Gate characterization 1D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charge-diagram">Charge diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
@@ -206,7 +210,7 @@
 }
 </style>
 <div class="section" id="tuningstages">
-<h1>Tuningstages<a class="headerlink" href="#tuningstages" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Tuningstages<a class="headerlink" href="#tuningstages" title="Permalink to this headline">¶</a></h1>
 <p>The TuningStage abstraction represents a typical step of both manual and
 automated tuning, its workflow is illustrates on the left. The TuningStage
 class itself is meant to be sub-classed, where the sub-classes implement the
@@ -235,6 +239,12 @@ update_current_ranges and get_next_actions. These depend on the type of
 measurements and hence require specific implementations. Currently implemented
 subclasses are GateCharacterization1D and ChargeDiagram. If required, these
 have additional attributes or methods.</p>
+<div class="section" id="gate-characterization-1d">
+<h2>Gate characterization 1D<a class="headerlink" href="#gate-characterization-1d" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="charge-diagram">
+<h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -243,8 +253,8 @@ have additional attributes or methods.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tuning.html" class="btn btn-neutral float-right" title="Tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="results_saving.html" class="btn btn-neutral float-right" title="Results saving" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="device_tuner.html" class="btn btn-neutral float-left" title="Device tuner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

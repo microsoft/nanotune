@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuning &mdash; nanotune 0+untagged.714.g4c2b47d documentation</title>
+  <title>Manual tuning &mdash; nanotune 0+untagged.715.gec37023 documentation</title>
   
 
   
@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Device Abstraction" href="../device/index.html" />
-    <link rel="prev" title="Tuningstages" href="tuningstages.html" />
+    <link rel="next" title="Device tuner" href="device_tuner.html" />
+    <link rel="prev" title="Tuning" href="index.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.714.g4c2b47d
+                0+untagged.715.gec37023
               </div>
             
           
@@ -98,19 +98,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tuning</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Manual tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuningstages.html">Tuningstages</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Tuning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#tuner">Tuner</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#characterizer">Characterizer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dottuner">DotTuner</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#mock-instruments">Mock instruments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html#server-client-setup-for-dacs">Server-Client Setup for DACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
@@ -167,13 +162,13 @@
         
           <li><a href="index.html">Tuning</a> &raquo;</li>
         
-      <li>Tuning</li>
+      <li>Manual tuning</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/tuning/tuning.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/tuning/manual_tuning.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -210,52 +205,32 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="tuning">
-<h1>Tuning<a class="headerlink" href="#tuning" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-<div class="figure align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/workflow_small_1.png"><img alt="Tuning workflow overview." src="../_images/workflow_small_1.png" style="width: 45%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Overview of tuning workflow.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-<div class="section" id="tuner">
-<h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="characterizer">
-<h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="dottuner">
-<h2>DotTuner<a class="headerlink" href="#dottuner" title="Permalink to this headline">¶</a></h2>
-<p>entire tuning of 2D device: dottuner.tune</p>
-<div class="figure align-center" id="id2">
-<a class="reference internal image-reference" href="../_images/algorithm_dot_tuning.svg"><img alt="dot tuning algorithm" src="../_images/algorithm_dot_tuning.svg" width="55%" /></a>
-<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Dot tuning algorithm implemented by the DotTuner class.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-<p>“Set top barrier”: <cite>set_helper_gate</cite></p>
-<p>“Characterize central barrier” and “Set central barrier”: <cite>set_central_barrier</cite></p>
-<p>“Characterize outer barriers” and “Set outer barriers”: <cite>set_outer_barriers</cite></p>
-<p>“Characterize plungers”: <cite>characterize_plunger</cite>, used in <cite>set_valid_plunger_ranges</cite></p>
-<p>“Characterize charge stability diagram” and “Classify charge state”: <cite>get_charge_diagram</cite>, classification result in returned TuningResult instance.
-<cite>get_charge_diagram</cite> changes plunger ranges if needed, executing the small inner lop on the left.</p>
-<p>“Change central barrier”: <cite>update_gate_configuration</cite></p>
-<p>The loop going left and right from “Classify state” are in <cite>update_gate_configuration</cite> (calls <cite>adjust_all_barriers_loop</cite>, which in turn calls <cite>adjust_all_barriers</cite>, which sets the top barrier, central barrier)</p>
+<div class="section" id="manual-tuning">
+<span id="id1"></span><h1>Manual tuning<a class="headerlink" href="#manual-tuning" title="Permalink to this headline">¶</a></h1>
+<p><em>In preparation</em></p>
+<p>Set barriers</p>
+<blockquote>
+<div><p><a class="reference internal" href="../_images/nw_dots-01.svg"><img alt="empty" src="../_images/nw_dots-01.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-20.svg"><img alt="array" src="../_images/nw_dots-20.svg" width="08%" /></a> <a class="reference internal" href="../_images/nw_dots-02.svg"><img alt="barriers" src="../_images/nw_dots-02.svg" width="45%" /></a></p>
+</div></blockquote>
+<p><a class="reference internal" href="../_images/nw_dots-07.svg"><img alt="labelsgates" src="../_images/nw_dots-07.svg" width="15%" /></a></p>
+<p>Take charge diagram</p>
+<p>Single dot:</p>
+<blockquote>
+<div><p><a class="reference internal" href="../_images/nw_dots-16.svg"><img alt="labels" src="../_images/nw_dots-16.svg" width="15%" /></a> <a class="reference internal" href="../_images/nw_dots-14.svg"><img alt="sweepsingle" src="../_images/nw_dots-14.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-12.svg"><img alt="singlechargediagram" src="../_images/nw_dots-12.svg" width="30%" /></a></p>
+</div></blockquote>
+<p>Double dot:</p>
+<blockquote>
+<div><p><a class="reference internal" href="../_images/nw_dots-15.svg"><img alt="chargediagram" src="../_images/nw_dots-15.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-11.svg"><img alt="chargediagrammeasurement" src="../_images/nw_dots-11.svg" width="30%" /></a></p>
+</div></blockquote>
+<p>Fine tuning:</p>
+<p>Single electron regime</p>
+<blockquote>
+<div><p><a class="reference internal" href="../_images/nw_dots-06.svg"><img alt="singleelectron" src="../_images/nw_dots-06.svg" width="45%" /></a></p>
+</div></blockquote>
 <dl class="simple">
-<dt>left loop:</dt><dd><ul class="simple">
-<li><p>uses termination reasons to update outer barriers first (if device was too pinched off or open)</p></li>
-<li><p>update top barrier/helper gate in <cite>adjust_all_barriers</cite>, called in <cite>adjust_all_barriers_loop</cite></p></li>
-<li><p>update top barrier</p></li>
-</ul>
+<dt>Tunnel coupling fine tuning</dt><dd><p><a class="reference internal" href="../_images/nw_dots-09.svg"><img alt="tunnelcoupling" src="../_images/nw_dots-09.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-10.svg"><img alt="tunnelcoupling2" src="../_images/nw_dots-10.svg" width="45%" /></a></p>
 </dd>
 </dl>
-<p>right loop:
-- change central barrier with <cite>initial_voltage_update</cite> in <cite>adjust_all_barriers_loop</cite>.
-- if central barrier is set successfully, the loop in <cite>adjust_all_barriers_loop</cite> is not executed and thus tuning resumes with plunger range characterization.
-- if after setting the central barrier other changes are needed, the loop in <cite>adjust_all_barriers_loop</cite> will set the top barrier, then central and also outer barriers.</p>
-<p>In both loops: of outer barrier can not be set, the top barrier is changed again.</p>
-<p><cite>set_central_and_outer_barriers</cite>: loop set central barrier - set outer barriers - update helper gate - set outer barriers</p>
-<p><cite>adjust_all_barriers_loop</cite>: update voltages based on input directives and run <cite>adjust_all_barriers</cite> in a loop.</p>
-<p><cite>choose_new_gate_voltage</cite>:</p>
-</div>
 </div>
 
 
@@ -264,8 +239,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../device/index.html" class="btn btn-neutral float-right" title="Device Abstraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="tuningstages.html" class="btn btn-neutral float-left" title="Tuningstages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="device_tuner.html" class="btn btn-neutral float-right" title="Device tuner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
