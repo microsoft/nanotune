@@ -23,7 +23,7 @@ class DACChannelInterface(InstrumentChannel, ABC):
     Properties:
         channel_id: The number of the channel on the DAC instrument.
         supports_hardware_ramp: whether the channel's voltage can be ramped by
-            using a hardware ramp.
+        using a hardware ramp.
     """
 
     def __init__(self, parent, name, channel_id):
