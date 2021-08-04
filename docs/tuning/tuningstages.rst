@@ -1,4 +1,5 @@
-============
+.. _tuningstages:
+
 Tuningstages
 ============
 
@@ -33,3 +34,10 @@ update_current_ranges and get_next_actions. These depend on the type of
 measurements and hence require specific implementations. Currently implemented
 subclasses are GateCharacterization1D and ChargeDiagram. If required, these
 have additional attributes or methods.
+
+
+Gate characterization 1D
+------------------------
+
+Charge diagram
+--------------

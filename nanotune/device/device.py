@@ -169,7 +169,7 @@ class Device(DelegateInstrument):
             fit and can depend on the voltages of other gates.
         current_valid_ranges: dict mapping gate IDs onto the gate's
             current valid range. These ranges will most probably depend on
-            voltaged of other gates and will be updated during tuning. These
+            voltages of other gates and will be updated during tuning. These
             are the ranges which will be swept during measurements. They
             represent the voltage range in which interesting/desired features
             are expected.
