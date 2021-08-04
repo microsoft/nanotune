@@ -36,8 +36,8 @@ subclasses are GateCharacterization1D and ChargeDiagram. If required, these
 have additional attributes or methods.
 
 
-GateCharacterization1D
-----------------------
+Gate characterization 1D
+------------------------
 
-ChargeDiagram
--------------
+Charge diagram
+--------------
