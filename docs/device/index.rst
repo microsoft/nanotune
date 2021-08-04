@@ -167,4 +167,3 @@ device channels serving the specific purpose. For example, the method
 `barriers` needs to return the gate IDs of all barriers of the device.
 `DeviceLayout` is a dataclass inheriting from the abstract `IDeviceLayout`.
 An example of a device layout implement is `DoubleDotLayout`.
-

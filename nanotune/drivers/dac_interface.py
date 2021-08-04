@@ -179,4 +179,3 @@ class DACInterface(Instrument):
     def sync(self):
         """Syncs the instrument."""
         pass
-
