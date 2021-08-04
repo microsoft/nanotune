@@ -96,8 +96,8 @@ class MockDACChannel(DACChannelInterface):
     def get_frequency(self) -> float:
         return self._frequency
 
-    def set_frequency(self, new_frequency: float) -> None:
-        self._frequency = new_frequency
+    def set_frequency(self, value: float) -> None:
+        self._frequency = value
 
     def get_offset(self) -> float:
         return self._offset
