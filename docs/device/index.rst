@@ -119,7 +119,13 @@ Device channel
 --------------
 
 A `DeviceChannel` is a wrapper of an instrument channel parameter such as a
-DAC channel with added functionalities.
+DAC channel with added functionalities. The channel wrapped and passed to init
+function needs to either implement the methods of a `DACChannelInterface` described in
+:ref:`drivers`, or be in subclass thereof. This interface setup ensures that
+channels of different instruments can be used, where it is up to the user to
+implement the 'glue' between hardware and software.
+
+Main attributes of `DeviceChannel` are:
 
 gate ID
     Identifier indicating which gate of a device layout the channel

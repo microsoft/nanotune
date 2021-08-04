@@ -4,30 +4,43 @@
 Instruments & Interfaces
 ========================
 
+
 Interfaces
 ----------
 
-The `DACChannelInterface` and `DACInterface` are interfaces to a DAC instrument
-and its channels, so that any kind of instrument can be used with nanotune. The
-interfaces need to be subclassed and all
-abstract methods need to be implemented. These methods define how for example
-parameters of DAC channels are accessed and set. It is the `DACInterface` subclass
-that needs to be used in measurements.
+The idea of using interfaces between the hardware used and
+nanotune is to keep the automation code general enough and independent of the
+instruments. It is up to the user to specify the methods getting and setting
+parameters by sub-classing the provided interfaces. There are two of them:
+the `DACInterface`, for a DAC instrument, and `DACChannelInterface`, for the
+DAC channel. It is the `DACInterface` subclass that needs to be used in
+measurements and its channels passed to the init method of `DeviceChannel`.
+
+Specifically, `DACInterface` establishes that it channel list is called
+`channels` and each channel is referred to by `chXY`, where XY is a
+two-digit number with a leading zero for single digits.
+The `DACChannelInterface` defines the voltage to be set and gotten by `set_voltage`
+and `get_voltage` respectively, and for the channel number to be specified by
+the `channel_id` property. The user also has to supply information about whether
+the channel's voltage can be ramped by using a software ramp, by implementing the
+`supports_hardware_ramp` property. Other setter and getter methods similar to the
+voltage one define the remaining functionalities.
+
+An example on how to use these interfaces are `MockDACChannel` and `MockDAC`,
+whose API documentation can be found in :ref:`drivers_api`.
 
 
 Mock instruments
 ----------------
 
 `MockDACChannel`, `MockDAC`, as well as `MockLockin` and `MockRF` are primarily
-used in unit and functional tests. However, as stated above `MockDACChannel`
-and `MockDAC`
-show how to use `DACChannelInterface` and `DACInterface`.
+used in unit and functional tests, but can also appear in offline demos.
 
 
 Server-Client Setup for DACs
 ----------------------------
 
-In QCoDeS it is currently not possible to connect to the same instrument from
+In QCoDeS, it is currently not possible to connect to the same instrument from
 the same python kernel, i.e. jupyter notebook. Sometimes it is convenient to
 do exactly that, such as when measuring multiple devices in parallel.
 A server-client setup is one option to enable such naive parallelism. In such
