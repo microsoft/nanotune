@@ -39,8 +39,8 @@ class DACChannelServer(DACChannelInterface):
         val = self.parent.send(self._get_msg("frequency"))
         return float(self._parse_return(val))
 
-    def set_frequency(self, new_frequency) -> None:
-        self.parent.send(self._set_msg("frequency", new_frequency))
+    def set_frequency(self, value) -> None:
+        self.parent.send(self._set_msg("frequency", value))
 
     def get_offset(self) -> float:
         val = self.parent.send(self._get_msg("offset"))
