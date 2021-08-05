@@ -39,5 +39,11 @@ have additional attributes or methods.
 Gate characterization 1D
 ------------------------
 
+`example notebook <../examples/Example_gate_characterization.ipynb>`__,
+
+
 Charge diagram
 --------------
+
+`example notebook <../examples/Example_charge_diagram_stage.ipynb>`__,
+

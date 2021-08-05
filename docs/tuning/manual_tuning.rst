@@ -55,9 +55,28 @@ Single dot:
 
     |labels| |sweepsingle| |singlechargediagram|
 
+
+Good single dots show clear and sharp diagonal lines. Taking one-dimensional
+traces give typical Coulomb oscillation sweeps.
+Taking a larger scan can look like the measurement below.
+nanotune avoid these large sweeps by doing a GateCharacterization1D
+beforehand, determining more precise ranges for both gates.
+Poor single dot. A dot starts to form but diagonal lines are not sharp. 1D
+Coulomb oscillations would show broad, doubled, or any other deformed peaks.
+
+.. _single_dot:
+.. figure:: ./figs/dotfit_deafcafe-0200-0004-0000-0165b06bd0af.svg
+    :alt: Double dot fit.
+    :align: center
+    :width: 60.0%
+
+    Example of a double dot fit.
+
 Double dot:
 
     |chargediagram| |chargediagrammeasurement|
+
+A double dot regime can look different between tune-ups or devices.
 
 Fine tuning:
 

@@ -78,8 +78,9 @@ The steps outlined in the diagram have a corresponding method within the class.
 
 
 The loop going left and right from "Classify state" are implemented by
-`update_gate_configuration`, which calls `adjust_all_barriers_loop` and which
-in turn calls `adjust_all_barriers`. This sets the top and central barrier.
+`update_gate_configuration`. This method calls `adjust_all_barriers_loop`, which
+in turn calls `adjust_all_barriers`. This also sets new voltages to the helper
+and central barrier if required.
 
 The large left loop:
  - uses termination reasons to update outer barriers first (if device was too pinched off or open)
