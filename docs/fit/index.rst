@@ -3,19 +3,35 @@
 Data fitting
 ============
 
-Date fitting base class
------------------------
+Base class
+----------
 
-The abstract DataFit class is the base class for fitting classes. It's purpose
-is to ensure that sub-classes have a find_fit and plot_fit method, as well as a
-next_actions attribute which are called when running using an instance of a
-TuningStage.
-The plot_fit method extracts features and determines the transport regime
-(open, closed, intermediate). In case of a closed or open regime,
-the next_actions list is populated with strings suggesting how voltages need to
-be adjusted. If the normalized current is below a lower threshold,
-"more positive" is added and "more negative" if the normalized current is above
-a upper threshold.
+The abstract `DataFit` class is the base for all fitting classes. It's main purpose
+is to establish the presence of `find_fit` and `plot_fit` methods, as well as the
+`next_actions` attribute required by :ref:`tuningstages`.
+
+The `find_fit` method extracts features and determines the transport regime,
+i.e. open, closed or intermediate. In case of a closed or open regime,
+the `next_actions` list is populated with suggesting how voltages need to
+be adjusted, e.g. more positive or negative.
+The `plot_fit` method displays a plot with important features shown.
+
+It also provides a method to save extracted features to metadata. Specifically,
+the following code is used for this:
+
+.. code-block:: python
+
+    nt.set_database(self.db_name, db_folder=self.db_folder)
+    ds = qc.load_by_run_spec(captured_run_id=self.qc_run_id)
+    try:
+        nt_meta = json.loads(ds.get_metadata(nt.meta_tag))
+    except (RuntimeError, TypeError, OperationalError):
+        nt_meta = {}
+    nt_meta["features"] = self.features
+    ds.add_metadata(nt.meta_tag, json.dumps(nt_meta))
+
+More details about the features extracted for each measurement can be found in
+:ref:`pinchoff`, :ref:`dotfit` and :ref:`coulomboscillationfit`.
 
 .. toctree::
    :maxdepth: 2
