@@ -46,4 +46,3 @@ Charge diagram
 --------------
 
 `example notebook <../examples/Example_charge_diagram_stage.ipynb>`__,
-

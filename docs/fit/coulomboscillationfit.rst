@@ -20,4 +20,3 @@ nanotune tuning procedure (autonomous tuning paper).
     :width: 60.0%
 
     Example of a Coulomb oscillation fit.
-

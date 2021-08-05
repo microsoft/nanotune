@@ -53,6 +53,3 @@ Pinchoff labels
     or gates that pinch off in stages, with some noise, or with a small slope. It is up to the labeller to
     decide which types of imperfection belong to which category. Ideally, this decision
     is made beforehand, to ensure consistent labelling.
-
-
-
