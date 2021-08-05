@@ -145,6 +145,7 @@ class CoulombOscillationFit(DataFit):
         filename: Optional[str] = None,
         file_location: Optional[str] = None,
         plot_params: Optional[plot_params_type] = None,
+        plot_format: str = "png",
     ) -> AxesTuple:
         """"""
         if plot_params is None:
@@ -232,7 +233,7 @@ class CoulombOscillationFit(DataFit):
             else:
                 filename = os.path.splitext(filename)[0]
 
-            path = os.path.join(file_location, filename + ".png")
-            plt.savefig(path, format="png", dpi=600, bbox_inches="tight")
+            path = os.path.join(file_location, filename + "."+ plot_format)
+            plt.savefig(path, format=plot_format, dpi=600, bbox_inches="tight")
 
         return ax, None
