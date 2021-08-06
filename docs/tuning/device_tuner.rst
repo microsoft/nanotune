@@ -129,4 +129,3 @@ Demonstration
     manual input. For good devices, only one pass through the algorithm is
     required, meaning only a few 1D and a one 2D measurement is taken.
     The loops adjusting barriers is not executed.
-
