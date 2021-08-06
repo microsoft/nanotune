@@ -85,7 +85,7 @@ These columns are initialized whenever a database is created using
 Data flow
 ---------
 
-The diagram shown in figure :numref:`fig_data_flow` illustrates the data and
+The diagram shown in :numref:`fig_data_flow` illustrates the data and
 instruction flow of quantum measurements.
 The dotted ellipses indicates which stages are covered by QCoDeS or nanotune.
 QCoDeS provides an interface to room-temperature instruments (i.e. drivers)

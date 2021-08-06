@@ -1,6 +1,6 @@
 .. _device:
 
-Device Abstraction
+Device abstraction
 ==================
 
 The physical device or sample is represented by an instance of a `Device` class, which
@@ -108,8 +108,8 @@ The device can be initialized using a yaml file. Example:
         transition_voltages:
             top_barrier: -0.4
 
-NormalizationConstants
-----------------------
+Normalization constants
+-----------------------
 
 This dataclass is used to hold and update normalization constants of a device.
 Each attribute keeps track of the constants of one readout method, e.g. transport,
