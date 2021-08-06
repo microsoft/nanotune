@@ -99,7 +99,7 @@ PyWavelets==1.1.1
 PyYAML==5.4.1
 pyzmq==22.2.0
 qcodes>=0.27.0
-reportlab==3.5.68
+reportlab==3.6.0
 requests==2.26.0
 requests-oauthlib==1.3.0
 requirements-parser==0.2.0
