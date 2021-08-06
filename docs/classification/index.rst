@@ -54,6 +54,24 @@ below.
     Example of a double dot fit.
 
 
+
+.. _double_dot_example3:
+.. figure:: ./figs/dotfit_deafcafe-0200-0004-0000-01659d4319a6.svg
+    :alt: Double dot fit.
+    :align: center
+    :width: 60.0%
+
+    Example of a double dot fit.
+
+.. _double_dot_example4:
+.. figure:: ./figs/dotfit_deafcafe-0200-0004-0000-01659f3e3104.svg
+    :alt: Double dot fit.
+    :align: center
+    :width: 60.0%
+
+    Example of a double dot fit.
+
+
 Synthetic data
 --------------
 
@@ -68,3 +86,4 @@ Comment on labelling
 - qflow labels are different
 - make difference between good regime but poor measurement due to noise in readout?
 - determine which data noise reduction can be used to improve accuracy.
+- need to segment data as different areas of the same diagram can show different regimes.
