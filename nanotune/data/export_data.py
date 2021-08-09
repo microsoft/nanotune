@@ -1,18 +1,13 @@
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import scipy.fft as fp
-from qcodes.dataset.experiment_container import load_by_id
-from qcodes.dataset.measurements import Measurement
 from scipy.ndimage import generic_gradient_magnitude, sobel
 from skimage.transform import resize
 
 import nanotune as nt
-from nanotune.data.databases import get_dataIDs
-from nanotune.data.dataset import Dataset
-from nanotune.fit.dotfit import DotFit
 
 logger = logging.getLogger(__name__)
 N_2D = nt.config["core"]["standard_shapes"]["2"]
@@ -24,14 +19,14 @@ def export_label(
     quality: int,
     category: str,
 ) -> int:
-    """
-    # Condense dot labels to:
-    # 0: poor singledot
-    # 1: good singledot
-    # 2: poor doubledot
-    # 3: good doubledot
+    """Merges binary labels of single and double dot qualities to a single
+    label. Only if `dotregime` is specified, for all other the initial
+    quality labels are returned.
+    It translates a dot regime label to: 0 - poor singledot, 1 - good singledot,
+    2 - poor doubledot, 3 - good doubledot.
 
-    All others remain the same i.e. this method oly returns the quality
+    Returns:
+        int: new label.
     """
     good = bool(quality)
     if category == "dotregime":
@@ -70,12 +65,22 @@ def prep_data(
     category: str,
     flip_data: bool = False
 ) -> List[List[List[float]]]:
-    """
-    Remove nans, normalize by normalization_constants and reshape into
-    target shape
-    shape convention:
-    shape =  datatypes, #samples, #features]
-    We return 1 sample and 2 datatypes
+    """Prepares data for classification.
+    It combines normalized data, its gradient, Fourier frequencies and
+    extracted features into a multidimensional list.
+    All sublists are reshaped to a standard shape, defined in config.json
+    under the `standard_shapes` key.
+
+    Args:
+        dataset: instance of nanotune dataset whose data should be prepared.
+        category: as which category/type of data, e.g. `pinchoff`, `singledot`
+            etc, it should be treated.
+        flip_data: whether data should be flipped. Used to simulate pinchoff
+            curves measured in rf sensing.
+
+    Returns:
+        list: multidimensional list. First sublist is normalized data,
+            second Fourier frequencies, third gradient and fourth features.
     """
     assert category in nt.config["core"]["features"].keys()
     if len(dataset.power_spectrum) == 0:
@@ -163,7 +168,13 @@ def export_data(
     filename: Optional[str] = None,
     db_folder: Optional[str] = None,
 ) -> None:
-    """"""
+    """Exports condensed data to a numpy file.
+
+    Args:
+        category:
+        db_names:
+        stages:
+    """
     assert isinstance(db_names, list)
     assert isinstance(stages, list)
 
@@ -230,7 +241,7 @@ def export_data(
         for d_id in dataids:
             if d_id not in skip_us:
                 try:
-                    df = Dataset(d_id, db_name, db_folder=db_folder)
+                    df = nt.Dataset(d_id, db_name, db_folder=db_folder)
                     condensed_data = prep_data(df, category)
                     new_label = export_label(df.label, df.quality, category)
                     condensed_data_all = np.append(
@@ -319,112 +330,3 @@ def correct_normalizations(
 
     path = os.path.join(db_folder, filename)
     np.save(path, data_w_labels)
-
-
-# def subsample_2Ddata(
-#     db_names: List[str],
-#     target_db_name: str,
-#     stages: List[str],
-#     qualities: List[int],
-#     original_db_folders: Optional[List[str]] = None,
-#     targe_db_folder: Optional[str] = None,
-#     n_slices: int = 5,
-#     temp_sub_size: int = 20,
-# ) -> None:
-#     """
-#     TODO: Fix subsample_2Ddata: Implement a method to increase the number of
-#     datasets one can use for classifier training. "Cut out" random sub_images
-#     from exisitng data. These don't need to be saved in a db.
-#     """
-#     if original_db_folder is None:
-#         original_db_folder = [nt.config["db_folder"]]*len(db_names)
-#     if targe_db_folder is None:
-#         targe_db_folder = nt.config["db_folder"]
-
-#     for original_db, original_db_folder in zip(db_names, original_db_folder):
-#         nt.set_database(original_db, original_db_folder)
-
-#         relevant_ids: List[int] = []
-#         for stage in stages:
-#             for quality in qualities:
-#                 temp_ids = nt.get_dataIDs(
-#                     original_db, stage,
-#                     quality=quality,
-#                     db_folder=original_db_folder,
-#                 )
-#                 temp_ids = list(filter(None, temp_ids))
-#                 relevant_ids += temp_ids
-
-#         for did in relevant_ids:
-#             ds = nt.Dataset(did, original_db, db_folder=original_db_folder)
-#             current_label = dict.fromkeys(NT_LABELS, 0)
-#             for lbl in ds.label:
-#                 current_label[lbl] = 1
-
-#             with nt.switch_database(target_db_name, target_db_folder):
-#                 meas = Measurement()
-#                 meas.register_custom_parameter(
-#                     ds.qc_parameters[0].name,
-#                     label=ds.qc_parameters[0].label,
-#                     unit=ds.qc_parameters[0].unit,
-#                     paramtype="array",
-#                 )
-
-#                 meas.register_custom_parameter(
-#                     ds.qc_parameters[1].name,
-#                     label=ds.qc_parameters[1].label,
-#                     unit=ds.qc_parameters[1].unit,
-#                     paramtype="array",
-#                 )
-
-#                 for ip, param_name in enumerate(list(ds.raw_data.data_vars)):
-#                     coord_names = list(ds.raw_data.coords)
-#                     x_crd_name = coord_names[0]
-#                     y_crd_name = coord_names[1]
-
-#                     x = ds.raw_data[param_name][x_crd_name].values
-#                     y = ds.raw_data[param_name][y_crd_name].values
-#                     signal = ds.raw_data[param_name].values
-
-
-#                     for _ in range(n_slices):
-#                         x0 = random.sample(range(0, N_2D[0] - temp_sub_size), 1)[0]
-#                         y0 = random.sample(range(0, N_2D[1] - temp_sub_size), 1)[0]
-
-#                         sub_x = np.linspace(x[x0], x[x0 + temp_sub_size], N_2D[0])
-#                         sub_y = np.linspace(y[y0], y[y0 + temp_sub_size], N_2D[1])
-
-#                         sub_x, sub_y = np.meshgrid(sub_x, sub_y)
-
-
-#                         output = []
-#                         for mid, meas_param in enumerate(ds.qc_parameters[2:]):
-#                             s1 = ds.qc_parameters[0].name
-#                             s2 = ds.qc_parameters[1].name
-#                             meas.register_custom_parameter(
-#                                 meas_param.name,
-#                                 label=meas_param.label,
-#                                 unit=meas_param.unit,
-#                                 paramtype="array",
-#                                 setpoints=[s1, s2],
-#                             )
-
-#                             sub_data = signal[mid][
-#                                 x0 : x0 + temp_sub_size, y0 : y0 + temp_sub_size
-#                             ]
-#                             sub_data = resize(sub_data, N_2D)
-#                             output.append([meas_param.name, sub_data])
-
-#                         with meas.run() as datasaver:
-#                             datasaver.add_result(
-#                                 (ds.qc_parameters[0].name, sub_x),
-#                                 (ds.qc_parameters[1].name, sub_y),
-#                                 *output,  # type: ignore
-#                             )
-
-#                         new_ds = load_by_id(datasaver.run_id)
-#                         new_ds.add_metadata("snapshot", json.dumps(ds.snapshot))
-#                         new_ds.add_metadata("original_guid", ds.guid)
-
-#                         for key, value in current_label.items():
-#                             new_ds.add_metadata(key, json.dumps(value))

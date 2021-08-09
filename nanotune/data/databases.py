@@ -9,10 +9,9 @@ from qcodes.dataset.experiment_container import experiments
 from qcodes.dataset.sqlite.connection import atomic
 from qcodes.dataset.sqlite.database import connect
 from qcodes.dataset.sqlite.queries import add_meta_data, get_metadata
-from qcodes.dataset.sqlite.query_helpers import insert_column, many_many
+from qcodes.dataset.sqlite.query_helpers import many_many
 
 import nanotune as nt
-from nanotune.data.dataset import Dataset
 from nanotune.utils import flatten_list
 
 logger = logging.getLogger(__name__)
@@ -20,11 +19,32 @@ logger = logging.getLogger(__name__)
 
 def get_dataIDs(
     db_name: str,
-    stage: str,
+    category: str,
     db_folder: Optional[str] = None,
     quality: Optional[int] = None,
 ) -> List[int]:
-    """"""
+    """Returns QCoDeS run IDs of datasets belonging to a specific category
+    of measurements, assigned to the data during labelling.
+
+    The entire database `db_name` is searched and a column of the same name as
+    the category looked up needs to exist in it. Example of categories are
+    `pinchoff`, `singledot` or `doubledot`, all valid ones are defined in
+    configuration.config.json under the "labels" key.
+    Optionally, the quality can be
+    specified. Quality and category together are the machine learning labels
+    nanotune uses during classification.
+
+    Args:
+        db_name: name of database to search.
+        category: measurement type/category we are looking for. E.g.
+            `pinchoff`, `singledot` or `doubledot`.
+        db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+        quality: Optional if a specific quality is required. 1==good, 0==poor.
+
+    Returns:
+        List of QCoDeS run IDs.
+    """
     if db_name[-2:] != "db":
         db_name += ".db"
     if db_folder is None:
@@ -35,12 +55,12 @@ def get_dataIDs(
 
     if quality is None:
         sql = f"""
-            SELECT run_id FROM runs WHERE {stage}={1} OR {stage} LIKE {str(1)}
+            SELECT run_id FROM runs WHERE {category}={1} OR {category} LIKE {str(1)}
             """
     else:
         sql = f"""
             SELECT run_id FROM runs
-                WHERE ({stage}={1} OR {stage} LIKE {str(1)})
+                WHERE ({category}={1} OR {category} LIKE {str(1)})
                 AND (good={quality} OR good LIKE {str(quality)})
             """
     c = conn.execute(sql)
@@ -53,7 +73,17 @@ def get_unlabelled_ids(
     db_name: str,
     db_folder: Optional[str] = None,
 ) -> List[int]:
-    """"""
+    """Gets run IDs all unlabelled datasets in a database. A dataset is selected
+    if it doesn't have a value in the `good` column.
+
+    Args:
+        db_name: name of database to search.
+        db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+
+    Returns:
+        List of QCoDeS run IDs which do not have a machine learning label.
+    """
     if db_name[-2:] != "db":
         db_name += ".db"
     if db_folder is None:
@@ -74,14 +104,18 @@ def get_unlabelled_ids(
 def list_experiments(
     db_folder: Optional[str] = None,
 ) -> Tuple[str, Dict[str, List[int]]]:
-    """"""
+    """Lists all databases and their experiments within a folder.
+
+    Args:
+        db_folder: the folder to enumerate.
+
+    Returns:
+        str: name of folder which was searched.
+        dict: mapping database name to a list of experiment IDs.
+    """
     if db_folder is None:
         db_folder = nt.config["db_folder"]
 
-    # print(os.listdir(db_folder))
-    # print(db_folder)
-    # db_files = glob.glob(db_folder + '*.db')
-    # db_files = glob.glob(db_folder)
     all_fls = os.listdir(db_folder)
     db_files = [db_file for db_file in all_fls if db_file.endswith(".db")]
     print("db_files: {}".format(db_files))
@@ -105,8 +139,16 @@ def new_database(
     db_name: str,
     db_folder: Optional[str] = None,
 ) -> str:
-    """
-    Ceate new database and initialise it
+    """Create new database and initialise it with nanotune labels.
+    A separate column for each label is created.
+
+    Args:
+        db_name: name of new database.
+        db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+
+    Returns:
+        str: absolute path of new database.
     """
     if db_folder is None:
         db_folder = nt.config["db_folder"]
@@ -133,7 +175,15 @@ def set_database(
     db_name: str,
     db_folder: Optional[str] = None,
 ) -> None:
-    """"""
+    """Sets a new database to be the default one to load from and save to.
+    If the database does not exist, a new one is created. The change is
+    propagated to QCoDeS' configuration.
+
+    Args:
+        db_name: name of database to set.
+        db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+    """
     if db_folder is None:
         db_folder = nt.config["db_folder"]
     else:
@@ -159,7 +209,12 @@ def set_database(
 
 
 def get_database() -> Tuple[str, str]:
-    """"""
+    """Gets name and folder of the current default database used by QCoDeS.
+
+    Returns:
+        str: database name
+        str: folder containing database
+    """
     db_path = qc.config["core"]["db_location"]
     db_name = os.path.basename(db_path)
     db_folder = os.path.dirname(db_path)
@@ -171,9 +226,16 @@ def get_last_dataid(
     db_name: str,
     db_folder: Optional[str] = None,
 ) -> int:
-    """
-    Return last 'global' dataid for given database. It is this ID that is used
-    in plot_by_id
+    """Returns QCoDeS run ID of last dataset in a database, i.e the highest
+    run ID there is.
+
+    Args:
+        db_name: name of database.
+        db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+
+    Returns:
+        int: sum of `last_counter` of all experiments within a database.
     """
     if db_folder is None:
         db_folder = nt.config["db_folder"]
@@ -190,7 +252,14 @@ def get_last_dataid(
 
 @contextmanager
 def switch_database(temp_db_name: str, temp_db_folder: str):
-    """ """
+    """Context manager temporarily setting a different database. Sets back to
+    previous database name and folder.
+
+    Args:
+        temp_db_name: name of database to set.
+        temp_db_folder: folder containing database. If not specified,
+            `nt.config["db_folder"]` is used.
+    """
     original_db, original_db_folder = nt.get_database()
     nt.set_database(temp_db_name, db_folder=temp_db_folder)
     try:
@@ -198,26 +267,3 @@ def switch_database(temp_db_name: str, temp_db_folder: str):
     finally:
         nt.set_database(original_db, db_folder=original_db_folder)
 
-
-# def rename_labels(db_name: str,
-#                   db_folder: Optional[str] = nt.config['db_folder']) -> bool:
-#     """
-#     """
-#     nt.set_database(db_name)
-#     for data_id in range(1, nt.get_last_dataid(db_name)+1):
-#         print(data_id)
-#         nt.correct_label_names(data_id, db_name)
-#         time.sleep(0.1)
-
-# if sqlite3.sqlite_version is 3.25 and above, we can use ALTER TABLE to
-# rename columns:
-# conn = connect(db_path)
-# sql = f"""
-#     ALTER TABLE runs RENAME COLUMN wallwall TO leadscoupling;
-#     """
-# c = conn.execute(sql)
-
-# ALTER TABLE runs RENAME COLUMN wallwall TO leadcoupling;
-# ALTER TABLE runs RENAME COLUMN clmboscs TO coulomboscillations;
-# ALTER TABLE runs RENAME COLUMN clmbdiam TO coulombdiamonds;
-# ALTER TABLE runs RENAME COLUMN zbp TO zerobiaspeak;
