@@ -72,6 +72,7 @@ def get_dataIDs(
 def get_unlabelled_ids(
     db_name: str,
     db_folder: Optional[str] = None,
+    get_run_id: bool = True,
 ) -> List[int]:
     """Gets run IDs all unlabelled datasets in a database. A dataset is selected
     if it doesn't have a value in the `good` column.
@@ -80,6 +81,7 @@ def get_unlabelled_ids(
         db_name: name of database to search.
         db_folder: folder containing database. If not specified,
             `nt.config["db_folder"]` is used.
+        run_id: whether to return run IDs. Returns capturd run IDs if False.
 
     Returns:
         List of QCoDeS run IDs which do not have a machine learning label.
@@ -90,13 +92,20 @@ def get_unlabelled_ids(
         db_folder = nt.config["db_folder"]
 
     db_path = os.path.join(db_folder, db_name)
-
     conn = connect(db_path)
-    sql = f"""
-        SELECT run_id FROM runs WHERE good IS NULL
-        """
+    if get_run_id:
+        sql = f"""
+            SELECT run_id FROM runs WHERE good IS NULL
+            """
+    else:
+        sql = f"""
+            SELECT captured_run_id FROM runs WHERE good IS NULL
+            """
     c = conn.execute(sql)
-    param_names_temp = many_many(c, "run_id")
+    if get_run_id:
+        param_names_temp = many_many(c, "run_id")
+    else:
+        param_names_temp = many_many(c, "captured_run_id")
 
     return list(flatten_list(param_names_temp))
 
