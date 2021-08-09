@@ -10,20 +10,17 @@ import qcodes as qc
 from matplotlib import rcParams
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from qcodes.dataset.experiment_container import (experiments, load_by_id,
+from qcodes.dataset.experiment_container import (experiments,
                                                  load_experiment,
                                                  load_experiment_by_name)
 from qcodes.dataset.plotting import plot_by_id
+from qcodes.dataset.sqlite.queries import get_runs
 
 import nanotune as nt
 
 # from PyQt5.QtCore import *
 # from PyQt5.QtGui import *
 # from PyQt5.QtWidgets import *
-
-
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -49,13 +46,13 @@ class LabellingTool(qtw.QMainWindow):
 
         if db_name is None:
             logger.warning("Labelling default main database.")
-            db_name = nt.config["main_db"]
+            db_name = nt.config["db_name"]
         nt.set_database(db_name)
         self.db_name = db_name
 
         self.db_folder = db_folder
 
-        # print(qc.config['core']['db_location'])
+        print(qc.config['core']['db_location'])
         matplotlib.rc("font", size=figure_fontsize)
         super(LabellingTool, self).__init__()
 
@@ -63,54 +60,53 @@ class LabellingTool(qtw.QMainWindow):
         self.experiment_id = experiment_id
 
         if self.experiment_id is None:
-            logger.error(
-                "Please select an experiment. Labelling entire "
-                + " database is not supported yet."
-            )
-            raise NotImplementedError
-            # all_experiments = experiments()
-            # for e in all_experiments:
-            # self.experiment = e
-            # (self._iterator_list,
-            #  self.labelled_ids,
-            #  self.n_total) = self.get_data_ids(start_over)
+            # logger.error(
+            #     "Please select an experiment. Labelling entire "
+            #     + " database is not supported yet."
+            # )
+            # raise NotImplementedError
+            try:
+                (self._iterator_list,
+                self.labelled_ids,
+                self.n_total) = self.get_data_ids(start_over)
+            except IndexError as i:
+                print(i)
+                msg = "Did not find any unlabelled data in experiment "
+                qtw.QMessageBox.warning(
+                    self, "Error instantiating LabellingTool.", msg,
+                    qtw.QMessageBox.Ok
+                )
         else:
             try:
-                self.experiment = load_experiment(self.experiment_id)
+                experiment = load_experiment(self.experiment_id)
+                runs = get_runs(experiment.conn, experiment.exp_id)
+                all_ids = [run['captured_run_id'] for run in runs]
+                if start_over:
+                    self._iterator_list = all_ids
+                    self.labelled_ids = []
+                    self.n_total = len(all_ids)
+                else:
+                    raise NotImplementedError
 
-                (
-                    self._iterator_list,
-                    self.labelled_ids,
-                    self.n_total,
-                ) = self.get_data_ids(start_over)
-
-                self._id_iterator = iter(self._iterator_list)
-                try:
-                    self.current_id = self._id_iterator.__next__()
-                except StopIteration:
-                    logger.warning(
-                        "All data of this experiment is already " + "labelled"
-                    )
-                    raise
-
-            except ValueError:
+            except ValueError as v:
                 msg = "Unable to load experiment."
-                # ee = experiments()
-                # for e in ee:
-                #     msg += e.name + '\n'
+                print(v)
                 qtw.QMessageBox.warning(
-                    self, "Error instantiating LabellingTool.", msg, qtw.QMessageBox.Ok
+                    self, "Error instantiating LabellingTool.", msg,
+                    qtw.QMessageBox.Ok
                 )
-            except IndexError:
-                msg = "Did not find any unlabelled data in experiment "
-                msg += self.experiment.name + "."
-                qtw.QMessageBox.warning(
-                    self, "Error instantiating LabellingTool.", msg, qtw.QMessageBox.Ok
-                )
+
+        self._id_iterator = iter(self._iterator_list)
+        try:
+            self.current_id = self._id_iterator.__next__()
+        except StopIteration:
+            logger.warning(
+                "All data of this experiment is already labelled."
+            )
+            raise
 
         self._main_widget = qtw.QWidget(self)
         self.setCentralWidget(self._main_widget)
-
         self.initUI()
         self.show()
 
@@ -123,8 +119,12 @@ class LabellingTool(qtw.QMainWindow):
         labelled_ids: List[int] = []
         print("getting datasets")
 
-        last_id = nt.get_last_dataid(self.db_name, db_folder=self.db_folder)
-        all_ids = list(range(1, last_id))
+        # last_id = nt.get_last_dataid(self.db_name, db_folder=self.db_folder)
+        # all_ids = list(range(1, last_id))
+        all_ids = []
+        for experiment in experiments():
+            runs = get_runs(experiment.conn, experiment.exp_id)
+            all_ids += [run['captured_run_id'] for run in runs]
 
         # dds = self.experiment.data_sets()
         # if len(dds) == 0:
@@ -140,7 +140,9 @@ class LabellingTool(qtw.QMainWindow):
         if not start_over:
             # Make sure database has nanotune label columns. Just a check.
             try:
-                ds = load_by_id(1)
+
+                some_id = nt.get_last_dataid(self.db_name, self.db_folder)
+                ds = qc.load_by_run_spec(captured_run_id=some_id)
                 ds.get_metadata("good")
             except OperationalError:
                 logger.warning(
@@ -410,7 +412,8 @@ class LabellingTool(qtw.QMainWindow):
             msg += " to be selected."
             qtw.QMessageBox.warning(self, "Cannot save label.", msg, qtw.QMessageBox.Ok)
         else:
-            ds = load_by_id(self.current_id)
+            # ds = load_by_id(self.current_id)
+            ds = qc.load_by_run_spec(captured_run_id=self.current_id)
 
             for label, value in self.current_label.items():
                 ds.add_metadata(label, value)
