@@ -357,13 +357,17 @@ class DotFit(DataFit):
         filename: Optional[str] = None,
         file_location: Optional[str] = None,
         plot_params: Optional[Dict[str, Any]] = None,
+        plot_format: str = "png",
+        singledot: bool = False,
     ) -> AxesTuple:
         """"""
         if plot_params is None:
             plot_params = default_plot_params
 
-        if self.triple_points is None:
+        if self.triple_points is None and not singledot:
             self.triple_points = self.get_triple_point_distances()
+        else:
+            self.triple_points = dict.fromkeys(self.readout_methods.keys(), [])
 
         fig_title = "Dotfit {}".format(self.guid)
         matplotlib.rcParams.update(plot_params)
@@ -386,7 +390,9 @@ class DotFit(DataFit):
                 voltage_y,
                 signal.T,
                 shading="auto",
+                rasterized=True,
             )
+            colormesh.set_edgecolor('face')
             if colorbar is not None:
                 colorbars.append(
                     ax[r_i, 0].figure.colorbar(
@@ -437,8 +443,8 @@ class DotFit(DataFit):
             else:
                 filename = os.path.splitext(filename)[0]
 
-            path = os.path.join(file_location, filename + ".png")
-            plt.savefig(path, format="png", dpi=600, bbox_inches="tight")
+            path = os.path.join(file_location, filename + '.' + plot_format)
+            plt.savefig(path, format=plot_format, dpi=600, bbox_inches="tight")
 
         return ax, colorbars
 

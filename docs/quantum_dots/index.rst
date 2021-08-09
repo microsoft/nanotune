@@ -1,7 +1,7 @@
-.. title:: Quantum Dots
+.. title:: Quantum dots
 
 
-Quantum Dots
+Quantum dots
 ============
 
 Adapted from Jana's thesis.
@@ -137,7 +137,7 @@ transition pattern illustrated in :numref:`fig_chargediagram`.
 
 Note that one often omits the small bias and talks about the alignment of the
 dots energy levels.
-If the levels don't align, as in figure :numref:`fig_2d_hop_forbidden`, the dot
+If the levels don't align, as in :numref:`fig_2d_hop_forbidden`, the dot
 is in the Coulomb blockade regime. Here, Coulomb repulsion between electrons prevents
 multiple electrons to occupy the same energy level and transport is suppressed.
 

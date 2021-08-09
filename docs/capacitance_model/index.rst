@@ -1,7 +1,7 @@
 
 .. _capa_model:
 
-Capacitance Model
+Capacitance model
 =================
 
 This section is an extraction from Jana's `thesis`_.

@@ -1,7 +1,7 @@
 
 .. _drivers:
 
-Instruments & Interfaces
+Instruments & interfaces
 ========================
 
 
@@ -37,7 +37,7 @@ Mock instruments
 used in unit and functional tests, but can also appear in offline demos.
 
 
-Server-Client Setup for DACs
+Server-client setup for DACs
 ----------------------------
 
 In QCoDeS, it is currently not possible to connect to the same instrument from
