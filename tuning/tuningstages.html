@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuningstages &mdash; nanotune 0+untagged.723.g97d5b89 documentation</title>
+  <title>Tuningstages &mdash; nanotune 0+untagged.724.g46648d6 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.723.g97d5b89
+                0+untagged.724.g46648d6
               </div>
             
           
@@ -96,24 +96,24 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum dots</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tuning</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tuningstages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#gate-characterization-1d">Gate characterization 1D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gate-characterization">Gate characterization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#charge-diagram">Charge diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -211,39 +211,48 @@
 </style>
 <div class="section" id="tuningstages">
 <span id="id1"></span><h1>Tuningstages<a class="headerlink" href="#tuningstages" title="Permalink to this headline">¶</a></h1>
-<p>The TuningStage abstraction represents a typical step of both manual and
-automated tuning, its workflow is illustrates on the left. The TuningStage
-class itself is meant to be sub-classed, where the sub-classes implement the
-bodies of some of the methods part of the workflow.</p>
-<p>A TuningStage takes as input a list of gates to be swept as well as the
-(trained) machine learning models to use for classification. Setpoints are
-calculated based on the gates’ current_valid_ranges, voltages ranges
-previously determined to be promising. The current method returns linearly
-spaced setpoints but is meant to be changed in the future.</p>
+<p>The <cite>TuningStage</cite> abstraction represents a typical step of both manual and
+automated tuning, its workflow is illustrated in <a class="reference internal" href="#tuningstage-workflow"><span class="std std-ref">The tuningstage workflow implemented by the base class and used by all
+sub-classes.</span></a>.
+This base class is meant to be sub-classed, where each sub-classes implements
+the methods called during the workflow.</p>
+<div class="figure align-center" id="id2">
+<span id="tuningstage-workflow"></span><a class="reference internal image-reference" href="../_images/tuningstage_workflow.svg"><img alt="tuningstage workflow" src="../_images/tuningstage_workflow.svg" width="55%" /></a>
+<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">The tuningstage workflow implemented by the base class and used by all
+sub-classes.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>A <cite>TuningStage</cite> takes as input a list of parameters which are to be swept,
+as well as the parameters’ safety ranges and (trained) machine learning models
+to use for classification. Setpoints are
+calculated based on the ranges to sweep, also an input parameters and which
+have been determined during previous tuning. The current default method returns
+linearly spaced setpoints but is meant to be changed in the future.</p>
 <p>Once the data is taken, it is fitted via a DataFit sub-class. Either the
 extracted feature vector or the entire measurement (normalized, filtered
 or Fourier frequencies) are passed to the classifier for a quality or regime
 assessment.
-If the desired quality/regime is reached, a TunigResult instance is returned.
-If not, the current strength is checked to determine whether the current gate
-voltage ranges need to be adjusted. If the detected current is too low/high,
+If the desired quality/regime is found, a <cite>TuningResult</cite> instance is returned.
+If not, the signal strength is checked to determine whether sweep
+ranges need to be adjusted. If the detected current is too low/high,
 voltage ranges are adjusted towards more positive/negative values.
 If the new ranges do not exceed the gates’ safety ranges, the measurement
-loop resumes by calculating new setpoints. If the gates’ ranges cannot be
-changes, the TuningStage returns an instance of a TuningStage indicating a
-non-successful stage.</p>
-<p>The TuningStage abstract base class contains all necessary attributes and
-methods to implement the workflow above. It’s main method is run_stage,
-which makes use of a few abstract methods, such as check_quality,
-update_current_ranges and get_next_actions. These depend on the type of
-measurements and hence require specific implementations. Currently implemented
-subclasses are GateCharacterization1D and ChargeDiagram. If required, these
-have additional attributes or methods.</p>
-<div class="section" id="gate-characterization-1d">
-<h2>Gate characterization 1D<a class="headerlink" href="#gate-characterization-1d" title="Permalink to this headline">¶</a></h2>
+loop resumes by calculating new setpoints. If safety ranges have been reached,
+the <cite>TuningStage</cite> returns an instance of a TuningStage indicating a
+unsuccessful run.</p>
+<p>Currently implemented subclasses are <cite>GateCharacterization1D</cite> and
+<cite>ChargeDiagram</cite>. All methods used in these classes have been refactored so
+that they can be used without the <cite>TuningStage</cite> abstraction as well.
+They are in the <cite>*tasks.py</cite> files located close to the classes’ implementations.</p>
+<div class="section" id="gate-characterization">
+<h2>Gate characterization<a class="headerlink" href="#gate-characterization" title="Permalink to this headline">¶</a></h2>
+<p><cite>GateCharacterization1D</cite> implements pinchoff curves. See
+<a class="reference internal" href="../examples/Example_gate_characterization.html"><span class="doc">the notebook</span></a>
+for an example.</p>
 </div>
 <div class="section" id="charge-diagram">
 <h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this headline">¶</a></h2>
+<p><cite>ChargeDiagram</cite> takes a 2D scan, most often plungers. See
+<a class="reference internal" href="../examples/Example_charge_diagram_stage.html"><span class="doc">the notebook</span></a> for an example.</p>
 </div>
 </div>
 

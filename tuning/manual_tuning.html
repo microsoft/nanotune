@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Manual tuning &mdash; nanotune 0+untagged.723.g97d5b89 documentation</title>
+  <title>Manual tuning &mdash; nanotune 0+untagged.724.g46648d6 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.723.g97d5b89
+                0+untagged.724.g46648d6
               </div>
             
           
@@ -96,7 +96,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum dots</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tuning</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Manual tuning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
@@ -104,12 +104,12 @@
 <li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -207,30 +207,42 @@
 </style>
 <div class="section" id="manual-tuning">
 <span id="id1"></span><h1>Manual tuning<a class="headerlink" href="#manual-tuning" title="Permalink to this headline">¶</a></h1>
-<p><em>In preparation</em></p>
-<p>Set barriers</p>
+<p>A typical manual tuning procedure consists of a series of 1D and 2D measurements,
+which narrow down the large voltage parameter space within which the desired
+(dot) features occur. Between each measurement the experimenter decides which
+gates to adjust and how. the It is an iterative process easily taking a significant
+amount of time.
+Here we outline a typical procedure using nanowires as example. We begin with
+a system in its initial state:</p>
+<p><a class="reference internal" href="../_images/nw_dots-13.svg"><img alt="init" src="../_images/nw_dots-13.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-07.svg"><img alt="labelsgates" src="../_images/nw_dots-07.svg" width="15%" /></a> <a class="reference internal" href="../_images/nw_dots-16.svg"><img alt="labels" src="../_images/nw_dots-16.svg" width="15%" /></a></p>
+<p>In a first step, the barriers are set. To do so, either 1D or pair-wise 2D
+sweeps are measured. Voltages at which a gate pinches off are typically set.
+Setting only outer barriers results in a large single dot, while setting the
+central barrier as well isolates two puddles:</p>
+<p><a class="reference internal" href="../_images/nw_dots-03.svg"><img alt="singledot_barriers" src="../_images/nw_dots-03.svg" width="35%" /></a> <a class="reference internal" href="../_images/nw_dots-02.svg"><img alt="barriers" src="../_images/nw_dots-02.svg" width="35%" /></a></p>
+<p>Single and double dots formed by setting barrier.</p>
+<p>The regime is verified via 2D charge diagram. One can sweep the barriers, although
+usually the plungers are used.</p>
+<p>Single dots:</p>
 <blockquote>
-<div><p><a class="reference internal" href="../_images/nw_dots-01.svg"><img alt="empty" src="../_images/nw_dots-01.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-20.svg"><img alt="array" src="../_images/nw_dots-20.svg" width="08%" /></a> <a class="reference internal" href="../_images/nw_dots-02.svg"><img alt="barriers" src="../_images/nw_dots-02.svg" width="45%" /></a></p>
-</div></blockquote>
-<p><a class="reference internal" href="../_images/nw_dots-07.svg"><img alt="labelsgates" src="../_images/nw_dots-07.svg" width="15%" /></a></p>
-<p>Take charge diagram</p>
-<p>Single dot:</p>
-<blockquote>
-<div><p><a class="reference internal" href="../_images/nw_dots-16.svg"><img alt="labels" src="../_images/nw_dots-16.svg" width="15%" /></a> <a class="reference internal" href="../_images/nw_dots-14.svg"><img alt="sweepsingle" src="../_images/nw_dots-14.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-12.svg"><img alt="singlechargediagram" src="../_images/nw_dots-12.svg" width="30%" /></a></p>
+<div><p><a class="reference internal" href="../_images/nw_dots-14.svg"><img alt="sweepsingle" src="../_images/nw_dots-14.svg" width="35%" /></a> <a class="reference internal" href="../_images/nw_dots-12.svg"><img alt="singlechargediagram" src="../_images/nw_dots-12.svg" width="25%" /></a></p>
+<p>Good single dots show clear and sharp diagonal lines. Taking one-dimensional
+traces give typical Coulomb oscillation sweeps.
+Taking a larger scan can look like the measurement above.
+The lines of poor single dots or dots which start to form are not sharp. 1D
+Coulomb oscillations would show broad, doubled, or any other deformed peaks.</p>
 </div></blockquote>
 <p>Double dot:</p>
 <blockquote>
-<div><p><a class="reference internal" href="../_images/nw_dots-15.svg"><img alt="chargediagram" src="../_images/nw_dots-15.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-11.svg"><img alt="chargediagrammeasurement" src="../_images/nw_dots-11.svg" width="30%" /></a></p>
+<div><p><a class="reference internal" href="../_images/nw_dots-15.svg"><img alt="chargediagram" src="../_images/nw_dots-15.svg" width="35%" /></a> <a class="reference internal" href="../_images/nw_dots-11.svg"><img alt="chargediagrammeasurement" src="../_images/nw_dots-11.svg" width="30%" /></a></p>
+<p>A double dot regime can look different between tune-ups or devices. An
+excellent charge diagram will show the honeycomb structure above.</p>
 </div></blockquote>
-<p>Fine tuning:</p>
-<p>Single electron regime</p>
-<blockquote>
-<div><p><a class="reference internal" href="../_images/nw_dots-06.svg"><img alt="singleelectron" src="../_images/nw_dots-06.svg" width="45%" /></a></p>
-</div></blockquote>
-<dl class="simple">
-<dt>Tunnel coupling fine tuning</dt><dd><p><a class="reference internal" href="../_images/nw_dots-09.svg"><img alt="tunnelcoupling" src="../_images/nw_dots-09.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-10.svg"><img alt="tunnelcoupling2" src="../_images/nw_dots-10.svg" width="45%" /></a></p>
-</dd>
-</dl>
+<p>Next, plunger ranges are adjusted to expel any surplus of charges to reach the
+single electron regime:
+<a class="reference internal" href="../_images/nw_dots-06.svg"><img alt="singleelectron" src="../_images/nw_dots-06.svg" width="35%" /></a></p>
+<p>Finally, tunnel couplings are adjusted.</p>
+<p><a class="reference internal" href="../_images/nw_dots-09.svg"><img alt="tunnelcoupling" src="../_images/nw_dots-09.svg" width="40%" /></a> <a class="reference internal" href="../_images/nw_dots-10.svg"><img alt="tunnelcoupling2" src="../_images/nw_dots-10.svg" width="35%" /></a></p>
 </div>
 
 

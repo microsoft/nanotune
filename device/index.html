@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Device Abstraction &mdash; nanotune 0+untagged.723.g97d5b89 documentation</title>
+  <title>Device abstraction &mdash; nanotune 0+untagged.724.g46648d6 documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Instruments &amp; Interfaces" href="../drivers/index.html" />
+    <link rel="next" title="Instruments &amp; interfaces" href="../drivers/index.html" />
     <link rel="prev" title="Results saving" href="../tuning/results_saving.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.723.g97d5b89
+                0+untagged.724.g46648d6
               </div>
             
           
@@ -96,19 +96,19 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum dots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tuning/index.html">Tuning</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Device Abstraction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#normalizationconstants">NormalizationConstants</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Device abstraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#normalization-constants">Normalization constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#device-channel">Device channel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#device-layout">Device layout</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -159,7 +159,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Device Abstraction</li>
+      <li>Device abstraction</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -203,7 +203,7 @@
 }
 </style>
 <div class="section" id="device-abstraction">
-<span id="device"></span><h1>Device Abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this headline">¶</a></h1>
+<span id="device"></span><h1>Device abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this headline">¶</a></h1>
 <p>The physical device or sample is represented by an instance of a <cite>Device</cite> class, which
 in turn is a QCodeS <cite>DelegateInstrument</cite>. It extends its base class by adding
 attributes and methods specific to the characterization and
@@ -297,8 +297,8 @@ measurements.</p>
         <span class="nt">top_barrier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.4</span>
 </pre></div>
 </div>
-<div class="section" id="normalizationconstants">
-<h2>NormalizationConstants<a class="headerlink" href="#normalizationconstants" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="normalization-constants">
+<h2>Normalization constants<a class="headerlink" href="#normalization-constants" title="Permalink to this headline">¶</a></h2>
 <p>This dataclass is used to hold and update normalization constants of a device.
 Each attribute keeps track of the constants of one readout method, e.g. transport,
 sensing and rf.</p>
@@ -308,7 +308,7 @@ sensing and rf.</p>
 <p>A <cite>DeviceChannel</cite> is a wrapper of an instrument channel parameter such as a
 DAC channel with added functionalities. The channel wrapped and passed to init
 function needs to either implement the methods of a <cite>DACChannelInterface</cite> described in
-<a class="reference internal" href="../drivers/index.html#drivers"><span class="std std-ref">Instruments &amp; Interfaces</span></a>, or be in subclass thereof. This interface setup ensures that
+<a class="reference internal" href="../drivers/index.html#drivers"><span class="std std-ref">Instruments &amp; interfaces</span></a>, or be in subclass thereof. This interface setup ensures that
 channels of different instruments can be used, where it is up to the user to
 implement the ‘glue’ between hardware and software.</p>
 <p>Main attributes of <cite>DeviceChannel</cite> are:</p>
@@ -354,7 +354,7 @@ An example of a device layout implement is <cite>DoubleDotLayout</cite>.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../drivers/index.html" class="btn btn-neutral float-right" title="Instruments &amp; Interfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../drivers/index.html" class="btn btn-neutral float-right" title="Instruments &amp; interfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="../tuning/results_saving.html" class="btn btn-neutral float-left" title="Results saving" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

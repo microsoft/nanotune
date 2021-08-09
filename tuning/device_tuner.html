@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Device tuner &mdash; nanotune 0+untagged.723.g97d5b89 documentation</title>
+  <title>Device tuner &mdash; nanotune 0+untagged.724.g46648d6 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.723.g97d5b89
+                0+untagged.724.g46648d6
               </div>
             
           
@@ -96,7 +96,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum dots</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tuning</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Device tuner</a><ul>
@@ -109,12 +109,12 @@
 <li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -216,8 +216,11 @@
 <h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this headline">¶</a></h2>
 <p>The base class implements the most common tuning methods such as updating a
 device’s normalization constants, measuring a pinchoff or taking a charge diagram.
-It also has a method to determine the initial ranges of a helper gate, such as
-a top barrier of a 2D layout or bottom gate underneath the entire 1D system.</p>
+These methods use the corresponding <a class="reference internal" href="tuningstages.html#tuningstages"><span class="std std-ref">Tuningstages</span></a> to take and
+analyse data. In general, a tuner acts on an instance of
+<a class="reference internal" href="../device/index.html#device"><span class="std std-ref">Device abstraction</span></a> to perform the tuning. It has methods to combine default
+measurement settings defined in the tuner’s data and setpoint settings with
+device-related ones.</p>
 <dl class="simple">
 <dt>Measurement settings</dt><dd><p>Measurement related settings are grouped in two dataclasses, <cite>DataSettings</cite>
 and <cite>SetpointSettings</cite>. A tuner class keeps an instance of each with
@@ -226,24 +229,31 @@ setting used
 for all measurements are setpoint_method, optionally voltage precision and
 high resolution precisions. As for data settings, data base location or
 size of charge diagram segments used for classification also stay unchanged
-in most cases.
-<cite>Tuner</cite> provides methods to compile device specific settings, by merging
-default with device specific settings.</p>
+in most cases.</p>
 </dd>
 </dl>
-<p>The tuner classes <cite>Characterizer</cite> and <cite>DotTuner</cite> inherit from this base class.</p>
+<p>Beside the methods listed above, the base class also has a method to determine
+the initial ranges of a helper gate, such as
+a top barrier of a 2D layout or bottom gate underneath the entire 1D system.</p>
+<p>Tuning results are saved whenever a <cite>TuningResult</cite> is returned by a tuning stage,
+i.e. when measuring a pinchoff or charge diagram. They are saved to the tuner’s
+<cite>tuning_history</cite> using the device name as key. Saving results in these low
+lying methods used in every other tuning procedure ensures that all of them
+are retained.</p>
 </div>
 <div class="section" id="characterizer">
 <h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this headline">¶</a></h2>
-<p>The <cite>Characterizer</cite> implements the device characterization step via its
-<cite>characterize</cite> method.</p>
+<p>The <cite>Characterizer</cite> sub-class implements the device characterization step by
+applying the base class’ gate characterization step to all gates. Optionally,
+gates can be left out, e.g. in the case of a helper gate which has been set
+beforehand.</p>
 </div>
 <div class="section" id="dot-tuner">
 <h2>Dot tuner<a class="headerlink" href="#dot-tuner" title="Permalink to this headline">¶</a></h2>
-<p>The <cite>DotTuner</cite> has all methods to implement the tuning procedure shown in figure
-<a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>.
-The entire sequence is implemented in the <cite>tune</cite> method, however all methods can
-be used independently to realize similar but different sequences.</p>
+<p>The <cite>DotTuner</cite> containes the methods required to implement the tuning procedure
+shown in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>.
+If desired, the entire sequence can by run using the <cite>tune</cite> method, however
+all methods should also be seen as building blocks for other sequences.</p>
 <div class="figure align-center" id="id2">
 <span id="tuning-algorithm"></span><a class="reference internal image-reference" href="../_images/algorithm_dot_tuning.svg"><img alt="dot tuning algorithm" src="../_images/algorithm_dot_tuning.svg" width="55%" /></a>
 <p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Dot tuning algorithm implemented by the <cite>DotTuner</cite> class.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
@@ -251,13 +261,15 @@ be used independently to realize similar but different sequences.</p>
 <p>The steps outlined in the diagram have a corresponding method within the class.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 49%" />
-<col style="width: 51%" />
+<col style="width: 38%" />
+<col style="width: 62%" />
 </colgroup>
-<tbody>
-<tr class="row-odd"><td><p>step</p></td>
-<td><p>method</p></td>
+<thead>
+<tr class="row-odd"><th class="head"><p>step</p></th>
+<th class="head"><p>method</p></th>
 </tr>
+</thead>
+<tbody>
 <tr class="row-even"><td><p>Set top barrier</p></td>
 <td><p><cite>set_helper_gate</cite></p></td>
 </tr>
@@ -270,52 +282,63 @@ Set outer barriers</p></td>
 <td><p><cite>set_outer_barriers</cite></p></td>
 </tr>
 <tr class="row-odd"><td><p>Characterize plungers</p></td>
-<td rowspan="2"><blockquote>
-<div><p><cite>characterize_plunger</cite></p>
-</div></blockquote>
-<p>(used in <cite>set_valid_plunger_ranges</cite>)</p>
-</td>
+<td><p><cite>characterize_plunger</cite>, used in <cite>set_valid_plunger_ranges</cite></p></td>
 </tr>
-<tr class="row-even"><td></td>
-</tr>
-<tr class="row-odd"><td><p>Characterize charge stability diagram
-Classify charge state</p></td>
+<tr class="row-even"><td><p>Characterize charge stability diagram</p></td>
 <td><p><cite>get_charge_diagram</cite></p></td>
 </tr>
-<tr class="row-even"><td colspan="2"><p><cite>get_charge_diagram</cite> returns classification result in TuningResult instance
-and changes plunger ranges if needed,
-executing the small inner lop on the left.</p></td>
+<tr class="row-odd"><td><p>Classify charge state</p></td>
+<td><p>in <cite>get_charge_diagram</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>Change central barrier</p></td>
+<tr class="row-even"><td><p>Change central barrier</p></td>
 <td><p><cite>update_gate_configuration</cite></p></td>
 </tr>
 </tbody>
 </table>
-<p>The loop going left and right from “Classify state” are implemented by
-<cite>update_gate_configuration</cite>, which calls <cite>adjust_all_barriers_loop</cite> and which
-in turn calls <cite>adjust_all_barriers</cite>. This sets the top and central barrier.</p>
+<p>Note that <cite>get_charge_diagram</cite> adjusts plunger ranges if the resulting diagram
+shows a signal too low or too high for a dot regime. If the signal is too high,
+the plunger ranges are decreased and increased if too low. If the plunger ranges
+hit their safety voltage ranges during this update, outer barriers are
+adjusted. This is the small inner loop labelled <cite>no success</cite> on the left.
+Similarly, if no plunger ranges within the respective safety limits are found to
+begin with, the outer barriers are changed.</p>
+<p>When the desired dot regime is not found, <cite>update_gate_configuration</cite>
+which implements the loop going left and right from “Classify state”, is called.
+It executes <cite>adjust_all_barriers_loop</cite>, which in turn calls <cite>adjust_all_barriers</cite>,
+but with different inputs depending on the classification outcome.
+<cite>adjust_all_barriers_loop</cite> sets adjusts voltage of one gate, specified as input,
+before launching <cite>adjust_all_barriers</cite>.
+If required, i.e. adjusting outer or central barriers was not successful
+because they reached their safety limit, the helper gate is changed too.</p>
+<p>Specifically, these two outer loops in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a></p>
 <dl class="simple">
-<dt>The large left loop:</dt><dd><ul class="simple">
-<li><p>uses termination reasons to update outer barriers first (if device was too pinched off or open)</p></li>
-<li><p>update top barrier/helper gate in <cite>adjust_all_barriers</cite>, called in <cite>adjust_all_barriers_loop</cite></p></li>
-<li><p>update top barrier</p></li>
+<dt>Large left loop - no good dot found:</dt><dd><ul class="simple">
+<li><p>Uses termination reasons to update outer barriers first. The decisive
+information is whether the device was too pinched off or open.</p></li>
+<li><p>Update top barrier/helper gate in <cite>adjust_all_barriers</cite>, called in <cite>adjust_all_barriers_loop</cite></p></li>
 </ul>
 </dd>
-<dt>The right loop:</dt><dd><ul class="simple">
-<li><p>change central barrier with <cite>initial_voltage_update</cite> in <cite>adjust_all_barriers_loop</cite>.</p></li>
-<li><p>if central barrier is set successfully, the loop in <cite>adjust_all_barriers_loop</cite> is not executed and thus tuning resumes with plunger range characterization.</p></li>
-<li><p>if after setting the central barrier other changes are needed, the loop in <cite>adjust_all_barriers_loop</cite> will set the top barrier, then central and also outer barriers.</p></li>
+<dt>Right loop - no success changing central barrier:</dt><dd><ul class="simple">
+<li><p>Change central barrier with <cite>initial_voltage_update</cite> in <cite>adjust_all_barriers_loop</cite>.</p></li>
+<li><p>If central barrier is set successfully, the loop in <cite>adjust_all_barriers_loop</cite> is not executed and thus tuning resumes with plunger range characterization.</p></li>
+<li><p>If after setting the central barrier other changes are needed, the loop in <cite>adjust_all_barriers_loop</cite> will set the top barrier, then central and also outer barriers.</p></li>
 </ul>
 </dd>
 </dl>
-<p>In both loops: of outer barrier can not be set, the top barrier is changed again.</p>
-<p><cite>set_central_and_outer_barriers</cite> first sets the central and outer barriers beforehand
-it loops:
-1. update helper gate
-2. set outer barriers
-until suitable values are found.</p>
-<p><cite>adjust_all_barriers_loop</cite>: update voltages based on input directives and run <cite>adjust_all_barriers</cite> in a loop.</p>
-<p><cite>choose_new_gate_voltage</cite>:</p>
+<p>The class also has methods to take high resolution charge diagram, with voltage
+precisions specified in <cite>setpoint_settings.high_res_precisions</cite>. There are two
+types of high res diagram: the entire one and only diagram segments which have
+been classified to be the target regime, e.g. good double. This serves to
+confirm the tuning result and get data for publications or presentations.</p>
+<p>Demonstration</p>
+<blockquote>
+<div><p>The
+<a class="reference external" href="https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.054005">autonomous tuning paper</a>
+showed that this tuning procedure is able to tune several devices without
+manual input. For good devices, only one pass through the algorithm is
+required, meaning only a few 1D and a one 2D measurement is taken.
+The loops adjusting barriers is not executed.</p>
+</div></blockquote>
 </div>
 </div>
 

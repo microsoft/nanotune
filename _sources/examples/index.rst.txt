@@ -1,10 +1,13 @@
 
+.. _examples:
+
 Examples
 ========
 
 .. toctree::
    :maxdepth: 2
 
+   dataset_example
    Example_charge_diagram_stage
    Example_gate_characterization
    Tuning_results_logging

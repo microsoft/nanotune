@@ -47,7 +47,7 @@ Tuning workflow
 
 The dot-initialization workflow consists of two pre-calibration, one
 characterization and one tuning step, as outlined in the flowchart pictured in
-figure :numref:`fig_workflow`.
+:numref:`fig_workflow`.
 
 .. _fig_workflow:
 .. figure:: ./workflow_small_1.png

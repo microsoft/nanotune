@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuning &mdash; nanotune 0+untagged.723.g97d5b89 documentation</title>
+  <title>Tuning &mdash; nanotune 0+untagged.724.g46648d6 documentation</title>
   
 
   
@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Manual tuning" href="manual_tuning.html" />
-    <link rel="prev" title="Quantum Dots" href="../quantum_dots/index.html" />
+    <link rel="prev" title="Quantum dots" href="../quantum_dots/index.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.723.g97d5b89
+                0+untagged.724.g46648d6
               </div>
             
           
@@ -96,7 +96,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview/index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum Dots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quantum_dots/index.html">Quantum dots</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tuning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device_tuner.html">Device tuner</a></li>
@@ -104,12 +104,12 @@
 <li class="toctree-l2"><a class="reference internal" href="results_saving.html">Results saving</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device Abstraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../device/index.html">Device abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../drivers/index.html">Instruments &amp; interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fit/index.html">Data fitting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
@@ -205,17 +205,29 @@
 </style>
 <div class="section" id="tuning">
 <span id="id1"></span><h1>Tuning<a class="headerlink" href="#tuning" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="device_tuner.html#device-tuner"><span class="std std-ref">Device tuner</span></a> module implements the tuning outlined in the workflow diagram
-<a class="reference internal" href="../overview/index.html#fig-workflow"><span class="std std-numref">Fig. 2</span></a>. Device characterization and dot tuning are covered by
-two separate sub-classes of the <cite>Tuner</cite> base: <cite>Characterizer</cite> and <cite>DotTuner</cite>.
-A tuner class acts on an instance of <a class="reference internal" href="../device/index.html#device"><span class="std std-ref">Device Abstraction</span></a> to perform the tuning.
-Each of them uses two different types of <a class="reference internal" href="tuningstages.html#tuningstages"><span class="std std-ref">Tuningstages</span></a>, the
-<cite>GateCharacterization1D</cite> and <cite>ChargeDiagram</cite>, to take and analyse data. Tuning
-results are saved in an instance of a <cite>TuningHistory</cite>, relying on <cite>TuningResult</cite>
-and <cite>MeasurementHistory</cite>, all of which are described in <a class="reference internal" href="results_saving.html#results-saving"><span class="std std-ref">Results saving</span></a>.</p>
-<p><a class="reference internal" href="../_images/nw_dots-13.svg"><img alt="nw13" src="../_images/nw_dots-13.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-20.svg"><img alt="array" src="../_images/nw_dots-20.svg" width="8%" /></a> <a class="reference internal" href="../_images/nw_dots-06.svg"><img alt="nw06" src="../_images/nw_dots-06.svg" width="40%" /></a>   <a class="reference internal" href="../_images/nw_dots-08.svg"><img alt="labels" src="../_images/nw_dots-08.svg" width="15%" /></a></p>
+<p>Tuning quantum dots is a process roughly consisting of two parts First, puddles
+of electrons are formed within an electron gas by finding appropriate,
+voltages to all electrostatic gates nearby. The second step optimizes the
+voltages of a small subset of these gates to adjust the number of charges within
+each dot and the couplings between them. The figure below illustrates the entire
+tuning process on a nanowire, where both steps have been performed.</p>
+<p><a class="reference internal" href="../_images/nw_dots-13.svg"><img alt="nw13" src="../_images/nw_dots-13.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-20.svg"><img alt="array" src="../_images/nw_dots-20.svg" width="8%" /></a> <a class="reference internal" href="../_images/nw_dots-09.svg"><img alt="nw09" src="../_images/nw_dots-09.svg" width="40%" /></a></p>
+<p><a class="reference internal" href="../_images/nw_dots-08.svg"><img alt="labels" src="../_images/nw_dots-08.svg" width="15%" /></a></p>
 <p>The general goal of dot tuning illustrated on a nanowire: by setting voltages to
-all electrostatic gates, well-defined quantum dots can be formed.</p>
+all electrostatic gates, well-defined quantum dots with specific tunnel
+couplings can be formed.</p>
+<p>A manual approach to tuning consists of a sequence of measurements iteratively
+narrowing down the voltage range of each gate, outlined in
+<a class="reference internal" href="manual_tuning.html#manual-tuning"><span class="std std-ref">Manual tuning</span></a>. nanotune applies this approach to the the first step,
+also referred to as coarse tuning. By automating some of the most common
+measurements and replacing the experimenter’s decision making by binary
+classifiers, it implements the device characterization and dot tuning
+procedures outlined in the workflow diagram in <a class="reference internal" href="../overview/index.html#fig-workflow"><span class="std std-numref">Fig. 2</span></a>.</p>
+<p>Both device characterization and dot tuning is covered by the tuning module,
+whose main components are the <cite>Tuner</cite> base class and its two subclasses
+<cite>Characterizer</cite> and <cite>DotTuner</cite>, described in <a class="reference internal" href="device_tuner.html#device-tuner"><span class="std std-ref">Device tuner</span></a>. Tuning
+results are saved in an instance of a <cite>TuningHistory</cite>, which holds instances
+of <cite>MeasurementHistory</cite> and <cite>TuningResult</cite>, described in <a class="reference internal" href="results_saving.html#results-saving"><span class="std std-ref">Results saving</span></a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="manual_tuning.html">Manual tuning</a></li>
@@ -226,7 +238,7 @@ all electrostatic gates, well-defined quantum dots can be formed.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tuningstages.html">Tuningstages</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tuningstages.html#gate-characterization-1d">Gate characterization 1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tuningstages.html#gate-characterization">Gate characterization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuningstages.html#charge-diagram">Charge diagram</a></li>
 </ul>
 </li>
@@ -247,7 +259,7 @@ all electrostatic gates, well-defined quantum dots can be formed.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="manual_tuning.html" class="btn btn-neutral float-right" title="Manual tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../quantum_dots/index.html" class="btn btn-neutral float-left" title="Quantum Dots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../quantum_dots/index.html" class="btn btn-neutral float-left" title="Quantum dots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
