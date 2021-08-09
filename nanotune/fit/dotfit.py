@@ -390,6 +390,7 @@ class DotFit(DataFit):
                 voltage_y,
                 signal.T,
                 shading="auto",
+                rasterized=True,
             )
             colormesh.set_edgecolor('face')
             if colorbar is not None:
