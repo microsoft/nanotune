@@ -81,7 +81,7 @@ def get_unlabelled_ids(
         db_name: name of database to search.
         db_folder: folder containing database. If not specified,
             `nt.config["db_folder"]` is used.
-        run_id: whether to return run IDs. Returns capturd run IDs if False.
+        get_run_id: whether to return run IDs. Returns capturd run IDs if False.
 
     Returns:
         List of QCoDeS run IDs which do not have a machine learning label.
