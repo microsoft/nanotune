@@ -243,7 +243,7 @@ def export_data(
                 try:
                     df = nt.Dataset(d_id, db_name, db_folder=db_folder)
                     condensed_data = prep_data(df, category)
-                    new_label = export_label(df.label, df.quality, category)
+                    new_label = export_label(df.ml_label, df.quality, category)
                     condensed_data_all = np.append(
                         condensed_data_all, condensed_data[0], axis=1
                     )
@@ -254,7 +254,7 @@ def export_data(
                             df, category, flip_data=True
                         )
                         new_label = export_label(
-                            df.label, df.quality, category
+                            df.ml_label, df.quality, category
                         )
                         condensed_data_all = np.append(
                             condensed_data_all, condensed_data[0], axis=1
