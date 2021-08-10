@@ -14,3 +14,4 @@ Examples
    capacitance_model_example_single_dot
    capacitance_model_example_double_dot
    labelling_example
+   example_data_export_and_classifier
