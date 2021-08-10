@@ -296,8 +296,7 @@ class LabellingTool(qtw.QMainWindow):
 
             except StopIteration:
                 msg1 = "You are done!"
-                msg2 = "All datasets of " + self.experiment.name
-                msg2 += " are labelled."
+                msg2 = "All datasets are labelled."
                 qtw.QMessageBox.information(
                     self, msg1, msg2, qtw.QMessageBox.Ok)
                 return
