@@ -22,7 +22,7 @@ def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
         "device_name",
         "readout_methods",
         "quality",
-        "label",
+        "ml_label",
         "raw_data",
         "data",
         "power_spectrum",
@@ -45,7 +45,7 @@ def test_dataset_attributes_after_init(nt_dataset_doubledot, tmp_path):
     assert ds.qc_run_id == 1
     assert ds.db_name == "temp.db"
     assert ds.quality == 1
-    assert set(ds.label) == {"doubledot"}
+    assert set(ds.ml_label) == {"doubledot"}
 
 
 def test_dataset_defaults_for_missing_metadata(
@@ -59,7 +59,7 @@ def test_dataset_defaults_for_missing_metadata(
     assert ds.readout_methods == {"transport": "current", "sensing": "sensor"}
     assert ds.device_name == "noname_device"
     assert ds.quality is None
-    assert ds.label == ["doubledot"]
+    assert ds.ml_label == ["doubledot"]
 
 
 def test_dataset_property_getters(nt_dataset_pinchoff, tmp_path):
