@@ -101,7 +101,8 @@ Labelling
 When using labelled experimental data, the labelling process brings another
 challenge with it. Not only is the process time consuming, but the regime
 might not be clear-cut. In fact, each labeller might label diagrams differently,
-inducing a bias which may confuse the classifier. A strategy could be sample
+inducing a bias which may confuse the classifier.
+A strategy could be sample
 a few examples, based on which a set of rules are fixed. A few relevant questions
 to answer before starting to label are the following. Most of the also apply
 other data such as pinch off curves.
@@ -119,8 +120,6 @@ To help answer these questions, one could think about what the subsequent tuning
 requires. Does it have to locate triple points? Or does it need to find the single
 electron regime? Can we deal with noise later on?
 A different end goal may require different labels.
-From experience a labelling tool, which displays the measurement and has
-buttons to click for each label, eases the pain of labelling a little bit.
 
 Below are three examples of data which may pose some labelling difficulties and
 could be used to decide on a set of "labelling rules".
@@ -135,3 +134,22 @@ could be used to decide on a set of "labelling rules".
    :width: 45 %
 
 |noise1| |noise2| |noise3|
+
+Labelling tool
+--------------
+
+nanotune has a simple tool trying to alleviate the pain of labelling, called
+the `LabellingTool`. From experience, having a window displaying each
+measurements and buttons to click for each label, makes the whole procedure
+faster and more reliable. The selected labels are saved to metadata of the
+QCoDeS dataset. Below a screenshot of this window, an example notebook of how
+to launch it can be found in :ref:`examples`.
+
+
+.. _fig_labellingtool:
+.. figure:: ./figs/labellingtool.png
+    :alt: screenshot of nanotune's labelling tool
+    :align: center
+    :width: 70.0%
+
+    Screenshot of nanotune's labelling tool.

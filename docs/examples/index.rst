@@ -13,3 +13,5 @@ Examples
    Tuning_results_logging
    capacitance_model_example_single_dot
    capacitance_model_example_double_dot
+   labelling_example
+
