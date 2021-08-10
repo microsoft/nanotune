@@ -233,7 +233,7 @@ def export_data(
                 if len(relevant_ids[db_name]) == 0:
                     logger.warning(f'No labelled data found in {db_name}')
             except Exception as e:
-                msg = f"Unable to load relevant ids in {db_name}." + e
+                msg = f"Unable to load relevant ids in {db_name}." + str(e)
                 logger.error(msg)
                 break
 
