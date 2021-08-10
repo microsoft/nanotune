@@ -275,4 +275,3 @@ def switch_database(temp_db_name: str, temp_db_folder: str):
         yield
     finally:
         nt.set_database(original_db, db_folder=original_db_folder)
-
