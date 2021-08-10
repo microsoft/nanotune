@@ -63,7 +63,8 @@ def export_label(
 def prep_data(
     dataset: nt.Dataset,
     category: str,
-    flip_data: bool = False
+    flip_data: bool = False,
+    readout_method_to_use: str = 'transport',
 ) -> List[List[List[float]]]:
     """Prepares data for classification.
     It combines normalized data, its gradient, Fourier frequencies and
@@ -88,72 +89,72 @@ def prep_data(
 
     condensed_data_all = []
 
-    for readout_method in dataset.readout_methods.keys():
-        signal = dataset.data[readout_method].values
-        if flip_data:
-            signal = np.flip(signal)
-        dimension = dataset.dimensions[readout_method]
+    # for readout_method in dataset.readout_methods.keys():
+    signal = dataset.data[readout_method_to_use].values
+    if flip_data:
+        signal = np.flip(signal)
+    dimension = dataset.dimensions[readout_method_to_use]
 
-        shape = tuple(nt.config["core"]["standard_shapes"][str(dimension)])
-        condensed_data = np.empty(
-            (len(nt.config["core"]["data_types"]), 1, np.prod(shape))
-        )
+    shape = tuple(nt.config["core"]["standard_shapes"][str(dimension)])
+    condensed_data = np.empty(
+        (len(nt.config["core"]["data_types"]), 1, np.prod(shape))
+    )
 
-        relevant_features = nt.config["core"]["features"][category]
-        features = []
+    relevant_features = nt.config["core"]["features"][category]
+    features = []
 
-        if dataset.features:
-            if all(isinstance(i, dict) for i in dataset.features.values()):
-                for feat in relevant_features:
-                    features.append(dataset.features[readout_method][feat])
-            else:
-                for feat in relevant_features:
-                    features.append(dataset.features[feat])
+    if dataset.features:
+        if all(isinstance(i, dict) for i in dataset.features.values()):
+            for feat in relevant_features:
+                features.append(dataset.features[readout_method_to_use][feat])
+        else:
+            for feat in relevant_features:
+                features.append(dataset.features[feat])
 
-        # double check if current range is correct:
-        if np.max(signal) > 1:
-            min_curr = np.min(signal)
-            max_curr = np.max(signal)
-            signal = (signal - min_curr) / (max_curr - min_curr)
-            # assume we are talking dots and high current was not actually
-            # device_max_signal
-            dataset.data[readout_method].values = signal * 0.3
-            dataset.compute_power_spectrum()
+    # double check if current range is correct:
+    if np.max(signal) > 1:
+        min_curr = np.min(signal)
+        max_curr = np.max(signal)
+        signal = (signal - min_curr) / (max_curr - min_curr)
+        # assume we are talking dots and high current was not actually
+        # device_max_signal
+        dataset.data[readout_method_to_use].values = signal * 0.3
+        dataset.compute_power_spectrum()
 
-        data_resized = resize(
-            signal, shape, anti_aliasing=True, mode="edge"
-        ).flatten()
+    data_resized = resize(
+        signal, shape, anti_aliasing=True, mode="edge"
+    ).flatten()
 
-        grad = generic_gradient_magnitude(signal, sobel)
-        gradient_resized = resize(
-            grad, shape, anti_aliasing=True, mode="constant"
-        ).flatten()
-        power = dataset.power_spectrum[readout_method].values
-        frequencies_resized = resize(
-            power, shape, anti_aliasing=True, mode="constant"
-        ).flatten()
+    grad = generic_gradient_magnitude(signal, sobel)
+    gradient_resized = resize(
+        grad, shape, anti_aliasing=True, mode="constant"
+    ).flatten()
+    power = dataset.power_spectrum[readout_method_to_use].values
+    frequencies_resized = resize(
+        power, shape, anti_aliasing=True, mode="constant"
+    ).flatten()
 
-        pad_width = len(data_resized.flatten()) - len(features)
-        features = np.pad(
-            features,
-            (0, pad_width),
-            "constant",
-            constant_values=nt.config["core"]["fill_value"],
-        )
+    pad_width = len(data_resized.flatten()) - len(features)
+    features = np.pad(
+        features,
+        (0, pad_width),
+        "constant",
+        constant_values=nt.config["core"]["fill_value"],
+    )
 
-        index = nt.config["core"]["data_types"]["signal"]
-        condensed_data[index, 0, :] = data_resized.tolist()
+    index = nt.config["core"]["data_types"]["signal"]
+    condensed_data[index, 0, :] = data_resized.tolist()
 
-        index = nt.config["core"]["data_types"]["frequencies"]
-        condensed_data[index, 0, :] = frequencies_resized.tolist()
+    index = nt.config["core"]["data_types"]["frequencies"]
+    condensed_data[index, 0, :] = frequencies_resized.tolist()
 
-        index = nt.config["core"]["data_types"]["gradient"]
-        condensed_data[index, 0, :] = gradient_resized.tolist()
+    index = nt.config["core"]["data_types"]["gradient"]
+    condensed_data[index, 0, :] = gradient_resized.tolist()
 
-        index = nt.config["core"]["data_types"]["features"]
-        condensed_data[index, 0, :] = features
+    index = nt.config["core"]["data_types"]["features"]
+    condensed_data[index, 0, :] = features
 
-        condensed_data_all.append(condensed_data.tolist())
+    condensed_data_all.append(condensed_data.tolist())
 
     return condensed_data_all
 
@@ -161,42 +162,58 @@ def prep_data(
 def export_data(
     category: str,
     db_names: List[str],
-    stages: List[str],
     skip_ids: Optional[Dict[str, List[int]]] = None,
     add_flipped_data: bool = False,
     quality: Optional[int] = None,
     filename: Optional[str] = None,
     db_folder: Optional[str] = None,
+    readout_method_to_use: str = 'transport',
 ) -> None:
-    """Exports condensed data to a numpy file.
+    """Exports condensed data to a numpy file in a format used by
+    nanotune's Classifier.
+
+    The saved array contains the normalized signal, gradient, Fourier
+    frequencies and extracted features of each dataset. The machine learning
+    labels are attached to each of them to the very end.
+    A dataset of 15 1D measurements results in an array of (4, 15, 101),
+    where each trace has been reshaped to 100 points plus the label. The
+    first array[0, :, :] are all signals, array[1, :, :] the frequencies,
+    array is defined in config.json under `data_types`.
 
     Args:
-        category:
-        db_names:
-        stages:
+        category: nt.config['core']['features'].keys()
+        db_names: names of databases whose data should be exported.
+        skip_ids: dict mapping database names to list of run IDs which should
+            be skipped.
+        add_flipped_data: whether or flipped data should be added as well.
+            a flipped pinchoff curve measured in transport for example
+            reproduces a pinchoff measured in rf.
+        quality: which qualities, e.g. only good or poor data, should be
+            exported. If none give, both will be taken.
+        filename: name of resulting numpy file. Default is the category name.
+        db_folder: folder where databases are located.
+        readout_method_to_use: which readout method to use if more than one
+            is available. Default is 'transport'.
     """
     assert isinstance(db_names, list)
-    assert isinstance(stages, list)
+    if category not in list(nt.config['core']['features'].keys()):
+        raise ValueError(
+            f"Unknown category. Please use on of the following: \
+            {list(nt.config['core']['features'].keys())}."
+        )
 
     if db_folder is None:
         db_folder = nt.config["db_folder"]
 
-    if category in ["pinchoff", "coulomboscillation"]:
+    if category in ["pinchoff", "coulomboscillation", "zerobiaspeak1D"]:
         dim = 1
-    elif category in [
-        "dotregime",
-        "singledot",
-        "doubledot",
-        "coulombdiamonds",
-    ]:
-        dim = 2
     else:
-        logger.error(
-            "Trying to export data of"
-            + " a category: {}/".format(category)
-            + " Please update utils/export_data.py and tell me"
-            + " the dimensions of the data "
-        )
+        dim = 2
+
+    if category == 'dotregime':
+        stages = ["singledot", "doubledot"]
+    else:
+        stages = [category]
 
     shape = tuple(nt.config["core"]["standard_shapes"][str(dim)])
     condensed_data_all = np.empty(
@@ -209,26 +226,18 @@ def export_data(
         nt.set_database(db_name, db_folder)
         for stage in stages:
             try:
-                if quality is None:
-                    relevant_ids[db_name] += nt.get_dataIDs(
-                        db_name, stage, db_folder=db_folder
-                    )
-                else:
-                    relevant_ids[db_name] += nt.get_dataIDs(
-                        db_name, stage, quality=quality, db_folder=db_folder
-                    )
-            except Exception as e:
-                logger.error(
-                    """Unable to load relevant ids
-                in {}""".format(
-                        db_name
-                    )
+                relevant_ids[db_name] += nt.get_dataIDs(
+                    db_name, stage, quality=quality, db_folder=db_folder,
+                    get_run_ids=False,
                 )
-                logger.error(e)
+                if len(relevant_ids[db_name]) == 0:
+                    logger.warning(f'No labelled data found in {db_name}')
+            except Exception as e:
+                msg = f"Unable to load relevant ids in {db_name}." + e
+                logger.error(msg)
                 break
 
     labels_exp = []
-
     for db_name, dataids in relevant_ids.items():
         nt.set_database(db_name, db_folder)
         skip_us = []
@@ -242,7 +251,10 @@ def export_data(
             if d_id not in skip_us:
                 try:
                     df = nt.Dataset(d_id, db_name, db_folder=db_folder)
-                    condensed_data = prep_data(df, category)
+                    condensed_data = prep_data(
+                        df,
+                        category,
+                        readout_method_to_use=readout_method_to_use)
                     new_label = export_label(df.ml_label, df.quality, category)
                     condensed_data_all = np.append(
                         condensed_data_all, condensed_data[0], axis=1
@@ -251,7 +263,8 @@ def export_data(
 
                     if add_flipped_data:
                         condensed_data = prep_data(
-                            df, category, flip_data=True
+                            df, category, flip_data=True,
+                            readout_method_to_use=readout_method_to_use
                         )
                         new_label = export_label(
                             df.ml_label, df.quality, category

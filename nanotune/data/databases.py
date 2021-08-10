@@ -22,6 +22,7 @@ def get_dataIDs(
     category: str,
     db_folder: Optional[str] = None,
     quality: Optional[int] = None,
+    get_run_ids: bool = True,
 ) -> List[int]:
     """Returns QCoDeS run IDs of datasets belonging to a specific category
     of measurements, assigned to the data during labelling.
@@ -41,6 +42,7 @@ def get_dataIDs(
         db_folder: folder containing database. If not specified,
             `nt.config["db_folder"]` is used.
         quality: Optional if a specific quality is required. 1==good, 0==poor.
+        get_run_ids: whether to return run IDs. Returns captured run IDs if False.
 
     Returns:
         List of QCoDeS run IDs.
@@ -52,19 +54,23 @@ def get_dataIDs(
 
     db_path = os.path.join(db_folder, db_name)
     conn = connect(db_path)
+    if get_run_ids:
+        id_type = "run_id"
+    else:
+        id_type = "captured_run_id"
 
     if quality is None:
         sql = f"""
-            SELECT run_id FROM runs WHERE {category}={1} OR {category} LIKE {str(1)}
+            SELECT {id_type} FROM runs WHERE {category}={1} OR {category} LIKE {str(1)}
             """
     else:
         sql = f"""
-            SELECT run_id FROM runs
+            SELECT {id_type} FROM runs
                 WHERE ({category}={1} OR {category} LIKE {str(1)})
                 AND (good={quality} OR good LIKE {str(quality)})
             """
     c = conn.execute(sql)
-    param_names_temp = many_many(c, "run_id")
+    param_names_temp = many_many(c, id_type)
 
     return list(flatten_list(param_names_temp))
 
@@ -81,7 +87,7 @@ def get_unlabelled_ids(
         db_name: name of database to search.
         db_folder: folder containing database. If not specified,
             `nt.config["db_folder"]` is used.
-        get_run_id: whether to return run IDs. Returns capturd run IDs if False.
+        get_run_id: whether to return run IDs. Returns captured run IDs if False.
 
     Returns:
         List of QCoDeS run IDs which do not have a machine learning label.
