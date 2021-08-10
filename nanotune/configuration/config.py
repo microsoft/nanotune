@@ -10,8 +10,10 @@ import pkg_resources as pkgr
 
 
 class Config:
-    """
-    Heavily inspired by qcodes config class
+    """nanotune config system.
+
+    Heavily inspired by qcodes config class. It loads defaults from config.json,
+    which can be accessed by `nt.config`.
     """
 
     config_filename = "config.json"
@@ -24,7 +26,7 @@ class Config:
     _loaded_config_files = [default_config_path]
 
     # home_dir = expanduser('~')
-    """ Golabl user specific configuration"""
+    """ Global user specific configuration"""
     user_config_path = expanduser(os.path.join("~", config_filename))
     user_schema_path = user_config_path.replace(config_filename, config_schema_filename)
 
