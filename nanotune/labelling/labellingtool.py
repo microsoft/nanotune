@@ -158,7 +158,7 @@ class LabellingTool(qtw.QMainWindow):
 
         self.l1 = qtw.QLabel()
         self.l1.setText("Plot ID: {}".format(self.current_id))
-        self.l1.setAlignment(qtc.Qt.AlignCenter)  # type: ignore
+        self.l1.setAlignment(qtc.Qt.AlignCenter)
         figure_row.addWidget(self.l1)
 
         rcParams.update({"figure.autolayout": True})
@@ -239,18 +239,18 @@ class LabellingTool(qtw.QMainWindow):
 
         clear_btn = qtw.QPushButton("Clear")
         finalize_row.addWidget(clear_btn)
-        clear_btn.clicked.connect(self.clear)  # type: ignore
+        clear_btn.clicked.connect(self.clear)
 
         save_btn = qtw.QPushButton("Save")
         finalize_row.addWidget(save_btn)
-        save_btn.clicked.connect(self.save_labels)  # type: ignore
+        save_btn.clicked.connect(self.save_labels)
 
         # -----------   Cancel row   ----------- #
         exit_row = qtw.QHBoxLayout()
 
         exit_btn = qtw.QPushButton("Cancel")
         exit_row.addWidget(exit_btn)
-        exit_btn.clicked.connect(self.exit)  # type: ignore
+        exit_btn.clicked.connect(self.exit)
 
         empty_space = qtw.QHBoxLayout()
         empty_space.addStretch(1)
