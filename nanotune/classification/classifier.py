@@ -130,7 +130,7 @@ class Classifier:
         if "features" in data_types:
             self._feature_indexes = RELEVANT_FEATURE_INDEXES[category]
         else:
-            self._feature_indexes = None
+            self._feature_indexes = []
 
         if category in DOT_LABEL_MAPPING.keys():
             relevant_labels = DOT_LABEL_MAPPING[category]
@@ -312,7 +312,8 @@ class Classifier:
         data: Optional[npt.NDArray[np.float64]] = None,
         labels: Optional[npt.NDArray[np.int64]] = None,
     ) -> None:
-        """Trains binary classifier.
+        """Trains binary classifier. Equal populations of data are selected
+        before the sklearn classifier is fitted.
 
         Args:
             data: prepped data
@@ -322,7 +323,8 @@ class Classifier:
             data = self.original_data
         if labels is None:
             labels = self.labels
-        (data_to_use, labels_to_use) = self.select_equal_populations(data, labels)
+        (data_to_use, labels_to_use) = self.select_equal_populations(
+            data, labels)
 
         X_train, _ = self.prep_data(train_data=data_to_use)
         self.clf.fit(X_train, labels_to_use)
@@ -601,7 +603,6 @@ class Classifier:
     def compute_metrics(
         self,
         n_iter: Optional[int] = None,
-        n_test: int = 100,
         save_to_file: bool = True,
         filename: str = "",
         supp_train_data: Optional[List[str]] = None,
@@ -609,7 +610,35 @@ class Classifier:
         perform_pca: bool = False,
         scale_pc: bool = False,
     ) -> Tuple[Dict[str, Dict[str, Any]], npt.NDArray[np.float64]]:
-        """Computes metrics to compare performance."""
+        """Computes different metrics of a classifier, averaging over
+        a number of iterations.
+        Beside metrics, the training time is tracked too. All information
+        extracted is saved to a dict. Metrics computed are `accuracy_score`,
+        `brier_score_loss`, `auc` (area under curve), `average_precision_recall`
+        and the confusion matrix - all implemented in sklearn.metrics.
+
+        Args:
+            n_iter: number of train and test iterations over which the metrics
+                statistic should be computed.
+            save_to_file: whether to save metrics info to file.
+            filename: name of json file if metrics are saved.
+            supp_train_data: list of paths to files with additional training
+                data.
+            n_supp_train: number of datasets which should be added to
+                the train set from additional data.
+            perform_pca: whether the metrics should be computed using
+                principal components for training and testing.
+            scale_pc: whether principal components should be scaled.
+
+        Returns:
+            dict: summary od results, mapping the a string indicating the
+                quantity onto the quantity itself. Containt mean and std
+                each metric.
+            np.array: metric results of all iterations. Shape is
+                (len(METRIC_NAMES), n_iter),
+                where the metrics appear in the order defined by
+                METRIC_NAMES.
+        """
         if n_iter is None:
             n_iter = DEFAULT_N_ITER[self.category]
 
@@ -619,7 +648,6 @@ class Classifier:
 
         start_time = time.time()
         train_times = []
-        test_times = []
 
         if supp_train_data is not None:
             supp_train_data, name_addon = self._list_paths(supp_train_data)
@@ -642,16 +670,17 @@ class Classifier:
             train_labels_addon = None  # type: ignore
 
         for curr_iter in range(n_iter):
-            start_time_inner = time.time()
+            start_time_train = time.time()
 
             (data_to_use, labels_to_use) = self.select_equal_populations(
                 self.original_data, self.labels
             )
-            (train_data, test_data, train_labels, test_labels) = self.split_data(
-                data_to_use, labels_to_use
-            )
-            if train_data_addon is not None:
+            (train_data,
+             test_data,
+             train_labels,
+             test_labels) = self.split_data(data_to_use, labels_to_use)
 
+            if train_data_addon is not None:
                 train_data = np.concatenate([train_data, train_data_addon], axis=0)
                 train_labels = np.concatenate(
                     [train_labels, train_labels_addon], axis=0
@@ -666,21 +695,18 @@ class Classifier:
 
             probas = self.clf.fit(X_train, train_labels).predict_proba(X_test)
 
-            train_times.append(time.time() - start_time_inner)
+            train_times.append(time.time() - start_time_train)
 
-            fpr, tpr, thresholds = roc_curve(test_labels, probas[:, 1])
-
-            start_time_inner = time.time()
-            for itt in range(n_test):
-                pred_labels = self.clf.predict(X_test)
-            test_times.append((time.time() - start_time_inner) / n_test)
+            pred_labels = self.clf.predict(X_test)
 
             m_in = METRIC_NAMES.index("accuracy_score")
             metrics[m_in, curr_iter] = accuracy_score(test_labels, pred_labels)
 
             m_in = METRIC_NAMES.index("brier_score_loss")
-            metrics[m_in, curr_iter] = brier_score_loss(test_labels, pred_labels)
+            metrics[m_in, curr_iter] = brier_score_loss(
+                test_labels, pred_labels)
 
+            fpr, tpr, thresholds = roc_curve(test_labels, probas[:, 1])
             m_in = METRIC_NAMES.index("auc")
             metrics[m_in, curr_iter] = auc(fpr, tpr)
 
@@ -709,8 +735,6 @@ class Classifier:
             "n_train": train_data.shape[0],
             "mean_train_time": np.mean(train_times),
             "std_train_time": np.std(train_times),
-            "mean_test_time": np.mean(test_times),
-            "std_test_time": np.std(test_times),
             "perform_pca": perform_pca,
             "scale_pc": scale_pc,
             "metadata": {},
