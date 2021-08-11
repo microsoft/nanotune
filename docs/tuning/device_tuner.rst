@@ -21,7 +21,7 @@ Measurement settings
     and `SetpointSettings`. A tuner class keeps an instance of each with
     general settings used for tuning of all devices. Examples of setpoint
     setting used
-    for all measurements are setpoint_method, optionally voltage precision and
+    for all measurements are `setpoint_method`, optionally `voltage_precision` and
     high resolution precisions. As for data settings, data base location or
     size of charge diagram segments used for classification also stay unchanged
     in most cases.
@@ -48,7 +48,7 @@ beforehand.
 Dot tuner
 ---------
 
-The `DotTuner` containes the methods required to implement the tuning procedure
+The `DotTuner` contains methods required to implement the tuning procedure
 shown in :numref:`tuning_algorithm`.
 If desired, the entire sequence can by run using the `tune` method, however
 all methods should also be seen as building blocks for other sequences.
@@ -102,6 +102,7 @@ If required, i.e. adjusting outer or central barriers was not successful
 because they reached their safety limit, the helper gate is changed too.
 
 Specifically, these two outer loops in :numref:`tuning_algorithm`
+do teh following:
 
 Large left loop - no good dot found:
  - Uses termination reasons to update outer barriers first. The decisive

@@ -6,7 +6,7 @@ Results saving
 
 Three classes work together to ensure tuning results are retained:
 `TuningResult`, `MeasurementHistory`, `MeasurementHistory`. They can be used to
-also save any results if desired.
+also save any other, not tuning related, results if desired.
 
 
 TuningResult

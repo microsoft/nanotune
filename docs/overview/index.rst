@@ -8,9 +8,9 @@ typical manual measurements and replaces the experimenter's quality and charge
 state assessment by supervised machine learning. In a very simplified way,
 the implemented dot-tuning sequence can be thought of as a
 for-loop with a couple of if-statements which hard code the tuning logic.
-Being based on QCoDeS, Nanotune extends the data acquisition software by
+Being based on QCoDeS, nanotune extends the data acquisition software by
 adding  automated tuning procedures which use machine learning models
-implemented in scikit-learn or tensorflow.
+implemented in scikit-learn.
 For successful autonomous tuning, only the following, minimal input is required:
 
 - bonding scheme/routing, i.e. which DAC channel corresponds to which gate,
@@ -66,22 +66,22 @@ Similar to a manual approach, each gate is characterized individually by
 stepping over its safety range while measuring the current through the device.
 The desired feature, a sharp current dip reaching zero, is confirmed by a
 binary classifier trained with experimental data. Only if traces of all gates
-show a good pinch-off, a device is tuned.
+show a good pinchoff, a device is tuned.
 
 The subsequent dot-tuning sequence is able to tune into either the single and
 double dot regime, with the main difference being the voltage value set to the
 central barrier. To form a double dot, a more negative value (when tuning in
-depletetion mode) is required than for the single dot regime.
+depletion mode) is required than for the single dot regime.
 Specifically, the dot-tuning process consists of a sequence of one- and
 two-dimensional measurements, referred to as gate characterizations and
-charge diagrams respectively. Each measurement is assessed by a binary
+charge diagrams. Each measurement is assessed by a binary
 classifier to determine quality and, in the case of a charge diagram, the
 charge state (i.e. single vs double dot).
 Gate characterizations are used to determine each gate's 'active' voltage
 range. An active voltage range, also called `current_valid_range`, is the
 range within which we expect the desired charge state to occur. A sequence of
 faster, one-dimensional measurements is an efficient way to narrow down the
-large parameter space before proceeding with more time consuming,
+large parameter space before proceeding with more time consuming
 two-dimensional measurements. Due to capacitive coupling, active ranges need
 to be updated each time the voltage of a nearby gate is changed.
 Once all gates are characterized and barriers set to a value within their

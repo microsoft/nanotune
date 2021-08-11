@@ -26,7 +26,7 @@ sys.setrecursionlimit(1500)
 # -- Project information -----------------------------------------------------
 
 project = 'nanotune'
-copyright = '2019, Jana Darulova'
+copyright = '2021, Jana Darulova'
 author = 'Jana Darulova'
 
 # auto versioning
