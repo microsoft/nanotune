@@ -5,7 +5,7 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy.typing as npt
-
+from prettytable import PrettyTable
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -356,92 +356,36 @@ def print_data_stats(data, labels) -> None:
     plt.show()
 
 
-def feature_combination_metrics(
-    classifier: str,
-    data_filenames: List[str],
-    category: str,
-    metric: str = "accuracy_score",
-    filename: Optional[str] = None,
-    classifier_parameters: Dict[str, Union[str, float, int]] = {},
-    feature_indexes: List[int] = [0],
-    n_iter: int = 75,
-) -> Dict[str, Any]:
-    """"""
-    # TODO: Fix this method. It is broken. Has not been used for a while
+def display_metrics(
+        info_dict: Dict[str, Dict[str, float]],
+        all_of_it: Optional[bool] = False,
+    ) -> None:
+        """"""
+        inf_t = PrettyTable(["parameter", "value"])
+        for key in info_dict.keys():
+            if key not in METRIC_NAMES and key != "metric_names":
+                inf_t.add_row([key, info_dict[key]])
 
-    # n_feat = len(feature_indexes)
-    # scores: List[str] = []
+        t = PrettyTable(["metric", "mean", "std"])
+        for mn in METRIC_NAMES:
+            t.add_row(
+                [
+                    mn,
+                    "{0:.3f}".format(info_dict[mn]["mean"]),
+                    "{0:.3f}".format(info_dict[mn]["std"]),
+                ]
+            )
+        t.add_row(
+            [
+                mn,
+                np.array(info_dict["confusion_matrix"]["mean"]),
+                np.array(info_dict["confusion_matrix"]["std"]),
+            ]
+        )
 
-    # for k in range(1, n_feat+1):
-    #     f_indx = itertools.combinations(range(1, n_feat+1), k)
-    #     for f_combo in feature_indexes:
-    #         qclf = Classifier(data_filenames,
-    #                               category,
-    #                               classifier=classifier,
-    #                               hyper_parameters=classifier_parameters,
-    #                               data_types=['features'],
-    #                               feature_indexes=list(f_combo),
-    #                               )
-    #     infos = qclf.compute_metrics(n_iter=n_iter)
-    #     features_str = ''
-    #     sub_feat = [features[f] for f in f_combo]
-    #     scores.append([', '.join(sub_feat), infos[metric]['mean'],
-    #                    infos[metric]['std']])
-
-    # info_dict = {
-    #     'stage': category,
-    #     'classifier': qclf.clf_type,
-    #     'classifier_parameters': qclf.clf.get_params(),
-    #     'n_iter': n_iter,
-    #     'data_files': qclf.file_paths,
-    #     'scores': scores,
-    #     'metric': metric,
-    # }
-
-    # if filename is None:
-    #     filename = qclf.clf_type + '_' + metric + '.json'
-
-    # path = os.path.join(nt.config['db_folder'], category + '_features_metrics')
-    # if not os.path.exists(path):
-    #     os.makedirs(path)
-    # path = os.path.join(path, filename)
-    # with open(path, 'w') as f:
-    #     json.dump(info_dict, f)
-
-    # return info_dict
-    logger.warning("feature_combination_metrics under construction")
-    return {}
-
-
-# def feature_metric_to_latex(directory: str,
-#                             filenames: List[str],
-#                             tables_folder: str) -> None:
-#     """
-#     """
-#     metric = 'accuracy_score'
-#     classifiers = ['SVC_rbf', 'SVC_linear', 'MLPClassifier']
-#     stage = 'po'
-#     directory = '/Users/jana/Documents/code/nanotune/measurements/databases/' + stage + '_features_metrics'
-
-#     for classifier in classifiers:
-#         filename = classifier + '_' + metric + '.json'
-
-#         path = os.path.join(directory, filename)
-#         with open(path) as f:
-#             feat_data = json.load(f)
-
-#         header =  ['features', 'mean ' + metric, 'std']
-#         scores = sorted(feat_data['scores'], key=itemgetter(1), reverse=True)[0:40]
-
-#         df = pd.DataFrame(scores)
-#         filepath = os.path.join(tables_folder,  stage + '_' + classifier + '_' + metric +'.tex')
-#         with open(filepath, 'w') as tf:
-#             with pd.option_context("max_colwidth", 1000):
-#                 tf.write(df.to_latex(index=False,
-#                                      formatters=[dont_format, format_float,
-#                                                  format_float],
-#                                      header=header,
-#                                      column_format='lcc').replace('\\toprule', '\\hline').replace('\\midrule', '\\hline').replace('\\bottomrule','\\hline'))
+        if all_of_it:
+            print(inf_t)
+        print(t)
 
 
 def performance_metrics_to_latex(
