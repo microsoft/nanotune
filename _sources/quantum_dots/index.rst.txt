@@ -44,7 +44,7 @@ Dots in a two-dimensional heterostructure (2DEG)
    ionised donors.  As a result, electrons are confined along the `z` axis,
    creating a two-dimensional electron gas (2DEG). Wells and barriers in the
    potential profile created by voltages applied to electrostatic gates
-   further localise electrons within the 2DEG.
+   further localize electrons within the 2DEG.
 
 Mobile electrons from a thin silicon donor layer within  AlGaAs layer are
 attracted by GaAs - AIGaAs  interface, marked in red in figure

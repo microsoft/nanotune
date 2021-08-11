@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Manual tuning &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Manual tuning &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -215,8 +216,9 @@ amount of time.
 Here we outline a typical procedure using nanowires as example. We begin with
 a system in its initial state:</p>
 <p><a class="reference internal" href="../_images/nw_dots-13.svg"><img alt="init" src="../_images/nw_dots-13.svg" width="45%" /></a> <a class="reference internal" href="../_images/nw_dots-07.svg"><img alt="labelsgates" src="../_images/nw_dots-07.svg" width="15%" /></a> <a class="reference internal" href="../_images/nw_dots-16.svg"><img alt="labels" src="../_images/nw_dots-16.svg" width="15%" /></a></p>
-<p>In a first step, the barriers are set. To do so, either 1D or pair-wise 2D
-sweeps are measured. Voltages at which a gate pinches off are typically set.
+<p>In a first step the barriers are set. To do so, either 1D or pair-wise 2D
+sweeps are measured to narrow down the respective ranges.
+Voltages at which a gate pinches off are typically set.
 Setting only outer barriers results in a large single dot, while setting the
 central barrier as well isolates two puddles:</p>
 <p><a class="reference internal" href="../_images/nw_dots-03.svg"><img alt="singledot_barriers" src="../_images/nw_dots-03.svg" width="35%" /></a> <a class="reference internal" href="../_images/nw_dots-02.svg"><img alt="barriers" src="../_images/nw_dots-02.svg" width="35%" /></a></p>
@@ -228,7 +230,6 @@ usually the plungers are used.</p>
 <div><p><a class="reference internal" href="../_images/nw_dots-14.svg"><img alt="sweepsingle" src="../_images/nw_dots-14.svg" width="35%" /></a> <a class="reference internal" href="../_images/nw_dots-12.svg"><img alt="singlechargediagram" src="../_images/nw_dots-12.svg" width="25%" /></a></p>
 <p>Good single dots show clear and sharp diagonal lines. Taking one-dimensional
 traces give typical Coulomb oscillation sweeps.
-Taking a larger scan can look like the measurement above.
 The lines of poor single dots or dots which start to form are not sharp. 1D
 Coulomb oscillations would show broad, doubled, or any other deformed peaks.</p>
 </div></blockquote>
@@ -259,7 +260,7 @@ single electron regime:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

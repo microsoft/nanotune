@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.data.databases &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>nanotune.data.databases &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -181,10 +182,9 @@
 <span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.connection</span> <span class="kn">import</span> <span class="n">atomic</span>
 <span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.database</span> <span class="kn">import</span> <span class="n">connect</span>
 <span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.queries</span> <span class="kn">import</span> <span class="n">add_meta_data</span><span class="p">,</span> <span class="n">get_metadata</span>
-<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.query_helpers</span> <span class="kn">import</span> <span class="n">insert_column</span><span class="p">,</span> <span class="n">many_many</span>
+<span class="kn">from</span> <span class="nn">qcodes.dataset.sqlite.query_helpers</span> <span class="kn">import</span> <span class="n">many_many</span>
 
 <span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
-<span class="kn">from</span> <span class="nn">nanotune.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -192,11 +192,34 @@
 
 <div class="viewcode-block" id="get_dataIDs"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_dataIDs">[docs]</a><span class="k">def</span> <span class="nf">get_dataIDs</span><span class="p">(</span>
     <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">quality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">get_run_ids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Returns QCoDeS run IDs of datasets belonging to a specific category</span>
+<span class="sd">    of measurements, assigned to the data during labelling.</span>
+
+<span class="sd">    The entire database `db_name` is searched and a column of the same name as</span>
+<span class="sd">    the category looked up needs to exist in it. Example of categories are</span>
+<span class="sd">    `pinchoff`, `singledot` or `doubledot`, all valid ones are defined in</span>
+<span class="sd">    configuration.config.json under the &quot;labels&quot; key.</span>
+<span class="sd">    Optionally, the quality can be</span>
+<span class="sd">    specified. Quality and category together are the machine learning labels</span>
+<span class="sd">    nanotune uses during classification.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_name: name of database to search.</span>
+<span class="sd">        category: measurement type/category we are looking for. E.g.</span>
+<span class="sd">            `pinchoff`, `singledot` or `doubledot`.</span>
+<span class="sd">        db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+<span class="sd">        quality: Optional if a specific quality is required. 1==good, 0==poor.</span>
+<span class="sd">        get_run_ids: whether to return run IDs. Returns captured run IDs if False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of QCoDeS run IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
         <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -204,19 +227,23 @@
 
     <span class="n">db_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">get_run_ids</span><span class="p">:</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="s2">&quot;run_id&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="s2">&quot;captured_run_id&quot;</span>
 
     <span class="k">if</span> <span class="n">quality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">            SELECT run_id FROM runs WHERE </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">            SELECT </span><span class="si">{</span><span class="n">id_type</span><span class="si">}</span><span class="s2"> FROM runs WHERE </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">            &quot;&quot;&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">            SELECT run_id FROM runs</span>
-<span class="s2">                WHERE (</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">            SELECT </span><span class="si">{</span><span class="n">id_type</span><span class="si">}</span><span class="s2"> FROM runs</span>
+<span class="s2">                WHERE (</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2"> OR </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
 <span class="s2">                AND (good=</span><span class="si">{</span><span class="n">quality</span><span class="si">}</span><span class="s2"> OR good LIKE </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">quality</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
 <span class="s2">            &quot;&quot;&quot;</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;run_id&quot;</span><span class="p">)</span>
+    <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">param_names_temp</span><span class="p">))</span></div>
 
@@ -224,21 +251,40 @@
 <div class="viewcode-block" id="get_unlabelled_ids"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_unlabelled_ids">[docs]</a><span class="k">def</span> <span class="nf">get_unlabelled_ids</span><span class="p">(</span>
     <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">get_run_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Gets run IDs all unlabelled datasets in a database. A dataset is selected</span>
+<span class="sd">    if it doesn&#39;t have a value in the `good` column.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_name: name of database to search.</span>
+<span class="sd">        db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+<span class="sd">        get_run_id: whether to return run IDs. Returns captured run IDs if False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of QCoDeS run IDs which do not have a machine learning label.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
         <span class="n">db_name</span> <span class="o">+=</span> <span class="s2">&quot;.db&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
 
     <span class="n">db_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_folder</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
-
     <span class="n">conn</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        SELECT run_id FROM runs WHERE good IS NULL</span>
-<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">get_run_id</span><span class="p">:</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT run_id FROM runs WHERE good IS NULL</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT captured_run_id FROM runs WHERE good IS NULL</span>
+<span class="s2">            &quot;&quot;&quot;</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;run_id&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">get_run_id</span><span class="p">:</span>
+        <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;run_id&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">param_names_temp</span> <span class="o">=</span> <span class="n">many_many</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;captured_run_id&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">param_names_temp</span><span class="p">))</span></div>
 
@@ -246,14 +292,18 @@
 <div class="viewcode-block" id="list_experiments"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.list_experiments">[docs]</a><span class="k">def</span> <span class="nf">list_experiments</span><span class="p">(</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Lists all databases and their experiments within a folder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_folder: the folder to enumerate.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: name of folder which was searched.</span>
+<span class="sd">        dict: mapping database name to a list of experiment IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
 
-    <span class="c1"># print(os.listdir(db_folder))</span>
-    <span class="c1"># print(db_folder)</span>
-    <span class="c1"># db_files = glob.glob(db_folder + &#39;*.db&#39;)</span>
-    <span class="c1"># db_files = glob.glob(db_folder)</span>
     <span class="n">all_fls</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">db_folder</span><span class="p">)</span>
     <span class="n">db_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">db_file</span> <span class="k">for</span> <span class="n">db_file</span> <span class="ow">in</span> <span class="n">all_fls</span> <span class="k">if</span> <span class="n">db_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.db&quot;</span><span class="p">)]</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;db_files: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_files</span><span class="p">))</span>
@@ -277,8 +327,16 @@
     <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Ceate new database and initialise it</span>
+    <span class="sd">&quot;&quot;&quot;Create new database and initialise it with nanotune labels.</span>
+<span class="sd">    A separate column for each label is created.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_name: name of new database.</span>
+<span class="sd">        db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: absolute path of new database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
@@ -305,7 +363,15 @@
     <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Sets a new database to be the default one to load from and save to.</span>
+<span class="sd">    If the database does not exist, a new one is created. The change is</span>
+<span class="sd">    propagated to QCoDeS&#39; configuration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_name: name of database to set.</span>
+<span class="sd">        db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -331,7 +397,12 @@
 
 
 <div class="viewcode-block" id="get_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.get_database">[docs]</a><span class="k">def</span> <span class="nf">get_database</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Gets name and folder of the current default database used by QCoDeS.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: database name</span>
+<span class="sd">        str: folder containing database</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">db_path</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">][</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span>
     <span class="n">db_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
     <span class="n">db_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
@@ -343,9 +414,16 @@
     <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return last &#39;global&#39; dataid for given database. It is this ID that is used</span>
-<span class="sd">    in plot_by_id</span>
+    <span class="sd">&quot;&quot;&quot;Returns QCoDeS run ID of last dataset in a database, i.e the highest</span>
+<span class="sd">    run ID there is.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_name: name of database.</span>
+<span class="sd">        db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: sum of `last_counter` of all experiments within a database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
@@ -362,37 +440,20 @@
 
 <div class="viewcode-block" id="switch_database"><a class="viewcode-back" href="../../../api/data/databases.html#nanotune.data.databases.switch_database">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">switch_database</span><span class="p">(</span><span class="n">temp_db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">temp_db_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Context manager temporarily setting a different database. Sets back to</span>
+<span class="sd">    previous database name and folder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        temp_db_name: name of database to set.</span>
+<span class="sd">        temp_db_folder: folder containing database. If not specified,</span>
+<span class="sd">            `nt.config[&quot;db_folder&quot;]` is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">original_db</span><span class="p">,</span> <span class="n">original_db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
     <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">temp_db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">temp_db_folder</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="n">original_db</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">original_db_folder</span><span class="p">)</span></div>
-
-
-<span class="c1"># def rename_labels(db_name: str,</span>
-<span class="c1">#                   db_folder: Optional[str] = nt.config[&#39;db_folder&#39;]) -&gt; bool:</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     nt.set_database(db_name)</span>
-<span class="c1">#     for data_id in range(1, nt.get_last_dataid(db_name)+1):</span>
-<span class="c1">#         print(data_id)</span>
-<span class="c1">#         nt.correct_label_names(data_id, db_name)</span>
-<span class="c1">#         time.sleep(0.1)</span>
-
-<span class="c1"># if sqlite3.sqlite_version is 3.25 and above, we can use ALTER TABLE to</span>
-<span class="c1"># rename columns:</span>
-<span class="c1"># conn = connect(db_path)</span>
-<span class="c1"># sql = f&quot;&quot;&quot;</span>
-<span class="c1">#     ALTER TABLE runs RENAME COLUMN wallwall TO leadscoupling;</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1"># c = conn.execute(sql)</span>
-
-<span class="c1"># ALTER TABLE runs RENAME COLUMN wallwall TO leadcoupling;</span>
-<span class="c1"># ALTER TABLE runs RENAME COLUMN clmboscs TO coulomboscillations;</span>
-<span class="c1"># ALTER TABLE runs RENAME COLUMN clmbdiam TO coulombdiamonds;</span>
-<span class="c1"># ALTER TABLE runs RENAME COLUMN zbp TO zerobiaspeak;</span>
 </pre></div>
 
            </div>
@@ -404,7 +465,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

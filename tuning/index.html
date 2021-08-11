@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tuning &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Tuning &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -205,9 +206,9 @@
 </style>
 <div class="section" id="tuning">
 <span id="id1"></span><h1>Tuning<a class="headerlink" href="#tuning" title="Permalink to this headline">¶</a></h1>
-<p>Tuning quantum dots is a process roughly consisting of two parts First, puddles
-of electrons are formed within an electron gas by finding appropriate,
-voltages to all electrostatic gates nearby. The second step optimizes the
+<p>Tuning quantum dots is a process roughly consisting of two parts. First, puddles
+of electrons are formed within an electron gas by finding appropriate
+voltages for all electrostatic gates nearby. The second step optimizes the
 voltages of a small subset of these gates to adjust the number of charges within
 each dot and the couplings between them. The figure below illustrates the entire
 tuning process on a nanowire, where both steps have been performed.</p>
@@ -218,10 +219,10 @@ all electrostatic gates, well-defined quantum dots with specific tunnel
 couplings can be formed.</p>
 <p>A manual approach to tuning consists of a sequence of measurements iteratively
 narrowing down the voltage range of each gate, outlined in
-<a class="reference internal" href="manual_tuning.html#manual-tuning"><span class="std std-ref">Manual tuning</span></a>. nanotune applies this approach to the the first step,
+<a class="reference internal" href="manual_tuning.html#manual-tuning"><span class="std std-ref">Manual tuning</span></a>. nanotune applies this approach to the first step,
 also referred to as coarse tuning. By automating some of the most common
 measurements and replacing the experimenter’s decision making by binary
-classifiers, it implements the device characterization and dot tuning
+classifiers, it implements the device characterization and dot-tuning
 procedures outlined in the workflow diagram in <a class="reference internal" href="../overview/index.html#fig-workflow"><span class="std std-numref">Fig. 2</span></a>.</p>
 <p>Both device characterization and dot tuning is covered by the tuning module,
 whose main components are the <cite>Tuner</cite> base class and its two subclasses
@@ -266,7 +267,7 @@ of <cite>MeasurementHistory</cite> and <cite>TuningResult</cite>, described in <
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

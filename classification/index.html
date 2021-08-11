@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Classification &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Classification &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -106,10 +106,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#classifier">Classifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#synthetic-vs-experimental-data">Synthetic vs experimental data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#labelling">Labelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#labelling-tool">Labelling tool</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -205,46 +207,65 @@
 <div class="section" id="classification">
 <h1>Classification<a class="headerlink" href="#classification" title="Permalink to this headline">¶</a></h1>
 <p>nanotune replaces the experimenter’s decision making by binary classifiers
-predicting either quality of a measurement or charge stage of charge diagrams.
-Due to a large variability not captured in synthetic models of this data,
+predicting either quality of a measurement or charge stage found in charge
+diagrams. Due to a large variety of regimes and noise types not reproduced by
+synthetic models,
 it uses hand-labelled experimental measurements to train them. Given the
-difficulty of collecting and labelling these datasets, classifiers
-which are less data hungry than neural networks.</p>
+difficulty of collecting and labelling these datasets, binary classifiers,
+which are less data hungry than neural networks, are used.</p>
 <div class="section" id="classifier">
 <h2>Classifier<a class="headerlink" href="#classifier" title="Permalink to this headline">¶</a></h2>
-<p>nanotune’s classifier class emulates binary classifiers implemented in
-scikit-learn. It support several different types, which can be specified during
-initialization. Its methods allow to prepare data loaded from QCoDeS datasets, i.e.
+<p>nanotune’s <cite>Classifier</cite> class emulates binary classifiers implemented in
+scikit-learn. One can choose among the following classifiers at initialization:</p>
+<ul class="simple">
+<li><p>SVC</p></li>
+<li><p>LogisticRegression</p></li>
+<li><p>MLPClassifier”</p></li>
+<li><p>GaussianProcessClassifier”</p></li>
+<li><p>DecisionTreeClassifier</p></li>
+<li><p>RandomForestClassifier</p></li>
+<li><p>AdaBoostClassifier</p></li>
+<li><p>GaussianNB</p></li>
+<li><p>QuadraticDiscriminantAnalysis</p></li>
+<li><p>KNeighborsClassifier.</p></li>
+</ul>
+<p>The <cite>Classifier</cite> wraps some of the methods found in sklearn, such as
+splitting data into train and test sets, and implements these tailored to data
+measured with QCoDeS.
+Its methods allow to prepare data loaded from QCoDeS datasets, i.e.
 by loading it into a nanotune dataset, traces are scaled using previously measured
 normalization constants. Training data is selected at random from the available
 dataset so that both labels appear equally often. Principle components can also
-be calculated and used for classification,
-however studies showed (Darulova et al. 2020) that
-they don’t increase prediction accuracy.</p>
+be calculated and used for classification.</p>
 </div>
 <div class="section" id="synthetic-vs-experimental-data">
 <h2>Synthetic vs experimental data<a class="headerlink" href="#synthetic-vs-experimental-data" title="Permalink to this headline">¶</a></h2>
-<p>The issue of using synthetic data to train machine learning classifiers to
+<p>The issue with using synthetic data to train machine learning classifiers to
 predict the charge state is that models often fail to capture the large variety
 of regimes. The model implemented in nanotune for example, is able to produce
-diagrams as as those below.</p>
+diagrams as those below.</p>
 <p><a class="reference internal" href="../_images/dotfit_aaaaaaaa-0000-0000-0000-016fe0f57760.svg"><img alt="capasd" src="../_images/dotfit_aaaaaaaa-0000-0000-0000-016fe0f57760.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_aaaaaaaa-0000-0000-0000-016fcbe58399.svg"><img alt="capadd" src="../_images/dotfit_aaaaaaaa-0000-0000-0000-016fcbe58399.svg" width="45%" /></a></p>
-<p>Note that these diagram are ideal regime without noise.
-While synthetic noise models can be added to modelled data, it has been
-shown that it does not increase classification accuracy (Darulova et al. 2021).
-There is another synthetic dataset used for charge state detection: the
-<a class="reference external" href="https://github.com/jpzwolak/QFlow-lite">QFlow-lite</a> dataset. This data provides
-double dot diagrams showing triple points instead of the honey comb structure
-above as well as a transition between single and double dot regime.</p>
+<p>These diagram show ideal regime without noise.
+Beside the capacitance model, datasets based on other models have been
+used as well.
+One of them is the
+<a class="reference external" href="https://github.com/jpzwolak/QFlow-lite">QFlow-lite</a> dataset. A
+difference between nanotune’s synthetic data is that QFlow-lite data
+provides double dot diagrams showing triple points instead of the honey comb
+structure. Additionally, it is also able to reproduce a transition between
+single and double dot regime.
+To potentially improve classification accuracy, noise models can be added to
+synthetic data, however it has been
+shown that it does not increase classification accuracy (Darulova et al. 2021).</p>
 <p>In contrast, experimental data can look similar, yet different. A diagram can
 contain more than one valid regime and various noise types. A double dot does
 not always look like a honeycomb structure and does not always show only
 triple points. Below a few examples of both single and double dots.</p>
 <p><a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01658a368f24.svg"><img alt="sd1" src="../_images/dotfit_deafcafe-0200-0004-0000-01658a368f24.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01628a192b48.svg"><img alt="sd2" src="../_images/dotfit_deafcafe-0200-0004-0000-01628a192b48.svg" width="45%" /></a></p>
-<p>Experimental single dots. In general, this charge state can be reproduced by
-models fairly well. But these to examples show that experimental data will
-always have some noise and maybe regions with poor regimes. A useful classifier
-should not be bothered by lower resolution.</p>
+<p>Experimental single dots.</p>
+<p>In general, this charge state can be reproduced by
+models fairly well. But these examples show that experimental data will
+always have some noise and maybe regions with poor regimes.</p>
 <p><a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-0165a05dfe17.svg"><img alt="dd1" src="../_images/dotfit_deafcafe-0200-0004-0000-0165a05dfe17.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01651308897d.svg"><img alt="dd4" src="../_images/dotfit_deafcafe-0200-0004-0000-01651308897d.svg" width="45%" /></a></p>
 <p>Experimental double dot diagrams showing that a double dot does not always look
 the same, and especially, does not necessarily look similar to modelled data.
@@ -253,16 +274,17 @@ device, not all charge transitions are visible. Some of them, mainly in the
 lower left corner, are below the noise floor.</p>
 <p><a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01659f3e3104.svg"><img alt="dd2" src="../_images/dotfit_deafcafe-0200-0004-0000-01659f3e3104.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01659d4319a6.svg"><img alt="dd3" src="../_images/dotfit_deafcafe-0200-0004-0000-01659d4319a6.svg" width="45%" /></a>
 Experimental double dot diagrams with multiple regimes within the
-same image.
-This variation is the reason why nanotune segments charge diagrams into
-sub-regions for classification. Each sub-region is classified seperately.</p>
+same image.</p>
+<p>This variation is the reason why nanotune segments charge diagrams into
+sub-regions for classification. Each sub-region is classified separately.</p>
 </div>
 <div class="section" id="labelling">
 <h2>Labelling<a class="headerlink" href="#labelling" title="Permalink to this headline">¶</a></h2>
 <p>When using labelled experimental data, the labelling process brings another
 challenge with it. Not only is the process time consuming, but the regime
 might not be clear-cut. In fact, each labeller might label diagrams differently,
-inducing a bias which may confuse the classifier. A strategy could be sample
+inducing a bias which may confuse the classifier.
+A strategy could be sample
 a few examples, based on which a set of rules are fixed. A few relevant questions
 to answer before starting to label are the following. Most of the also apply
 other data such as pinch off curves.</p>
@@ -279,12 +301,23 @@ between single, double and no dot.</p></li>
 <p>To help answer these questions, one could think about what the subsequent tuning
 requires. Does it have to locate triple points? Or does it need to find the single
 electron regime? Can we deal with noise later on?
-A different end goal may require different labels.
-From experience a labelling tool, which displays the measurement and has
-buttons to click for each label, eases the pain of labelling a little bit.</p>
+A different end goal may require different labels.</p>
 <p>Below are three examples of data which may pose some labelling difficulties and
 could be used to decide on a set of “labelling rules”.</p>
 <p><a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01658ef52b2c.svg"><img alt="noise1" src="../_images/dotfit_deafcafe-0200-0004-0000-01658ef52b2c.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01659e804f95.svg"><img alt="noise2" src="../_images/dotfit_deafcafe-0200-0004-0000-01659e804f95.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-0165ad687e7b.svg"><img alt="noise3" src="../_images/dotfit_deafcafe-0200-0004-0000-0165ad687e7b.svg" width="45%" /></a></p>
+</div>
+<div class="section" id="labelling-tool">
+<h2>Labelling tool<a class="headerlink" href="#labelling-tool" title="Permalink to this headline">¶</a></h2>
+<p>nanotune has a simple tool trying to alleviate the pain of labelling, called
+the <cite>LabellingTool</cite>. From experience, having a window displaying each
+measurements and buttons to click for each label, makes the whole procedure
+faster and more reliable. The selected labels are saved to metadata of the
+QCoDeS dataset. Below a screenshot of this window, an example notebook of how
+to launch it can be found in <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Examples</span></a>.</p>
+<div class="figure align-center" id="id2">
+<span id="fig-labellingtool"></span><a class="reference internal image-reference" href="../_images/labellingtool.png"><img alt="screenshot of nanotune's labelling tool" src="../_images/labellingtool.png" style="width: 70.0%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 18 </span><span class="caption-text">Screenshot of nanotune’s labelling tool.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 </div>
 
@@ -302,7 +335,7 @@ could be used to decide on a set of “labelling rules”.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

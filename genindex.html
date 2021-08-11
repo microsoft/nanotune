@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Index &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Index &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -187,6 +188,7 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -251,6 +253,8 @@
 </li>
       <li><a href="api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel">CapacitanceModel (class in nanotune.model.capacitancemodel)</a>
 </li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.category">category (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.central_barrier">central_barrier() (nanotune.device.device_layout.DoubleDotLayout class method)</a>
 
       <ul>
@@ -279,20 +283,24 @@
 </li>
       <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier">Classifier (class in nanotune.classification.classifier)</a>
 </li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.classifier_type">classifier_type (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.Classifiers">Classifiers (class in nanotune.tuningstages.settings)</a>
 </li>
       <li><a href="api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.classify_dot_segments">classify_dot_segments() (in module nanotune.tuningstages.chargediagram_tasks)</a>
+</li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.clf">clf (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.comment">comment (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.compute_1D_power_spectrum">compute_1D_power_spectrum() (nanotune.data.dataset.Dataset method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.compute_2D_power_spectrum">compute_2D_power_spectrum() (nanotune.data.dataset.Dataset method)</a>
 </li>
       <li><a href="api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.compute_energy">compute_energy() (nanotune.model.capacitancemodel.CapacitanceModel method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.compute_initial_guess">compute_initial_guess() (nanotune.fit.pinchofffit.PinchoffFit method)</a>
 </li>
       <li><a href="api/tuningstages/base_tasks.html#nanotune.tuningstages.base_tasks.compute_linear_setpoints">compute_linear_setpoints() (in module nanotune.tuningstages.base_tasks)</a>
@@ -300,10 +308,6 @@
       <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.compute_metrics">compute_metrics() (nanotune.classification.classifier.Classifier method)</a>
 </li>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.compute_power_spectrum">compute_power_spectrum() (nanotune.data.dataset.Dataset method)</a>
-</li>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.compute_ROC">compute_ROC() (nanotune.classification.classifier.Classifier method)</a>
-</li>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.compute_ROC_different_source">compute_ROC_different_source() (nanotune.classification.classifier.Classifier method)</a>
 </li>
       <li><a href="api/tuningstages/tuningstage.html#nanotune.tuningstages.tuningstage.TuningStage.compute_setpoints">compute_setpoints() (nanotune.tuningstages.tuningstage.TuningStage method)</a>
 </li>
@@ -357,9 +361,13 @@
 </li>
       <li><a href="api/drivers/dac_interface.html#nanotune.drivers.dac_interface.DACInterface">DACInterface (class in nanotune.drivers.dac_interface)</a>
 </li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.data">data (nanotune.data.dataset.Dataset attribute)</a>
+</li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.data_ids">data_ids (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
       <li><a href="api/device_tuner/tuner.html#nanotune.device_tuner.tuner.Tuner.data_settings">data_settings (nanotune.device_tuner.tuner.Tuner property)</a>
+</li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.data_types">data_types (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DataClassMixin">DataClassMixin (class in nanotune.device.device_layout)</a>
 </li>
@@ -369,15 +377,19 @@
 </li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings">DataSettings (class in nanotune.tuningstages.settings)</a>
 </li>
-      <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.db_folder">db_folder (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.db_folder">db_folder (nanotune.data.dataset.Dataset attribute)</a>
 
       <ul>
+        <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.db_folder">(nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
+</li>
         <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.db_folder">(nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.db_name">db_name (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.db_name">db_name (nanotune.data.dataset.Dataset attribute)</a>
 
       <ul>
+        <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.db_name">(nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
+</li>
         <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.db_name">(nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
       </ul></li>
@@ -387,15 +399,13 @@
 </li>
       <li><a href="api/configuration/config.html#nanotune.configuration.config.Config.default_schema">default_schema (nanotune.configuration.config.Config attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/configuration/config.html#nanotune.configuration.config.Config.default_schema_path">default_schema_path (nanotune.configuration.config.Config attribute)</a>
 </li>
       <li><a href="api/tuningstages/chargediagram_tasks.html#nanotune.tuningstages.chargediagram_tasks.determine_dot_regime">determine_dot_regime() (in module nanotune.tuningstages.chargediagram_tasks)</a>
 </li>
       <li><a href="api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.determine_N">determine_N() (nanotune.model.capacitancemodel.CapacitanceModel method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.determine_number_of_redraws">determine_number_of_redraws() (nanotune.classification.classifier.Classifier method)</a>
 </li>
       <li><a href="api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.determine_sweep_voltages">determine_sweep_voltages() (nanotune.model.capacitancemodel.CapacitanceModel method)</a>
 </li>
@@ -407,13 +417,13 @@
 </li>
       <li><a href="api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DeviceState">DeviceState (class in nanotune.device_tuner.dottuner)</a>
 </li>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.display_metrics">display_metrics() (nanotune.classification.classifier.Classifier method)</a>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.dimensions">dimensions (nanotune.data.dataset.Dataset attribute)</a>
+</li>
+      <li><a href="api/classification/utils.html#nanotune.classification.utils.display_metrics">display_metrics() (in module nanotune.classification.utils)</a>
 </li>
       <li><a href="api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.distribute">distribute() (nanotune.device_tuner.tuningreport.TuningReport method)</a>
 </li>
       <li><a href="api/tuningstages/take_data.html#nanotune.tuningstages.take_data.do_nothing">do_nothing() (in module nanotune.tuningstages.take_data)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.dont_format">dont_format() (in module nanotune.classification.utils)</a>
 </li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.dot_signal_threshold">dot_signal_threshold (nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
@@ -445,6 +455,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.exp_id">exp_id (nanotune.data.dataset.Dataset attribute)</a>
+</li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.experiment_id">experiment_id (nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
   </ul></td>
@@ -459,14 +471,18 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.feature_combination_metrics">feature_combination_metrics() (in module nanotune.classification.utils)</a>
-</li>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.features">features (nanotune.data.dataset.Dataset property)</a>
 
       <ul>
         <li><a href="api/fit/datafit.html#nanotune.fit.datafit.DataFit.features">(nanotune.fit.datafit.DataFit property)</a>
 </li>
       </ul></li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.file_fractions">file_fractions (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.file_paths">file_paths (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.filtered_data">filtered_data (nanotune.data.dataset.Dataset attribute)</a>
+</li>
       <li><a href="api/fit/coulomboscillationfit.html#nanotune.fit.coulomboscillationfit.CoulombOscillationFit.find_fit">find_fit() (nanotune.fit.coulomboscillationfit.CoulombOscillationFit method)</a>
 
       <ul>
@@ -505,9 +521,7 @@
 </li>
       <li><a href="api/drivers/dac_interface.html#nanotune.drivers.dac_interface.RelayState.floating">floating (nanotune.drivers.dac_interface.RelayState attribute)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.format_float">format_float() (in module nanotune.classification.utils)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.format_time">format_time() (in module nanotune.classification.utils)</a>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.folder_path">folder_path (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.from_qcodes_dataset">from_qcodes_dataset() (nanotune.data.dataset.Dataset method)</a>
 </li>
@@ -697,6 +711,8 @@
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.Device.ground_gates">ground_gates() (nanotune.device.device.Device method)</a>
 </li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.guid">guid (nanotune.data.dataset.Dataset attribute)</a>
+</li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.guids">guids (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
   </ul></td>
@@ -714,6 +730,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.SetpointSettings.high_res_precisions">high_res_precisions (nanotune.tuningstages.settings.SetpointSettings attribute)</a>
+</li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.hyper_parameters">hyper_parameters (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -741,6 +759,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.labels">labels (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.left_barrier">left_barrier (nanotune.device.device_layout.DoubleDotLayout attribute)</a>
 </li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.left_plunger">left_plunger (nanotune.device.device_layout.DoubleDotLayout attribute)</a>
@@ -749,21 +769,17 @@
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.ReadoutMethods.list">list() (nanotune.device.device.ReadoutMethods class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/data/databases.html#nanotune.data.databases.list_experiments">list_experiments() (in module nanotune.data.databases)</a>
 </li>
       <li><a href="api/configuration/config.html#nanotune.configuration.config.Config.load_config">load_config() (nanotune.configuration.config.Config method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.load_data">load_data() (nanotune.classification.classifier.Classifier method)</a>
 </li>
       <li><a href="api/configuration/config.html#nanotune.configuration.config.Config.load_default">load_default() (nanotune.configuration.config.Config method)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.load_exp_data">load_exp_data() (in module nanotune.classification.utils)</a>
-</li>
       <li><a href="api/model/noise.html#nanotune.model.noise.load_noise">load_noise() (in module nanotune.model.noise)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.load_syn_data">load_syn_data() (in module nanotune.classification.utils)</a>
 </li>
       <li><a href="api/math/lorentzians.html#nanotune.math.lorentzians.lorentzian_1D">lorentzian_1D() (in module nanotune.math.lorentzians)</a>
 </li>
@@ -799,13 +815,13 @@
 </li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory">MeasurementHistory (class in nanotune.device_tuner.tuningresult)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.merge_optimization_files">merge_optimization_files() (in module nanotune.classification.utils)</a>
-</li>
       <li><a href="api/drivers/dac_client.html#nanotune.drivers.dac_client.message_parser">message_parser() (in module nanotune.drivers.dac_client)</a>
 </li>
       <li><a href="api/tuningstages/chargediagram.html#nanotune.tuningstages.chargediagram.RangeChangeSettingsDict.min_change">min_change (nanotune.tuningstages.chargediagram.RangeChangeSettingsDict attribute)</a>
 </li>
       <li><a href="api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.RangeChangeSetting.min_range_change">min_range_change (nanotune.device_tuner.dottuner.RangeChangeSetting attribute)</a>
+</li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.ml_label">ml_label (nanotune.data.dataset.Dataset attribute)</a>
 </li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.ml_result">ml_result (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
@@ -1312,6 +1328,8 @@
         <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.normalization_constants">(nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.normalization_tolerances">normalization_tolerances (nanotune.data.dataset.Dataset attribute)</a>
+</li>
       <li><a href="api/device/device.html#nanotune.device.device.NormalizationConstants">NormalizationConstants (class in nanotune.device.device)</a>
 </li>
       <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.nt_metadata">nt_metadata (nanotune.data.dataset.Dataset property)</a>
@@ -1328,6 +1346,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.original_data">original_data (nanotune.classification.classifier.Classifier attribute)</a>
+</li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.outer_barriers">outer_barriers() (nanotune.device.device_layout.DoubleDotLayout class method)</a>
 
       <ul>
@@ -1341,10 +1361,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.SetpointSettings.parameters_to_sweep">parameters_to_sweep (nanotune.tuningstages.settings.SetpointSettings attribute)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.performance_metrics_to_figure">performance_metrics_to_figure() (in module nanotune.classification.utils)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.performance_metrics_to_latex">performance_metrics_to_latex() (in module nanotune.classification.utils)</a>
 </li>
       <li><a href="api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DeviceState.pinchedoff">pinchedoff (nanotune.device_tuner.dottuner.DeviceState attribute)</a>
 </li>
@@ -1366,29 +1382,27 @@
         <li><a href="api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.plot_fit">(nanotune.fit.pinchofffit.PinchoffFit method)</a>
 </li>
       </ul></li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.plot_metric_fluctuations">plot_metric_fluctuations() (in module nanotune.classification.utils)</a>
-</li>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.plot_ROC">plot_ROC() (nanotune.classification.classifier.Classifier method)</a>
-</li>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.plunger_barrier_pairs">plunger_barrier_pairs() (nanotune.device.device_layout.DoubleDotLayout class method)</a>
 
       <ul>
         <li><a href="api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.plunger_barrier_pairs">(nanotune.device.device_layout.IDeviceLayout class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/device/device_layout.html#nanotune.device.device_layout.DoubleDotLayout.plungers">plungers() (nanotune.device.device_layout.DoubleDotLayout class method)</a>
 
       <ul>
         <li><a href="api/device/device_layout.html#nanotune.device.device_layout.IDeviceLayout.plungers">(nanotune.device.device_layout.IDeviceLayout class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/drivers/dac_client.html#nanotune.drivers.dac_client.DACClient.PORT">PORT (nanotune.drivers.dac_client.DACClient attribute)</a>
 </li>
       <li><a href="api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.VoltageChangeDirection.positive">positive (nanotune.device_tuner.dottuner.VoltageChangeDirection attribute)</a>
 </li>
       <li><a href="api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel.post_delay">post_delay (nanotune.device.device_channel.DeviceChannel property)</a>
+</li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.power_spectrum">power_spectrum (nanotune.data.dataset.Dataset attribute)</a>
 </li>
       <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.predict">predict() (nanotune.classification.classifier.Classifier method)</a>
 </li>
@@ -1408,9 +1422,19 @@
 </li>
       <li><a href="api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.press">press() (nanotune.device_tuner.tuningreport.TuningReport method)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.print_data_stats">print_data_stats() (in module nanotune.classification.utils)</a>
-</li>
       <li><a href="api/tuningstages/base_tasks.html#nanotune.tuningstages.base_tasks.print_tuningstage_status">print_tuningstage_status() (in module nanotune.tuningstages.base_tasks)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.qc_parameters">qc_parameters (nanotune.data.dataset.Dataset attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.qc_run_id">qc_run_id (nanotune.data.dataset.Dataset attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1452,9 +1476,13 @@
 </li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.SetpointSettings.ranges_to_sweep">ranges_to_sweep (nanotune.tuningstages.settings.SetpointSettings attribute)</a>
 </li>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.raw_data">raw_data (nanotune.data.dataset.Dataset attribute)</a>
+</li>
+      <li><a href="api/device/device.html#nanotune.device.device.Readout">Readout (class in nanotune.device.device)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/device/device.html#nanotune.device.device.Readout">Readout (class in nanotune.device.device)</a>
+      <li><a href="api/data/dataset.html#nanotune.data.dataset.Dataset.readout_methods">readout_methods (nanotune.data.dataset.Dataset attribute)</a>
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.ReadoutMethods">ReadoutMethods (class in nanotune.device.device)</a>
 </li>
@@ -1469,6 +1497,8 @@
       <li><a href="api/device/device.html#nanotune.device.device.Device.rename_gate_identifier">rename_gate_identifier() (nanotune.device.device.Device method)</a>
 </li>
       <li><a href="api/device_tuner/tuner.html#nanotune.device_tuner.tuner.TuningHistory.results">results (nanotune.device_tuner.tuner.TuningHistory attribute)</a>
+</li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.retained_variance">retained_variance (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.NormalizationConstants.rf">rf (nanotune.device.device.NormalizationConstants attribute)</a>
 
@@ -1532,12 +1562,10 @@
 </li>
       <li><a href="api/tuningstages/settings.html#nanotune.tuningstages.settings.DataSettings.segment_size">segment_size (nanotune.tuningstages.settings.DataSettings attribute)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.select_equal_populations">select_equal_populations() (in module nanotune.classification.utils)</a>
-
-      <ul>
-        <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.select_equal_populations">(nanotune.classification.classifier.Classifier method)</a>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.select_equal_populations">select_equal_populations() (nanotune.classification.classifier.Classifier method)</a>
 </li>
-      </ul></li>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.select_relevant_data">select_relevant_data() (nanotune.classification.classifier.Classifier method)</a>
+</li>
       <li><a href="api/drivers/dac_client.html#nanotune.drivers.dac_client.DACClient.send">send() (nanotune.drivers.dac_client.DACClient method)</a>
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.NormalizationConstants.sensing">sensing (nanotune.device.device.NormalizationConstants attribute)</a>
@@ -1548,8 +1576,6 @@
         <li><a href="api/device/device.html#nanotune.device.device.ReadoutMethods.sensing">(nanotune.device.device.ReadoutMethods attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.separate_data">separate_data() (nanotune.classification.classifier.Classifier method)</a>
-</li>
       <li><a href="api/drivers/dac_channel_server.html#nanotune.drivers.dac_channel_server.DACChannelServer.set_amplitude">set_amplitude() (nanotune.drivers.dac_channel_server.DACChannelServer method)</a>
 
       <ul>
@@ -1700,8 +1726,6 @@
 </li>
       <li><a href="api/device_tuner/tuningreport.html#nanotune.device_tuner.tuningreport.TuningReport.summarize">summarize() (nanotune.device_tuner.tuningreport.TuningReport method)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.summarize_hyper_parameter_optimization">summarize_hyper_parameter_optimization() (in module nanotune.classification.utils)</a>
-</li>
       <li><a href="api/device/device_channel.html#nanotune.device.device_channel.DeviceChannel.supports_hardware_ramp">supports_hardware_ramp (nanotune.device.device_channel.DeviceChannel property)</a>
 
       <ul>
@@ -1744,9 +1768,9 @@
 </li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.termination_reasons">termination_reasons (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
-      <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.timestamp">timestamp (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
+      <li><a href="api/classification/classifier.html#nanotune.classification.classifier.Classifier.test_size">test_size (nanotune.classification.classifier.Classifier attribute)</a>
 </li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.to_categorical">to_categorical() (in module nanotune.classification.utils)</a>
+      <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.TuningResult.timestamp">timestamp (nanotune.device_tuner.tuningresult.TuningResult attribute)</a>
 </li>
       <li><a href="api/device_tuner/tuningresult.html#nanotune.device_tuner.tuningresult.MeasurementHistory.to_dict">to_dict() (nanotune.device_tuner.tuningresult.MeasurementHistory method)</a>
 
@@ -1803,8 +1827,6 @@
       <li><a href="api/device_tuner/dottuner.html#nanotune.device_tuner.dottuner.DeviceState.undefined">undefined (nanotune.device_tuner.dottuner.DeviceState attribute)</a>
 </li>
       <li><a href="api/math/distributions.html#nanotune.math.distributions.uniform_ND">uniform_ND() (in module nanotune.math.distributions)</a>
-</li>
-      <li><a href="api/classification/utils.html#nanotune.classification.utils.unpack">unpack() (in module nanotune.classification.utils)</a>
 </li>
       <li><a href="api/device/device.html#nanotune.device.device.NormalizationConstants.update">update() (nanotune.device.device.NormalizationConstants method)</a>
 
@@ -1870,7 +1892,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.configuration.config &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>nanotune.configuration.config &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -182,8 +183,10 @@
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../api/configuration/config.html#nanotune.configuration.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Heavily inspired by qcodes config class</span>
+    <span class="sd">&quot;&quot;&quot;nanotune config system.</span>
+
+<span class="sd">    Heavily inspired by qcodes config class. It loads defaults from config.json,</span>
+<span class="sd">    which can be accessed by `nt.config`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">config_filename</span> <span class="o">=</span> <span class="s2">&quot;config.json&quot;</span>
@@ -196,7 +199,7 @@
     <span class="n">_loaded_config_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">default_config_path</span><span class="p">]</span>
 
     <span class="c1"># home_dir = expanduser(&#39;~&#39;)</span>
-    <span class="sd">&quot;&quot;&quot; Golabl user specific configuration&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Global user specific configuration&quot;&quot;&quot;</span>
     <span class="n">user_config_path</span> <span class="o">=</span> <span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="n">config_filename</span><span class="p">))</span>
     <span class="n">user_schema_path</span> <span class="o">=</span> <span class="n">user_config_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">config_schema_filename</span><span class="p">)</span>
 
@@ -308,7 +311,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

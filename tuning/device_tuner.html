@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Device tuner &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Device tuner &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -226,7 +227,7 @@ device-related ones.</p>
 and <cite>SetpointSettings</cite>. A tuner class keeps an instance of each with
 general settings used for tuning of all devices. Examples of setpoint
 setting used
-for all measurements are setpoint_method, optionally voltage precision and
+for all measurements are <cite>setpoint_method</cite>, optionally <cite>voltage_precision</cite> and
 high resolution precisions. As for data settings, data base location or
 size of charge diagram segments used for classification also stay unchanged
 in most cases.</p>
@@ -250,7 +251,7 @@ beforehand.</p>
 </div>
 <div class="section" id="dot-tuner">
 <h2>Dot tuner<a class="headerlink" href="#dot-tuner" title="Permalink to this headline">¶</a></h2>
-<p>The <cite>DotTuner</cite> containes the methods required to implement the tuning procedure
+<p>The <cite>DotTuner</cite> contains methods required to implement the tuning procedure
 shown in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>.
 If desired, the entire sequence can by run using the <cite>tune</cite> method, however
 all methods should also be seen as building blocks for other sequences.</p>
@@ -310,7 +311,8 @@ but with different inputs depending on the classification outcome.
 before launching <cite>adjust_all_barriers</cite>.
 If required, i.e. adjusting outer or central barriers was not successful
 because they reached their safety limit, the helper gate is changed too.</p>
-<p>Specifically, these two outer loops in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a></p>
+<p>Specifically, these two outer loops in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>
+do teh following:</p>
 <dl class="simple">
 <dt>Large left loop - no good dot found:</dt><dd><ul class="simple">
 <li><p>Uses termination reasons to update outer barriers first. The decisive
@@ -356,7 +358,7 @@ The loops adjusting barriers is not executed.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

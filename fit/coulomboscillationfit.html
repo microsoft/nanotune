@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Coulomb oscillation fit &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Coulomb oscillation fit &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -113,6 +113,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -211,11 +212,11 @@
 <span id="coulomboscillationfit"></span><h1>Coulomb oscillation fit<a class="headerlink" href="#coulomb-oscillation-fit" title="Permalink to this headline">¶</a></h1>
 <p>The <cite>CoulombOscillationFit</cite> class detects peaks within a 1D trace. To this end,
 the <cite>find_peaks</cite> routine implemented in <cite>scipy.signal</cite> is used. It also
-determines the voltage different between consecutive peaks, which can then be
-used to determine other quantities such as capacitances.</p>
+determines the voltage difference between consecutive peaks, which can then be
+used to determine other quantities such as capacitances or lever arms.</p>
 <p>An example of a Coulomb oscillation fit is shown below. Note that this routine
-is currently to very robust against noise, i.e. some noises are mistaken for peaks.
-This fitting procedure has not been used in the demonstration of the initial
+is currently not very robust against noise, i.e. some noise is mistaken for peaks.
+It has not been used in the demonstration of the initial
 nanotune tuning procedure (autonomous tuning paper).</p>
 <div class="figure align-center" id="id1">
 <span id="coulomb-fit"></span><a class="reference internal image-reference" href="../_images/coulomboscillationfit_deafcafe-0200-0004-0000-01659f4b7467.svg"><img alt="Coulomb oscillation fit." src="../_images/coulomboscillationfit_deafcafe-0200-0004-0000-01659f4b7467.svg" width="60.0%" /></a>
@@ -237,7 +238,7 @@ nanotune tuning procedure (autonomous tuning paper).</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

@@ -56,8 +56,9 @@ a system in its initial state:
 .. |singledot_barriers| image:: ./figs/nw_dots-03.svg
    :width: 35 %
 
-In a first step, the barriers are set. To do so, either 1D or pair-wise 2D
-sweeps are measured. Voltages at which a gate pinches off are typically set.
+In a first step the barriers are set. To do so, either 1D or pair-wise 2D
+sweeps are measured to narrow down the respective ranges.
+Voltages at which a gate pinches off are typically set.
 Setting only outer barriers results in a large single dot, while setting the
 central barrier as well isolates two puddles:
 
@@ -75,7 +76,6 @@ Single dots:
 
     Good single dots show clear and sharp diagonal lines. Taking one-dimensional
     traces give typical Coulomb oscillation sweeps.
-    Taking a larger scan can look like the measurement above.
     The lines of poor single dots or dots which start to form are not sharp. 1D
     Coulomb oscillations would show broad, doubled, or any other deformed peaks.
 

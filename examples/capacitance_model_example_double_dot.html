@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Capacitance model for quantum dots &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Capacitance model for quantum dots &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="nanotune API documentation" href="../api/index.html" />
+    <link rel="next" title="Labelling example" href="labelling_example.html" />
     <link rel="prev" title="Capacitance model for a single dot" href="capacitance_model_example_single_dot.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -71,7 +71,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -113,8 +113,12 @@
 <li class="toctree-l2"><a class="reference internal" href="Tuning_results_logging.html">Example TuningResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="capacitance_model_example_single_dot.html">Capacitance model for a single dot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Capacitance model for quantum dots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labelling_example.html">Labelling example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_data_export_and_classifier.html">Data export and classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_data_export_and_classifier.html#Predict-the-quality-of-a-dataset.">Predict the quality of a dataset.</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -509,9 +513,9 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 <div class="line">Illustration of capacitances between gates and gates and dots:</div>
 <div class="line">Each gate voltage <span class="math notranslate nohighlight">\(V_{i}\)</span> will tune the number of charges on each dot. The capacitance of the dots, <span class="math notranslate nohighlight">\(C_{A}\)</span> and <span class="math notranslate nohighlight">\(C_{B}\)</span>, are sums of all capacitances connects to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> respectively. Gates located further away will have a smaller capacitive coupling. Most labels of capacitance between gates are omitted for readability.</div>
 </div>
-<p><img alt="635ad64ebaec41e4bf3c7c95f8825737" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
+<p><img alt="7bad27651a714be89f69ac2aa3c96e41" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
 <p>Names and layout indices of gates: Six electrostatic gates, three barriers and two plungers, are used to define two, possibly coupled, quantum dots. Barrier gates are primarily used to create potential barriers, while plungers are used to tune electron density and thus the dot’s electrochemical potentials.</p>
-<p><img alt="16df7089620c451caee4fc0794e0a9a1" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
+<p><img alt="52d3a51736a64ea38c0ada8f1822fe5f" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
 <p>Initiate or set database where data should be saved. When initializing a database a new qcodes experiment needs to be created as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -767,7 +771,7 @@ Starting experimental run with id: 240.
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../api/index.html" class="btn btn-neutral float-right" title="nanotune API documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="labelling_example.html" class="btn btn-neutral float-right" title="Labelling example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="capacitance_model_example_single_dot.html" class="btn btn-neutral float-left" title="Capacitance model for a single dot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
@@ -775,7 +779,7 @@ Starting experimental run with id: 240.
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

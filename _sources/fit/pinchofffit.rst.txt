@@ -21,7 +21,7 @@ range as well as transition voltage of the gate swept is determined. The
 active/valid voltage range is generally indicated by :math:`[L, H]`, while
 the transition voltage is indicated by a :math:`T`. These values, together with
 the signal strength at each of these voltages is saved to metadata of the
-(QCoDeS) dataset under the `nt.meta_tag`.
+(QCoDeS) dataset under the `nt.meta_tag` key.
 
 Figures :numref:`pinchoff_fit` and :numref:`pinchoff_features` show the fit
 together with extracted features. They have been plotted using the `plot_fit`
@@ -50,6 +50,8 @@ Pinchoff labels
     poor (0, False). In general, a good curve is one showing a clear transition
     between open and closed regime and a poor doesn't. However, there are many cases
     in-between, such as curves that don't start at max/open regime but slightly below
-    or gates that pinch off in stages, with some noise, or with a small slope. It is up to the labeller to
-    decide which types of imperfection belong to which category. Ideally, this decision
+    or gates that pinch off in stages, with some noise, or with a small slope.
+    It is up to the labeller to
+    decide which types of imperfection belong to which category. Ideally,
+    this decision
     is made beforehand, to ensure consistent labelling.

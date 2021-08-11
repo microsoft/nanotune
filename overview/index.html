@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Overview &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Overview &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -210,9 +211,9 @@ typical manual measurements and replaces the experimenter’s quality and charge
 state assessment by supervised machine learning. In a very simplified way,
 the implemented dot-tuning sequence can be thought of as a
 for-loop with a couple of if-statements which hard code the tuning logic.
-Being based on QCoDeS, Nanotune extends the data acquisition software by
+Being based on QCoDeS, nanotune extends the data acquisition software by
 adding  automated tuning procedures which use machine learning models
-implemented in scikit-learn or tensorflow.
+implemented in scikit-learn.
 For successful autonomous tuning, only the following, minimal input is required:</p>
 <ul class="simple">
 <li><p>bonding scheme/routing, i.e. which DAC channel corresponds to which gate,</p></li>
@@ -256,21 +257,21 @@ Similar to a manual approach, each gate is characterized individually by
 stepping over its safety range while measuring the current through the device.
 The desired feature, a sharp current dip reaching zero, is confirmed by a
 binary classifier trained with experimental data. Only if traces of all gates
-show a good pinch-off, a device is tuned.</p>
+show a good pinchoff, a device is tuned.</p>
 <p>The subsequent dot-tuning sequence is able to tune into either the single and
 double dot regime, with the main difference being the voltage value set to the
 central barrier. To form a double dot, a more negative value (when tuning in
-depletetion mode) is required than for the single dot regime.
+depletion mode) is required than for the single dot regime.
 Specifically, the dot-tuning process consists of a sequence of one- and
 two-dimensional measurements, referred to as gate characterizations and
-charge diagrams respectively. Each measurement is assessed by a binary
+charge diagrams. Each measurement is assessed by a binary
 classifier to determine quality and, in the case of a charge diagram, the
 charge state (i.e. single vs double dot).
 Gate characterizations are used to determine each gate’s ‘active’ voltage
 range. An active voltage range, also called <cite>current_valid_range</cite>, is the
 range within which we expect the desired charge state to occur. A sequence of
 faster, one-dimensional measurements is an efficient way to narrow down the
-large parameter space before proceeding with more time consuming,
+large parameter space before proceeding with more time consuming
 two-dimensional measurements. Due to capacitive coupling, active ranges need
 to be updated each time the voltage of a nearby gate is changed.
 Once all gates are characterized and barriers set to a value within their
@@ -316,7 +317,7 @@ methods.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

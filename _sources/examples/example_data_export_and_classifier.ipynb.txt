@@ -1,0 +1,328 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "b34048a3",
+   "metadata": {},
+   "source": [
+    "# Data export and classification"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "a8b5f676",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Logging hadn't been started.\n",
+      "Activating auto-logging. Current session state plus future input saved.\n",
+      "Filename       : /Users/jana/.qcodes/logs/command_history.log\n",
+      "Mode           : append\n",
+      "Output logging : True\n",
+      "Raw input log  : False\n",
+      "Timestamping   : True\n",
+      "State          : active\n",
+      "Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "import numpy as np\n",
+    "import qcodes as qc\n",
+    "import nanotune as nt\n",
+    "\n",
+    "from nanotune.data.export_data import correct_normalizations, export_data, prep_data\n",
+    "from nanotune.classification.classifier import Classifier, METRIC_NAMES\n",
+    "from nanotune.classification.utils import display_metrics\n",
+    "\n",
+    "nt_root = os.path.dirname(os.path.dirname(os.path.abspath(nt.__file__)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "778dfc9e",
+   "metadata": {},
+   "source": [
+    "## Export labelled data to a numpy file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "e4530c74",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "export_data('pinchoff', ['device_characterization.db'], db_folder=os.path.join(nt_root, 'data', 'tuning'), filename='test_export_data')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "24f3684a",
+   "metadata": {},
+   "source": [
+    "## Train classifier with the data saved in the numpy file. \n",
+    "Note that this is just to small demo and that the data in the file is not sufficient for real-life purposes."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "7ba44cd3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pinchoff_classifier = Classifier(\n",
+    "        ['test_export_data.npy'],\n",
+    "        'pinchoff',\n",
+    "        data_types=[\"signal\"],\n",
+    "        classifier_type=\"SVC\",\n",
+    "        folder_path=os.path.join(nt_root, 'data', 'tuning'),\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "499cdb17",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pinchoff_classifier.train()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a1db20a2",
+   "metadata": {},
+   "source": [
+    "# Predict the quality of a dataset. \n",
+    "Note that this is again just to show how the code works and that a classifier should not be used to predict data it was trained on."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "233b77ea",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[array([1])]"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pinchoff_classifier.predict(1203, db_name='device_characterization.db', db_folder=os.path.join(nt_root, 'data', 'tuning'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "f8b66019",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pinchoff_classifier = Classifier(\n",
+    "        ['pinchoff.npy'],\n",
+    "        'pinchoff',\n",
+    "        data_types=[\"signal\"],\n",
+    "        classifier_type=\"SVC\",\n",
+    "        folder_path=os.path.join(nt_root, 'data', 'training_data'),\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "52dedf08",
+   "metadata": {},
+   "source": [
+    "We can also compute metrics such as accuracy..."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "82ee6cf9",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "metrics_results, metrics_all_iterations = pinchoff_classifier.compute_metrics(save_to_file=False, n_iter=10)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c84c1340",
+   "metadata": {},
+   "source": [
+    "..and display them."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "a634866f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------------+---------------+---------------------------+\n",
+      "|          metric          |      mean     |            std            |\n",
+      "+--------------------------+---------------+---------------------------+\n",
+      "|      accuracy_score      |     0.869     |           0.015           |\n",
+      "|     brier_score_loss     |     0.131     |           0.015           |\n",
+      "|           auc            |     0.916     |           0.018           |\n",
+      "| average_precision_recall |     0.900     |           0.032           |\n",
+      "| average_precision_recall |  [[95.  16.6] |  [[6.69328021 4.00499688] |\n",
+      "|                          |  [12.8 99.6]] |  [3.37045991 5.12249939]] |\n",
+      "+--------------------------+---------------+---------------------------+\n"
+     ]
+    }
+   ],
+   "source": [
+    "display_metrics(metrics_results)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "279e265b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'n_iter': 10,\n",
+       " 'classifier': 'SVC',\n",
+       " 'category': 'pinchoff',\n",
+       " 'data_files': ['/Users/jana/Documents/code/nanotune/nanotune/data/training_data/pinchoff.npy'],\n",
+       " 'data_types': ['signal'],\n",
+       " 'hyper_parameters': {'C': 1.0,\n",
+       "  'break_ties': False,\n",
+       "  'cache_size': 200,\n",
+       "  'class_weight': None,\n",
+       "  'coef0': 0.0,\n",
+       "  'decision_function_shape': 'ovr',\n",
+       "  'degree': 3,\n",
+       "  'gamma': 'auto',\n",
+       "  'kernel': 'linear',\n",
+       "  'max_iter': -1,\n",
+       "  'probability': True,\n",
+       "  'random_state': None,\n",
+       "  'shrinking': True,\n",
+       "  'tol': 0.001,\n",
+       "  'verbose': False},\n",
+       " 'metric_names': ['accuracy_score',\n",
+       "  'brier_score_loss',\n",
+       "  'auc',\n",
+       "  'average_precision_recall'],\n",
+       " 'elapsed_time [s/iter]': 0.2644777774810791,\n",
+       " 'n_test': 224,\n",
+       " 'n_train': 894,\n",
+       " 'mean_train_time': 0.25345420837402344,\n",
+       " 'std_train_time': 0.06884147960996587,\n",
+       " 'perform_pca': False,\n",
+       " 'scale_pc': False,\n",
+       " 'metadata': {},\n",
+       " 'supp_train_data': None,\n",
+       " 'accuracy_score': {'std': 0.015099584397578344, 'mean': 0.86875},\n",
+       " 'brier_score_loss': {'std': 0.015099584397578357,\n",
+       "  'mean': 0.13125000000000003},\n",
+       " 'auc': {'std': 0.017588194466964448, 'mean': 0.9157644790019349},\n",
+       " 'average_precision_recall': {'std': 0.0323745309805244,\n",
+       "  'mean': 0.8998004889838839},\n",
+       " 'confusion_matrix': {'std': [[6.6932802122726045, 4.004996878900157],\n",
+       "   [3.370459909270543, 5.122499389946279]],\n",
+       "  'mean': [[95.0, 16.6], [12.8, 99.6]]}}"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "metrics_results"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "88c77612",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "accuracy_score\n",
+      "n_iter\n",
+      "\n",
+      "\n",
+      "brier_score_loss\n",
+      "classifier\n",
+      "\n",
+      "\n",
+      "auc\n",
+      "category\n",
+      "\n",
+      "\n",
+      "average_precision_recall\n",
+      "data_files\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "for metric_name, value in zip(METRIC_NAMES, metrics_results):\n",
+    "    print(metric_name)\n",
+    "    print(value)\n",
+    "    print('\\n')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "be89142b",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

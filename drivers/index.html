@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Instruments &amp; interfaces &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Instruments &amp; interfaces &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -110,6 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -207,21 +208,21 @@
 <div class="section" id="interfaces">
 <h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h2>
 <p>The idea of using interfaces between the hardware used and
-nanotune is to keep the automation code general enough and independent of the
+nanotune is to keep the automation code general and independent of the
 instruments. It is up to the user to specify the methods getting and setting
 parameters by sub-classing the provided interfaces. There are two of them:
 the <cite>DACInterface</cite>, for a DAC instrument, and <cite>DACChannelInterface</cite>, for the
 DAC channel. It is the <cite>DACInterface</cite> subclass that needs to be used in
 measurements and its channels passed to the init method of <cite>DeviceChannel</cite>.</p>
-<p>Specifically, <cite>DACInterface</cite> establishes that it channel list is called
+<p>Specifically, <cite>DACInterface</cite> establishes that its channel list is called
 <cite>channels</cite> and each channel is referred to by <cite>chXY</cite>, where XY is a
 two-digit number with a leading zero for single digits.
 The <cite>DACChannelInterface</cite> defines the voltage to be set and gotten by <cite>set_voltage</cite>
 and <cite>get_voltage</cite> respectively, and for the channel number to be specified by
 the <cite>channel_id</cite> property. The user also has to supply information about whether
 the channel’s voltage can be ramped by using a software ramp, by implementing the
-<cite>supports_hardware_ramp</cite> property. Other setter and getter methods similar to the
-voltage one define the remaining functionalities.</p>
+<cite>supports_hardware_ramp</cite> property. Other setter and getter methods similar
+define the remaining functionalities.</p>
 <p>An example on how to use these interfaces are <cite>MockDACChannel</cite> and <cite>MockDAC</cite>,
 whose API documentation can be found in <a class="reference internal" href="../api/drivers/index.html#drivers-api"><span class="std std-ref">nanotune.drivers</span></a>.</p>
 </div>
@@ -236,7 +237,7 @@ used in unit and functional tests, but can also appear in offline demos.</p>
 the same python kernel, i.e. jupyter notebook. Sometimes it is convenient to
 do exactly that, such as when measuring multiple devices in parallel.
 A server-client setup is one option to enable such naive parallelism. In such
-a setup, a server, connected to the physical instrument in one python kernel,
+a setup, a server connected to the physical instrument in one python kernel
 communicates with multiple other kernels via (string) messages. In the case of
 a DAC, these messages say which parameter of a channel should be changed.
 The <cite>DACChannelServer</cite> and <cite>DACClient</cite> are examples of how this server-client
@@ -260,7 +261,7 @@ blow up a device.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>

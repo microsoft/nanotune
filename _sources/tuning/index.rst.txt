@@ -3,9 +3,9 @@
 Tuning
 ======
 
-Tuning quantum dots is a process roughly consisting of two parts First, puddles
-of electrons are formed within an electron gas by finding appropriate,
-voltages to all electrostatic gates nearby. The second step optimizes the
+Tuning quantum dots is a process roughly consisting of two parts. First, puddles
+of electrons are formed within an electron gas by finding appropriate
+voltages for all electrostatic gates nearby. The second step optimizes the
 voltages of a small subset of these gates to adjust the number of charges within
 each dot and the couplings between them. The figure below illustrates the entire
 tuning process on a nanowire, where both steps have been performed.
@@ -33,10 +33,10 @@ couplings can be formed.
 
 A manual approach to tuning consists of a sequence of measurements iteratively
 narrowing down the voltage range of each gate, outlined in
-:ref:`manual_tuning`. nanotune applies this approach to the the first step,
+:ref:`manual_tuning`. nanotune applies this approach to the first step,
 also referred to as coarse tuning. By automating some of the most common
 measurements and replacing the experimenter's decision making by binary
-classifiers, it implements the device characterization and dot tuning
+classifiers, it implements the device characterization and dot-tuning
 procedures outlined in the workflow diagram in :numref:`fig_workflow`.
 
 Both device characterization and dot tuning is covered by the tuning module,

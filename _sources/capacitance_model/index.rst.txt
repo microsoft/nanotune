@@ -6,7 +6,8 @@ Capacitance model
 
 This section is an extraction from Jana's `thesis`_.
 
-Quantum dots with weak coupling between dots and thus well localized charges
+Quantum dots with weak coupling between them and thus well localized charges
+separated from the remaining of the electron gas
 can be modelled by the capacitance model, also referred to as the
 constant-interaction model (van der Wiel et al. 2002). The constant-interaction model
 is a classical description based on two assumptions (Hanson et al. 2007). First,
@@ -20,8 +21,8 @@ The system of electrostatic gates, dots and reservoirs is represented by a
 system of conductors connected via resistors and capacitors. Albeit classical
 and simple, the capacitance model explains and qualitatively reproduces
 relevant transport features of gate-defined quantum dots.
-The following paragraphs are based van der Wiel et al. 2002 paper and discussions
-with John K. Gamble.
+The following paragraphs are based on van der Wiel et al. 2002 and
+discussions with John K. Gamble.
 
 The capacitance model is defined by a capacitance matrix :math:`\mathbf{C}`,
 whose elements :math:`C_{ij}` are the capacitances between individual

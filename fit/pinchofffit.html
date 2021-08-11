@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Pinchoff &mdash; nanotune 0+untagged.726.gacd7a9e documentation</title>
+  <title>Pinchoff &mdash; nanotune 0+untagged.727.g524e1b1 documentation</title>
   
 
   
@@ -71,7 +71,7 @@
             
             
               <div class="version">
-                0+untagged.726.gacd7a9e
+                0+untagged.727.g524e1b1
               </div>
             
           
@@ -115,6 +115,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../classification/index.html">Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../capacitance_model/index.html">Capacitance model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/index.html">nanotune API documentation</a></li>
 </ul>
 
@@ -226,7 +227,7 @@ range as well as transition voltage of the gate swept is determined. The
 active/valid voltage range is generally indicated by <span class="math notranslate nohighlight">\([L, H]\)</span>, while
 the transition voltage is indicated by a <span class="math notranslate nohighlight">\(T\)</span>. These values, together with
 the signal strength at each of these voltages is saved to metadata of the
-(QCoDeS) dataset under the <cite>nt.meta_tag</cite>.</p>
+(QCoDeS) dataset under the <cite>nt.meta_tag</cite> key.</p>
 <p>Figures <a class="reference internal" href="#pinchoff-fit"><span class="std std-numref">Fig. 14</span></a> and <a class="reference internal" href="#pinchoff-features"><span class="std std-numref">Fig. 15</span></a> show the fit
 together with extracted features. They have been plotted using the <cite>plot_fit</cite>
 and <cite>plot_features</cite> methods.</p>
@@ -244,8 +245,10 @@ curves need to be labelled. nanotune uses to labels, good (1, True) and
 poor (0, False). In general, a good curve is one showing a clear transition
 between open and closed regime and a poor doesn’t. However, there are many cases
 in-between, such as curves that don’t start at max/open regime but slightly below
-or gates that pinch off in stages, with some noise, or with a small slope. It is up to the labeller to
-decide which types of imperfection belong to which category. Ideally, this decision
+or gates that pinch off in stages, with some noise, or with a small slope.
+It is up to the labeller to
+decide which types of imperfection belong to which category. Ideally,
+this decision
 is made beforehand, to ensure consistent labelling.</p>
 </dd>
 </dl>
@@ -265,7 +268,7 @@ is made beforehand, to ensure consistent labelling.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2019, Jana Darulova.
+        &#169; Copyright 2021, Jana Darulova.
 
     </p>
   </div>
