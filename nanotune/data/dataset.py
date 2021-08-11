@@ -27,14 +27,40 @@ logger = logging.getLogger(__name__)
 
 
 class Dataset:
-    """
-    To be used as parent class for dot fits (in the future)
-    For now, it is used to load data and to normalise it with
-    normalization_constants.
+    """Emulates the QCoDeS dataset and adds data post-processing
+    functionalities.
 
-    Loads existing data from a database, e.g. it expects the data (measured and
-    saved with qcodes) to exit in the given database.
+    It loads QCodeS data to an xarray dataset and applies previously measured
+    normalization constants. It keeps both raw and normalized data in separate
+    xarray dataset attributes. Fourier frequencies or Gaussian filtered data
+    is computed as well.
 
+    Attributes:
+        qc_run_id: Captured run ID in of QCodeS dataset.
+        db_name: database name
+        db_folder: folder containing database
+        normalization_tolerances: if normalization constants are not correct,
+            this is the range within which the normalized signal is still
+            accepted without throwing an error. Useful when a lot of noise is
+            present.
+        exp_id: QCoDeS experiment ID.
+        guid: QCoDeS data GUID.
+        qc_parameters: list of QCoDeS `ParamSpec` of parameters swept and
+            measured.
+        ml_label: list of machine learning labels. Empty if not labelled.
+        dimensions: dimensionality of the measurement.
+        readout_methods: mapping readout type (transport, sensing or rf) to
+            the corresponding QCoDeS parameter.
+        raw_data: xarray dataset containing un-processed data, as returned by
+            `qc_dataset.to_xarray_dataset()`.
+        data: xarray dataset containing normalized data and whose keys have
+            been renamed to "standard" readout methods defined in `Readout`.
+        power_spectrum: xarray dataset containing Fourier frequencies whose
+            keys have been renamed to "standard" readout methods defined in
+            `Readout`.
+        filtered_data: xarray dataset containing data to which a Gaussian
+            filter has been applied. Keys have been renamed to "standard"
+            readout methods defined in `Readout`.
     """
 
     def __init__(
@@ -64,7 +90,7 @@ class Dataset:
         self.exp_id: int
         self.guid: str
         self.qc_parameters: List[qc.Parameter]
-        self.label: List[str]
+        self.ml_label: List[str]
         self.dimensions: Dict[str, int] = {}
         self.readout_methods: Dict[str, str] = {}
 
@@ -103,7 +129,7 @@ class Dataset:
     def get_plot_label(
         self, readout_method: str, axis: int, power_spect: bool = False
     ) -> str:
-        """ """
+        """"""
         curr_dim = self.dimensions[readout_method]
         assert curr_dim >= axis
         data = self.data[readout_method]
@@ -148,10 +174,6 @@ class Dataset:
         try:
             self._nt_metadata = json.loads(qc_dataset.get_metadata(nt.meta_tag))
         except (RuntimeError, TypeError):
-            # try:
-            #     self._nt_metadata = json.loads(
-            #         qc_dataset.get_metadata('nanotune_meta'))
-            # except (RuntimeError, TypeError):
             pass
 
         try:
@@ -192,17 +214,20 @@ class Dataset:
         else:
             self.quality = None
 
-        self.label = []
+        self.ml_label = []
         for label in LABELS:
             if label != "good":
                 lbl = qc_dataset.get_metadata(label)
                 if lbl is None:
                     lbl = 0
                 if int(lbl) == 1:
-                    self.label.append(label)
+                    self.ml_label.append(label)
 
     def _prep_qcodes_data(self, rename: bool = True):
-        """ normalize data and rename labels """
+        """Prepares nanotune-ready data.
+        Renames xarray dataset keys, applies normalization constants and
+        loads machine learning labels.
+        """
         self.data = self.raw_data.interpolate_na()
         if rename:
             self._rename_xarray_variables()
@@ -225,6 +250,7 @@ class Dataset:
         return f"{lbl} [{unit}]"
 
     def _rename_xarray_variables(self):
+        """Renames xarray dataset keys."""
         new_names = {old: new for new, old in self.readout_methods.items()}
         new_names_all = copy.deepcopy(new_names)
         for old_n in new_names.keys():
@@ -237,7 +263,7 @@ class Dataset:
         signal: npt.NDArray[np.float64],
         signal_type,
     ) -> npt.NDArray[np.float64]:
-        """"""
+        """Applies normalization constants."""
         minv = self.normalization_constants[signal_type][0]
         maxv = self.normalization_constants[signal_type][1]
 
@@ -252,7 +278,8 @@ class Dataset:
         return normalized_sig
 
     def prepare_filtered_data(self):
-        """"""
+        """Applies a Gaussian filter and saves the result under the
+        'filtered_data' attribute."""
         self.filtered_data = self.data.copy(deep=True)
         for read_meth in self.readout_methods:
             smooth = gaussian_filter(
@@ -264,7 +291,9 @@ class Dataset:
         self,
         readout_method: str,
     ) -> xr.DataArray:
-        """"""
+        """Computes Fourier frequencies of a 1D measurement.
+        Data is detrended before the Fourier transformation is applied.
+        """
         c_name = default_coord_names["voltage"][0]
         voltage_x = self.data[readout_method][c_name].values
 
@@ -287,7 +316,9 @@ class Dataset:
         self,
         readout_method: str,
     ) -> xr.DataArray:
-        """"""
+        """Computes Fourier frequencies of a 2D measurement.
+        Data is detrended before the Fourier transformation is applied.
+        """
         c_name_x = default_coord_names["voltage"][0]
         c_name_y = default_coord_names["voltage"][1]
         voltage_x = self.data[readout_method][c_name_x].values
@@ -318,12 +349,12 @@ class Dataset:
         return freq_xar
 
     def compute_power_spectrum(self):
-        """
-        Compute frequencies of the signal. Detrend before that to eliminate DC
-        component.
-        No high pass filter applied as we do not want to accidentally remove
-        information contained in low frequencies. We count on PCA to assess
-        which signal/frequencies are important
+        """Computes Fourier frequencies of a measurement.
+        Each readout method, i.e. measured trace within the dataset, is treated
+        seperately.
+        The data is detrended to eliminate DC component, but no high pass
+        filter applied as we do not want to accidentally remove
+        information contained in low frequencies.
         """
         self.power_spectrum = xr.Dataset()
 

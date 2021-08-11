@@ -519,8 +519,7 @@ def pinchoff_classifier(nanotune_path):
         ['pinchoff.npy'],
         'pinchoff',
         data_types=["signal"],
-        # classifier="MLPClassifier",
-        classifier="SVC",
+        classifier_type="SVC",  # "MLPClassifier",
         folder_path=os.path.join(nanotune_path, 'data', 'training_data'),
     )
     _pinchoff_classifier.train()

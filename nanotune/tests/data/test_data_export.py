@@ -2,21 +2,12 @@ import os
 
 import numpy as np
 import pytest
-import qcodes as qc
 import scipy.fft as fp
-from qcodes.dataset.experiment_container import (experiments,
-                                                 load_last_experiment)
-from qcodes.dataset.sqlite.database import (conn_from_dbpath_or_conn, connect,
-                                            get_DB_debug, get_DB_location)
-from qcodes.dataset.sqlite.queries import (finish_experiment, get_experiments,
-                                           get_last_experiment, get_last_run,
-                                           get_run_counter, get_runs)
-from qcodes.dataset.sqlite.queries import new_experiment as ne
 from scipy.ndimage import generic_gradient_magnitude, sobel
 from skimage.transform import resize
 
 import nanotune as nt
-from nanotune.data.export_data import (  # subsample_2Ddata,
+from nanotune.data.export_data import (
     correct_normalizations, export_data, export_label, prep_data)
 
 
@@ -47,7 +38,7 @@ def test_export_label():
 def test_export_data(experiment_doubledots, tmp_path):
 
     export_data(
-        "doubledot", ["temp.db"], ["doubledot"], db_folder=tmp_path, filename="temp.npy"
+        "doubledot", ["temp.db"], db_folder=tmp_path, filename="temp.npy"
     )
     data_w_labels = np.load(os.path.join(tmp_path, "temp.npy"))
     assert data_w_labels.shape == (4, 10, 2501)
@@ -55,7 +46,6 @@ def test_export_data(experiment_doubledots, tmp_path):
     export_data(
         "doubledot",
         ["temp.db"],
-        ["doubledot"],
         skip_ids={"temp.db": [1, 10]},
         db_folder=tmp_path,
         filename="temp.npy",
@@ -64,15 +54,8 @@ def test_export_data(experiment_doubledots, tmp_path):
     assert data_w_labels.shape == (4, 8, 2501)
 
     export_data(
-        "doubledot", ["temp.db"], ["singledot"], db_folder=tmp_path, filename="temp.npy"
-    )
-    data_w_labels = np.load(os.path.join(tmp_path, "temp.npy"))
-    assert data_w_labels.shape == (4, 0, 2501)
-
-    export_data(
         "doubledot",
         ["temp.db"],
-        ["doubledot"],
         quality=1,
         db_folder=tmp_path,
         filename="temp.npy",
@@ -83,7 +66,7 @@ def test_export_data(experiment_doubledots, tmp_path):
 
 def test_correct_normalizations(experiment_doubledots, tmp_path):
     export_data(
-        "doubledot", ["temp.db"], ["doubledot"], db_folder=tmp_path, filename="temp.npy"
+        "doubledot", ["temp.db"], db_folder=tmp_path, filename="temp.npy"
     )
 
     data_w_labels = np.load(os.path.join(tmp_path, "temp.npy"))

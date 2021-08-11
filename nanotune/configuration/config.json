@@ -43,7 +43,8 @@
             "singledot": "Single dot",
             "doubledot": "Double dot",
             "coulombdiamonds": "Coulomb diamonds",
-            "zerobiaspeak": "Zero bias peak",
+            "zerobiaspeak1D": "Zero bias peak 1D",
+            "zerobiaspeak2D": "Zero bias peak 2D",
             "good": "Good",
             "other": "Other"
         },
@@ -51,12 +52,15 @@
             "pinchoff": ["amplitude", "slope", "low_signal", "high_signal",
                         "residuals", "offset", "transition_signal",
                         "low_voltage", "high_voltage", "transition_voltage"],
-            "outerbarriers": ["corner"],
             "singledot": ["snr"],
             "doubledot": ["triple_points"],
             "dotregime": ["snr"],
+            "zerobiaspeak1D": [],
+            "zerobiaspeak2D": [],
             "coulomboscillation": ["peak_indx", "peak_locations",
-                                   "peak_distances"]
+                                   "peak_distances"],
+            "leadcoupling": [],
+            "coulombdiamonds": []
         }
     },
     "plotting": {

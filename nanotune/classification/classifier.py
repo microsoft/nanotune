@@ -4,12 +4,9 @@ import os
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy.typing as npt
-import matplotlib.pyplot as plt
 import numpy as np
-from prettytable import PrettyTable
-from scipy import interp
+
 from sklearn import svm
-from sklearn.calibration import calibration_curve
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
@@ -17,7 +14,7 @@ from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (accuracy_score, auc, average_precision_score,
                              brier_score_loss, confusion_matrix, roc_curve)
-from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
@@ -77,29 +74,31 @@ class Classifier:
     load is expected to be in the same format as outputted by
     `nanotune.data.export_data.export_data`.
 
-    Parameters:
-        relevant_labels: Labels to use, corresponding to the regime/data type
-            one wishes to load.
-        clf_params:
-        category:
-        feature_indexes
-        relevant_labels
-        file_fractions
-        folder_path
-        file_paths
-        name
-        clf_type
-        retained_variance
-        data_types
-        test_size
-        multi_class
-        clf
-        original_data
-        labels
-        file_paths
-        data_types
+    Attributes:
+        hyper_parameters: hyperparameters/keyword arguments to pass to the
+            binary classifier.
+        category: which measurements wil be classified, e.g. 'pinchoff',
+            'singledot', 'dotregime'. Supported categories correspond to
+            keys of nt.config['core']['features'].
+        file_fractions: fraction of all data loaded that should be used. For
+            a value less than 1, data is chosen at random. It can be used to
+            calculate accuracy variation when different random sub-sets of
+            avaliable data are used for training data.
+        folder_path: path to folder where numpy data files are located.s
+        file_paths: list of paths of numpy data files.
+        classifier_type: string indicating which binary classifier to use. E.g
+            'SVG', 'MLPClassifier', .... For a full list see the keys of
+            `DEFAULT_CLF_PARAMETERS`.
+        retained_variance: variance to retain when calculating principal
+            components.
+        data_types: data types, one or more of: 'signal', 'gradient',
+            'frequencies', 'features'.
+        test_size: size of test set; it's the relative proportional of all data
+            loaded.
+        clf: instance of a scikit-learn binary classifier.
+        original_data: all data loaded.
+        labels: labels of original data.
     """
-
     def __init__(
         self,
         data_filenames: List[str],
@@ -107,24 +106,21 @@ class Classifier:
         data_types: Optional[List[str]] = None,
         folder_path: Optional[str] = None,
         test_size: float = 0.2,
-        classifier: Optional[str] = None,
-        hyper_parameters: Dict[str, Union[str, float, int]] = {},
-        multi_class: bool = False,
+        classifier_type: Optional[str] = None,
+        hyper_parameters: Optional[Dict[str, Union[str, float, int]]] = None,
         retained_variance: float = 0.99,
-        name: Optional[str] = "",
         file_fractions: Optional[List[float]] = None,
-        clf_params: Optional[Dict[str, Union[str, float, int]]] = None,
-        feature_indexes: Optional[List[int]] = None,
-        relevant_labels: Optional[List[int]] = None,
     ) -> None:
-        """ """
 
         if folder_path is None:
             folder_path = nt.config["db_folder"]
 
+        if hyper_parameters is None:
+            hyper_parameters = {}
+
         if category not in ALLOWED_CATEGORIES:
             logger.error(
-                "Classifier category must be one " + "of {}".format(ALLOWED_CATEGORIES)
+                "Classifier category must be one of {}".format(ALLOWED_CATEGORIES)
             )
             raise ValueError
         self.category = category
@@ -132,69 +128,63 @@ class Classifier:
         if data_types is None:
             data_types = ["signal", "frequencies"]
         if "features" in data_types:
-            if feature_indexes is None:
-                self.feature_indexes = RELEVANT_FEATURE_INDEXES[category]
-            else:
-                self.feature_indexes = feature_indexes
+            self._feature_indexes = RELEVANT_FEATURE_INDEXES[category]
+        else:
+            self._feature_indexes = []
 
-        if relevant_labels is None:
-            if category in DOT_LABEL_MAPPING.keys():
-                # logger.warning('Classifier: Assuming both data of dot' +
-                #                 ' regimes are saved in ' +
-                #                 '{}'.format(data_filenames))
-                relevant_labels = DOT_LABEL_MAPPING[category]
-            else:
-                relevant_labels = [0, 1]
-        self.relevant_labels = sorted(relevant_labels)
+        if category in DOT_LABEL_MAPPING.keys():
+            relevant_labels = DOT_LABEL_MAPPING[category]
+        else:
+            relevant_labels = [0, 1]
+        self._relevant_labels = sorted(relevant_labels)
 
         if file_fractions is None:
             file_fractions = [1.0] * len(data_filenames)
         self.file_fractions = file_fractions
         # Add default values to parameter dict in case some have not been
         # specified
-        if classifier is None:
+        if classifier_type is None:
             default_params = {}
         else:
-            default_params = DEFAULT_CLF_PARAMETERS[classifier]
+            default_params = DEFAULT_CLF_PARAMETERS[classifier_type]
         default_params.update(hyper_parameters)
-        self.clf_params = default_params
+        self.hyper_parameters = default_params
 
         self.folder_path = folder_path
         self.file_paths, name_addon = self._list_paths(data_filenames)
         self.name = name_addon + category + "_"
 
-        if classifier is not None:
-            self.name += classifier
-        self.clf_type = classifier
+        if classifier_type is not None:
+            self.name += classifier_type
+        self.classifier_type = classifier_type
 
         self.retained_variance = retained_variance
 
         self.data_types = data_types
         self.test_size = test_size
-        self.multi_class = multi_class
 
-        if classifier == "SVC":
-            self.clf = svm.SVC(**self.clf_params)
-        elif classifier == "LogisticRegression":
-            self.clf = LogisticRegression(**self.clf_params)
-        elif classifier == "LinearSVC":
-            self.clf = svm.LinearSVC(**self.clf_params)
-        elif classifier == "MLPClassifier":
-            self.clf = MLPClassifier(**self.clf_params)
-        elif classifier == "GaussianProcessClassifier":
-            self.clf = GaussianProcessClassifier(**self.clf_params)
-        elif classifier == "DecisionTreeClassifier":
-            self.clf = DecisionTreeClassifier(**self.clf_params)
-        elif classifier == "RandomForestClassifier":
-            self.clf = RandomForestClassifier(**self.clf_params)
-        elif classifier == "AdaBoostClassifier":
-            self.clf = AdaBoostClassifier(**self.clf_params)
-        elif classifier == "GaussianNB":
-            self.clf = GaussianNB(**self.clf_params)
-        elif classifier == "QuadraticDiscriminantAnalysis":
-            self.clf = QuadraticDiscriminantAnalysis(**self.clf_params)
-        elif classifier == "KNeighborsClassifier":
-            self.clf = KNeighborsClassifier(**self.clf_params)
+        if classifier_type == "SVC":
+            self.clf = svm.SVC(**self.hyper_parameters)
+        elif classifier_type == "LogisticRegression":
+            self.clf = LogisticRegression(**self.hyper_parameters)
+        elif classifier_type == "LinearSVC":
+            self.clf = svm.LinearSVC(**self.hyper_parameters)
+        elif classifier_type == "MLPClassifier":
+            self.clf = MLPClassifier(**self.hyper_parameters)
+        elif classifier_type == "GaussianProcessClassifier":
+            self.clf = GaussianProcessClassifier(**self.hyper_parameters)
+        elif classifier_type == "DecisionTreeClassifier":
+            self.clf = DecisionTreeClassifier(**self.hyper_parameters)
+        elif classifier_type == "RandomForestClassifier":
+            self.clf = RandomForestClassifier(**self.hyper_parameters)
+        elif classifier_type == "AdaBoostClassifier":
+            self.clf = AdaBoostClassifier(**self.hyper_parameters)
+        elif classifier_type == "GaussianNB":
+            self.clf = GaussianNB(**self.hyper_parameters)
+        elif classifier_type == "QuadraticDiscriminantAnalysis":
+            self.clf = QuadraticDiscriminantAnalysis(**self.hyper_parameters)
+        elif classifier_type == "KNeighborsClassifier":
+            self.clf = KNeighborsClassifier(**self.hyper_parameters)
         else:
             self.clf = None
 
@@ -208,8 +198,20 @@ class Classifier:
         data_types: List[str],
         file_fractions: Optional[List[float]] = [1.0],
     ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
-        """
-        Load data from file and separate data from labels
+        """Loads data including labels from numpy files.
+
+        Args:
+            file_paths: list of paths of numpy data files.
+            data_types: data types, one or more of: 'signal', 'gradient',
+            'frequencies', 'features'.
+            file_fractions: fraction of all data loaded that should be used. For
+            a value less than 1, data is chosen at random. It can be used to
+            calculate accuracy variation when different random sub-sets of
+            avaliable data are used for training data.
+
+        Returns:
+            np.array: data
+            np.array: labels
         """
         DATA_TYPE_MAPPING = dict(nt.config["core"]["data_types"])
 
@@ -252,7 +254,7 @@ class Classifier:
                 to_append = to_append[:, np.isfinite(to_append).any(axis=0)]
 
                 try:
-                    to_append = to_append[:, self.feature_indexes]
+                    to_append = to_append[:, self._feature_indexes]
                 except IndexError:
                     logger.warning(
                         "Some data in {} ".format(file_paths)
@@ -273,23 +275,28 @@ class Classifier:
         relevant_data = relevant_data[mask]
         labels = labels[mask].astype(int)
 
-        relevant_data, labels = self.separate_data(relevant_data, labels)
+        relevant_data, labels = self.select_relevant_data(relevant_data, labels)
 
         return relevant_data, labels
 
-    def separate_data(
+    def select_relevant_data(
         self,
         data: npt.NDArray[np.float64],
         labels: npt.NDArray[np.int64],
     ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
-        """
-        Extract sub data depending on which labels we would like to predict
+        """Extract a subset data depending on which labels we would like to
+        predict. Only relevant for dot data as the data file may contain
+        four different labels.
+
+        Args:
+            data: original data
+            label: original labels
         """
         shape = data.shape
         relevant_data = np.empty((0, shape[1]))
         relevant_labels = np.empty([0])
 
-        for il, label in enumerate(self.relevant_labels):
+        for il, label in enumerate(self._relevant_labels):
             relevant_indx = np.where(labels == label)[0]
             relevant_data = np.concatenate(
                 [relevant_data, data[relevant_indx, :]], axis=0
@@ -305,12 +312,19 @@ class Classifier:
         data: Optional[npt.NDArray[np.float64]] = None,
         labels: Optional[npt.NDArray[np.int64]] = None,
     ) -> None:
-        """"""
+        """Trains binary classifier. Equal populations of data are selected
+        before the sklearn classifier is fitted.
+
+        Args:
+            data: prepped data
+            label: corresponding labels
+        """
         if data is None:
             data = self.original_data
         if labels is None:
             labels = self.labels
-        (data_to_use, labels_to_use) = self.select_equal_populations(data, labels)
+        (data_to_use, labels_to_use) = self.select_equal_populations(
+            data, labels)
 
         X_train, _ = self.prep_data(train_data=data_to_use)
         self.clf.fit(X_train, labels_to_use)
@@ -323,8 +337,22 @@ class Classifier:
         scale_pc: Optional[bool] = False,
     ) -> Tuple[Optional[npt.NDArray[np.float64]],
             Optional[npt.NDArray[np.float64]]]:
-        """
-        scale and extract principle components
+        """Prepares data for training and testing.
+        It scales the data and extracts principle components is
+        desired. Transformations are applied to both train
+        and test data, although transformations are first fitted on
+        training data and then applied to test data.
+
+        Args:
+            train_data: dataset to be used for training
+            test_data: dataset to be used for testing
+            perform_pca: whether or not to perform a PCA and thus use principal
+                components for training and testing.
+            scale_pc: whether to scale principal components.
+
+        Returns:
+            np.array: prepped training data
+            np.array: prepped testing data
         """
         (train_data, test_data) = self.scale_raw_data(
             train_data=train_data, test_data=test_data
@@ -345,10 +373,13 @@ class Classifier:
         data: npt.NDArray[np.float64],
         labels: npt.NDArray[np.int64],
     ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
+        """Selects a subset of data at random so that each population/label
+        appears equally often. Makes for a balanced dataset.
+
+        Args:
+            data: the data to subsample and balance
+            labels: labels corresponding to `data`.
         """
-        Make sure we have 50% of one and 50% of other population
-        """
-        # self.data_to_use = copy.deepcopy(self.original_data)
         populations_labels, population_counts = np.unique(labels, return_counts=True)
 
         n_each = int(np.min(population_counts))
@@ -374,7 +405,19 @@ class Classifier:
         labels: npt.NDArray[np.int64],
     ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64],
             npt.NDArray[np.int64], npt.NDArray[np.int64]]:
+        """Splits data into train and test set.
+        Emulates sklearn's `train_test_split`.
 
+        Args:
+            data: the data to split
+            labels: labels of `data`
+
+        Returns:
+            np.array: train data
+            np.array: test data
+            np.array: train labels
+            np.array: test labels
+        """
         (train_data, test_data, train_labels, test_labels) = train_test_split(
             data, labels, test_size=self.test_size, random_state=0
         )
@@ -387,7 +430,18 @@ class Classifier:
         test_data: Optional[npt.NDArray[np.float64]] = None,
     ) -> Tuple[Optional[npt.NDArray[np.float64]],
             Optional[npt.NDArray[np.float64]]]:
-        """"""
+        """Scales data loaded from numpy files by emulating sklearn's
+        `StandardScaler`. The scaler is first fitted using the train set before
+        also scaling the test set.
+
+        Args:
+            train_data: dataset to be used for training
+            test_data: dataset to be used for testing
+
+        Returns:
+            np.array: scaled training data
+            np.array: scaled test data
+        """
         if train_data is not None:
             self.raw_scaler = StandardScaler()
             self.raw_scaler.fit(train_data)
@@ -408,7 +462,20 @@ class Classifier:
         test_data: Optional[npt.NDArray[np.float64]] = None,
     ) -> Tuple[Optional[npt.NDArray[np.float64]],
             Optional[npt.NDArray[np.float64]]]:
-        """"""
+        """Scales previously computed principal components.
+
+        Args:
+            train_data: dataset to be used for training, containing principal
+                components.
+            test_data: dataset to be used for testing, containing principal
+                components.
+
+        Returns:
+            np.array: scaled training data containing scaled principal
+                components.
+            np.array: scaled test data containing scaled principal
+                components.
+        """
         if train_data is not None:
             self.compressed_scaler = StandardScaler()
             self.compressed_scaler.fit(train_data)
@@ -419,8 +486,8 @@ class Classifier:
                 test_data = self.compressed_scaler.transform(test_data)
             else:
                 logger.error(
-                    "Train data principle components has not been"
-                    + " have to be scaled before scaling test PC."
+                    "Train data principle components has not been \
+                     have to be scaled before scaling test PC."
                 )
                 raise AttributeError
 
@@ -432,7 +499,16 @@ class Classifier:
         test_data: Optional[npt.NDArray[np.float64]] = None,
     ) -> Tuple[Optional[npt.NDArray[np.float64]],
             Optional[npt.NDArray[np.float64]]]:
-        """"""
+        """Computes principal components.
+
+        Args:
+            train_data: dataset to be used for training
+            test_data: dataset to be used for testing
+
+        Returns:
+            np.array: scaled training data containing principal components.
+            np.array: scaled test data containing principal components.
+        """
         if train_data is not None:
             self.pca = PCA(self.retained_variance)
             self.pca.fit(train_data)
@@ -442,7 +518,8 @@ class Classifier:
             if hasattr(self, "pca"):
                 test_data = self.pca.transform(test_data)
             else:
-                logger.error("Compress train data before compressing test" + " data.")
+                logger.error(
+                    "Compress train data before compressing test data.")
                 raise AttributeError
 
         return train_data, test_data
@@ -451,7 +528,16 @@ class Classifier:
         test_data: npt.NDArray[np.float64],
         test_labels: npt.NDArray[np.float64],
     ) -> float:
-        """"""
+        """Emulates the binary classifiers `score` method and returns the mean
+        accuracy for the given test set.
+
+        Args:
+            test_data: prepped test data
+            test_labels: labels of `test_data`.
+
+        Returns:
+            float: mean accuracy.
+        """
         self.clf_score = self.clf.score(test_data, test_labels)
         return self.clf_score
 
@@ -460,15 +546,30 @@ class Classifier:
         dataid: int,
         db_name: str,
         db_folder: Optional[str] = None,
+        readout_method_to_use: str = 'transport',
     ) -> List[Any]:
-        """"""
+        """Classifies the trace of a QCoDeS dataset. Ideally, this data has
+        been measured with nanotune and/or normalization constants saved
+        to metadata under the `nt.meta_tag` key. Otherwise correct
+        classification can not be guaranteed.
+
+        Args:
+            dataid: QCoDeS run ID.
+            db_name: name of database
+            db_folder: path to folder where database is located.
+
+        Returns:
+            array: containing the result as integers.
+        """
         if db_folder is None:
             db_folder = nt.config["db_folder"]
 
         DATA_TYPE_MAPPING = dict(nt.config["core"]["data_types"])
 
         df = Dataset(dataid, db_name)
-        condensed_data_all = prep_data(df, self.category)
+
+        condensed_data_all = prep_data(
+            df, self.category, readout_method_to_use=readout_method_to_use)
 
         predictions = []
 
@@ -486,12 +587,9 @@ class Classifier:
                         to_append = to_append[:, self.feature_indexes]  # type: ignore
                     except IndexError:
                         logger.warning(
-                            "Some data in {} ".format(dataid)
-                            + "does not have the "
-                            + "feature requested. Make sure all data "
-                            + "has been "
-                            + "fitted with appropriate fit "
-                            + "classes."
+                            f"Some data in {dataid} does not have the requested \
+                            features. Make sure all data has been fitted with \
+                            appropriate fit classes."
                         )
 
                 relevant_data = np.append(relevant_data, to_append, axis=1)
@@ -502,258 +600,9 @@ class Classifier:
 
         return predictions
 
-    def compute_ROC(
-        self,
-        data_types: Optional[List[str]] = None,
-        n_splits: int = 10,
-        n_population_subselect: int = 10,
-        save_to_file: bool = False,
-        path: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """
-        Compute ROC for multiple train and test datasets
-        """
-        if path is None:
-            path = os.path.join(nt.config["db_folder"], "ROC")
-        if data_types is None:
-            data_types = self.data_types
-
-        cv = StratifiedKFold(n_splits=n_splits)
-
-        result: Dict[str, Any] = {}
-
-        # save additional info
-        result["metadata"] = {}
-        result["metadata"]["n_splits"] = n_splits
-        result["metadata"]["n_population_subselect"] = n_population_subselect
-        result["metadata"]["file_paths"] = self.file_paths
-        result["metadata"]["clf_params"] = self.clf.get_params()
-
-        for data_type in data_types:
-            result[data_type] = {}
-            # this line below could be made more efficient and not load
-            # from file every time
-            (self.original_data, self.labels) = self.load_data(
-                self.file_paths, [data_type], file_fractions=self.file_fractions
-            )
-            tprs: List[List[float]] = []
-            aucs: List[float] = []
-
-            for redraw_iter in range(n_population_subselect):
-                # tprs = []
-                # aucs = []
-                mean_fpr = np.linspace(0, 1, 100)
-
-                X, y = self.select_equal_populations(self.original_data, self.labels)
-
-                for train, test in cv.split(X, y):
-                    # scale data as we would in real life
-                    X_train = X[train]
-                    y_train = y[train]
-
-                    X_test = X[test]
-                    y_test = y[test]
-
-                    X_train, X_test = self.prep_data(
-                        train_data=X_train, test_data=X_test
-                    )
-
-                    # probas = self.clf.fit(X[train], y[train]).predict_proba(X[test])
-                    probas = self.clf.fit(X_train, y_train).predict_proba(X_test)
-
-                    # Compute ROC curve and area the curve
-                    fpr, tpr, thresholds = roc_curve(y_test, probas[:, 1])
-
-                    if np.all(np.diff(fpr) >= 0):
-                        # interpolate curve to np.linspace(0, 1, 100)
-                        tprs.append(interp(mean_fpr, fpr, tpr))
-                        tprs[-1][0] = 0.0
-                        # compute area under the roc curve:
-                        roc_auc = auc(fpr, tpr)
-                        aucs.append(roc_auc)
-                    else:
-                        logger.warning(
-                            "Averaging over less than the "
-                            + " desired number of train-test splits."
-                        )
-            mean_tpr = np.mean(tprs, axis=0)
-            mean_tpr[-1] = 1.0
-
-            mean_auc = auc(mean_fpr, mean_tpr)
-            std_auc = np.std(aucs)
-            std_tpr = np.std(tprs, axis=0)
-
-            result[data_type]["mean_fpr"] = mean_fpr
-            result[data_type]["mean_tpr"] = mean_tpr
-            result[data_type]["std_tpr"] = std_tpr
-            result[data_type]["mean_auc"] = mean_auc
-            result[data_type]["std_auc"] = std_auc
-
-        if save_to_file:
-            name = "ROC_" + self.name
-
-            if not os.path.exists(path):
-                os.makedirs(path)
-            path = os.path.join(path, name)
-            np.save(path, result)
-
-        return result
-
-    def compute_ROC_different_source(
-        self,
-        train_files: List[str],
-        test_files: List[str],
-        data_types: Optional[List[str]] = None,
-        save_to_file: Optional[bool] = False,
-        path: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """
-        Load different data for training
-        """
-        if path is None:
-            path = os.path.join(nt.config["db_folder"], "ROC")
-
-        if data_types is None:
-            logger.warning("No data types specified. No ROC will be computed.")
-
-        train_files_full, _ = self._list_paths(train_files)
-        test_files_full, _ = self._list_paths(test_files)
-
-        result: Dict[str, Any] = {}
-        for data_type in data_types:  # type: ignore
-            result[data_type] = {}
-
-            ff = self.file_fractions
-            train_data, train_labels = self.load_data(
-                train_files_full, [data_type], file_fractions=ff
-            )
-            self.train(train_data, train_labels)
-
-            test_data, test_labels = self.load_data(
-                test_files_full, [data_type], file_fractions=ff
-            )
-
-            (test_data, test_labels) = self.select_equal_populations(
-                test_data, test_labels
-            )
-
-            _, test_data = self.prep_data(test_data=test_data)  # type: ignore
-            probas = self.clf.predict_proba(test_data)
-
-            # Compute ROC curve and area the curve
-            fpr, tpr, thresholds = roc_curve(test_labels, probas[:, 1])
-            mean_fpr = np.linspace(0, 1, 100)
-
-            if np.all(np.diff(fpr) >= 0):
-                roc_auc = auc(fpr, tpr)
-                tpr = interp(mean_fpr, fpr, tpr)
-                tpr[0] = 0.0
-            else:
-                logger.error(
-                    "Unable to compute ROC with different test " + "and train files."
-                )
-
-            result[data_type]["mean_fpr"] = mean_fpr
-            result[data_type]["mean_tpr"] = tpr
-            result[data_type]["std_tpr"] = 0
-            result[data_type]["mean_auc"] = roc_auc
-            result[data_type]["std_auc"] = 0
-
-        result["metadata"] = {}
-        result["metadata"]["n_splits"] = 1
-        result["metadata"]["n_population_subselect"] = 1
-        result["metadata"]["train_files"] = train_files_full
-        result["metadata"]["test_files"] = test_files_full
-        result["metadata"]["file_fractions"] = self.file_fractions
-        result["metadata"]["clf_params"] = self.clf.get_params()
-
-        if save_to_file:
-            self.name = "ROC" + self.name + "_train"
-
-            for train_file in train_files:
-                self.name += os.path.splitext(train_file)[0]
-            self.name += "_test"
-            for test_file in test_files:
-                self.name += os.path.splitext(test_file)[0]
-
-            if not os.path.exists(path):
-                os.makedirs(path)
-            path = os.path.join(path, self.name)
-            np.save(path, result)
-
-        return result
-
-    def plot_ROC(
-        self,
-        roc_result: Optional[Dict[str, Any]] = None,
-        save_to_file: bool = False,
-        path: Optional[str] = None,
-    ) -> str:
-        """
-        Plot ROC and return path where the figure was saved
-        """
-        if path is None:
-            path = os.path.join(nt.config["db_folder"], "ROC")
-        if roc_result is None:
-            logger.warning(
-                "No ROC result dict given. Computing one with " + "default values."
-            )
-            roc_result = self.compute_ROC(save_to_file=True)
-
-        _ = plt.figure()
-        for d_type, res in roc_result.items():
-            if d_type != "metadata":
-                mean_fpr = res["mean_fpr"]
-                mean_tpr = res["mean_tpr"]
-                std_tpr = res["std_tpr"]
-                mean_auc = res["mean_auc"]
-                std_auc = res["std_auc"]
-
-                label = r"Mean ROC (AUC = %0.2f $\pm$ %0.2f) " % (mean_auc, std_auc)
-                label += d_type
-                plt.plot(mean_fpr, mean_tpr, label=label, lw=2, alpha=0.8)
-
-                tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
-                tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
-                plt.fill_between(
-                    mean_fpr,
-                    tprs_lower,
-                    tprs_upper,
-                    color="grey",
-                    alpha=0.2,
-                )
-        # plot the last std twice to have a legend entry (and only one)
-        plt.fill_between(
-            mean_fpr,
-            tprs_lower,
-            tprs_upper,
-            color="grey",
-            alpha=0.2,
-            label=r"$\pm$ 1 std. dev.",
-        )
-        plt.plot(
-            [0, 1], [0, 1], linestyle="--", lw=2, color="r", label="Chance", alpha=0.8
-        )
-        plt.xlim([-0.05, 1.05])
-        plt.ylim([-0.05, 1.05])
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
-        plt.title("Receiver Operating Characteristic " + self.name)
-        plt.legend(loc="lower right", bbox_to_anchor=(1, 0))
-
-        filename = "ROC_" + self.name
-        path1 = os.path.join(path, filename + ".eps")
-        plt.savefig(path1, format="eps", dpi=600)
-
-        path2 = os.path.join(path, filename + ".png")
-        plt.savefig(path2, format="png", dpi=600)
-
-        return path2
-
     def compute_metrics(
         self,
         n_iter: Optional[int] = None,
-        n_test: int = 100,
         save_to_file: bool = True,
         filename: str = "",
         supp_train_data: Optional[List[str]] = None,
@@ -761,7 +610,35 @@ class Classifier:
         perform_pca: bool = False,
         scale_pc: bool = False,
     ) -> Tuple[Dict[str, Dict[str, Any]], npt.NDArray[np.float64]]:
-        """"""
+        """Computes different metrics of a classifier, averaging over
+        a number of iterations.
+        Beside metrics, the training time is tracked too. All information
+        extracted is saved to a dict. Metrics computed are `accuracy_score`,
+        `brier_score_loss`, `auc` (area under curve), `average_precision_recall`
+        and the confusion matrix - all implemented in sklearn.metrics.
+
+        Args:
+            n_iter: number of train and test iterations over which the metrics
+                statistic should be computed.
+            save_to_file: whether to save metrics info to file.
+            filename: name of json file if metrics are saved.
+            supp_train_data: list of paths to files with additional training
+                data.
+            n_supp_train: number of datasets which should be added to
+                the train set from additional data.
+            perform_pca: whether the metrics should be computed using
+                principal components for training and testing.
+            scale_pc: whether principal components should be scaled.
+
+        Returns:
+            dict: summary od results, mapping the a string indicating the
+                quantity onto the quantity itself. Containt mean and std
+                each metric.
+            np.array: metric results of all iterations. Shape is
+                (len(METRIC_NAMES), n_iter),
+                where the metrics appear in the order defined by
+                METRIC_NAMES.
+        """
         if n_iter is None:
             n_iter = DEFAULT_N_ITER[self.category]
 
@@ -771,7 +648,6 @@ class Classifier:
 
         start_time = time.time()
         train_times = []
-        test_times = []
 
         if supp_train_data is not None:
             supp_train_data, name_addon = self._list_paths(supp_train_data)
@@ -794,16 +670,17 @@ class Classifier:
             train_labels_addon = None  # type: ignore
 
         for curr_iter in range(n_iter):
-            start_time_inner = time.time()
+            start_time_train = time.time()
 
             (data_to_use, labels_to_use) = self.select_equal_populations(
                 self.original_data, self.labels
             )
-            (train_data, test_data, train_labels, test_labels) = self.split_data(
-                data_to_use, labels_to_use
-            )
-            if train_data_addon is not None:
+            (train_data,
+             test_data,
+             train_labels,
+             test_labels) = self.split_data(data_to_use, labels_to_use)
 
+            if train_data_addon is not None:
                 train_data = np.concatenate([train_data, train_data_addon], axis=0)
                 train_labels = np.concatenate(
                     [train_labels, train_labels_addon], axis=0
@@ -818,21 +695,18 @@ class Classifier:
 
             probas = self.clf.fit(X_train, train_labels).predict_proba(X_test)
 
-            train_times.append(time.time() - start_time_inner)
+            train_times.append(time.time() - start_time_train)
 
-            fpr, tpr, thresholds = roc_curve(test_labels, probas[:, 1])
-
-            start_time_inner = time.time()
-            for itt in range(n_test):
-                pred_labels = self.clf.predict(X_test)
-            test_times.append((time.time() - start_time_inner) / n_test)
+            pred_labels = self.clf.predict(X_test)
 
             m_in = METRIC_NAMES.index("accuracy_score")
             metrics[m_in, curr_iter] = accuracy_score(test_labels, pred_labels)
 
             m_in = METRIC_NAMES.index("brier_score_loss")
-            metrics[m_in, curr_iter] = brier_score_loss(test_labels, pred_labels)
+            metrics[m_in, curr_iter] = brier_score_loss(
+                test_labels, pred_labels)
 
+            fpr, tpr, thresholds = roc_curve(test_labels, probas[:, 1])
             m_in = METRIC_NAMES.index("auc")
             metrics[m_in, curr_iter] = auc(fpr, tpr)
 
@@ -850,7 +724,7 @@ class Classifier:
 
         info_dict: Dict[str, Any] = {
             "n_iter": n_iter,
-            "classifier": self.clf_type,
+            "classifier": self.classifier_type,
             "category": self.category,
             "data_files": self.file_paths,
             "data_types": self.data_types,
@@ -861,8 +735,6 @@ class Classifier:
             "n_train": train_data.shape[0],
             "mean_train_time": np.mean(train_times),
             "std_train_time": np.std(train_times),
-            "mean_test_time": np.mean(test_times),
-            "std_test_time": np.std(test_times),
             "perform_pca": perform_pca,
             "scale_pc": scale_pc,
             "metadata": {},
@@ -901,100 +773,9 @@ class Classifier:
 
         return info_dict, metrics
 
-    def display_metrics(
-        self,
-        info_dict: Dict[str, Dict[str, float]],
-        all_of_it: Optional[bool] = False,
-    ) -> None:
-        """"""
-        inf_t = PrettyTable(["parameter", "value"])
-        for key in info_dict.keys():
-            if key not in METRIC_NAMES and key != "metric_names":
-                inf_t.add_row([key, info_dict[key]])
-
-        t = PrettyTable(["metric", "mean", "std"])
-        for mn in METRIC_NAMES:
-            t.add_row(
-                [
-                    mn,
-                    "{0:.3f}".format(info_dict[mn]["mean"]),
-                    "{0:.3f}".format(info_dict[mn]["std"]),
-                ]
-            )
-        t.add_row(
-            [
-                mn,
-                np.array(info_dict["confusion_matrix"]["mean"]),
-                np.array(info_dict["confusion_matrix"]["std"]),
-            ]
-        )
-
-        if all_of_it:
-            print(inf_t)
-        print(t)
-
-    def determine_number_of_redraws(
-        self,
-        n_max_iter: int = 200,
-        perform_pca: bool = False,
-        scale_pc: bool = False,
-        save_to_file: bool = True,
-        data_folder: Optional[str] = None,
-        figure_folder: Optional[str] = None,
-        filename: Optional[str] = None,
-    ) -> Dict[str, Dict[str, Any]]:
-        """
-        Skipping confusion matrix
-        """
-        # TODO: change method name to better reflect what it actually does.
-        means = np.empty((len(METRIC_NAMES), n_max_iter))
-        stds = np.empty((len(METRIC_NAMES), n_max_iter))
-
-        info_dict, metrics = self.compute_metrics(
-            n_iter=n_max_iter,
-            n_test=1,
-            save_to_file=False,
-            perform_pca=perform_pca,
-            scale_pc=scale_pc,
-        )
-        for n_eval in range(n_max_iter):
-            for m_id, metric in enumerate(METRIC_NAMES):
-                means[m_id, n_eval] = np.mean(metrics[m_id, 0 : n_eval + 1])
-                stds[m_id, n_eval] = np.std(metrics[m_id, 0 : n_eval + 1])
-
-        info_dict["mean_metric_variations"] = means.tolist()
-        info_dict["std_metric_variations"] = stds.tolist()
-        info_dict["metadata"]["metric_names"] = "Skip confusion matrix"
-
-        if save_to_file:
-            if filename is None:
-                filename = "metric_fluctuations_" + self.name
-                filename = filename + "_" + "_".join(self.data_types)
-                if perform_pca:
-                    filename += "_PCA"
-                if scale_pc:
-                    filename += "_scaled"
-
-            if data_folder is None:
-                data_folder = os.path.join(nt.config["db_folder"], "classifier_stats")
-            if not os.path.exists(data_folder):
-                os.makedirs(data_folder)
-            data_file = os.path.join(data_folder, filename + ".json")
-            with open(data_file, "w") as f:
-                json.dump(info_dict, f)
-
-        return info_dict
-
-    # def tune_hyper_parameters(self,
-    #                           ) -> Dict:
-    #     """
-    #     """
-    #     return best_params
 
     def _list_paths(self, filenames: List[str]) -> Tuple[List[str], str]:
-        """
-        add path to file names
-        """
+        """Adds path to file names."""
         file_paths = []
         name = ""
 

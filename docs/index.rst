@@ -18,6 +18,7 @@ Documentation
    classification/index
    capacitance_model/index
    examples/index
+   configuration/index
    api/index
 
 

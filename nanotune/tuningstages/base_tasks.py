@@ -83,7 +83,7 @@ def check_measurement_quality(
     elif db_folder is None:
         _, db_folder = nt.get_database()
 
-    quality = classifier.predict(run_id, db_name, db_folder)
+    quality = classifier.predict(run_id, db_name, db_folder=db_folder)
     return any(quality)
 
 

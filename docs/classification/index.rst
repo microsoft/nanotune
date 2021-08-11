@@ -4,42 +4,61 @@ Classification
 ==============
 
 nanotune replaces the experimenter's decision making by binary classifiers
-predicting either quality of a measurement or charge stage of charge diagrams.
-Due to a large variability not captured in synthetic models of this data,
+predicting either quality of a measurement or charge stage found in charge
+diagrams. Due to a large variety of regimes and noise types not reproduced by
+synthetic models,
 it uses hand-labelled experimental measurements to train them. Given the
-difficulty of collecting and labelling these datasets, classifiers
-which are less data hungry than neural networks.
+difficulty of collecting and labelling these datasets, binary classifiers,
+which are less data hungry than neural networks, are used.
 
 Classifier
 ----------
 
-nanotune's classifier class emulates binary classifiers implemented in
-scikit-learn. It support several different types, which can be specified during
-initialization. Its methods allow to prepare data loaded from QCoDeS datasets, i.e.
+nanotune's `Classifier` class emulates binary classifiers implemented in
+scikit-learn. One can choose among the following classifiers at initialization:
+
+- SVC
+- LogisticRegression
+- MLPClassifier"
+- GaussianProcessClassifier"
+- DecisionTreeClassifier
+- RandomForestClassifier
+- AdaBoostClassifier
+- GaussianNB
+- QuadraticDiscriminantAnalysis
+- KNeighborsClassifier.
+
+The `Classifier` wraps some of the methods found in sklearn, such as
+splitting data into train and test sets, and implements these tailored to data
+measured with QCoDeS.
+Its methods allow to prepare data loaded from QCoDeS datasets, i.e.
 by loading it into a nanotune dataset, traces are scaled using previously measured
 normalization constants. Training data is selected at random from the available
 dataset so that both labels appear equally often. Principle components can also
-be calculated and used for classification,
-however studies showed (Darulova et al. 2020) that
-they don't increase prediction accuracy.
+be calculated and used for classification.
 
 Synthetic vs experimental data
 ------------------------------
 
-The issue of using synthetic data to train machine learning classifiers to
+The issue with using synthetic data to train machine learning classifiers to
 predict the charge state is that models often fail to capture the large variety
 of regimes. The model implemented in nanotune for example, is able to produce
-diagrams as as those below.
+diagrams as those below.
 
 |capasd| |capadd|
 
-Note that these diagram are ideal regime without noise.
-While synthetic noise models can be added to modelled data, it has been
+These diagram show ideal regime without noise.
+Beside the capacitance model, datasets based on other models have been
+used as well.
+One of them is the
+`QFlow-lite  <https://github.com/jpzwolak/QFlow-lite>`_ dataset. A
+difference between nanotune's synthetic data is that QFlow-lite data
+provides double dot diagrams showing triple points instead of the honey comb
+structure. Additionally, it is also able to reproduce a transition between
+single and double dot regime.
+To potentially improve classification accuracy, noise models can be added to
+synthetic data, however it has been
 shown that it does not increase classification accuracy (Darulova et al. 2021).
-There is another synthetic dataset used for charge state detection: the
-`QFlow-lite  <https://github.com/jpzwolak/QFlow-lite>`_ dataset. This data provides
-double dot diagrams showing triple points instead of the honey comb structure
-above as well as a transition between single and double dot regime.
 
 In contrast, experimental data can look similar, yet different. A diagram can
 contain more than one valid regime and various noise types. A double dot does
@@ -55,10 +74,12 @@ triple points. Below a few examples of both single and double dots.
 
 |sd1| |sd2|
 
-Experimental single dots. In general, this charge state can be reproduced by
-models fairly well. But these to examples show that experimental data will
-always have some noise and maybe regions with poor regimes. A useful classifier
-should not be bothered by lower resolution.
+Experimental single dots.
+
+In general, this charge state can be reproduced by
+models fairly well. But these examples show that experimental data will
+always have some noise and maybe regions with poor regimes.
+
 
 .. |dd1| image:: ./figs/dotfit_deafcafe-0200-0004-0000-0165a05dfe17.svg
    :width: 45 %
@@ -90,9 +111,9 @@ lower left corner, are below the noise floor.
 |dd2| |dd3|
 Experimental double dot diagrams with multiple regimes within the
 same image.
-This variation is the reason why nanotune segments charge diagrams into
-sub-regions for classification. Each sub-region is classified seperately.
 
+This variation is the reason why nanotune segments charge diagrams into
+sub-regions for classification. Each sub-region is classified separately.
 
 
 Labelling
@@ -101,7 +122,8 @@ Labelling
 When using labelled experimental data, the labelling process brings another
 challenge with it. Not only is the process time consuming, but the regime
 might not be clear-cut. In fact, each labeller might label diagrams differently,
-inducing a bias which may confuse the classifier. A strategy could be sample
+inducing a bias which may confuse the classifier.
+A strategy could be sample
 a few examples, based on which a set of rules are fixed. A few relevant questions
 to answer before starting to label are the following. Most of the also apply
 other data such as pinch off curves.
@@ -119,8 +141,6 @@ To help answer these questions, one could think about what the subsequent tuning
 requires. Does it have to locate triple points? Or does it need to find the single
 electron regime? Can we deal with noise later on?
 A different end goal may require different labels.
-From experience a labelling tool, which displays the measurement and has
-buttons to click for each label, eases the pain of labelling a little bit.
 
 Below are three examples of data which may pose some labelling difficulties and
 could be used to decide on a set of "labelling rules".
@@ -135,3 +155,22 @@ could be used to decide on a set of "labelling rules".
    :width: 45 %
 
 |noise1| |noise2| |noise3|
+
+Labelling tool
+--------------
+
+nanotune has a simple tool trying to alleviate the pain of labelling, called
+the `LabellingTool`. From experience, having a window displaying each
+measurements and buttons to click for each label, makes the whole procedure
+faster and more reliable. The selected labels are saved to metadata of the
+QCoDeS dataset. Below a screenshot of this window, an example notebook of how
+to launch it can be found in :ref:`examples`.
+
+
+.. _fig_labellingtool:
+.. figure:: ./figs/labellingtool.png
+    :alt: screenshot of nanotune's labelling tool
+    :align: center
+    :width: 70.0%
+
+    Screenshot of nanotune's labelling tool.
