@@ -27,6 +27,5 @@ def test_chargediagram_run_stage(chargediagram_settings, experiment):
     print(features)
 
     transport_features = features["transport"]["triple_points"]
-    assert features["transport"]["triple_points"]
     assert features["sensing"]["triple_points"]
     assert np.isclose(transport_features[0][0][0], 0.03583013287130833, atol=atol)
