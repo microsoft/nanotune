@@ -24,7 +24,9 @@ def test_chargediagram_run_stage(chargediagram_settings, experiment):
     assert tuning_result.success
     assert not tuning_result.termination_reasons
     features = tuning_result.ml_result["features"]
-    print(features)
+
+    assert "triple_points" in features["transport"].keys()
+    assert "triple_points" in features["sensing"].keys()
 
     transport_features = features["transport"]["triple_points"]
     assert features["sensing"]["triple_points"]
