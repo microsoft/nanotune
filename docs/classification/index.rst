@@ -19,8 +19,8 @@ scikit-learn. One can choose among the following classifiers at initialization:
 
 - SVC
 - LogisticRegression
-- MLPClassifier"
-- GaussianProcessClassifier"
+- MLPClassifier
+- GaussianProcessClassifier
 - DecisionTreeClassifier
 - RandomForestClassifier
 - AdaBoostClassifier

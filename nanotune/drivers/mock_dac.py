@@ -9,6 +9,10 @@ from nanotune.drivers.dac_interface import (DACChannelInterface, DACInterface,
 
 
 class MockDACChannel(DACChannelInterface):
+    """Channel of a mock DAC for nanotune.
+    It implements all methods of `DACChannelInterface` to be compatible with
+    nanotunes requirements.
+    """
     def __init__(self, parent, name, channel_id):
         super().__init__(parent, name, channel_id)
 
@@ -148,10 +152,7 @@ class MockDACChannel(DACChannelInterface):
 
 
 class MockDAC(DACInterface):
-    """
-    Dummy instrument with nt channels
-    """
-
+    """Mock DAC instrument compatible with nanotune."""
     def __init__(self, name, DACChannelClass):
         super().__init__(name, DACChannelClass)
 

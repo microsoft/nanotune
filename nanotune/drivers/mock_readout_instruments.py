@@ -6,7 +6,8 @@ import qcodes as qc
 
 
 class MockLockin(qc.Instrument):
-
+    """Mock lockin with frequency, amplitude, phase, time_constant, X and Y
+    attributes."""
     def __init__(
             self,
             name: str,
@@ -46,7 +47,7 @@ class MockLockin(qc.Instrument):
 
 
 class MockRF(qc.Instrument):
-
+    """Mock RF source with frequency, power, phase and status attributes."""
     def __init__(
             self,
             name: str,

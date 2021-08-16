@@ -14,7 +14,6 @@ atol = 1e-05
 def test_dotfit_init(nt_dataset_doubledot, tmp_path):
 
     attributes = [
-        "signal_thresholds",
         "segment_size",
         "triple_points",
         "fit_parameters",
@@ -33,9 +32,13 @@ def test_dotfit_range_update_directives(nt_dataset_doubledot, tmp_path):
         1,
         "temp.db",
         db_folder=str(tmp_path),
-        noise_floor=0.03,
-        dot_signal_threshold=0.4,
     )
+    df.fit_parameters['transport']['noise_floor'] = 0.03
+    df.fit_parameters['transport']['dot_signal_threshold'] = 0.4
+
+    df.fit_parameters['sensing']['noise_floor'] = 0.03
+    df.fit_parameters['sensing']['dot_signal_threshold'] = 0.4
+
     assert not df.range_update_directives
 
     edge = df.get_edge("left vertical", use_raw_data=False)
@@ -54,12 +57,14 @@ def test_dotfit_range_update_directives(nt_dataset_doubledot, tmp_path):
     assert np.max(edge) > 0.25
     assert np.min(edge) < 0.03
 
-    df.signal_thresholds = [0.1, 0.2]
+    df.fit_parameters['transport']['noise_floor'] = 0.1
+    df.fit_parameters['transport']['dot_signal_threshold'] = 0.2
     df._range_update_directives = []
     assert "x more negative" in df.range_update_directives
     assert "y more negative" in df.range_update_directives
 
-    df.signal_thresholds = [0.5, 0.7]
+    df.fit_parameters['transport']['noise_floor'] = 0.5
+    df.fit_parameters['transport']['dot_signal_threshold'] = 0.7
     df._range_update_directives = []
     assert "x more positive" in df.range_update_directives
     assert "y more positive" in df.range_update_directives
@@ -153,14 +158,16 @@ def test_get_triple_point_distances(nt_dataset_doubledot, tmp_path):
 
     df.fit_parameters = {
         "transport": {
-            "noise_level": 0.02,
+            "noise_floor": 0.02,
             "binary_neighborhood": 1,
             "distance_threshold": 0.05,
+            "dot_signal_threshold": 0.1,
         },
         "sensing": {
-            "noise_level": 0.3,
+            "noise_floor": 0.3,
             "binary_neighborhood": 2,
             "distance_threshold": 0.05,
+            "dot_signal_threshold": 0.1,
         },
     }
 
@@ -195,12 +202,13 @@ def test_dotfit_plot(nt_dataset_doubledot, tmp_path):
 
     df.fit_parameters = {
         "transport": {
-            "noise_level": 0.02,
+            "noise_floor": 0.02,
             "binary_neighborhood": 1,
             "distance_threshold": 0.05,
+            "dot_signal_threshold": 0.1,
         },
         "sensing": {
-            "noise_level": 0.3,
+            "noise_floor": 0.3,
             "binary_neighborhood": 2,
             "distance_threshold": 0.05,
         },
