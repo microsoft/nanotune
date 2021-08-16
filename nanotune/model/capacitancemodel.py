@@ -331,7 +331,7 @@ class CapacitanceModel(Instrument):
             N_np = np.array(N)
 
         if V_v is None:
-            V_v = np.array(self.V_v())
+            V_v = self.V_v()
 
         C_cc = np.array(self.C_cc())
         C_cv = np.array(self.C_cv())
