@@ -28,27 +28,41 @@ logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 default_dot_fit_parameters: Dict[str, Dict[str, Union[int, float]]] = {
     "transport": {
-        "noise_level": 0.02,
+        "noise_floor": 0.02,
         "binary_neighborhood": 1,
         "distance_threshold": 0.05,
+        "dot_signal_threshold": 0.1,
     },
     "sensing": {
-        "noise_level": 0.3,
+        "noise_floor": 0.3,
         "binary_neighborhood": 2,
         "distance_threshold": 0.05,
+        "dot_signal_threshold": 0.1,
     },
 }
 
 
 class DotFit(DataFit):
+    """Data fitting class for double dot charge diagrams.
+    Beside fitting it also allows to segment a diagram into subregions which
+    can be classified independently.
+
+    Attributes:
+        fit_parameters: parameters required for fitting. Nested dict with a
+            subdict for each readout methods. Subdicts have keys
+            `noise_floor`, `binary_neighborhood`, `dot_signal_threshold`
+            and `distance_threshold`.
+        segment_size: voltage range spanned by each sub-region to be classified
+            seperately.
+        segmented_data: diagram sub-regions.
+        triple_points: triple point located by the fitting routine.
+    """
     def __init__(
         self,
         qc_run_id: int,
         db_name: str,
         db_folder: Optional[str] = None,
         segment_size: float = 0.05,
-        noise_floor: float = 0.004,
-        dot_signal_threshold: float = 0.1,
         fit_parameters: Optional[Dict[str, Dict[str, Union[int, float]]]] = None,
         **kwargs,
     ) -> None:
@@ -65,8 +79,6 @@ class DotFit(DataFit):
             db_folder=db_folder,
             **kwargs,
         )
-
-        self.signal_thresholds = [noise_floor, dot_signal_threshold]
         self.segment_size = segment_size
         self.fit_parameters = fit_parameters
         self.segmented_data: List[xr.Dataset] = []
@@ -75,13 +87,10 @@ class DotFit(DataFit):
 
     @property
     def range_update_directives(self) -> List[str]:
-        """
-        signal_type: If more than one signal type (i.e dc, sensing or rf)
-        have been measured, select which one to use to perform the edge
-        analysis on. Use indexing and the order in which these signals have been
-        measured.
-        If the data has been segmented, the entire measurement is used to
-        determine next voltage range updates.
+        """Determines whether nearby gates need to be adjustes towards more
+        positive or negative values. Signal strenghts of all four edges
+        of the diagram are compared to the noise floor and dot signal
+        threshold of a given readout method.
         """
         if not self._range_update_directives:
 
@@ -91,25 +100,25 @@ class DotFit(DataFit):
                 right_vertical = self.get_edge("right vertical", read_meth)
                 top_horizontal = self.get_edge("top horizontal", read_meth)
 
-                if np.max(left_vertical) > self.signal_thresholds[1]:
+                noise_floor = self.fit_parameters[read_meth]['noise_floor']
+                dot_threshold = self.fit_parameters[read_meth]['dot_signal_threshold']
+                if np.max(left_vertical) > dot_threshold:
                     self._range_update_directives.append("x more negative")
 
-                if np.max(bottom_horizontal) > self.signal_thresholds[1]:
+                if np.max(bottom_horizontal) > dot_threshold:
                     self._range_update_directives.append("y more negative")
 
-                if np.max(right_vertical) < self.signal_thresholds[0]:
+                if np.max(right_vertical) < noise_floor:
                     self._range_update_directives.append("x more positive")
 
-                if np.max(top_horizontal) < self.signal_thresholds[0]:
+                if np.max(top_horizontal) < noise_floor:
                     self._range_update_directives.append("y more positive")
 
-        return self._range_update_directives
+        return list(set(self._range_update_directives))
 
     def find_fit(self) -> None:
-        """
-        Until capacitance extraction is not implemented no features are
-        returned.
-        """
+        """Locates triple points for each trace that was measured (one for
+        readout method."""
         self.triple_points = self.get_triple_point_distances()
         for read_meth in self.readout_methods:
             self._features[read_meth] = {}
@@ -120,7 +129,13 @@ class DotFit(DataFit):
         self,
         use_raw_data: bool = False,
     ) -> None:
-        """"""
+        """Segments a charge diagram into sub-regions. Result is retained under
+        the `segmented_data` attribute.
+
+        Args:
+            use_raw_data: whether to segment raw data. Normalized data is used
+                if not.
+        """
         if use_raw_data:
             data = self.raw_data
             coord_names = [str(it) for it in list(self.raw_data.coords)]
@@ -285,6 +300,86 @@ class DotFit(DataFit):
 
         return segment_info
 
+    def get_edge(
+        self,
+        which_one: str,
+        readout_method: str = "transport",
+        delta_v: float = 0.05,
+        use_raw_data: bool = False,
+    ) -> npt.NDArray[np.float64]:
+        """Isolates a border of a 2D measurements. Used to determine a device's
+        regime"""
+        if self.dimensions[readout_method] != 2:
+            logger.error("get_edge method not implemented for 1D data.")
+            raise NotImplementedError
+        if use_raw_data:
+            data = self.raw_data[self.readout_methods[readout_method]]
+            coord_names = [str(it) for it in list(self.raw_data.coords)]
+        else:
+            data = self.data[readout_method]
+            coord_names = default_coord_names["voltage"]
+
+        signal = data.values
+        voltage_x = data[coord_names[0]].values
+        voltage_y = data[coord_names[1]].values
+
+        if which_one == "left vertical":
+            v_start = voltage_x[0]
+            dv = 0
+            didx = 1
+            for ii in range(1, len(voltage_x)):
+                dv += abs(v_start - voltage_x[ii])
+                v_start = voltage_x[ii]
+                if dv <= delta_v:
+                    didx = ii
+                else:
+                    break
+            edge = np.average(signal[:, 0 : didx + 1], axis=1)
+
+        elif which_one == "bottom horizontal":
+            v_start = voltage_y[0]
+            dv = 0
+            didx = 1
+            for ii in range(1, len(voltage_y)):
+                dv += abs(v_start - voltage_y[ii])
+                v_start = voltage_y[ii]
+                if dv <= delta_v:
+                    didx = ii
+                else:
+                    break
+            edge = np.average(signal[0 : didx + 1, :], axis=0)
+
+        elif which_one == "right vertical":
+            v_start = voltage_x[-1]
+            dv = 0
+            didx = 1
+            for ii in range(1, len(voltage_x)):
+                dv += abs(v_start - voltage_x[-ii])
+                v_start = voltage_x[-ii]
+                if dv <= delta_v:
+                    didx = ii
+                else:
+                    break
+            edge = np.average(signal[:, -(didx + 1) :], axis=1)
+
+        elif which_one == "top horizontal":
+            v_start = voltage_y[-1]
+            dv = 0
+            didx = 1
+            for ii in range(1, len(voltage_y)):
+                dv += abs(v_start - voltage_y[-ii])
+                v_start = voltage_y[-ii]
+                if dv <= delta_v:
+                    didx = ii
+                else:
+                    break
+            edge = np.average(signal[-(didx + 1) :, :], axis=0)
+
+        else:
+            logger.error("Trying to get an edge which does not exist:" + which_one)
+
+        return edge
+
     def get_triple_point_distances(self) -> Dict[str, List[Any]]:
 
         """
@@ -297,7 +392,8 @@ class DotFit(DataFit):
         for read_meth in self.readout_methods:
             f_params = self.fit_parameters[read_meth]
             binary_neighborhood = f_params["binary_neighborhood"]
-            noise_level = f_params["noise_level"]
+            noise_floor = f_params["noise_floor"]
+            # noise_floor = self.signal_thresholds[0]
             distance_threshold = f_params["distance_threshold"]
 
             data = self.filtered_data[read_meth]
@@ -309,7 +405,7 @@ class DotFit(DataFit):
             m_filter = maximum_filter(signal, footprint=neighborhood)
             detected_peaks = m_filter == signal
 
-            background = signal <= noise_level
+            background = signal <= noise_floor
             eroded_background = binary_erosion(
                 background, structure=neighborhood, border_value=1
             )
@@ -366,7 +462,7 @@ class DotFit(DataFit):
 
         if self.triple_points is None and not singledot:
             self.triple_points = self.get_triple_point_distances()
-        else:
+        if singledot:
             self.triple_points = dict.fromkeys(self.readout_methods.keys(), [])
 
         fig_title = "Dotfit {}".format(self.guid)
@@ -409,7 +505,7 @@ class DotFit(DataFit):
             ax[r_i, 0].set_xlabel(self.get_plot_label(read_meth, 0))
             ax[r_i, 0].set_ylabel(self.get_plot_label(read_meth, 1))
             ax[r_i, 0].set_title(fig_title)
-            triple_points = np.asarray(self.triple_points[read_meth])
+            triple_points = np.asarray(self.triple_points[read_meth])  # type: ignore
             try:
                 ax[r_i, 0].scatter(
                     triple_points[:, 2, 0],

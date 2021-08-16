@@ -15,3 +15,4 @@ Examples
    capacitance_model_example_double_dot
    labelling_example
    example_data_export_and_classifier
+   example_dot_tuning_sim

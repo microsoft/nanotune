@@ -111,3 +111,17 @@ the a device characterization and a `DotTuner`.
 A `Tuner` class acts on an instance of a `Device` class, which represents the
 physical device including a list of gates, ohmics, gate layout and readout
 methods.
+
+
+
+Acknowledgments
+---------------
+
+A special thanks goes to Matthias Troyer, Maja Cassidy, David Reilly and
+Charles Marcus for initiating, supervising and pushing over the finish line
+the PhD project, which resulted in the original version of nanotune. Chris
+Granade, Nathan Wiebe, John Hornibrook - your inputs were invaluable in
+implementing several modules. Alice Mahoney, Sebastian Pauka, Rachpon Kalra -
+thank you for setting up fridges and prepping devices, making it possible for
+automated tuning to be developed, tested and demonstrated. William H.P. Nielsen
+and Jens Nielsen - both your patience and help with qcodes was essential.

@@ -2,15 +2,14 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-from typing import Dict, List, Optional, Sequence, Tuple, Any
-from nanotune.device_tuner.dottuner import (DotTuner, VoltageChangeDirection,
-    DeviceState, check_new_voltage, RangeChangeSetting)
+from typing import List, Optional
+from nanotune.device_tuner.dottuner import DotTuner
 from nanotune.device_tuner.tuner import (DataSettings, SetpointSettings,
     Classifiers)
 from nanotune.device.device import Device
 from nanotune.device.device_channel import DeviceChannel
 from sim.simulation_scenario import SimulationScenario
-from nanotune.device_tuner.tuningresult import MeasurementHistory, TuningResult
+from nanotune.device_tuner.tuningresult import TuningResult
 
 
 class SimDotTuner(DotTuner):

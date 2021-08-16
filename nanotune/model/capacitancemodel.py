@@ -326,9 +326,10 @@ class CapacitanceModel(Instrument):
         """
         if N is None:
             N_self = self.N()
-            N_np = np.array(N_self).reshape(len(N_self), 1)
+            N_np = np.array(N_self)
         else:
-            N_np = np.array(N).reshape(len(N), 1)
+            N_np = np.array(N)
+
         if V_v is None:
             V_v = self.V_v()
 
@@ -1166,7 +1167,7 @@ class CapacitanceModel(Instrument):
         )
         V_stop_config = res.x
 
-        return list(zip([V_init_config, V_stop_config]))  # type: ignore
+        return list(zip(V_init_config, V_stop_config))  # type: ignore
 
     def _get_N(self) -> List[int]:
         """ QCoDeS parameter getter for charge configuration N. """
@@ -1285,6 +1286,3 @@ class CapacitanceModel(Instrument):
                 "Setting CapacitanceModel.c_l: Unable to update C_cc"
             )
             pass
-
-        self._C_cc += self._get_C_cc_diagonals()
-        self._C_cc = self._C_cc.tolist()

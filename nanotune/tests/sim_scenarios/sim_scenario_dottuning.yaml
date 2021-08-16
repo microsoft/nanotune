@@ -1,4 +1,4 @@
-"init ranges 2D":
+"dot tuning":
 
   - "Sweep central barrier":
       type : "sim.simulation_scenario.SetDataProviderAction"

@@ -119,10 +119,8 @@ def plot_dataset(
     filename: Optional[str] = None,
     file_location: Optional[str] = None,
 ) -> AxesTuple:
-    """
-    If to be saved and no file location specified, the figure will be saved at
-    os.path.join(nt.config['db_folder'], 'tuning_results', dataset.device_name)
-    in both eps and png
+    """Plots normalized trace of a QCoDeS dataset which has normalization
+    constants saved to metadata.
     """
 
     if plot_params is None:

@@ -3,6 +3,11 @@ from typing import Optional, Tuple
 
 
 class DACChannelServer(DACChannelInterface):
+    """Channel class for DAC server.
+
+    Implements all methods of `DACChannelInterface`, which sends string messages
+    to a server to set or get parameters.
+    """
     def __init__(self, parent, name, channel_id):
         super().__init__(parent, name, channel_id)
         self._voltage_limit = (-3, 0)

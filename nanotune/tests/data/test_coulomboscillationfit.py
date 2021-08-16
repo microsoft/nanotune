@@ -15,7 +15,6 @@ rtol = 1e-05
 def test_coulomboscillationfit_init(nt_dataset_coulomboscillation, tmp_path):
     attributes = [
         "relative_height_threshold",
-        "sigma_dV",
         "peak_indx",
         "peak_distances",
     ]

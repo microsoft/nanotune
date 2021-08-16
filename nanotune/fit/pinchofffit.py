@@ -5,49 +5,28 @@ from typing import Dict, List, Optional, Tuple
 import numpy.typing as npt
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.ticker as tick
 import numpy as np
-import scipy as sc
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from numpy import linalg as lg
 from scipy.optimize import least_squares
-from scipy.signal import argrelextrema
-from scipy.stats import norm
 
 import nanotune as nt
-from nanotune.data.plotting import (colors_dict, default_plot_params,
-                                    plot_params_type)
+from nanotune.data.plotting import default_plot_params, plot_params_type
 from nanotune.fit.datafit import DataFit
-from nanotune.utils import format_axes
-
-# from matplotlib2tikz import save as tikz_save
-
-
-# from qcodes.self.experiment_container import load_by_id
-
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 
 
 class PinchoffFit(DataFit):
-    """
+    """Data fitting class for pinch-off curves.
 
-    Args:
-        run_id (int): QCoDeS run id of the dataset to fit.
-        db_name (str): Name of database where the dataset to fit is saved.
-        db_folder (optional str): Folder there database db_name is saved.
-        gradient_percentile (optional float):
-        get_transition_from_fit (optional bool):
-
-    Parameters:
-        features (dict):
-        range_update_directives (list):
-
-        gradient_percentile
-        get_transition_from_fit
-
-    Methods:
+    Attributes:
+        gradient_percentile: percentage of the highest gradient of the traces,
+            above which a portion of the trace is considered to be dropping,
+            i.e. to be the transition interval.
+        get_transition_from_fit: whether to get transition interval from the
+            fit. If not, filtered data is used.
     """
 
     def __init__(
@@ -87,7 +66,9 @@ class PinchoffFit(DataFit):
 
     @property
     def range_update_directives(self) -> List[str]:
-        """"""
+        """List of directives how nearby gates need to be adjusted. Depends on
+        the signal strength of the trace.
+        """
         if not self._low_signal:
             self.compute_transition_interval()
         self._range_update_directives = []
@@ -100,7 +81,8 @@ class PinchoffFit(DataFit):
         return self._range_update_directives
 
     def find_fit(self) -> None:
-        """"""
+        """Fits a pinchoff curve to a hyperbolic tangent and extracts transition
+        voltages as well as interval."""
 
         for r_meth in self.readout_methods:
             (bounds,
@@ -133,9 +115,8 @@ class PinchoffFit(DataFit):
         self.save_features()
 
     def compute_transition_interval(self) -> None:
-        """
-        Using the signal gradient to determine where the transition from high
-         to low voltage occurs
+        """Determines the transition interval based on a trace's gradient, for
+        all traces (readout methods) measured.
         """
         for read_meth in self.readout_methods:
             if not self.get_transition_from_fit:
@@ -174,7 +155,7 @@ class PinchoffFit(DataFit):
             self._high_signal_index[read_meth] = high_idx
 
     def compute_transition_voltage(self) -> None:
-        """"""
+        """Computes the transition voltage based in a trace's gradient."""
         for read_meth in self.readout_methods:
             if not self.get_transition_from_fit:
                 temp_sig = self.filtered_data[read_meth].values
@@ -200,7 +181,7 @@ class PinchoffFit(DataFit):
         self,
         readout_method: str = "transport",
     ) -> Tuple[Tuple[List[float], List[float]], List[float]]:
-        """"""
+        """Computes initial guess for fitting."""
         signal = self.data[readout_method].values
         amplitude_init = np.max(signal) - np.min(signal)
         amplitude_min = 0
@@ -242,13 +223,15 @@ class PinchoffFit(DataFit):
         v: npt.NDArray[np.float64],
         params: List[float],
     ) -> npt.NDArray[np.float64]:
-        """
-        Function we use to fit pinch off curves.
+        """Function to fit pinch off curves.
 
-        x: input vector, usually gate voltage in V
-        a: parameter referred to as 'amplitude'
-        b: parameter referred to as 'slope'
-        c: a shift
+        Args:
+            v: voltage vector in V.
+            params: parameter vector with the following entries: [amplitude,
+                slope, shift, tanh sign].
+
+        Returns:
+            np.array: tanh function values.
         """
         fit = 1 + params[3] * (np.tanh(params[1] * v + params[2]))
         return params[0] * fit
@@ -271,11 +254,9 @@ class PinchoffFit(DataFit):
             trans_s = self._transition_signal[read_meth]
 
             self._features[read_meth]["low_voltage"] = v_x[low_idx]
-            # self._features[read_meth]["low_signal"] = self._low_signal[read_meth]
             self._features[read_meth]["low_signal"] = signal[low_idx]
 
             self._features[read_meth]["high_voltage"] = v_x[high_idx]
-            # self._features[read_meth]["high_signal"] = self._high_signal[read_meth]
             self._features[read_meth]["high_signal"] = signal[high_idx]
 
             self._features[read_meth]["transition_voltage"] = trans_v
@@ -296,7 +277,9 @@ class PinchoffFit(DataFit):
         plot_params: Optional[plot_params_type] = None,
         plot_format: str = "png",
     ) -> AxesTuple:
-        """"""
+        """Plots the measurement including the fit, gradient and filtered
+        trace.
+        """
         if plot_params is None:
             plot_params = default_plot_params
         if not self._high_signal_index:
@@ -437,7 +420,7 @@ class PinchoffFit(DataFit):
         plot_params: Optional[plot_params_type] = None,
         plot_format: str = "png",
     ) -> AxesTuple:
-        """"""
+        """Plots measurement, indicating some of the extracted features."""
         if plot_params is None:
             plot_params = default_plot_params
         matplotlib.rcParams.update(plot_params)

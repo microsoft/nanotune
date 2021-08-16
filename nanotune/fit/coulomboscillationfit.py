@@ -12,22 +12,26 @@ import nanotune as nt
 from nanotune.data.plotting import (colors_dict, default_plot_params,
                                     plot_params_type)
 from nanotune.fit.datafit import DataFit
-from nanotune.utils import format_axes
 
 logger = logging.getLogger(__name__)
 AxesTuple = Tuple[matplotlib.axes.Axes, matplotlib.colorbar.Colorbar]
 
 
 class CoulombOscillationFit(DataFit):
-    """"""
+    """Data fitting class for Coulomb oscillations.
 
+    Attributes:
+        relative_height_threshold: threshold above which a peak is
+                considered a Coulomb peak. Compared to normalized signal.
+        peak_indx: indices of the peaks found.
+        peak_distances: distances between peaks.
+    """
     def __init__(
         self,
         qc_run_id: int,
         db_name: str,
         db_folder: Optional[str] = None,
         relative_height_threshold: float = 0.5,
-        sigma_dV: float = 0.005,
         **kwargs,
     ) -> None:
 
@@ -43,8 +47,6 @@ class CoulombOscillationFit(DataFit):
         )
 
         self.relative_height_threshold = relative_height_threshold
-        self.sigma_dV = sigma_dV
-
         self.peak_indx: Dict[str, List[int]] = {}
         self.peak_distances: Dict[str, List[float]] = {}
 
@@ -54,8 +56,7 @@ class CoulombOscillationFit(DataFit):
         raise NotImplementedError
 
     def find_fit(self) -> None:
-        """
-        Find peaks and extract distances between them (in voltage space)
+        """Finds peaks and extracts distances in voltage space between them.
         """
         self.peak_indx = self.find_peaks()
         self.peak_distances = self.calculate_peak_distances(self.peak_indx)
@@ -75,8 +76,11 @@ class CoulombOscillationFit(DataFit):
             self._features[read_meth]["peak_distances"] = temp
 
     def calculate_voltage_distances(self) -> Dict[str, float]:
-        """
-        Get voltage spacing between Coulomb peaks
+        """Calculates voltage spacing between successive Coulomb peaks.
+
+        Returns:
+            dict: mapping readout method to maximum of peak distances found
+                for this method.
         """
         voltage_distances = {}
         for read_meth in self.readout_methods.keys():
@@ -84,6 +88,14 @@ class CoulombOscillationFit(DataFit):
         return voltage_distances
 
     def get_peak_locations(self) -> Dict[str, List[float]]:
+        """Determines peaks for each trace in the dataset and retains their
+        indices.
+
+        Returns:
+            dict: mapping readout method to a list of voltages at which peaks
+                were detected.
+
+        """
         peak_locations = {}
         for read_meth in self.readout_methods.keys():
             v_x = self.data[read_meth].voltage_x.values
@@ -97,12 +109,7 @@ class CoulombOscillationFit(DataFit):
         absolute_height_threshold: Optional[float] = None,
         minimal_index_distance: int = 3,
     ) -> Dict[str, List[int]]:
-        """
-        wrapper around scipy.signal.peaks
-
-        the threshold calculated with:
-        height = height_threshold * np.max(self.signal)
-        """
+        """Locates peaks by using scipy.signal.peaks."""
         peaks = {}
         for read_meth in self.readout_methods.keys():
             if absolute_height_threshold is None:
