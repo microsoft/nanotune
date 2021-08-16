@@ -505,7 +505,7 @@ class DotFit(DataFit):
             ax[r_i, 0].set_xlabel(self.get_plot_label(read_meth, 0))
             ax[r_i, 0].set_ylabel(self.get_plot_label(read_meth, 1))
             ax[r_i, 0].set_title(fig_title)
-            triple_points = np.asarray(self.triple_points[read_meth])
+            triple_points = np.asarray(self.triple_points[read_meth])  # type: ignore
             try:
                 ax[r_i, 0].scatter(
                     triple_points[:, 2, 0],
