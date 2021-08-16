@@ -31,7 +31,7 @@ grpcio==1.39.0
 h5py==3.3.0
 idna==3.2
 imageio==2.9.0
-importlib-metadata==4.6.3
+importlib-metadata==4.6.4
 iniconfig==1.1.1
 ipykernel==5.5.5
 ipython==7.26.0
