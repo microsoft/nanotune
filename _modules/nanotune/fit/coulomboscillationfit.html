@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.coulomboscillationfit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.coulomboscillationfit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -185,22 +185,26 @@
 <span class="kn">from</span> <span class="nn">nanotune.data.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">colors_dict</span><span class="p">,</span> <span class="n">default_plot_params</span><span class="p">,</span>
                                     <span class="n">plot_params_type</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">nanotune.fit.datafit</span> <span class="kn">import</span> <span class="n">DataFit</span>
-<span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">format_axes</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">AxesTuple</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="CoulombOscillationFit"><a class="viewcode-back" href="../../../api/fit/coulomboscillationfit.html#nanotune.fit.coulomboscillationfit.CoulombOscillationFit">[docs]</a><span class="k">class</span> <span class="nc">CoulombOscillationFit</span><span class="p">(</span><span class="n">DataFit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Data fitting class for Coulomb oscillations.</span>
 
+<span class="sd">    Attributes:</span>
+<span class="sd">        relative_height_threshold: threshold above which a peak is</span>
+<span class="sd">                considered a Coulomb peak. Compared to normalized signal.</span>
+<span class="sd">        peak_indx: indices of the peaks found.</span>
+<span class="sd">        peak_distances: distances between peaks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">qc_run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">relative_height_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">sigma_dV</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -216,8 +220,6 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_height_threshold</span> <span class="o">=</span> <span class="n">relative_height_threshold</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_dV</span> <span class="o">=</span> <span class="n">sigma_dV</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_indx</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_distances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -227,8 +229,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="CoulombOscillationFit.find_fit"><a class="viewcode-back" href="../../../api/fit/coulomboscillationfit.html#nanotune.fit.coulomboscillationfit.CoulombOscillationFit.find_fit">[docs]</a>    <span class="k">def</span> <span class="nf">find_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Find peaks and extract distances between them (in voltage space)</span>
+        <span class="sd">&quot;&quot;&quot;Finds peaks and extracts distances in voltage space between them.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_indx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_distances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_peak_distances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_indx</span><span class="p">)</span>
@@ -248,8 +249,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;peak_distances&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
 
 <div class="viewcode-block" id="CoulombOscillationFit.calculate_voltage_distances"><a class="viewcode-back" href="../../../api/fit/coulomboscillationfit.html#nanotune.fit.coulomboscillationfit.CoulombOscillationFit.calculate_voltage_distances">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_voltage_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get voltage spacing between Coulomb peaks</span>
+        <span class="sd">&quot;&quot;&quot;Calculates voltage spacing between successive Coulomb peaks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: mapping readout method to maximum of peak distances found</span>
+<span class="sd">                for this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">voltage_distances</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -257,6 +261,14 @@
         <span class="k">return</span> <span class="n">voltage_distances</span></div>
 
 <div class="viewcode-block" id="CoulombOscillationFit.get_peak_locations"><a class="viewcode-back" href="../../../api/fit/coulomboscillationfit.html#nanotune.fit.coulomboscillationfit.CoulombOscillationFit.get_peak_locations">[docs]</a>    <span class="k">def</span> <span class="nf">get_peak_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Determines peaks for each trace in the dataset and retains their</span>
+<span class="sd">        indices.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: mapping readout method to a list of voltages at which peaks</span>
+<span class="sd">                were detected.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">peak_locations</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">v_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">voltage_x</span><span class="o">.</span><span class="n">values</span>
@@ -270,12 +282,7 @@
         <span class="n">absolute_height_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">minimal_index_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        wrapper around scipy.signal.peaks</span>
-
-<span class="sd">        the threshold calculated with:</span>
-<span class="sd">        height = height_threshold * np.max(self.signal)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Locates peaks by using scipy.signal.peaks.&quot;&quot;&quot;</span>
         <span class="n">peaks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">absolute_height_threshold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

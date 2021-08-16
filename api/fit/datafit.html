@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.datafit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.datafit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -223,41 +223,78 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="module-nanotune.fit.datafit">
-<span id="nanotune-fit-datafit"></span><h1>nanotune.fit.datafit<a class="headerlink" href="#module-nanotune.fit.datafit" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nanotune-fit-datafit">
+<h1>nanotune.fit.datafit<a class="headerlink" href="#nanotune-fit-datafit" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.fit.datafit.</span></span><span class="sig-name descname"><span class="pre">DataFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.datafit.DataFit" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.fit.datafit.</span></span><span class="sig-name descname"><span class="pre">DataFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABC" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a>, <a class="reference internal" href="../data/dataset.html#nanotune.data.dataset.Dataset" title="nanotune.data.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.data.dataset.Dataset</span></code></a></p>
+<p>Abstract base class for fitting classes.
+It inherits from nt.Dataset to have access to post processed data as
+necessary. The abstract <cite>find_fit</cite> and <cite>plot_fit</cite> methods, as well as
+the <cite>range_update_directives</cite> property need to be
+implemented by child classes. They are used by tuningstage classes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">features</span></span></dt>
+<dd><p>features extracted by child classes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">range_update_directives</span></span></dt>
+<dd><p>directives on how to update voltages other
+than those swept in the current fit. Typically indicating general
+directions such as more positive or negative, determined based
+on the normalized signal strength. E.g. if the signal is too low, i.e.
+the device is pinched off, this property will say that some other
+voltages need to be set to more positive values.</p>
+</dd></dl>
+
 <dl class="py property">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.features">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><a class="headerlink" href="#nanotune.fit.datafit.DataFit.features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.find_fit">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">find_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.find_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.datafit.DataFit.find_fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></em></dt>
+<dd><p>Overwrites feature attribute of nt.Dataset class. Computes
+features if they are not found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dict</strong> – mapping strings indicating the feature type to its value.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.range_update_directives">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">range_update_directives</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[str]</span></em><a class="headerlink" href="#nanotune.fit.datafit.DataFit.range_update_directives" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">range_update_directives</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[str]</span></em></dt>
+<dd><p>Indicating general directions such as more positive or negative,
+determined based on the normalized signal strength. E.g. if the signal
+is too low, i.e. the device is pinched off, this property will say that
+some other voltages need to be set to more positive values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>list</strong> – list of directives.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.save_features">
-<span class="sig-name descname"><span class="pre">save_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.save_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.datafit.DataFit.save_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">find_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.find_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Method to extract features. To be defined by child classes and
+tailored to a specific measurement. It needs to populate self._features.</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.get_edge">
-<span class="sig-name descname"><span class="pre">get_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which_one</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'transport'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_v</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.21)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.get_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.datafit.DataFit.get_edge" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">plot_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">matplotlib.axes._axes.Axes</span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://matplotlib.org/api/colorbar_api.html#matplotlib.colorbar.Colorbar" title="(in Matplotlib v3.4.3)"><span class="pre">matplotlib.colorbar.Colorbar</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.plot_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Should display a plot fit important features shown.</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nanotune.fit.datafit.DataFit.plot_fit">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">plot_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">matplotlib.axes._axes.Axes</span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://matplotlib.org/api/colorbar_api.html#matplotlib.colorbar.Colorbar" title="(in Matplotlib v3.4.3)"><span class="pre">matplotlib.colorbar.Colorbar</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.plot_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.datafit.DataFit.plot_fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">save_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/datafit.html#DataFit.save_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Saves extracted features to QCoDeS metadata.</p>
+</dd></dl>
 
 </dd></dl>
 

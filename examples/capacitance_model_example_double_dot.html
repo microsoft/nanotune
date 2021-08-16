@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Capacitance model for quantum dots &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>Capacitance model for quantum dots &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -71,7 +71,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -116,6 +116,9 @@
 <li class="toctree-l2"><a class="reference internal" href="labelling_example.html">Labelling example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_data_export_and_classifier.html">Data export and classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_data_export_and_classifier.html#Predict-the-quality-of-a-dataset.">Predict the quality of a dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html">Example dot tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html#Load-instruments-and-simulator-to-play-back-data">Load instruments and simulator to play back data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html#Initialize-tuner">Initialize tuner</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
@@ -487,7 +490,7 @@ Output logging : True
 Raw input log  : False
 Timestamping   : True
 State          : active
-Qcodes Logfile : /Users/jana/.qcodes/logs/210802-55898-qcodes.log
+Qcodes Logfile : /Users/jana/.qcodes/logs/210816-19286-qcodes.log
 </pre></div></div>
 </div>
 <div class="section" id="Capacitance-model-for-quantum-dots">
@@ -513,9 +516,9 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 <div class="line">Illustration of capacitances between gates and gates and dots:</div>
 <div class="line">Each gate voltage <span class="math notranslate nohighlight">\(V_{i}\)</span> will tune the number of charges on each dot. The capacitance of the dots, <span class="math notranslate nohighlight">\(C_{A}\)</span> and <span class="math notranslate nohighlight">\(C_{B}\)</span>, are sums of all capacitances connects to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> respectively. Gates located further away will have a smaller capacitive coupling. Most labels of capacitance between gates are omitted for readability.</div>
 </div>
-<p><img alt="98d5b59d1e3049af9504375db257fbdb" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
+<p><img alt="792759f52a9148c68e1a046c3ff6909c" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
 <p>Names and layout indices of gates: Six electrostatic gates, three barriers and two plungers, are used to define two, possibly coupled, quantum dots. Barrier gates are primarily used to create potential barriers, while plungers are used to tune electron density and thus the dot’s electrochemical potentials.</p>
-<p><img alt="0e06316695fb4988838dcc6a5a76758d" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
+<p><img alt="37b01cc30ba1423684952e21bb71520c" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
 <p>Initiate or set database where data should be saved. When initializing a database a new qcodes experiment needs to be created as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -536,8 +539,8 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-capacitance_extraction#capa_model#129@/Users/jana/Documents/code/nanotune/nanotune/docs/capacitance_model/capa_model_test.db
-----------------------------------------------------------------------------------------------------------------------------
+capacitance_extraction#capa_model#26@/Users/jana/Documents/code/nanotune/nanotune/docs/examples/capa_model_test.db
+------------------------------------------------------------------------------------------------------------------
 </pre></div></div>
 </div>
 <p>Initialize an instance of CapacitanceModel with six gates and two dots</p>
@@ -557,10 +560,6 @@ capacitance_extraction#capa_model#129@/Users/jana/Documents/code/nanotune/nanotu
 <span class="n">charge_nodes</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span>
     <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span>
-<span class="p">}</span>
-<span class="n">dot_handles</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">qdot</span> <span class="o">=</span> <span class="n">CapacitanceModel</span><span class="p">(</span>
@@ -654,9 +653,9 @@ capacitance_extraction#capa_model#129@/Users/jana/Documents/code/nanotune/nanotu
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Starting experimental run with id: 239.
-CPU times: user 1min 36s, sys: 9.18 s, total: 1min 45s
-Wall time: 1min 3s
+Starting experimental run with id: 14.
+CPU times: user 1min 17s, sys: 7.21 s, total: 1min 24s
+Wall time: 1min 4s
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -665,8 +664,8 @@ Wall time: 1min 3s
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-([&lt;AxesSubplot:title={&#39;center&#39;:&#39;Run #239, Experiment capacitance_extraction (capa_model)&#39;}, xlabel=&#39;voltage node left_plunger (V[2]) (V)&#39;, ylabel=&#39;voltage node right_plunger (V[4]) (V)&#39;&gt;],
- [&lt;matplotlib.colorbar.Colorbar at 0x7fc7a45a47d0&gt;])
+([&lt;AxesSubplot:title={&#39;center&#39;:&#39;Run #14, Experiment capacitance_extraction (capa_model)&#39;}, xlabel=&#39;voltage node left_plunger (V[2]) (V)&#39;, ylabel=&#39;voltage node right_plunger (V[4]) (V)&#39;&gt;],
+ [&lt;matplotlib.colorbar.Colorbar at 0x7f8d8a646cd0&gt;])
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -716,7 +715,7 @@ Wall time: 1min 3s
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Starting experimental run with id: 240.
+Starting experimental run with id: 15.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -725,7 +724,7 @@ Starting experimental run with id: 240.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-([&lt;AxesSubplot:title={&#39;center&#39;:&#39;Run #240, Experiment capacitance_extraction (capa_model)&#39;}, xlabel=&#39;voltage node right_plunger (V[4]) (V)&#39;, ylabel=&#39;Gate R (kV)&#39;&gt;],
+([&lt;AxesSubplot:title={&#39;center&#39;:&#39;Run #15, Experiment capacitance_extraction (capa_model)&#39;}, xlabel=&#39;voltage node right_plunger (V[4]) (V)&#39;, ylabel=&#39;Gate R (kV)&#39;&gt;],
  [None])
 </pre></div></div>
 </div>
@@ -734,24 +733,6 @@ Starting experimental run with id: 240.
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/examples_capacitance_model_example_double_dot_14_2.png" src="../_images/examples_capacitance_model_example_double_dot_14_2.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.datafit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.datafit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -179,19 +179,32 @@
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
-<span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="n">load_by_id</span>
 
 <span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
-<span class="kn">from</span> <span class="nn">nanotune.data.dataset</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">default_coord_names</span><span class="p">,</span>
-                                   <span class="n">default_readout_methods</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">nanotune.data.dataset</span> <span class="kn">import</span> <span class="n">default_coord_names</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">AxesTuple</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="DataFit"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit">[docs]</a><span class="k">class</span> <span class="nc">DataFit</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="DataFit"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit">[docs]</a><span class="k">class</span> <span class="nc">DataFit</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">nt</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base class for fitting classes.</span>
+<span class="sd">    It inherits from nt.Dataset to have access to post processed data as</span>
+<span class="sd">    necessary. The abstract `find_fit` and `plot_fit` methods, as well as</span>
+<span class="sd">    the `range_update_directives` property need to be</span>
+<span class="sd">    implemented by child classes. They are used by tuningstage classes.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        features: features extracted by child classes.</span>
+<span class="sd">        range_update_directives: directives on how to update voltages other</span>
+<span class="sd">            than those swept in the current fit. Typically indicating general</span>
+<span class="sd">            directions such as more positive or negative, determined based</span>
+<span class="sd">            on the normalized signal strength. E.g. if the signal is too low, i.e.</span>
+<span class="sd">            the device is pinched off, this property will say that some other</span>
+<span class="sd">            voltages need to be set to more positive values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">qc_run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -203,7 +216,7 @@
         <span class="k">if</span> <span class="n">db_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">db_folder</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">]</span>
 
-        <span class="n">Dataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">nt</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">qc_run_id</span><span class="p">,</span>
             <span class="n">db_name</span><span class="p">,</span>
@@ -215,22 +228,42 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Overwrites feature attribute of nt.Dataset class. Computes</span>
+<span class="sd">        features if they are not found.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: mapping strings indicating the feature type to its value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">find_fit</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span>
 
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Indicating general directions such as more positive or negative,</span>
+<span class="sd">        determined based on the normalized signal strength. E.g. if the signal</span>
+<span class="sd">        is too low, i.e. the device is pinched off, this property will say that</span>
+<span class="sd">        some other voltages need to be set to more positive values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of directives.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="DataFit.find_fit"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit.find_fit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">find_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot;Method to extract features. To be defined by child classes and</span>
+<span class="sd">        tailored to a specific measurement. It needs to populate self._features.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span>
+<div class="viewcode-block" id="DataFit.plot_fit"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit.plot_fit">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">plot_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Should display a plot fit important features shown.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
 
 <div class="viewcode-block" id="DataFit.save_features"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit.save_features">[docs]</a>    <span class="k">def</span> <span class="nf">save_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Saves extracted features to QCoDeS metadata.&quot;&quot;&quot;</span>
         <span class="n">nt</span><span class="o">.</span><span class="n">set_database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_folder</span><span class="p">)</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">load_by_run_spec</span><span class="p">(</span><span class="n">captured_run_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qc_run_id</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -238,90 +271,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">OperationalError</span><span class="p">):</span>
             <span class="n">nt_meta</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">nt_meta</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span>
-        <span class="n">ds</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">meta_tag</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">nt_meta</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="DataFit.get_edge"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">which_one</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;transport&quot;</span><span class="p">,</span>
-        <span class="n">delta_v</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-        <span class="n">use_raw_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;get_edge method not implemented for 1D data.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">if</span> <span class="n">use_raw_data</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]]</span>
-            <span class="n">coord_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">coords</span><span class="p">)]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span>
-            <span class="n">coord_names</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">]</span>
-
-        <span class="n">signal</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">voltage_x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">coord_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">voltage_y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">coord_names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="k">if</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;left vertical&quot;</span><span class="p">:</span>
-            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)):</span>
-                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_x</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
-                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">break</span>
-            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[:,</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;bottom horizontal&quot;</span><span class="p">:</span>
-            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">)):</span>
-                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_y</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
-                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">break</span>
-            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;right vertical&quot;</span><span class="p">:</span>
-            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)):</span>
-                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
-                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
-                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">break</span>
-            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[:,</span> <span class="o">-</span><span class="p">(</span><span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;top horizontal&quot;</span><span class="p">:</span>
-            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">)):</span>
-                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
-                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
-                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">break</span>
-            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Trying to get an edge which does not exist:&quot;</span> <span class="o">+</span> <span class="n">which_one</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">edge</span></div>
-
-<div class="viewcode-block" id="DataFit.plot_fit"><a class="viewcode-back" href="../../../api/fit/datafit.html#nanotune.fit.datafit.DataFit.plot_fit">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">plot_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
-        <span class="k">pass</span></div></div>
+        <span class="n">ds</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">meta_tag</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">nt_meta</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>

@@ -8,13 +8,14 @@ Base class
 
 The abstract `DataFit` class is the base for all fitting classes. Its main purpose
 is to establish the presence of `find_fit` and `plot_fit` methods, as well as the
-`next_actions` attribute required by :ref:`tuningstages`.
+`range_update_directives` attribute required by :ref:`tuningstages`.
 
 The `find_fit` method extracts features and determines the transport regime,
-i.e. open, closed or intermediate. In case of a closed or open regime,
-the `next_actions` list is populated with suggestions on how voltages need to
+i.e. open, closed or intermediate. Its implementation needs to
+update `self._features` with the extracted features. In case of a closed or open regime,
+the `range_update_directives` list is populated with suggestions on how voltages need to
 be adjusted, e.g. more positive or negative.
-The `plot_fit` method displays a plot with important features shown.
+The `plot_fit` method should display a plot with important features shown.
 
 It also provides a method to save extracted features to metadata. Specifically,
 the following code is used for this:

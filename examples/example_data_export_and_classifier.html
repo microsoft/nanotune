@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Data export and classification &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>Data export and classification &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Configuration" href="../configuration/index.html" />
+    <link rel="next" title="Example dot tuning" href="example_dot_tuning_sim.html" />
     <link rel="prev" title="Labelling example" href="labelling_example.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -71,7 +71,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -120,6 +120,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Predict-the-quality-of-a-dataset.">Predict the quality of a dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html">Example dot tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html#Load-instruments-and-simulator-to-play-back-data">Load instruments and simulator to play back data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_dot_tuning_sim.html#Initialize-tuner">Initialize tuner</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
@@ -465,8 +468,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Data-export-and-classification">
 <h1>Data export and classification<a class="headerlink" href="#Data-export-and-classification" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -483,26 +486,10 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Logging hadn&#39;t been started.
-Activating auto-logging. Current session state plus future input saved.
-Filename       : /Users/jana/.qcodes/logs/command_history.log
-Mode           : append
-Output logging : True
-Raw input log  : False
-Timestamping   : True
-State          : active
-Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
-</pre></div></div>
-</div>
 <div class="section" id="Export-labelled-data-to-a-numpy-file">
 <h2>Export labelled data to a numpy file<a class="headerlink" href="#Export-labelled-data-to-a-numpy-file" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -515,7 +502,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 <h2>Train classifier with the data saved in the numpy file.<a class="headerlink" href="#Train-classifier-with-the-data-saved-in-the-numpy-file." title="Permalink to this headline">¶</a></h2>
 <p>Note that this is just to small demo and that the data in the file is not sufficient for real-life purposes.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -530,7 +517,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -544,7 +531,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 <h1>Predict the quality of a dataset.<a class="headerlink" href="#Predict-the-quality-of-a-dataset." title="Permalink to this headline">¶</a></h1>
 <p>Note that this is again just to show how the code works and that a classifier should not be used to predict data it was trained on.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -553,7 +540,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -562,7 +549,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -578,7 +565,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 <p>We can also compute metrics such as accuracy…</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -588,7 +575,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 <p>..and display them.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -601,20 +588,20 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-+--------------------------+---------------+---------------------------+
-|          metric          |      mean     |            std            |
-+--------------------------+---------------+---------------------------+
-|      accuracy_score      |     0.869     |           0.015           |
-|     brier_score_loss     |     0.131     |           0.015           |
-|           auc            |     0.916     |           0.018           |
-| average_precision_recall |     0.900     |           0.032           |
-| average_precision_recall |  [[95.  16.6] |  [[6.69328021 4.00499688] |
-|                          |  [12.8 99.6]] |  [3.37045991 5.12249939]] |
-+--------------------------+---------------+---------------------------+
++--------------------------+-----------------+---------------------------+
+|          metric          |       mean      |            std            |
++--------------------------+-----------------+---------------------------+
+|      accuracy_score      |      0.857      |           0.022           |
+|     brier_score_loss     |      0.143      |           0.022           |
+|           auc            |      0.899      |           0.026           |
+| average_precision_recall |      0.878      |           0.050           |
+| average_precision_recall |  [[ 91.1  17.3] |  [[7.84155597 3.79605058] |
+|                          |  [ 14.7 100.9]] |  [3.71618084 7.81600921]] |
++--------------------------+-----------------+---------------------------+
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -623,7 +610,7 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -652,28 +639,28 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210811-79111-qcodes.log
   &#39;brier_score_loss&#39;,
   &#39;auc&#39;,
   &#39;average_precision_recall&#39;],
- &#39;elapsed_time [s/iter]&#39;: 0.2644777774810791,
+ &#39;elapsed_time [s/iter]&#39;: 0.23525290489196776,
  &#39;n_test&#39;: 224,
  &#39;n_train&#39;: 894,
- &#39;mean_train_time&#39;: 0.25345420837402344,
- &#39;std_train_time&#39;: 0.06884147960996587,
+ &#39;mean_train_time&#39;: 0.22599971294403076,
+ &#39;std_train_time&#39;: 0.04204103765981187,
  &#39;perform_pca&#39;: False,
  &#39;scale_pc&#39;: False,
  &#39;metadata&#39;: {},
  &#39;supp_train_data&#39;: None,
- &#39;accuracy_score&#39;: {&#39;std&#39;: 0.015099584397578344, &#39;mean&#39;: 0.86875},
- &#39;brier_score_loss&#39;: {&#39;std&#39;: 0.015099584397578357,
-  &#39;mean&#39;: 0.13125000000000003},
- &#39;auc&#39;: {&#39;std&#39;: 0.017588194466964448, &#39;mean&#39;: 0.9157644790019349},
- &#39;average_precision_recall&#39;: {&#39;std&#39;: 0.0323745309805244,
-  &#39;mean&#39;: 0.8998004889838839},
- &#39;confusion_matrix&#39;: {&#39;std&#39;: [[6.6932802122726045, 4.004996878900157],
-   [3.370459909270543, 5.122499389946279]],
-  &#39;mean&#39;: [[95.0, 16.6], [12.8, 99.6]]}}
+ &#39;accuracy_score&#39;: {&#39;std&#39;: 0.02150284746212909, &#39;mean&#39;: 0.8571428571428571},
+ &#39;brier_score_loss&#39;: {&#39;std&#39;: 0.021502847462129097,
+  &#39;mean&#39;: 0.14285714285714288},
+ &#39;auc&#39;: {&#39;std&#39;: 0.026156287412055446, &#39;mean&#39;: 0.8992805600465585},
+ &#39;average_precision_recall&#39;: {&#39;std&#39;: 0.049648983017123845,
+  &#39;mean&#39;: 0.8777369915616033},
+ &#39;confusion_matrix&#39;: {&#39;std&#39;: [[7.841555968046137, 3.7960505792204615],
+   [3.7161808352124095, 7.8160092118676525]],
+  &#39;mean&#39;: [[91.1, 17.3], [14.7, 100.9]]}}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -724,7 +711,7 @@ data_files
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../configuration/index.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_dot_tuning_sim.html" class="btn btn-neutral float-right" title="Example dot tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="labelling_example.html" class="btn btn-neutral float-left" title="Labelling example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

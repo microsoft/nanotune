@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -227,35 +227,67 @@
 <span id="nanotune-fit-dotfit"></span><h1>nanotune.fit.dotfit<a class="headerlink" href="#module-nanotune.fit.dotfit" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.fit.dotfit.</span></span><span class="sig-name descname"><span class="pre">DotFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_floor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.004</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dot_signal_threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/fit/dotfit.html#DotFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.dotfit.DotFit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="datafit.html#nanotune.fit.datafit.DataFit" title="nanotune.fit.datafit.DataFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.fit.datafit.DataFit</span></code></a></p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.fit.dotfit.</span></span><span class="sig-name descname"><span class="pre">DotFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc_run_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/fit/dotfit.html#DotFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.dotfit.DotFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">nanotune.fit.datafit.DataFit</span></code></p>
+<p>Data fitting class for double dot charge diagrams.
+Beside fitting it also allows to segment a diagram into subregions which
+can be classified independently.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.fit_parameters">
+<span class="sig-name descname"><span class="pre">fit_parameters</span></span><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.fit_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>parameters required for fitting. Nested dict with a
+subdict for each readout methods. Subdicts have keys
+<cite>noise_floor</cite>, <cite>binary_neighborhood</cite>, <cite>dot_signal_threshold</cite>
+and <cite>distance_threshold</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.segment_size">
+<span class="sig-name descname"><span class="pre">segment_size</span></span><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.segment_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>voltage range spanned by each sub-region to be classified
+seperately.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.segmented_data">
+<span class="sig-name descname"><span class="pre">segmented_data</span></span><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.segmented_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>diagram sub-regions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.triple_points">
+<span class="sig-name descname"><span class="pre">triple_points</span></span><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.triple_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>triple point located by the fitting routine.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.range_update_directives">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">range_update_directives</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[str]</span></em><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.range_update_directives" title="Permalink to this definition">¶</a></dt>
-<dd><p>If more than one signal type (i.e dc, sensing or rf)
-have been measured, select which one to use to perform the edge
-analysis on. Use indexing and the order in which these signals have been
-measured.
-If the data has been segmented, the entire measurement is used to
-determine next voltage range updates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>signal_type</p>
-</dd>
-</dl>
+<dd><p>Determines whether nearby gates need to be adjustes towards more
+positive or negative values. Signal strenghts of all four edges
+of the diagram are compared to the noise floor and dot signal
+threshold of a given readout method.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.find_fit">
 <span class="sig-name descname"><span class="pre">find_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/dotfit.html#DotFit.find_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.find_fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Until capacitance extraction is not implemented no features are
-returned.</p>
+<dd><p>Locates triple points for each trace that was measured (one for
+readout method.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.prepare_segmented_data">
 <span class="sig-name descname"><span class="pre">prepare_segmented_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_raw_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/fit/dotfit.html#DotFit.prepare_segmented_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.prepare_segmented_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Segments a charge diagram into sub-regions. Result is retained under
+the <cite>segmented_data</cite> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>use_raw_data</strong> – whether to segment raw data. Normalized data is used
+if not.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.save_segmented_data_return_info">
@@ -267,6 +299,13 @@ returned.</p>
 method and <cite>voltage_ranges</cite> on the second.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nanotune.fit.dotfit.DotFit.get_edge">
+<span class="sig-name descname"><span class="pre">get_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which_one</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">readout_method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'transport'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_v</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.21)"><span class="pre">numpy.dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nanotune/fit/dotfit.html#DotFit.get_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.fit.dotfit.DotFit.get_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Isolates a border of a 2D measurements. Used to determine a device’s
+regime</p>
 </dd></dl>
 
 <dl class="py method">

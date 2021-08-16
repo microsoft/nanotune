@@ -7,7 +7,6 @@ nanotune.classification
 
     nanotune.classification
     nanotune.classification.classifier
-    nanotune.classification.data_augmentation
     nanotune.classification.default_hyperparameters
     nanotune.classification.utils
 
@@ -19,6 +18,5 @@ nanotune.classification
    :hidden:
 
    classifier
-   data_augmentation
    default_hyperparameters
    utils

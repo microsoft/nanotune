@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.pinchofffit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.pinchofffit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -178,49 +178,28 @@
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">tick</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sc</span>
 <span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="kn">import</span> <span class="n">make_axes_locatable</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">lg</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">least_squares</span>
-<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">argrelextrema</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 
 <span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
-<span class="kn">from</span> <span class="nn">nanotune.data.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">colors_dict</span><span class="p">,</span> <span class="n">default_plot_params</span><span class="p">,</span>
-                                    <span class="n">plot_params_type</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">nanotune.data.plotting</span> <span class="kn">import</span> <span class="n">default_plot_params</span><span class="p">,</span> <span class="n">plot_params_type</span>
 <span class="kn">from</span> <span class="nn">nanotune.fit.datafit</span> <span class="kn">import</span> <span class="n">DataFit</span>
-<span class="kn">from</span> <span class="nn">nanotune.utils</span> <span class="kn">import</span> <span class="n">format_axes</span>
-
-<span class="c1"># from matplotlib2tikz import save as tikz_save</span>
-
-
-<span class="c1"># from qcodes.self.experiment_container import load_by_id</span>
-
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">AxesTuple</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="PinchoffFit"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit">[docs]</a><span class="k">class</span> <span class="nc">PinchoffFit</span><span class="p">(</span><span class="n">DataFit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Data fitting class for pinch-off curves.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        run_id (int): QCoDeS run id of the dataset to fit.</span>
-<span class="sd">        db_name (str): Name of database where the dataset to fit is saved.</span>
-<span class="sd">        db_folder (optional str): Folder there database db_name is saved.</span>
-<span class="sd">        gradient_percentile (optional float):</span>
-<span class="sd">        get_transition_from_fit (optional bool):</span>
-
-<span class="sd">    Parameters:</span>
-<span class="sd">        features (dict):</span>
-<span class="sd">        range_update_directives (list):</span>
-
-<span class="sd">        gradient_percentile</span>
-<span class="sd">        get_transition_from_fit</span>
-
-<span class="sd">    Methods:</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        gradient_percentile: percentage of the highest gradient of the traces,</span>
+<span class="sd">            above which a portion of the trace is considered to be dropping,</span>
+<span class="sd">            i.e. to be the transition interval.</span>
+<span class="sd">        get_transition_from_fit: whether to get transition interval from the</span>
+<span class="sd">            fit. If not, filtered data is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -260,7 +239,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;List of directives how nearby gates need to be adjusted. Depends on</span>
+<span class="sd">        the signal strength of the trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_signal</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_transition_interval</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span> <span class="o">=</span> <span class="p">[]</span>
@@ -273,7 +254,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span>
 
 <div class="viewcode-block" id="PinchoffFit.find_fit"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.find_fit">[docs]</a>    <span class="k">def</span> <span class="nf">find_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Fits a pinchoff curve to a hyperbolic tangent and extracts transition</span>
+<span class="sd">        voltages as well as interval.&quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">r_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
             <span class="p">(</span><span class="n">bounds</span><span class="p">,</span>
@@ -306,9 +288,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save_features</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PinchoffFit.compute_transition_interval"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.compute_transition_interval">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transition_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Using the signal gradient to determine where the transition from high</span>
-<span class="sd">         to low voltage occurs</span>
+        <span class="sd">&quot;&quot;&quot;Determines the transition interval based on a trace&#39;s gradient, for</span>
+<span class="sd">        all traces (readout methods) measured.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition_from_fit</span><span class="p">:</span>
@@ -347,7 +328,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="n">high_idx</span></div>
 
 <div class="viewcode-block" id="PinchoffFit.compute_transition_voltage"><a class="viewcode-back" href="../../../api/fit/pinchofffit.html#nanotune.fit.pinchofffit.PinchoffFit.compute_transition_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transition_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Computes the transition voltage based in a trace&#39;s gradient.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transition_from_fit</span><span class="p">:</span>
                 <span class="n">temp_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
@@ -373,7 +354,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;transport&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Computes initial guess for fitting.&quot;&quot;&quot;</span>
         <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">amplitude_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
         <span class="n">amplitude_min</span> <span class="o">=</span> <span class="mi">0</span>
@@ -415,13 +396,15 @@
         <span class="n">v</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function we use to fit pinch off curves.</span>
+        <span class="sd">&quot;&quot;&quot;Function to fit pinch off curves.</span>
 
-<span class="sd">        x: input vector, usually gate voltage in V</span>
-<span class="sd">        a: parameter referred to as &#39;amplitude&#39;</span>
-<span class="sd">        b: parameter referred to as &#39;slope&#39;</span>
-<span class="sd">        c: a shift</span>
+<span class="sd">        Args:</span>
+<span class="sd">            v: voltage vector in V.</span>
+<span class="sd">            params: parameter vector with the following entries: [amplitude,</span>
+<span class="sd">                slope, shift, tanh sign].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: tanh function values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span></div>
@@ -444,11 +427,9 @@
             <span class="n">trans_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transition_signal</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;low_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span><span class="p">[</span><span class="n">low_idx</span><span class="p">]</span>
-            <span class="c1"># self._features[read_meth][&quot;low_signal&quot;] = self._low_signal[read_meth]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;low_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="n">low_idx</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;high_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_x</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
-            <span class="c1"># self._features[read_meth][&quot;high_signal&quot;] = self._high_signal[read_meth]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;high_signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s2">&quot;transition_voltage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_v</span>
@@ -469,7 +450,9 @@
         <span class="n">plot_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plot_params_type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">plot_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Plots the measurement including the fit, gradient and filtered</span>
+<span class="sd">        trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">plot_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plot_params</span> <span class="o">=</span> <span class="n">default_plot_params</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_signal_index</span><span class="p">:</span>
@@ -610,7 +593,7 @@
         <span class="n">plot_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plot_params_type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">plot_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AxesTuple</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Plots measurement, indicating some of the extracted features.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">plot_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plot_params</span> <span class="o">=</span> <span class="n">default_plot_params</span>
         <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">plot_params</span><span class="p">)</span>

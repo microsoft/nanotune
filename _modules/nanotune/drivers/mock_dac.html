@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.mock_dac &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.drivers.mock_dac &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -182,6 +182,10 @@
 
 
 <div class="viewcode-block" id="MockDACChannel"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDACChannel">[docs]</a><span class="k">class</span> <span class="nc">MockDACChannel</span><span class="p">(</span><span class="n">DACChannelInterface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Channel of a mock DAC for nanotune.</span>
+<span class="sd">    It implements all methods of `DACChannelInterface` to be compatible with</span>
+<span class="sd">    nanotunes requirements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">)</span>
 
@@ -321,10 +325,7 @@
 
 
 <div class="viewcode-block" id="MockDAC"><a class="viewcode-back" href="../../../api/drivers/mock_dac.html#nanotune.drivers.mock_dac.MockDAC">[docs]</a><span class="k">class</span> <span class="nc">MockDAC</span><span class="p">(</span><span class="n">DACInterface</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Dummy instrument with nt channels</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
+    <span class="sd">&quot;&quot;&quot;Mock DAC instrument compatible with nanotune.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">DACChannelClass</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">DACChannelClass</span><span class="p">)</span>
 

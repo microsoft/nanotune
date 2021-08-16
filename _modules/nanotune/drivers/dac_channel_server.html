@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.dac_channel_server &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.drivers.dac_channel_server &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -176,6 +176,11 @@
 
 
 <div class="viewcode-block" id="DACChannelServer"><a class="viewcode-back" href="../../../api/drivers/dac_channel_server.html#nanotune.drivers.dac_channel_server.DACChannelServer">[docs]</a><span class="k">class</span> <span class="nc">DACChannelServer</span><span class="p">(</span><span class="n">DACChannelInterface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Channel class for DAC server.</span>
+
+<span class="sd">    Implements all methods of `DACChannelInterface`, which sends string messages</span>
+<span class="sd">    to a server to set or get parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_voltage_limit</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>

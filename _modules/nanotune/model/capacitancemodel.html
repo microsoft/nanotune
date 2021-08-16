@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.model.capacitancemodel &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.model.capacitancemodel &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -499,9 +499,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">N_self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
-            <span class="n">N_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N_self</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_self</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">N_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N_self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">N_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">N_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
 
@@ -1339,7 +1340,7 @@
         <span class="p">)</span>
         <span class="n">V_stop_config</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
 
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="n">V_init_config</span><span class="p">,</span> <span class="n">V_stop_config</span><span class="p">]))</span>  <span class="c1"># type: ignore</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">V_init_config</span><span class="p">,</span> <span class="n">V_stop_config</span><span class="p">))</span>  <span class="c1"># type: ignore</span></div>
 
     <span class="k">def</span> <span class="nf">_get_N</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; QCoDeS parameter getter for charge configuration N. &quot;&quot;&quot;</span>
@@ -1457,10 +1458,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Setting CapacitanceModel.c_l: Unable to update C_cc&quot;</span>
             <span class="p">)</span>
-            <span class="k">pass</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_C_cc_diagonals</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_C_cc</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+            <span class="k">pass</span></div>
 </pre></div>
 
            </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.738.g489f802 documentation</title>
+  <title>nanotune.fit.dotfit &mdash; nanotune 0+untagged.739.g49001d0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.738.g489f802
+                0+untagged.739.g49001d0
               </div>
             
           
@@ -201,27 +201,41 @@
 <span class="n">AxesTuple</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span><span class="p">]</span>
 <span class="n">default_dot_fit_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;transport&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;noise_level&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+        <span class="s2">&quot;noise_floor&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
         <span class="s2">&quot;binary_neighborhood&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;distance_threshold&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;dot_signal_threshold&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s2">&quot;sensing&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;noise_level&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="s2">&quot;noise_floor&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
         <span class="s2">&quot;binary_neighborhood&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
         <span class="s2">&quot;distance_threshold&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;dot_signal_threshold&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="DotFit"><a class="viewcode-back" href="../../../api/fit/dotfit.html#nanotune.fit.dotfit.DotFit">[docs]</a><span class="k">class</span> <span class="nc">DotFit</span><span class="p">(</span><span class="n">DataFit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Data fitting class for double dot charge diagrams.</span>
+<span class="sd">    Beside fitting it also allows to segment a diagram into subregions which</span>
+<span class="sd">    can be classified independently.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        fit_parameters: parameters required for fitting. Nested dict with a</span>
+<span class="sd">            subdict for each readout methods. Subdicts have keys</span>
+<span class="sd">            `noise_floor`, `binary_neighborhood`, `dot_signal_threshold`</span>
+<span class="sd">            and `distance_threshold`.</span>
+<span class="sd">        segment_size: voltage range spanned by each sub-region to be classified</span>
+<span class="sd">            seperately.</span>
+<span class="sd">        segmented_data: diagram sub-regions.</span>
+<span class="sd">        triple_points: triple point located by the fitting routine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">qc_run_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">db_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">segment_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-        <span class="n">noise_floor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.004</span><span class="p">,</span>
-        <span class="n">dot_signal_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">fit_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -238,8 +252,6 @@
             <span class="n">db_folder</span><span class="o">=</span><span class="n">db_folder</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal_thresholds</span> <span class="o">=</span> <span class="p">[</span><span class="n">noise_floor</span><span class="p">,</span> <span class="n">dot_signal_threshold</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segment_size</span> <span class="o">=</span> <span class="n">segment_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_parameters</span> <span class="o">=</span> <span class="n">fit_parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segmented_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -248,13 +260,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">range_update_directives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        signal_type: If more than one signal type (i.e dc, sensing or rf)</span>
-<span class="sd">        have been measured, select which one to use to perform the edge</span>
-<span class="sd">        analysis on. Use indexing and the order in which these signals have been</span>
-<span class="sd">        measured.</span>
-<span class="sd">        If the data has been segmented, the entire measurement is used to</span>
-<span class="sd">        determine next voltage range updates.</span>
+        <span class="sd">&quot;&quot;&quot;Determines whether nearby gates need to be adjustes towards more</span>
+<span class="sd">        positive or negative values. Signal strenghts of all four edges</span>
+<span class="sd">        of the diagram are compared to the noise floor and dot signal</span>
+<span class="sd">        threshold of a given readout method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="p">:</span>
 
@@ -264,25 +273,25 @@
                 <span class="n">right_vertical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="s2">&quot;right vertical&quot;</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span>
                 <span class="n">top_horizontal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="s2">&quot;top horizontal&quot;</span><span class="p">,</span> <span class="n">read_meth</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">left_vertical</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_thresholds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">noise_floor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_parameters</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s1">&#39;noise_floor&#39;</span><span class="p">]</span>
+                <span class="n">dot_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_parameters</span><span class="p">[</span><span class="n">read_meth</span><span class="p">][</span><span class="s1">&#39;dot_signal_threshold&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">left_vertical</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dot_threshold</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more negative&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">bottom_horizontal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_thresholds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">bottom_horizontal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dot_threshold</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y more negative&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">right_vertical</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_thresholds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">right_vertical</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">noise_floor</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;x more positive&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">top_horizontal</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_thresholds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">top_horizontal</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">noise_floor</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;y more positive&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range_update_directives</span><span class="p">))</span>
 
 <div class="viewcode-block" id="DotFit.find_fit"><a class="viewcode-back" href="../../../api/fit/dotfit.html#nanotune.fit.dotfit.DotFit.find_fit">[docs]</a>    <span class="k">def</span> <span class="nf">find_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Until capacitance extraction is not implemented no features are</span>
-<span class="sd">        returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Locates triple points for each trace that was measured (one for</span>
+<span class="sd">        readout method.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_triple_point_distances</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_features</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -293,7 +302,13 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">use_raw_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Segments a charge diagram into sub-regions. Result is retained under</span>
+<span class="sd">        the `segmented_data` attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            use_raw_data: whether to segment raw data. Normalized data is used</span>
+<span class="sd">                if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">use_raw_data</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span>
             <span class="n">coord_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">coords</span><span class="p">)]</span>
@@ -458,6 +473,86 @@
 
         <span class="k">return</span> <span class="n">segment_info</span></div>
 
+<div class="viewcode-block" id="DotFit.get_edge"><a class="viewcode-back" href="../../../api/fit/dotfit.html#nanotune.fit.dotfit.DotFit.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">which_one</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">readout_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;transport&quot;</span><span class="p">,</span>
+        <span class="n">delta_v</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">use_raw_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Isolates a border of a 2D measurements. Used to determine a device&#39;s</span>
+<span class="sd">        regime&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;get_edge method not implemented for 1D data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="n">use_raw_data</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]]</span>
+            <span class="n">coord_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">coords</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">readout_method</span><span class="p">]</span>
+            <span class="n">coord_names</span> <span class="o">=</span> <span class="n">default_coord_names</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">]</span>
+
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">voltage_x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">coord_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">voltage_y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">coord_names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">if</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;left vertical&quot;</span><span class="p">:</span>
+            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)):</span>
+                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_x</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
+                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[:,</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;bottom horizontal&quot;</span><span class="p">:</span>
+            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">)):</span>
+                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_y</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
+                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;right vertical&quot;</span><span class="p">:</span>
+            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_x</span><span class="p">)):</span>
+                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
+                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_x</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
+                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[:,</span> <span class="o">-</span><span class="p">(</span><span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">which_one</span> <span class="o">==</span> <span class="s2">&quot;top horizontal&quot;</span><span class="p">:</span>
+            <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dv</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">didx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_y</span><span class="p">)):</span>
+                <span class="n">dv</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v_start</span> <span class="o">-</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">])</span>
+                <span class="n">v_start</span> <span class="o">=</span> <span class="n">voltage_y</span><span class="p">[</span><span class="o">-</span><span class="n">ii</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dv</span> <span class="o">&lt;=</span> <span class="n">delta_v</span><span class="p">:</span>
+                    <span class="n">didx</span> <span class="o">=</span> <span class="n">ii</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">didx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Trying to get an edge which does not exist:&quot;</span> <span class="o">+</span> <span class="n">which_one</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">edge</span></div>
+
 <div class="viewcode-block" id="DotFit.get_triple_point_distances"><a class="viewcode-back" href="../../../api/fit/dotfit.html#nanotune.fit.dotfit.DotFit.get_triple_point_distances">[docs]</a>    <span class="k">def</span> <span class="nf">get_triple_point_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -470,7 +565,8 @@
         <span class="k">for</span> <span class="n">read_meth</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="p">:</span>
             <span class="n">f_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_parameters</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
             <span class="n">binary_neighborhood</span> <span class="o">=</span> <span class="n">f_params</span><span class="p">[</span><span class="s2">&quot;binary_neighborhood&quot;</span><span class="p">]</span>
-            <span class="n">noise_level</span> <span class="o">=</span> <span class="n">f_params</span><span class="p">[</span><span class="s2">&quot;noise_level&quot;</span><span class="p">]</span>
+            <span class="n">noise_floor</span> <span class="o">=</span> <span class="n">f_params</span><span class="p">[</span><span class="s2">&quot;noise_floor&quot;</span><span class="p">]</span>
+            <span class="c1"># noise_floor = self.signal_thresholds[0]</span>
             <span class="n">distance_threshold</span> <span class="o">=</span> <span class="n">f_params</span><span class="p">[</span><span class="s2">&quot;distance_threshold&quot;</span><span class="p">]</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_data</span><span class="p">[</span><span class="n">read_meth</span><span class="p">]</span>
@@ -482,7 +578,7 @@
             <span class="n">m_filter</span> <span class="o">=</span> <span class="n">maximum_filter</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">neighborhood</span><span class="p">)</span>
             <span class="n">detected_peaks</span> <span class="o">=</span> <span class="n">m_filter</span> <span class="o">==</span> <span class="n">signal</span>
 
-            <span class="n">background</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">&lt;=</span> <span class="n">noise_level</span>
+            <span class="n">background</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">&lt;=</span> <span class="n">noise_floor</span>
             <span class="n">eroded_background</span> <span class="o">=</span> <span class="n">binary_erosion</span><span class="p">(</span>
                 <span class="n">background</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">neighborhood</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">1</span>
             <span class="p">)</span>
@@ -539,7 +635,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">singledot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_triple_point_distances</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">singledot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readout_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="p">[])</span>
 
         <span class="n">fig_title</span> <span class="o">=</span> <span class="s2">&quot;Dotfit </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
@@ -582,7 +678,7 @@
             <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
             <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plot_label</span><span class="p">(</span><span class="n">read_meth</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">fig_title</span><span class="p">)</span>
-            <span class="n">triple_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span><span class="p">[</span><span class="n">read_meth</span><span class="p">])</span>
+            <span class="n">triple_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triple_points</span><span class="p">[</span><span class="n">read_meth</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">ax</span><span class="p">[</span><span class="n">r_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
                     <span class="n">triple_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
