@@ -30,4 +30,3 @@ Code of Conduct
 ---------------
 
 nanotune strictly adheres to the `Microsoft Open Source Code of Conduct <https://opensource.microsoft.com/codeofconduct/>`__.
-
