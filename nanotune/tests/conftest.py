@@ -9,7 +9,6 @@ from qcodes import new_experiment
 from qcodes.tests.instrument_mocks import DummyInstrument
 
 import nanotune as nt
-from nanotune.tuningstages.settings import DataSettings, SetpointSettings
 from nanotune.device.device import NormalizationConstants, Readout
 from nanotune.device.device_channel import DeviceChannel
 from nanotune.classification.classifier import Classifier
