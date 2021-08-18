@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.743.g018bcf6 documentation</title>
+  <title>nanotune.drivers.dac_interface &mdash; nanotune 0+untagged.744.g5eb9667 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0+untagged.743.g018bcf6
+                0+untagged.744.g5eb9667
               </div>
             
           
@@ -256,7 +256,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACChannelInterface">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_interface.</span></span><span class="sig-name descname"><span class="pre">DACChannelInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACChannelInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACChannelInterface" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/channel.html#qcodes.instrument.channel.InstrumentChannel" title="(in QCoDeS v0.27.0+259.g9106f388b)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.channel.InstrumentChannel</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABC" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/channel.html#qcodes.instrument.channel.InstrumentChannel" title="(in QCoDeS v0.27.0+265.gd32bd8af0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.channel.InstrumentChannel</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABC" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
 <p>A DAC channel interface. By inheriting from this class and implementing
 all abstract methods, the user specifies how the DAC and its channels are
 set or gotten. It allows to keep the rest of nanotune independent of the
@@ -406,7 +406,7 @@ specified ramp rate or for example self.get_ramp_rate().</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_interface.DACInterface">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_interface.</span></span><span class="sig-name descname"><span class="pre">DACInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DACChannelClass</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nanotune.drivers.dac_interface.DACChannelInterface" title="nanotune.drivers.dac_interface.DACChannelInterface"><span class="pre">nanotune.drivers.dac_interface.DACChannelInterface</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_interface.html#DACInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_interface.DACInterface" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/base.html#qcodes.instrument.base.Instrument" title="(in QCoDeS v0.27.0+259.g9106f388b)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.base.Instrument</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://qcodes.github.io/Qcodes/api/instrument/base.html#qcodes.instrument.base.Instrument" title="(in QCoDeS v0.27.0+265.gd32bd8af0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qcodes.instrument.base.Instrument</span></code></a></p>
 <p>Interface for a DAC instrument defining the name of its channel list and
 how each individual channel is called. Its subclass should be used in
 measurements.</p>
