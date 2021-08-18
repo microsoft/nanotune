@@ -26,6 +26,8 @@ At the moment, nanotune is only available from GitHub. After cloning, you can se
 License
 -------
 
+See `License <https://github.com/microsoft/nanotune/blob/main/LICENSE>`__.
+
 Code of Conduct
 ---------------
 
