@@ -89,7 +89,7 @@ reportlab==3.6.1
 requests==2.26.0
 requirements-parser==0.2.0
 rsa==4.7.2
-ruamel.yaml==0.17.11
+ruamel.yaml==0.17.14
 ruamel.yaml.clib==0.2.6
 schema==0.7.4
 scikit-image==0.18.2
