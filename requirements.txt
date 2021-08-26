@@ -25,7 +25,7 @@ execnet==1.9.0
 flatbuffers==2.0
 gast==0.5.2
 google-api-core~=1.31.2
-google-auth~=1.35.0
+google-auth~=2.0.1
 googleapis-common-protos~=1.53.0
 grpcio==1.39.0
 h5py==3.4.0
