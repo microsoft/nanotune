@@ -230,7 +230,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'nanotune', 'nanotune Documentation',
-     author, 'nanotune', 'One line description of project.',
+     author, 'nanotune', 'Automated tuning of quantum dots.',
      'Miscellaneous'),
 ]
 
