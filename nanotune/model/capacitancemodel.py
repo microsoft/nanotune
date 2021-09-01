@@ -33,17 +33,16 @@ N_lmt_type = Sequence[Tuple[int, int]]
 
 
 class CapacitanceModel(Instrument):
-    """
-    Implementation of a general capacitance model an arbitrary number of dots
-    and gates. Simulating weakly coupled quantum dots with well localised
-    charges, it is a classical description based on two assumptions: (1)
-    Coulomb interactions between electrons on dots and in reservoirs are
-    parametrised by constant capacitances. (2) The single-particle energy-level
+    """Implementation of a general capacitance model with an arbitrary number
+    of dots and gates. It simulates weakly coupled quantum dots with well
+    localized charges and is a classical description based on two assumptions:
+    (1) Coulomb interactions between electrons on dots and in reservoirs are
+    parametrized by constant capacitances. (2) The single-particle energy-level
     spectrum is considered independent of electron interactions and the number
     of electrons, meaning that quantum mechanical energy spacings are not taken
     into account.
     The system of electrostatic gates, dots and reservoirs is represented by a
-    system of conductors connected via resistors and capacitors
+    system of conductors connected via resistors and capacitors.
 
     Being based on
     https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1,
@@ -87,23 +86,22 @@ class CapacitanceModel(Instrument):
         db_name: str = "capa_model_test.db",
         db_folder: str = nt.config["db_folder"],
     ) -> None:
-        """
-        Constructor of CapacitanceModel class.
+        """Init method of CapacitanceModel class.
 
         Args:
-            name: Name identifier to be passed to qc.Instrument
-            charge_nodes: Dictionary with charge nodes of the model,
+            name: name identifier to be passed to qc.Instrument
+            charge_nodes: dictionary with charge nodes of the model,
                 mapping integer node IDs to string labels.
-            voltage_nodes: Dictionary with voltage nodes of the model,
+            voltage_nodes: dictionary with voltage nodes of the model,
                 mapping integer node IDs to string labels.
-            N: Initial charge configuration, i.e. number of charges on
+            N: initial charge configuration, i.e. number of charges on
                 each dot. Index of entry corresponds to charge node layout ID.
-            V_v: Voltages to set on voltage nodes. Index of entry
+            V_v: voltages to set on voltage nodes. Index of entry
                 corresponds to charge node layout ID.
-            C_cc_off_diags: Capacitances between charge nodes.
-            C_cv: Capacitances between charge and voltage nodes.
-            db_name: Name of database to store synthetic data.
-            db_folder: Path to folder where database is located.
+            C_cc_off_diags: capacitances between charge nodes.
+            C_cv: capacitances between charge and voltage nodes.
+            db_name: name of database to store synthetic data.
+            db_folder: path to folder where database is located.
         """
         if charge_nodes is None:
             charge_nodes = {}
@@ -220,10 +218,7 @@ class CapacitanceModel(Instrument):
         update: Optional[bool] = True,
         params_to_skip_update: Optional[Sequence[str]] = None,
     ) -> Dict[Any, Any]:
-        """
-        Pass on QCoDeS snapshot.
-        """
-
+        """Pass on QCoDeS snapshot."""
         snap = super().snapshot_base(update, params_to_skip_update)
         return snap
 
@@ -314,7 +309,7 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """Compute the total energy of the system.
+        """Computes the total energy of the dot system.
 
         Args:
             N: charge configuration, i.e. number of charges on each
@@ -346,7 +341,8 @@ class CapacitanceModel(Instrument):
         self,
         V_v: Optional[Sequence[float]] = None,
     ) -> List[int]:
-        """Determines N by minimizing the total energy of the system.
+        """Determines the charge state :math:`\vec{N}` by minimizing the total
+            energy of the dot system.
 
         Args:
             V_v: Voltages to set on voltages nodes.
@@ -407,7 +403,8 @@ class CapacitanceModel(Instrument):
         N_limits: N_lmt_type,
     ) -> Tuple[
             npt.NDArray[np.float64], npt.NDArray[np.float64], List[List[int]]]:
-        """Calculates triple points for charge configuration within N_limits
+        """Calculates triple points for charge configurations within
+        'N_limits'.
 
         Args:
             voltage_node_idx: indices of gates to sweep
@@ -436,7 +433,7 @@ class CapacitanceModel(Instrument):
         coordinates_htp = np.empty([len(c_configs), len(voltage_node_idx)])
 
         for ic, c_config in enumerate(c_configs):
-            # setting M mostly for monitor purposes
+            # setting N mostly for monitor purposes
             self.N(list(c_config))
             x_etp, x_htp = self.calculate_triplepoints(
                 voltage_node_idx, c_config
@@ -488,8 +485,9 @@ class CapacitanceModel(Instrument):
         voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
     ) -> npt.NDArray[np.float64]:
-        """Calculates mu_j(N): chemical potentials of all charge nodes for given
-        charge configuration N and corresponding to electron triple points.
+        """Calculates chemical potentials of all charge nodes
+        for a given charge configuration N and corresponding to electron
+        triple points (:math:`\mu(N)`).
 
         Args:
             new_voltages: Voltages to set on voltage nodes.
@@ -523,19 +521,18 @@ class CapacitanceModel(Instrument):
         voltage_node_idx: Sequence[int],
         N: Optional[Sequence[int]] = None,
     ) -> npt.NDArray[np.float64]:
-        """Calculates mu_j(N + e_hat_i): chemical potentials of all charge nodes
+        """Calculates chemical potentials of all charge nodes
             for given charge configuration N and corresponding to hole triple
-            points.
+            points (:math:`mu_{j}(N + \hat{e}_{i})`).
 
         Args:
             new_voltages: values of new gate voltages, to be replaced in
                 self.V_v. These are the values scipy.optimize.fsolve is solving
-                for
+                for.
             voltage_node_idx: Voltages nodes indices to which the values
                 above correspond to.
             N: Desired charge configuration, if none supplied self.N() is taken.
         """
-
         if N is None:
             N = self.N()
         V_v = self.V_v()
@@ -552,7 +549,6 @@ class CapacitanceModel(Instrument):
                     out.append(
                         self.mu(dot_id, N=N + e_hat_other + e_hat, V_v=V_v)
                     )
-
         return np.array(out).flatten()
 
     def mu(
@@ -561,16 +557,19 @@ class CapacitanceModel(Instrument):
         N: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
     ) -> float:
-        """Calculates chemical potential of a specific charge node for a given
-        charge and voltage configuration.
+        """Calculates the chemical potential of a single dot (charge node)
+        given the charge
+        and voltage configuration of the entire dot system (all dots included).
 
         Args:
-            N: Charge configuration, i.e. the number of electrons on each
-                charge node.
+            dot_indx: index of dot for which the chemical potential should be
+                computed.
+            N: Charge configuration of the entire system, i.e. the number of
+                electrons on each charge node.
             V_v: Voltages to set on (all) voltage nodes.
 
         Returns:
-            float: Chemical potential.
+            float: Chemical potential of dot `dot_indx`.
         """
 
         if N is None:
@@ -612,10 +611,18 @@ class CapacitanceModel(Instrument):
         jump_freq: float = 0.001,
     ) -> Optional[int]:
         """Sweep two voltage nodes to measure a charge diagram. Determines
-        charge transitions by computing the number of degeneracies using
-        get_number_of_degeneracies. Applies a Gaussien filter to broaden
-        transitions and adds random normal noise and optionally charge jumps.
-        The diagram is saved into .db using QCoDeS.
+        charge transitions by computing energy differences to 'adjacent'
+        charge states, i.e. charge states differing by at most one charge, via
+        `get_energy_differences_to_adjacent_charge_states`. The current is
+        given by the sum of the inverse of each energy, although typically
+        only one inverse contributes significantly. This can result in
+        some broadening. This estimates the
+        probability that a charge changes its location (i.e. change in charge
+        state), which results in a measurable current.
+        Optionally a Gaussian filter is applied to further broaden
+        transitions, simulating e.g. thermal broadening.
+        Random normal noise and charge jumps can be added
+        optionally as well. The diagram is saved into .db using QCoDeS.
 
         Args:
             voltage_node_idx: Voltage node indices to sweep.
@@ -624,12 +631,14 @@ class CapacitanceModel(Instrument):
             line_intensity: Multiplication factor of number of
                 degeneracies, resulting in the desired peak hight before
                 normalization.
+            broaden: whether or not to broaden the initial (potentially)
+                stick-figure-style diagram.
+            add_noise: whether or not to add noise.
             kernel_widths: Sigmas of Gaussian filter used for broadening
                 of charge transitions.
             target_snr_db: Target signal-to-noise ratio used to
                 calculate amplitude of random normal noise.
-            e_temp: Electron temperature, used as absolute tolerance in
-                energy at which two charge states count as degenerate.
+            normalize: whether to normalize the data.
             known_regime: Label to be saved in metadata.
             known_quality: Quality to be saved in metadata.
             add_charge_jumps: Whether or not to add random charge jumps.
@@ -690,7 +699,6 @@ class CapacitanceModel(Instrument):
             signal = self._make_it_real(signal, kernel_widths=kernel_widths)
         if add_noise:
             signal = self._add_noise(signal, target_snr_db=target_snr_db)
-
         if normalize:
             signal = signal / np.max(signal)
 
@@ -715,33 +723,45 @@ class CapacitanceModel(Instrument):
 
     def sweep_voltage(
         self,
-        voltage_node_idx: int,  # the one we want to sweep
+        voltage_node_idx: int,
         voltage_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
+        broaden: bool = True,
+        add_noise: bool = True,
         kernel_width: Sequence[float] = [1.0],
         target_snr_db: float = 100.0,
         normalize: bool = True,
     ) -> Optional[int]:
         """Sweep one voltage to measure Coulomb oscillations. Determines
-        charge transitions by computing the number of degeneracies using
-        get_number_of_degeneracies. Applies a Gaussien filter to broaden
-        transitions and adds random normal noise and optionally charge jumps.
-        The diagram is saved into .db using QCoDeS.
+        charge transitions by computing energy differences to 'adjacent'
+        charge states, i.e. charge states differing by at most one charge, via
+        `get_energy_differences_to_adjacent_charge_states`. The current is
+        given by the sum of the inverse of each energy, although typically
+        only one inverse contributes significantly. This can result in
+        some broadening. This estimates the
+        probability that a charge changes its location (i.e. change in charge
+        state), which results in a measurable current.
+        Optionally a Gaussian filter is applied to further broaden
+        transitions, simulating e.g. thermal broadening. Random normal noise
+        and charge jumps can be added optionally as well. The diagram is
+        saved into .db using QCoDeS.
 
         Args:
-            voltage_node_idx: Voltage node indices to sweep.
-            voltage_ranges: Voltage ranges to sweep.
+            voltage_node_idx: voltage node index to sweep.
+            voltage_range: Voltage range to sweep.
             n_steps: Number of steps of the measurement.
             line_intensity: Multiplication factor of number of
                 degeneracies, resulting in the desired peak hight before
                 normalization.
-            e_temp: Electron temperature, used as absolute tolerance in
-                energy at which two charge states count as degenerate.
-            known_quality: Quality to be saved in metadata.
-            add_charge_jumps: Whether or not to add random charge jumps.
-            jump_freq: Average frequency at which optional charge jumps
-                should occur.
+            broaden: whether or not to broaden peaks further, simulating e.g.
+                thermal broadening.
+            add_noise: whether or not to add noise.
+            kernel_width: sigma of Gaussian filter used for broadening
+                of charge transitions.
+            target_snr_db: target signal-to-noise ratio used to
+                calculate amplitude of random normal noise.
+            normalize: whether to normalize the data.
 
         Returns:
             int: QCoDeS data run ID.
@@ -763,9 +783,11 @@ class CapacitanceModel(Instrument):
             signal[iv] = np.sum(np.reciprocal(dU)) * line_intensity
 
         signal = (signal - np.mean(signal))
-        signal = self._make_it_real(signal, kernel_widths=kernel_width)
-        signal = self._add_noise(signal, target_snr_db=target_snr_db)
 
+        if broaden:
+            signal = self._make_it_real(signal, kernel_widths=kernel_width)
+        if add_noise:
+            signal = self._add_noise(signal, target_snr_db=target_snr_db)
         if normalize:
             signal = signal / np.max(signal)
 
@@ -786,7 +808,26 @@ class CapacitanceModel(Instrument):
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
     ) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """ """
+        """Computes a Coulomb diamond diagram by sweeping the source-drain
+        bias against a voltage. It returns two diagrams, one showing
+        the bias-voltage sweep without co-tunneling events and a second
+        showing elastic co-tunneling events only, calculated via
+        `get_co_tunneling_rate`.
+
+        Args:
+            voltage_node_idx: voltage node index to sweep.
+            voltage_range: range of voltage to sweep.
+            bias_range: bias range to sweep.
+            n_steps: number of steps in each dimension.
+            line_intensity: Multiplication factor of number of
+                degeneracies, resulting in the desired peak hight before
+                normalization.
+
+        Returns:
+            np.ndarray: 2d diagram of bias-voltage sweep without tunneling
+                events.
+            np.ndarray: 2d diagram showing elastic co-tunneling only.
+        """
 
         self.set_voltage(voltage_node_idx, np.min(voltage_range))
 
@@ -807,13 +848,13 @@ class CapacitanceModel(Instrument):
 
             dU = self.get_energy_differences_to_excited_charge_states(
                 N_current=N_current,
-                how_many=1,
+                n_diff_charges=1,
             )
             for ib, b_val in enumerate(bias_steps):
                 if (dU <= abs(b_val)).any():
                     signal[iv, ib] = line_intensity
                     engs_in_bias = dU[dU <= abs(b_val)]
-        #             signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity
+                    # signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity
                     signal[iv, ib] = len(engs_in_bias) * line_intensity
                 else:
                     signal[iv, ib] = 0
@@ -843,7 +884,31 @@ class CapacitanceModel(Instrument):
         drain_rate_N_plus_one: float = 0.2,
         h_bar: float = 1,
     ) -> float:
+        """Calculates the elastic co-tunneling rate according to the equation
+        on page 400 (chapter 8) or Thomas Ihn's book. This equations assumes
+        the system to be at zero temperature and that tunneling rates are
+        independent of energy over a small source-drain voltage.
 
+        Args:
+            bias: source drain bias
+            mu_n: chemical potential of charge state :math:`\vec{N}`, e.g.
+                of the self.N() state.
+            mu_n_plus_one: chemical potential of charge state with N+1 charges,
+                e.g. an adjacent charge state of self.N(). Adjacent means
+                having one additional charge.
+            source_rate_N: tunneling rate between source and a dot system in
+                charge state :math:`\vec{N}`.
+            source_rate_N_plus_one: tunneling rate between source and a dot
+                system in charge state :math:`\vec{N+1}`.
+            drain_rate_N: tunneling rate between drain and a dot system in
+                charge state :math:`\vec{N}`.
+            drain_rate_N_plus_one: tunneling rate between drain and a dot
+                system in charge state :math:`\vec{N+1}`.
+            h_bar: Plank constant or the substitution thereof.
+
+        Returns:
+            float: co-tunneling rate
+        """
         mu_source = bias
         mu_drain = 0
 
@@ -864,8 +929,19 @@ class CapacitanceModel(Instrument):
         self,
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
-    ) -> int:
-        """
+    ) -> npt.NDArray[np.float64]:
+        """Computes energy differences between a charge state and all states
+        differing from it by at most one charge.
+
+        Args:
+            N_current: charge state to which other states differing by at most
+                one charge should be compared to. Default is self.N().
+            V_v: voltage configuration at which the energies should be computed.
+                Default is self.V_v().
+
+        Returns:
+            np.array: Energy differences to charge states differing by at most
+                one charge.
         """
 
         n_dots = len(self.charge_nodes)
@@ -904,7 +980,6 @@ class CapacitanceModel(Instrument):
                             N=charge_state, V_v=V_v,
                         )
                     )
-
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
@@ -914,11 +989,25 @@ class CapacitanceModel(Instrument):
         self,
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
-        how_many: int = 3,
-    ) -> List[float]:
-        """
-        """
+        n_diff_charges: int = 3,
+    ) -> npt.NDArray[np.float64]:
+        """Computes energy differences between a charge state and all states
+        differing from it by at most 'n_diff_charges' charges. These additional
+        charges represent excited charge state which require an excitation
+        voltage for a quantum dot system to reach them.
 
+        Args:
+            N_current: charge state to which other states differing by at most
+                'n_diff_charges' charges should be compared to. Default is self.N().
+            V_v: voltage configuration at which the energies should be computed.
+                Default is self.V_v().
+            n_diff_charges: number of extra charges to consider adding to
+                'N_current'.
+
+        Returns:
+            np.array: Energy differences to charge states differing by at most
+                'n_diff_charges' charges.
+        """
         n_dots = len(self.charge_nodes)
 
         if N_current is None:
@@ -937,7 +1026,7 @@ class CapacitanceModel(Instrument):
         for dot_id in range(n_dots):
             e_hat = I_mat[dot_id]
 
-            for add_e in range(how_many):
+            for add_e in range(n_diff_charges):
                 charge_state = N_current + (add_e+1)*e_hat
                 charge_state[charge_state < 0] = 0
                 energies.append(self.compute_energy(N=charge_state, V_v=V_v))
@@ -949,7 +1038,7 @@ class CapacitanceModel(Instrument):
             for other_dot in range(n_dots):
                 if other_dot != dot_id:
                     e_hat_other = I_mat[other_dot]
-                    for add_e in range(how_many):
+                    for add_e in range(n_diff_charges):
                         charge_state = N_current + (add_e+1)*e_hat - e_hat_other
                         charge_state[charge_state < 0] = 0
                         energies.append(
@@ -957,11 +1046,10 @@ class CapacitanceModel(Instrument):
                                 N=charge_state, V_v=V_v,
                             )
                         )
-
         current_energy = self.compute_energy(N=N_current, V_v=V_v)
         dU = abs(np.array(energies) - current_energy)
 
-        return dU[dU != 0].tolist()
+        return dU[dU != 0]
 
     def _make_it_real(
         self,
@@ -992,7 +1080,7 @@ class CapacitanceModel(Instrument):
         target_snr_db: float = 10.0,
     ) -> npt.NDArray[np.float64]:
         """Adds normally distributed random noise to a diagram to match the
-        desired signal to noise ratio.
+        desired signal-to-noise ratio.
 
         Args:
             diagram: Noise free diagram
