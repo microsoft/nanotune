@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.model.capacitancemodel &mdash; nanotune 0+untagged.773.g0a150b7 documentation</title>
+  <title>nanotune.model.capacitancemodel &mdash; nanotune 0+untagged.774.g8b15de7 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.773.g0a150b7
+                0+untagged.774.g8b15de7
               </div>
             
           
@@ -206,17 +206,16 @@
 
 
 <div class="viewcode-block" id="CapacitanceModel"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel">[docs]</a><span class="k">class</span> <span class="nc">CapacitanceModel</span><span class="p">(</span><span class="n">Instrument</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of a general capacitance model an arbitrary number of dots</span>
-<span class="sd">    and gates. Simulating weakly coupled quantum dots with well localised</span>
-<span class="sd">    charges, it is a classical description based on two assumptions: (1)</span>
-<span class="sd">    Coulomb interactions between electrons on dots and in reservoirs are</span>
-<span class="sd">    parametrised by constant capacitances. (2) The single-particle energy-level</span>
+    <span class="sd">&quot;&quot;&quot;Implementation of a general capacitance model with an arbitrary number</span>
+<span class="sd">    of dots and gates. It simulates weakly coupled quantum dots with well</span>
+<span class="sd">    localized charges and is a classical description based on two assumptions:</span>
+<span class="sd">    (1) Coulomb interactions between electrons on dots and in reservoirs are</span>
+<span class="sd">    parametrized by constant capacitances. (2) The single-particle energy-level</span>
 <span class="sd">    spectrum is considered independent of electron interactions and the number</span>
 <span class="sd">    of electrons, meaning that quantum mechanical energy spacings are not taken</span>
 <span class="sd">    into account.</span>
 <span class="sd">    The system of electrostatic gates, dots and reservoirs is represented by a</span>
-<span class="sd">    system of conductors connected via resistors and capacitors</span>
+<span class="sd">    system of conductors connected via resistors and capacitors.</span>
 
 <span class="sd">    Being based on</span>
 <span class="sd">    https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.75.1,</span>
@@ -260,23 +259,22 @@
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;capa_model_test.db&quot;</span><span class="p">,</span>
         <span class="n">db_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">nt</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;db_folder&quot;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor of CapacitanceModel class.</span>
+        <span class="sd">&quot;&quot;&quot;Init method of CapacitanceModel class.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            name: Name identifier to be passed to qc.Instrument</span>
-<span class="sd">            charge_nodes: Dictionary with charge nodes of the model,</span>
+<span class="sd">            name: name identifier to be passed to qc.Instrument</span>
+<span class="sd">            charge_nodes: dictionary with charge nodes of the model,</span>
 <span class="sd">                mapping integer node IDs to string labels.</span>
-<span class="sd">            voltage_nodes: Dictionary with voltage nodes of the model,</span>
+<span class="sd">            voltage_nodes: dictionary with voltage nodes of the model,</span>
 <span class="sd">                mapping integer node IDs to string labels.</span>
-<span class="sd">            N: Initial charge configuration, i.e. number of charges on</span>
+<span class="sd">            N: initial charge configuration, i.e. number of charges on</span>
 <span class="sd">                each dot. Index of entry corresponds to charge node layout ID.</span>
-<span class="sd">            V_v: Voltages to set on voltage nodes. Index of entry</span>
+<span class="sd">            V_v: voltages to set on voltage nodes. Index of entry</span>
 <span class="sd">                corresponds to charge node layout ID.</span>
-<span class="sd">            C_cc_off_diags: Capacitances between charge nodes.</span>
-<span class="sd">            C_cv: Capacitances between charge and voltage nodes.</span>
-<span class="sd">            db_name: Name of database to store synthetic data.</span>
-<span class="sd">            db_folder: Path to folder where database is located.</span>
+<span class="sd">            C_cc_off_diags: capacitances between charge nodes.</span>
+<span class="sd">            C_cv: capacitances between charge and voltage nodes.</span>
+<span class="sd">            db_name: name of database to store synthetic data.</span>
+<span class="sd">            db_folder: path to folder where database is located.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">charge_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">charge_nodes</span> <span class="o">=</span> <span class="p">{}</span>
@@ -393,10 +391,7 @@
         <span class="n">update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">params_to_skip_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pass on QCoDeS snapshot.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
+        <span class="sd">&quot;&quot;&quot;Pass on QCoDeS snapshot.&quot;&quot;&quot;</span>
         <span class="n">snap</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">snapshot_base</span><span class="p">(</span><span class="n">update</span><span class="p">,</span> <span class="n">params_to_skip_update</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">snap</span></div>
 
@@ -487,7 +482,7 @@
         <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Compute the total energy of the system.</span>
+        <span class="sd">&quot;&quot;&quot;Computes the total energy of the dot system.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            N: charge configuration, i.e. number of charges on each</span>
@@ -519,7 +514,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Determines N by minimizing the total energy of the system.</span>
+        <span class="sd">&quot;&quot;&quot;Determines the charge state N by minimizing the total</span>
+<span class="sd">        energy of the dot system.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            V_v: Voltages to set on voltages nodes.</span>
@@ -580,7 +576,8 @@
         <span class="n">N_limits</span><span class="p">:</span> <span class="n">N_lmt_type</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
             <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates triple points for charge configuration within N_limits</span>
+        <span class="sd">&quot;&quot;&quot;Calculates triple points for charge configurations within</span>
+<span class="sd">        &#39;N_limits&#39;.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            voltage_node_idx: indices of gates to sweep</span>
@@ -609,7 +606,7 @@
         <span class="n">coordinates_htp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c_configs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">voltage_node_idx</span><span class="p">)])</span>
 
         <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">c_config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c_configs</span><span class="p">):</span>
-            <span class="c1"># setting M mostly for monitor purposes</span>
+            <span class="c1"># setting N mostly for monitor purposes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">c_config</span><span class="p">))</span>
             <span class="n">x_etp</span><span class="p">,</span> <span class="n">x_htp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_triplepoints</span><span class="p">(</span>
                 <span class="n">voltage_node_idx</span><span class="p">,</span> <span class="n">c_config</span>
@@ -661,8 +658,9 @@
         <span class="n">voltage_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates mu_j(N): chemical potentials of all charge nodes for given</span>
-<span class="sd">        charge configuration N and corresponding to electron triple points.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates chemical potentials of all charge nodes</span>
+<span class="sd">        for a given charge configuration N and corresponding to electron</span>
+<span class="sd">        triple points (:math:`\mu(N)`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            new_voltages: Voltages to set on voltage nodes.</span>
@@ -696,19 +694,18 @@
         <span class="n">voltage_node_idx</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates mu_j(N + e_hat_i): chemical potentials of all charge nodes</span>
+        <span class="sd">&quot;&quot;&quot;Calculates chemical potentials of all charge nodes</span>
 <span class="sd">            for given charge configuration N and corresponding to hole triple</span>
-<span class="sd">            points.</span>
+<span class="sd">            points (:math:`mu_{j}(N + \hat{e}_{i})`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            new_voltages: values of new gate voltages, to be replaced in</span>
 <span class="sd">                self.V_v. These are the values scipy.optimize.fsolve is solving</span>
-<span class="sd">                for</span>
+<span class="sd">                for.</span>
 <span class="sd">            voltage_node_idx: Voltages nodes indices to which the values</span>
 <span class="sd">                above correspond to.</span>
 <span class="sd">            N: Desired charge configuration, if none supplied self.N() is taken.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
         <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
@@ -725,7 +722,6 @@
                     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">(</span><span class="n">dot_id</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span> <span class="o">+</span> <span class="n">e_hat_other</span> <span class="o">+</span> <span class="n">e_hat</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
                     <span class="p">)</span>
-
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CapacitanceModel.mu"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.mu">[docs]</a>    <span class="k">def</span> <span class="nf">mu</span><span class="p">(</span>
@@ -734,16 +730,19 @@
         <span class="n">N</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates chemical potential of a specific charge node for a given</span>
-<span class="sd">        charge and voltage configuration.</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the chemical potential of a single dot (charge node)</span>
+<span class="sd">        given the charge</span>
+<span class="sd">        and voltage configuration of the entire dot system (all dots included).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            N: Charge configuration, i.e. the number of electrons on each</span>
-<span class="sd">                charge node.</span>
+<span class="sd">            dot_indx: index of dot for which the chemical potential should be</span>
+<span class="sd">                computed.</span>
+<span class="sd">            N: Charge configuration of the entire system, i.e. the number of</span>
+<span class="sd">                electrons on each charge node.</span>
 <span class="sd">            V_v: Voltages to set on (all) voltage nodes.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Chemical potential.</span>
+<span class="sd">            float: Chemical potential of dot `dot_indx`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -785,10 +784,18 @@
         <span class="n">jump_freq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Sweep two voltage nodes to measure a charge diagram. Determines</span>
-<span class="sd">        charge transitions by computing the number of degeneracies using</span>
-<span class="sd">        get_number_of_degeneracies. Applies a Gaussien filter to broaden</span>
-<span class="sd">        transitions and adds random normal noise and optionally charge jumps.</span>
-<span class="sd">        The diagram is saved into .db using QCoDeS.</span>
+<span class="sd">        charge transitions by computing energy differences to &#39;adjacent&#39;</span>
+<span class="sd">        charge states, i.e. charge states differing by at most one charge, via</span>
+<span class="sd">        `get_energy_differences_to_adjacent_charge_states`. The current is</span>
+<span class="sd">        given by the sum of the inverse of each energy, although typically</span>
+<span class="sd">        only one inverse contributes significantly. This can result in</span>
+<span class="sd">        some broadening. This estimates the</span>
+<span class="sd">        probability that a charge changes its location (i.e. change in charge</span>
+<span class="sd">        state), which results in a measurable current.</span>
+<span class="sd">        Optionally a Gaussian filter is applied to further broaden</span>
+<span class="sd">        transitions, simulating e.g. thermal broadening.</span>
+<span class="sd">        Random normal noise and charge jumps can be added</span>
+<span class="sd">        optionally as well. The diagram is saved into .db using QCoDeS.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            voltage_node_idx: Voltage node indices to sweep.</span>
@@ -797,12 +804,14 @@
 <span class="sd">            line_intensity: Multiplication factor of number of</span>
 <span class="sd">                degeneracies, resulting in the desired peak hight before</span>
 <span class="sd">                normalization.</span>
+<span class="sd">            broaden: whether or not to broaden the initial (potentially)</span>
+<span class="sd">                stick-figure-style diagram.</span>
+<span class="sd">            add_noise: whether or not to add noise.</span>
 <span class="sd">            kernel_widths: Sigmas of Gaussian filter used for broadening</span>
 <span class="sd">                of charge transitions.</span>
 <span class="sd">            target_snr_db: Target signal-to-noise ratio used to</span>
 <span class="sd">                calculate amplitude of random normal noise.</span>
-<span class="sd">            e_temp: Electron temperature, used as absolute tolerance in</span>
-<span class="sd">                energy at which two charge states count as degenerate.</span>
+<span class="sd">            normalize: whether to normalize the data.</span>
 <span class="sd">            known_regime: Label to be saved in metadata.</span>
 <span class="sd">            known_quality: Quality to be saved in metadata.</span>
 <span class="sd">            add_charge_jumps: Whether or not to add random charge jumps.</span>
@@ -863,7 +872,6 @@
             <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_widths</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">add_noise</span><span class="p">:</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
 
@@ -888,33 +896,45 @@
 
 <div class="viewcode-block" id="CapacitanceModel.sweep_voltage"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.sweep_voltage">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_voltage</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">voltage_node_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># the one we want to sweep</span>
+        <span class="n">voltage_node_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">N_1D</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">broaden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">add_noise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">kernel_width</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
         <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
         <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Sweep one voltage to measure Coulomb oscillations. Determines</span>
-<span class="sd">        charge transitions by computing the number of degeneracies using</span>
-<span class="sd">        get_number_of_degeneracies. Applies a Gaussien filter to broaden</span>
-<span class="sd">        transitions and adds random normal noise and optionally charge jumps.</span>
-<span class="sd">        The diagram is saved into .db using QCoDeS.</span>
+<span class="sd">        charge transitions by computing energy differences to &#39;adjacent&#39;</span>
+<span class="sd">        charge states, i.e. charge states differing by at most one charge, via</span>
+<span class="sd">        `get_energy_differences_to_adjacent_charge_states`. The current is</span>
+<span class="sd">        given by the sum of the inverse of each energy, although typically</span>
+<span class="sd">        only one inverse contributes significantly. This can result in</span>
+<span class="sd">        some broadening. This estimates the</span>
+<span class="sd">        probability that a charge changes its location (i.e. change in charge</span>
+<span class="sd">        state), which results in a measurable current.</span>
+<span class="sd">        Optionally a Gaussian filter is applied to further broaden</span>
+<span class="sd">        transitions, simulating e.g. thermal broadening. Random normal noise</span>
+<span class="sd">        and charge jumps can be added optionally as well. The diagram is</span>
+<span class="sd">        saved into .db using QCoDeS.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            voltage_node_idx: Voltage node indices to sweep.</span>
-<span class="sd">            voltage_ranges: Voltage ranges to sweep.</span>
+<span class="sd">            voltage_node_idx: voltage node index to sweep.</span>
+<span class="sd">            voltage_range: Voltage range to sweep.</span>
 <span class="sd">            n_steps: Number of steps of the measurement.</span>
 <span class="sd">            line_intensity: Multiplication factor of number of</span>
 <span class="sd">                degeneracies, resulting in the desired peak hight before</span>
 <span class="sd">                normalization.</span>
-<span class="sd">            e_temp: Electron temperature, used as absolute tolerance in</span>
-<span class="sd">                energy at which two charge states count as degenerate.</span>
-<span class="sd">            known_quality: Quality to be saved in metadata.</span>
-<span class="sd">            add_charge_jumps: Whether or not to add random charge jumps.</span>
-<span class="sd">            jump_freq: Average frequency at which optional charge jumps</span>
-<span class="sd">                should occur.</span>
+<span class="sd">            broaden: whether or not to broaden peaks further, simulating e.g.</span>
+<span class="sd">                thermal broadening.</span>
+<span class="sd">            add_noise: whether or not to add noise.</span>
+<span class="sd">            kernel_width: sigma of Gaussian filter used for broadening</span>
+<span class="sd">                of charge transitions.</span>
+<span class="sd">            target_snr_db: target signal-to-noise ratio used to</span>
+<span class="sd">                calculate amplitude of random normal noise.</span>
+<span class="sd">            normalize: whether to normalize the data.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: QCoDeS data run ID.</span>
@@ -936,9 +956,11 @@
             <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">dU</span><span class="p">))</span> <span class="o">*</span> <span class="n">line_intensity</span>
 
         <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
-        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_width</span><span class="p">)</span>
-        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">broaden</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_width</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_noise</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
 
@@ -959,7 +981,25 @@
         <span class="n">n_steps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">N_2D</span><span class="p">,</span>
         <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Computes a Coulomb diamond diagram by sweeping the source-drain</span>
+<span class="sd">        bias against a voltage. It returns two diagrams, one showing</span>
+<span class="sd">        the bias-voltage sweep without co-tunneling events and a second</span>
+<span class="sd">        showing elastic co-tunneling events only, calculated via</span>
+<span class="sd">        `get_co_tunneling_rate`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            voltage_node_idx: voltage node index to sweep.</span>
+<span class="sd">            voltage_range: range of voltage to sweep.</span>
+<span class="sd">            bias_range: bias range to sweep.</span>
+<span class="sd">            n_steps: number of steps in each dimension.</span>
+<span class="sd">            line_intensity: Multiplication factor of number of</span>
+<span class="sd">                degeneracies, resulting in the desired peak hight before normalization.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: 2d diagram of bias-voltage sweep without tunneling</span>
+<span class="sd">                events.</span>
+<span class="sd">            np.ndarray: 2d diagram showing elastic co-tunneling only.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="n">voltage_node_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voltage_range</span><span class="p">))</span>
 
@@ -980,13 +1020,13 @@
 
             <span class="n">dU</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_differences_to_excited_charge_states</span><span class="p">(</span>
                 <span class="n">N_current</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span>
-                <span class="n">how_many</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">n_diff_charges</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">ib</span><span class="p">,</span> <span class="n">b_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bias_steps</span><span class="p">):</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">dU</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b_val</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
                     <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">,</span> <span class="n">ib</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_intensity</span>
                     <span class="n">engs_in_bias</span> <span class="o">=</span> <span class="n">dU</span><span class="p">[</span><span class="n">dU</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b_val</span><span class="p">)]</span>
-        <span class="c1">#             signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity</span>
+                    <span class="c1"># signal[iv, ib] = np.sum(np.reciprocal(engs_in_bias)) * line_intensity</span>
                     <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">,</span> <span class="n">ib</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">engs_in_bias</span><span class="p">)</span> <span class="o">*</span> <span class="n">line_intensity</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">,</span> <span class="n">ib</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1016,7 +1056,31 @@
         <span class="n">drain_rate_N_plus_one</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
         <span class="n">h_bar</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the elastic co-tunneling rate according to the equation</span>
+<span class="sd">        on page 400 (chapter 8) or Thomas Ihn&#39;s book. This equations assumes</span>
+<span class="sd">        the system to be at zero temperature and that tunneling rates are</span>
+<span class="sd">        independent of energy over a small source-drain voltage.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            bias: source drain bias</span>
+<span class="sd">            mu_n: chemical potential of charge state with a total of N charges,</span>
+<span class="sd">                e.g. of the self.N() state.</span>
+<span class="sd">            mu_n_plus_one: chemical potential of charge state with N+1 charges,</span>
+<span class="sd">                e.g. an adjacent charge state of self.N(). Adjacent means</span>
+<span class="sd">                having one additional charge.</span>
+<span class="sd">            source_rate_N: tunneling rate between source and a dot system in</span>
+<span class="sd">                charge state with a total of N charges.</span>
+<span class="sd">            source_rate_N_plus_one: tunneling rate between source and a dot</span>
+<span class="sd">                system in charge state with a total of N+1 charges.</span>
+<span class="sd">            drain_rate_N: tunneling rate between drain and a dot system in</span>
+<span class="sd">                charge state with a total of N charges</span>
+<span class="sd">            drain_rate_N_plus_one: tunneling rate between drain and a dot</span>
+<span class="sd">                system in charge state with a total of N+1 charges.</span>
+<span class="sd">            h_bar: Plank constant or the substitution thereof.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: co-tunneling rate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mu_source</span> <span class="o">=</span> <span class="n">bias</span>
         <span class="n">mu_drain</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -1037,8 +1101,19 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">N_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Computes energy differences between a charge state and all states</span>
+<span class="sd">        differing from it by at most one charge.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            N_current: charge state to which other states differing by at most</span>
+<span class="sd">                one charge should be compared to. Default is self.N().</span>
+<span class="sd">            V_v: voltage configuration at which the energies should be computed.</span>
+<span class="sd">                Default is self.V_v().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: Energy differences to charge states differing by at most</span>
+<span class="sd">                one charge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">n_dots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span>
@@ -1077,7 +1152,6 @@
                             <span class="n">N</span><span class="o">=</span><span class="n">charge_state</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-
         <span class="n">current_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
         <span class="n">dU</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">-</span> <span class="n">current_energy</span><span class="p">)</span>
 
@@ -1087,11 +1161,25 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">N_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">how_many</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_diff_charges</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Computes energy differences between a charge state and all states</span>
+<span class="sd">        differing from it by at most &#39;n_diff_charges&#39; charges. These additional</span>
+<span class="sd">        charges represent excited charge state which require an excitation</span>
+<span class="sd">        voltage for a quantum dot system to reach them.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            N_current: charge state to which other states differing by at most</span>
+<span class="sd">                &#39;n_diff_charges&#39; charges should be compared to. Default is self.N().</span>
+<span class="sd">            V_v: voltage configuration at which the energies should be computed.</span>
+<span class="sd">                Default is self.V_v().</span>
+<span class="sd">            n_diff_charges: number of extra charges to consider adding to</span>
+<span class="sd">                &#39;N_current&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: Energy differences to charge states differing by at most</span>
+<span class="sd">                &#39;n_diff_charges&#39; charges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_dots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">N_current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1110,7 +1198,7 @@
         <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
             <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I_mat</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
 
-            <span class="k">for</span> <span class="n">add_e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">how_many</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">add_e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_diff_charges</span><span class="p">):</span>
                 <span class="n">charge_state</span> <span class="o">=</span> <span class="n">N_current</span> <span class="o">+</span> <span class="p">(</span><span class="n">add_e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">e_hat</span>
                 <span class="n">charge_state</span><span class="p">[</span><span class="n">charge_state</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">charge_state</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">))</span>
@@ -1122,7 +1210,7 @@
             <span class="k">for</span> <span class="n">other_dot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">other_dot</span> <span class="o">!=</span> <span class="n">dot_id</span><span class="p">:</span>
                     <span class="n">e_hat_other</span> <span class="o">=</span> <span class="n">I_mat</span><span class="p">[</span><span class="n">other_dot</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">add_e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">how_many</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">add_e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_diff_charges</span><span class="p">):</span>
                         <span class="n">charge_state</span> <span class="o">=</span> <span class="n">N_current</span> <span class="o">+</span> <span class="p">(</span><span class="n">add_e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">e_hat</span> <span class="o">-</span> <span class="n">e_hat_other</span>
                         <span class="n">charge_state</span><span class="p">[</span><span class="n">charge_state</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1130,11 +1218,10 @@
                                 <span class="n">N</span><span class="o">=</span><span class="n">charge_state</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">,</span>
                             <span class="p">)</span>
                         <span class="p">)</span>
-
         <span class="n">current_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span> <span class="n">V_v</span><span class="o">=</span><span class="n">V_v</span><span class="p">)</span>
         <span class="n">dU</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">-</span> <span class="n">current_energy</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">dU</span><span class="p">[</span><span class="n">dU</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">dU</span><span class="p">[</span><span class="n">dU</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_make_it_real</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1165,7 +1252,7 @@
         <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Adds normally distributed random noise to a diagram to match the</span>
-<span class="sd">        desired signal to noise ratio.</span>
+<span class="sd">        desired signal-to-noise ratio.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            diagram: Noise free diagram</span>
