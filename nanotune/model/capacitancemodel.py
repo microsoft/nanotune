@@ -341,8 +341,8 @@ class CapacitanceModel(Instrument):
         self,
         V_v: Optional[Sequence[float]] = None,
     ) -> List[int]:
-        """Determines the charge state :math:`\vec{N}` by minimizing the total
-            energy of the dot system.
+        """Determines the charge state N by minimizing the total
+        energy of the dot system.
 
         Args:
             V_v: Voltages to set on voltages nodes.
@@ -820,8 +820,7 @@ class CapacitanceModel(Instrument):
             bias_range: bias range to sweep.
             n_steps: number of steps in each dimension.
             line_intensity: Multiplication factor of number of
-                degeneracies, resulting in the desired peak hight before
-                normalization.
+                degeneracies, resulting in the desired peak hight before normalization.
 
         Returns:
             np.ndarray: 2d diagram of bias-voltage sweep without tunneling
@@ -891,19 +890,19 @@ class CapacitanceModel(Instrument):
 
         Args:
             bias: source drain bias
-            mu_n: chemical potential of charge state :math:`\vec{N}`, e.g.
-                of the self.N() state.
+            mu_n: chemical potential of charge state with a total of N charges,
+                e.g. of the self.N() state.
             mu_n_plus_one: chemical potential of charge state with N+1 charges,
                 e.g. an adjacent charge state of self.N(). Adjacent means
                 having one additional charge.
             source_rate_N: tunneling rate between source and a dot system in
-                charge state :math:`\vec{N}`.
+                charge state with a total of N charges.
             source_rate_N_plus_one: tunneling rate between source and a dot
-                system in charge state :math:`\vec{N+1}`.
+                system in charge state with a total of N+1 charges.
             drain_rate_N: tunneling rate between drain and a dot system in
-                charge state :math:`\vec{N}`.
+                charge state with a total of N charges
             drain_rate_N_plus_one: tunneling rate between drain and a dot
-                system in charge state :math:`\vec{N+1}`.
+                system in charge state with a total of N+1 charges.
             h_bar: Plank constant or the substitution thereof.
 
         Returns:
