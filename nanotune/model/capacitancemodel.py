@@ -600,9 +600,7 @@ class CapacitanceModel(Instrument):
         voltage_ranges: Sequence[Tuple[float, float]],
         n_steps: Sequence[int] = N_2D,
         line_intensity: float = 1.0,
-        broaden: bool = True,
         add_noise: bool = True,
-        kernel_widths: Tuple[float, float] = (1.0, 1.0),
         target_snr_db: float = 100,
         normalize: bool = True,
         known_regime: str = 'doubledot',
@@ -610,17 +608,8 @@ class CapacitanceModel(Instrument):
         add_charge_jumps: bool = False,
         jump_freq: float = 0.001,
     ) -> Optional[int]:
-        """Sweep two voltage nodes to measure a charge diagram. Determines
-        charge transitions by computing energy differences to 'adjacent'
-        charge states, i.e. charge states differing by at most one charge, via
-        `get_energy_differences_to_adjacent_charge_states`. The current is
-        given by the sum of the inverse of each energy, although typically
-        only one inverse contributes significantly. This can result in
-        some broadening. This estimates the
-        probability that a charge changes its location (i.e. change in charge
-        state), which results in a measurable current.
-        Optionally a Gaussian filter is applied to further broaden
-        transitions, simulating e.g. thermal broadening.
+        """Sweep two voltage nodes to measure a charge diagram.
+        Calculate current at zero bias and at zero temperature.
         Random normal noise and charge jumps can be added
         optionally as well. The diagram is saved into .db using QCoDeS.
 
@@ -628,14 +617,11 @@ class CapacitanceModel(Instrument):
             voltage_node_idx: Voltage node indices to sweep.
             voltage_ranges: Voltage ranges to sweep.
             n_steps: Number of steps of the measurement.
-            line_intensity: Multiplication factor of number of
-                degeneracies, resulting in the desired peak hight before
-                normalization.
-            broaden: whether or not to broaden the initial (potentially)
-                stick-figure-style diagram.
+            line_intensity: Multiplication factor of transport current.
+                It depends on number of degeneracies and coupling strength between
+                dots and leads.
             add_noise: whether or not to add noise.
-            kernel_widths: Sigmas of Gaussian filter used for broadening
-                of charge transitions.
+            broadening: level broadening due to dots coupling to leads
             target_snr_db: Target signal-to-noise ratio used to
                 calculate amplitude of random normal noise.
             normalize: whether to normalize the data.
@@ -688,15 +674,10 @@ class CapacitanceModel(Instrument):
                 N_curr[n_idx] += additional_charges[ivx, ivy]
                 self.N(N_curr)
 
-                dU = self.get_energy_differences_to_adjacent_charge_states(
+                signal[ivx, ivy] = self.calculate_transport_at_zero_bias(
                     N_current=N_curr,
-                )
-                signal[ivx, ivy] = np.sum(np.reciprocal(dU)) * line_intensity
+                ) * line_intensity
 
-        signal = (signal - np.mean(signal))
-
-        if broaden:
-            signal = self._make_it_real(signal, kernel_widths=kernel_widths)
         if add_noise:
             signal = self._add_noise(signal, target_snr_db=target_snr_db)
         if normalize:
@@ -727,23 +708,13 @@ class CapacitanceModel(Instrument):
         voltage_range: Sequence[float],
         n_steps: int = N_1D[0],
         line_intensity: float = 1.0,
-        broaden: bool = True,
         add_noise: bool = True,
-        kernel_width: Sequence[float] = [1.0],
+        broadening: float = 0.01,
         target_snr_db: float = 100.0,
         normalize: bool = True,
     ) -> Optional[int]:
-        """Sweep one voltage to measure Coulomb oscillations. Determines
-        charge transitions by computing energy differences to 'adjacent'
-        charge states, i.e. charge states differing by at most one charge, via
-        `get_energy_differences_to_adjacent_charge_states`. The current is
-        given by the sum of the inverse of each energy, although typically
-        only one inverse contributes significantly. This can result in
-        some broadening. This estimates the
-        probability that a charge changes its location (i.e. change in charge
-        state), which results in a measurable current.
-        Optionally a Gaussian filter is applied to further broaden
-        transitions, simulating e.g. thermal broadening. Random normal noise
+        """Sweep one voltage to measure Coulomb oscillations.
+        Calculate current at zero bias and at zero temperature. Random normal noise
         and charge jumps can be added optionally as well. The diagram is
         saved into .db using QCoDeS.
 
@@ -751,14 +722,11 @@ class CapacitanceModel(Instrument):
             voltage_node_idx: voltage node index to sweep.
             voltage_range: Voltage range to sweep.
             n_steps: Number of steps of the measurement.
-            line_intensity: Multiplication factor of number of
-                degeneracies, resulting in the desired peak hight before
-                normalization.
-            broaden: whether or not to broaden peaks further, simulating e.g.
-                thermal broadening.
+            line_intensity: Multiplication factor of transport current.
+                It depends on number of degeneracies and coupling strength between
+                dots and leads.
             add_noise: whether or not to add noise.
-            kernel_width: sigma of Gaussian filter used for broadening
-                of charge transitions.
+            broadening: level broadening due to dots coupling to leads
             target_snr_db: target signal-to-noise ratio used to
                 calculate amplitude of random normal noise.
             normalize: whether to normalize the data.
@@ -777,15 +745,9 @@ class CapacitanceModel(Instrument):
             N_current = self.determine_N()
             self.N(N_current)
 
-            dU = self.get_energy_differences_to_adjacent_charge_states(
-                N_current=N_current,
-            )
-            signal[iv] = np.sum(np.reciprocal(dU)) * line_intensity
+            signal[iv] = self.calculate_transport_at_zero_bias(
+                N_current=N_current, broadening=broadening) * line_intensity
 
-        signal = (signal - np.mean(signal))
-
-        if broaden:
-            signal = self._make_it_real(signal, kernel_widths=kernel_width)
         if add_noise:
             signal = self._add_noise(signal, target_snr_db=target_snr_db)
         if normalize:
@@ -923,6 +885,80 @@ class CapacitanceModel(Instrument):
         co_tunneling_rate += third_term
 
         return co_tunneling_rate
+
+    def calculate_transport_at_zero_bias(
+            self,
+        N_current: Optional[Sequence[int]] = None,
+        V_v: Optional[Sequence[float]] = None,
+        broadening: Optional[float] = 0.01
+    ) -> float:
+        """Computes transport signal at zero bias and at zero temperature.
+
+        Assume the electrochemical potentials of source and drain to be zero (zero bias)
+        Transport current is propotional to DOS (density of states) of all dot levels at energy 0
+        Assume that all dots are connected sequentially, meaning carrier needs to hop from
+        source to dot 1, then to dot 2, ..., then to dot N, and finally hop to drain
+        In this case, current is propotional to (DOS of dot 1 at energy 0) * ... * (DOS of dot N at 0)
+        For each dot, only consider current charge state and the first excited state.
+        Also take into account level broadening due to dots coupling to leads.
+
+        Args:
+            N_current: charge state to which other states differing by at most
+                one charge should be compared to. Default is self.N().
+            V_v: voltage configuration at which the energies should be computed.
+                Default is self.V_v().
+            broadening: level broadening due to dots coupling to leads
+
+        Returns:
+            float: transport signal in given configuration
+        """
+
+        n_dots = len(self.charge_nodes)
+
+        if N_current is None:
+            N_current = self.N()
+        else:
+            self.N(N_current)
+
+        if V_v is None:
+            V_v = self.V_v()
+        else:
+            self.V_v(V_v)
+
+        I_mat = np.eye(n_dots)
+        current = 1.
+
+        for dot_id in range(n_dots):
+            dos = 0
+            e_hat = I_mat[dot_id]
+            mu = self.mu(dot_id, N=N_current)
+            # dos of current charge state
+            dos += self.lorentzian_density_of_state(0, mu, broadening)
+            charge_state = N_current + e_hat
+            mu = self.mu(dot_id, N=charge_state)
+            # dos of the first excited state
+            dos += self.lorentzian_density_of_state(0, mu, broadening)
+            current *= dos
+
+        return current
+
+    def lorentzian_density_of_state(
+        self,
+        transport_energy: float,
+        level_energy: float,
+        broadening: float,
+    ) -> float:
+        """Computes density of states of a energy level at given transport energy
+        using a Lorentzian function
+
+        For reference, see equation 1.3.2 in S. Datta's book
+        Quantum Transport Atom To Transistor
+
+        Returns:
+            float: density of state at transport energy
+        """
+        diff = transport_energy - level_energy
+        return broadening / (2. * np.pi * (diff ** 2 + broadening ** 2 / 4.))
 
     def get_energy_differences_to_adjacent_charge_states(
         self,
