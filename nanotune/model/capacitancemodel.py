@@ -890,7 +890,7 @@ class CapacitanceModel(Instrument):
             self,
         N_current: Optional[Sequence[int]] = None,
         V_v: Optional[Sequence[float]] = None,
-        broadening: Optional[float] = 0.01
+        broadening: float = 0.01
     ) -> float:
         """Computes transport signal at zero bias and at zero temperature.
 
@@ -929,15 +929,15 @@ class CapacitanceModel(Instrument):
         current = 1.
 
         for dot_id in range(n_dots):
-            dos = 0
+            dos = 0.0
             e_hat = I_mat[dot_id]
             mu = self.mu(dot_id, N=N_current)
             # dos of current charge state
-            dos += self.lorentzian_density_of_state(0, mu, broadening)
+            dos += self.lorentzian_density_of_state(0.0, mu, broadening)
             charge_state = N_current + e_hat
             mu = self.mu(dot_id, N=charge_state)
             # dos of the first excited state
-            dos += self.lorentzian_density_of_state(0, mu, broadening)
+            dos += self.lorentzian_density_of_state(0.0, mu, broadening)
             current *= dos
 
         return current
