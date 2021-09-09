@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>nanotune.model.capacitancemodel &mdash; nanotune 0.1.0+8.g78dab7bf documentation</title>
+  <title>nanotune.model.capacitancemodel &mdash; nanotune 0.1.0+10.ga46a1f20 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0+8.g78dab7bf
+                0.1.0+10.ga46a1f20
               </div>
             
           
@@ -773,9 +773,7 @@
         <span class="n">voltage_ranges</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
         <span class="n">n_steps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">N_2D</span><span class="p">,</span>
         <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">broaden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">add_noise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">kernel_widths</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
         <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">known_regime</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;doubledot&#39;</span><span class="p">,</span>
@@ -783,17 +781,8 @@
         <span class="n">add_charge_jumps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">jump_freq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Sweep two voltage nodes to measure a charge diagram. Determines</span>
-<span class="sd">        charge transitions by computing energy differences to &#39;adjacent&#39;</span>
-<span class="sd">        charge states, i.e. charge states differing by at most one charge, via</span>
-<span class="sd">        `get_energy_differences_to_adjacent_charge_states`. The current is</span>
-<span class="sd">        given by the sum of the inverse of each energy, although typically</span>
-<span class="sd">        only one inverse contributes significantly. This can result in</span>
-<span class="sd">        some broadening. This estimates the</span>
-<span class="sd">        probability that a charge changes its location (i.e. change in charge</span>
-<span class="sd">        state), which results in a measurable current.</span>
-<span class="sd">        Optionally a Gaussian filter is applied to further broaden</span>
-<span class="sd">        transitions, simulating e.g. thermal broadening.</span>
+        <span class="sd">&quot;&quot;&quot;Sweep two voltage nodes to measure a charge diagram.</span>
+<span class="sd">        Calculate current at zero bias and at zero temperature.</span>
 <span class="sd">        Random normal noise and charge jumps can be added</span>
 <span class="sd">        optionally as well. The diagram is saved into .db using QCoDeS.</span>
 
@@ -801,14 +790,11 @@
 <span class="sd">            voltage_node_idx: Voltage node indices to sweep.</span>
 <span class="sd">            voltage_ranges: Voltage ranges to sweep.</span>
 <span class="sd">            n_steps: Number of steps of the measurement.</span>
-<span class="sd">            line_intensity: Multiplication factor of number of</span>
-<span class="sd">                degeneracies, resulting in the desired peak hight before</span>
-<span class="sd">                normalization.</span>
-<span class="sd">            broaden: whether or not to broaden the initial (potentially)</span>
-<span class="sd">                stick-figure-style diagram.</span>
+<span class="sd">            line_intensity: Multiplication factor of transport current.</span>
+<span class="sd">                It depends on number of degeneracies and coupling strength between</span>
+<span class="sd">                dots and leads.</span>
 <span class="sd">            add_noise: whether or not to add noise.</span>
-<span class="sd">            kernel_widths: Sigmas of Gaussian filter used for broadening</span>
-<span class="sd">                of charge transitions.</span>
+<span class="sd">            broadening: level broadening due to dots coupling to leads</span>
 <span class="sd">            target_snr_db: Target signal-to-noise ratio used to</span>
 <span class="sd">                calculate amplitude of random normal noise.</span>
 <span class="sd">            normalize: whether to normalize the data.</span>
@@ -861,15 +847,10 @@
                 <span class="n">N_curr</span><span class="p">[</span><span class="n">n_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">additional_charges</span><span class="p">[</span><span class="n">ivx</span><span class="p">,</span> <span class="n">ivy</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="n">N_curr</span><span class="p">)</span>
 
-                <span class="n">dU</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_differences_to_adjacent_charge_states</span><span class="p">(</span>
+                <span class="n">signal</span><span class="p">[</span><span class="n">ivx</span><span class="p">,</span> <span class="n">ivy</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_transport_at_zero_bias</span><span class="p">(</span>
                     <span class="n">N_current</span><span class="o">=</span><span class="n">N_curr</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">signal</span><span class="p">[</span><span class="n">ivx</span><span class="p">,</span> <span class="n">ivy</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">dU</span><span class="p">))</span> <span class="o">*</span> <span class="n">line_intensity</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="n">line_intensity</span>
 
-        <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">broaden</span><span class="p">:</span>
-            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_widths</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">add_noise</span><span class="p">:</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
@@ -900,23 +881,13 @@
         <span class="n">voltage_range</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">n_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">N_1D</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">line_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">broaden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">add_noise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">kernel_width</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+        <span class="n">broadening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
         <span class="n">target_snr_db</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
         <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Sweep one voltage to measure Coulomb oscillations. Determines</span>
-<span class="sd">        charge transitions by computing energy differences to &#39;adjacent&#39;</span>
-<span class="sd">        charge states, i.e. charge states differing by at most one charge, via</span>
-<span class="sd">        `get_energy_differences_to_adjacent_charge_states`. The current is</span>
-<span class="sd">        given by the sum of the inverse of each energy, although typically</span>
-<span class="sd">        only one inverse contributes significantly. This can result in</span>
-<span class="sd">        some broadening. This estimates the</span>
-<span class="sd">        probability that a charge changes its location (i.e. change in charge</span>
-<span class="sd">        state), which results in a measurable current.</span>
-<span class="sd">        Optionally a Gaussian filter is applied to further broaden</span>
-<span class="sd">        transitions, simulating e.g. thermal broadening. Random normal noise</span>
+        <span class="sd">&quot;&quot;&quot;Sweep one voltage to measure Coulomb oscillations.</span>
+<span class="sd">        Calculate current at zero bias and at zero temperature. Random normal noise</span>
 <span class="sd">        and charge jumps can be added optionally as well. The diagram is</span>
 <span class="sd">        saved into .db using QCoDeS.</span>
 
@@ -924,14 +895,11 @@
 <span class="sd">            voltage_node_idx: voltage node index to sweep.</span>
 <span class="sd">            voltage_range: Voltage range to sweep.</span>
 <span class="sd">            n_steps: Number of steps of the measurement.</span>
-<span class="sd">            line_intensity: Multiplication factor of number of</span>
-<span class="sd">                degeneracies, resulting in the desired peak hight before</span>
-<span class="sd">                normalization.</span>
-<span class="sd">            broaden: whether or not to broaden peaks further, simulating e.g.</span>
-<span class="sd">                thermal broadening.</span>
+<span class="sd">            line_intensity: Multiplication factor of transport current.</span>
+<span class="sd">                It depends on number of degeneracies and coupling strength between</span>
+<span class="sd">                dots and leads.</span>
 <span class="sd">            add_noise: whether or not to add noise.</span>
-<span class="sd">            kernel_width: sigma of Gaussian filter used for broadening</span>
-<span class="sd">                of charge transitions.</span>
+<span class="sd">            broadening: level broadening due to dots coupling to leads</span>
 <span class="sd">            target_snr_db: target signal-to-noise ratio used to</span>
 <span class="sd">                calculate amplitude of random normal noise.</span>
 <span class="sd">            normalize: whether to normalize the data.</span>
@@ -950,15 +918,9 @@
             <span class="n">N_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determine_N</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="n">N_current</span><span class="p">)</span>
 
-            <span class="n">dU</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_differences_to_adjacent_charge_states</span><span class="p">(</span>
-                <span class="n">N_current</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">dU</span><span class="p">))</span> <span class="o">*</span> <span class="n">line_intensity</span>
+            <span class="n">signal</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_transport_at_zero_bias</span><span class="p">(</span>
+                <span class="n">N_current</span><span class="o">=</span><span class="n">N_current</span><span class="p">,</span> <span class="n">broadening</span><span class="o">=</span><span class="n">broadening</span><span class="p">)</span> <span class="o">*</span> <span class="n">line_intensity</span>
 
-        <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">broaden</span><span class="p">:</span>
-            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_it_real</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">kernel_widths</span><span class="o">=</span><span class="n">kernel_width</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">add_noise</span><span class="p">:</span>
             <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_noise</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">target_snr_db</span><span class="o">=</span><span class="n">target_snr_db</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
@@ -1096,6 +1058,80 @@
         <span class="n">co_tunneling_rate</span> <span class="o">+=</span> <span class="n">third_term</span>
 
         <span class="k">return</span> <span class="n">co_tunneling_rate</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.calculate_transport_at_zero_bias"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.calculate_transport_at_zero_bias">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_transport_at_zero_bias</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="n">N_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">V_v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">broadening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Computes transport signal at zero bias and at zero temperature.</span>
+
+<span class="sd">        Assume the electrochemical potentials of source and drain to be zero (zero bias)</span>
+<span class="sd">        Transport current is propotional to DOS (density of states) of all dot levels at energy 0</span>
+<span class="sd">        Assume that all dots are connected sequentially, meaning carrier needs to hop from</span>
+<span class="sd">        source to dot 1, then to dot 2, ..., then to dot N, and finally hop to drain</span>
+<span class="sd">        In this case, current is propotional to (DOS of dot 1 at energy 0) * ... * (DOS of dot N at 0)</span>
+<span class="sd">        For each dot, only consider current charge state and the first excited state.</span>
+<span class="sd">        Also take into account level broadening due to dots coupling to leads.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            N_current: charge state to which other states differing by at most</span>
+<span class="sd">                one charge should be compared to. Default is self.N().</span>
+<span class="sd">            V_v: voltage configuration at which the energies should be computed.</span>
+<span class="sd">                Default is self.V_v().</span>
+<span class="sd">            broadening: level broadening due to dots coupling to leads</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: transport signal in given configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_dots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_nodes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">N_current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">N_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">(</span><span class="n">N_current</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">V_v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">V_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V_v</span><span class="p">(</span><span class="n">V_v</span><span class="p">)</span>
+
+        <span class="n">I_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dots</span><span class="p">)</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="mf">1.</span>
+
+        <span class="k">for</span> <span class="n">dot_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dots</span><span class="p">):</span>
+            <span class="n">dos</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">e_hat</span> <span class="o">=</span> <span class="n">I_mat</span><span class="p">[</span><span class="n">dot_id</span><span class="p">]</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">(</span><span class="n">dot_id</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N_current</span><span class="p">)</span>
+            <span class="c1"># dos of current charge state</span>
+            <span class="n">dos</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lorentzian_density_of_state</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">broadening</span><span class="p">)</span>
+            <span class="n">charge_state</span> <span class="o">=</span> <span class="n">N_current</span> <span class="o">+</span> <span class="n">e_hat</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">(</span><span class="n">dot_id</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">charge_state</span><span class="p">)</span>
+            <span class="c1"># dos of the first excited state</span>
+            <span class="n">dos</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lorentzian_density_of_state</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">broadening</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">*=</span> <span class="n">dos</span>
+
+        <span class="k">return</span> <span class="n">current</span></div>
+
+<div class="viewcode-block" id="CapacitanceModel.lorentzian_density_of_state"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.lorentzian_density_of_state">[docs]</a>    <span class="k">def</span> <span class="nf">lorentzian_density_of_state</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">transport_energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">level_energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">broadening</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Computes density of states of a energy level at given transport energy</span>
+<span class="sd">        using a Lorentzian function</span>
+
+<span class="sd">        For reference, see equation 1.3.2 in S. Datta&#39;s book</span>
+<span class="sd">        Quantum Transport Atom To Transistor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: density of state at transport energy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">transport_energy</span> <span class="o">-</span> <span class="n">level_energy</span>
+        <span class="k">return</span> <span class="n">broadening</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">diff</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">broadening</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">4.</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CapacitanceModel.get_energy_differences_to_adjacent_charge_states"><a class="viewcode-back" href="../../../api/model/capacitancemodel.html#nanotune.model.capacitancemodel.CapacitanceModel.get_energy_differences_to_adjacent_charge_states">[docs]</a>    <span class="k">def</span> <span class="nf">get_energy_differences_to_adjacent_charge_states</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
