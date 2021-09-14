@@ -44,7 +44,7 @@ jsonschema==3.2.0
 jupyter-client==7.0.2
 jupyter-core==4.7.1
 jupyterlab-pygments==0.1.2
-jupyterlab-widgets==1.0.1
+jupyterlab-widgets==1.0.2
 jupyterthemes==0.20.0
 kiwisolver==1.3.2
 lesscpy==0.15.0
