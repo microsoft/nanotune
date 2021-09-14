@@ -14,7 +14,7 @@ charset-normalizer==2.0.4
 contextlib2==21.6.0
 cycler==0.10.0
 debugpy==1.4.1
-decorator==5.0.9
+decorator==5.1.0
 defusedxml==0.7.1
 docutils==0.16
 entrypoints==0.3
