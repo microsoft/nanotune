@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instruments &amp; interfaces &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Instruments &amp; interfaces &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -110,9 +111,9 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="instruments-interfaces">
+<section id="instruments-interfaces">
 <span id="drivers"></span><h1>Instruments &amp; interfaces<a class="headerlink" href="#instruments-interfaces" title="Permalink to this headline"></a></h1>
-<div class="section" id="interfaces">
+<section id="interfaces">
 <h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline"></a></h2>
 <p>The idea of using interfaces between the hardware used and
 nanotune is to keep the automation code general and independent of the
@@ -132,13 +133,13 @@ the channel’s voltage can be ramped by using a software ramp, by implementing 
 define the remaining functionalities.</p>
 <p>An example on how to use these interfaces are <cite>MockDACChannel</cite> and <cite>MockDAC</cite>,
 whose API documentation can be found in <a class="reference internal" href="../api/drivers/index.html#drivers-api"><span class="std std-ref">nanotune.drivers</span></a>.</p>
-</div>
-<div class="section" id="mock-instruments">
+</section>
+<section id="mock-instruments">
 <h2>Mock instruments<a class="headerlink" href="#mock-instruments" title="Permalink to this headline"></a></h2>
 <p><cite>MockDACChannel</cite>, <cite>MockDAC</cite>, as well as <cite>MockLockin</cite> and <cite>MockRF</cite> are primarily
 used in unit and functional tests, but can also appear in offline demos.</p>
-</div>
-<div class="section" id="server-client-setup-for-dacs">
+</section>
+<section id="server-client-setup-for-dacs">
 <h2>Server-client setup for DACs<a class="headerlink" href="#server-client-setup-for-dacs" title="Permalink to this headline"></a></h2>
 <p>In QCoDeS, it is currently not possible to connect to the same instrument from
 the same python kernel, i.e. jupyter notebook. Sometimes it is convenient to
@@ -151,8 +152,8 @@ The <cite>DACChannelServer</cite> and <cite>DACClient</cite> are examples of how
 message passing can be implemented. It should be taken more as an inspiration,
 knowing that it is currently untested. No guarantee that it will not
 blow up a device.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

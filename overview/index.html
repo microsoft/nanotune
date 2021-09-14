@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Overview &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -110,7 +111,7 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="overview">
+<section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
 <p>Nanotune was implemented as part of a PhD project with the goal to initialize
 gate-defined quantum dots without human interaction and no pre-measured input.
@@ -135,11 +136,13 @@ GaAs two-dimensional electron gas, however no assumptions about the material
 were made. The gate layout of the devices used consist of
 six gates: four so-called barriers and two plungers, shown in figure
 <a class="reference internal" href="#fig-dev-scheme"><span class="std std-numref">Fig. 1</span></a>.</p>
-<div class="figure align-center" id="id1">
+<figure class="align-center" id="id1">
 <span id="fig-dev-scheme"></span><a class="reference internal image-reference" href="../_images/quantum_dots-09.svg"><img alt="Double dot device schema." src="../_images/quantum_dots-09.svg" width="30.0%" /></a>
-<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Gate layout of the device used to demonstrate autonomous tuning. <cite>A</cite> and <cite>B</cite>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Gate layout of the device used to demonstrate autonomous tuning. <cite>A</cite> and <cite>B</cite>
 represent dots.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+</figcaption>
+</figure>
 <p>Barrier gates typically create potential wells between them, defining tunnel resistances
 between dots and reservoirs. Plungers are used to adjust the
 electrochemical potential of a dot, changing the number of electrons if desired.
@@ -147,15 +150,17 @@ Except for the top barrier, the tuning is identical to the tuning of quantum
 dots formed in 1D systems such as nanowires. All measurements were taken in
 DC transport, i.e. measuring current through the device. This readout method
 can be replaced by sensing technique easily.</p>
-<div class="section" id="tuning-workflow">
+<section id="tuning-workflow">
 <h2>Tuning workflow<a class="headerlink" href="#tuning-workflow" title="Permalink to this headline"></a></h2>
 <p>The dot-initialization workflow consists of two pre-calibration, one
 characterization and one tuning step, as outlined in the flowchart pictured in
 <a class="reference internal" href="#fig-workflow"><span class="std std-numref">Fig. 2</span></a>.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <span id="fig-workflow"></span><a class="reference internal image-reference" href="../_images/workflow_small_1.png"><img alt="Tuning workflow overview." src="../_images/workflow_small_1.png" style="width: 44.0%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Device tuning workflow.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Device tuning workflow.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>A gate leakage test and initial quality assessment ensure that devices
 are ‘alive’, meaning that voltages can be set and the current through the
 device is above the specified noise floor. The characterization step
@@ -190,8 +195,8 @@ Depending on the classification outcome of the charge diagram as well as
 additional checks assessing whether the device is in an open, closed or
 intermediate transport regime, gate voltages are adjusted. The precise
 sequence of measurements is discussed in <a class="reference internal" href="../tuning/index.html#tuning"><span class="std std-ref">Tuning</span></a>.</p>
-</div>
-<div class="section" id="implementation">
+</section>
+<section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline"></a></h2>
 <p>The main modules implementing the dot-tuning are the <cite>Device</cite>, <cite>Tuner</cite>,
 <cite>TuningStage</cite>, <cite>DataFit</cite> and <cite>Classifier</cite> classes. These classes work together as follows:
@@ -208,8 +213,8 @@ the a device characterization and a <cite>DotTuner</cite>.
 A <cite>Tuner</cite> class acts on an instance of a <cite>Device</cite> class, which represents the
 physical device including a list of gates, ohmics, gate layout and readout
 methods.</p>
-</div>
-<div class="section" id="acknowledgments">
+</section>
+<section id="acknowledgments">
 <h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline"></a></h2>
 <p>A special thanks goes to Matthias Troyer, Maja Cassidy, David Reilly and
 Charles Marcus for initiating, supervising and pushing over the finish line
@@ -219,8 +224,8 @@ implementing several modules. Alice Mahoney, Sebastian Pauka, Rachpon Kalra -
 thank you for setting up fridges and prepping devices, making it possible for
 automated tuning to be developed, tested and demonstrated. William H.P. Nielsen
 and Jens Nielsen - both your patience and help with qcodes was essential.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example dot tuning &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Example dot tuning &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -34,7 +35,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -368,7 +369,7 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Example-dot-tuning">
+<section id="Example-dot-tuning">
 <h1>Example dot tuning<a class="headerlink" href="#Example-dot-tuning" title="Permalink to this headline"></a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -403,8 +404,8 @@ State          : active
 Qcodes Logfile : /Users/jana/.qcodes/logs/210816-21779-qcodes.log
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Load-instruments-and-simulator-to-play-back-data">
+</section>
+<section id="Load-instruments-and-simulator-to-play-back-data">
 <h1>Load instruments and simulator to play back data<a class="headerlink" href="#Load-instruments-and-simulator-to-play-back-data" title="Permalink to this headline"></a></h1>
 <p>We use a MockDAC and a simulator to replace a real setup. The simulator takes previously measured data and plays it back. It needs to be initialized and added to the station.</p>
 <div class="nbinput docutils container">
@@ -460,8 +461,8 @@ Qcodes Logfile : /Users/jana/.qcodes/logs/210816-21779-qcodes.log
 NormalizationConstants(transport=(0, 1.93e-09), sensing=(0, 1), rf=(0, 1))
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Initialize-tuner">
+</section>
+<section id="Initialize-tuner">
 <h1>Initialize tuner<a class="headerlink" href="#Initialize-tuner" title="Permalink to this headline"></a></h1>
 <p>We use the SimDotTuner here, which is a subclass of the DotTuner with the only difference that before each measurement, the data simulated is advanced to replay the next dataset.</p>
 <div class="nbinput nblast docutils container">
@@ -727,7 +728,7 @@ dict_keys([&#39;gatecharacterization1d&#39;, &#39;gatecharacterization1d_31&#39;
 </pre></div>
 </div>
 </div>
-</div>
+</section>
 
 
            </div>

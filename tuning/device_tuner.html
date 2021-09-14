@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device tuner &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Device tuner &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -117,9 +118,9 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="device-tuner">
+<section id="device-tuner">
 <span id="id1"></span><h1>Device tuner<a class="headerlink" href="#device-tuner" title="Permalink to this headline"></a></h1>
-<div class="section" id="tuner">
+<section id="tuner">
 <h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this headline"></a></h2>
 <p>The base class implements the most common tuning methods such as updating a
 device’s normalization constants, measuring a pinchoff or taking a charge diagram.
@@ -147,24 +148,26 @@ i.e. when measuring a pinchoff or charge diagram. They are saved to the tuner’
 <cite>tuning_history</cite> using the device name as key. Saving results in these low
 lying methods used in every other tuning procedure ensures that all of them
 are retained.</p>
-</div>
-<div class="section" id="characterizer">
+</section>
+<section id="characterizer">
 <h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this headline"></a></h2>
 <p>The <cite>Characterizer</cite> sub-class implements the device characterization step by
 applying the base class’ gate characterization step to all gates. Optionally,
 gates can be left out, e.g. in the case of a helper gate which has been set
 beforehand.</p>
-</div>
-<div class="section" id="dot-tuner">
+</section>
+<section id="dot-tuner">
 <h2>Dot tuner<a class="headerlink" href="#dot-tuner" title="Permalink to this headline"></a></h2>
 <p>The <cite>DotTuner</cite> contains methods required to implement the tuning procedure
 shown in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>.
 If desired, the entire sequence can by run using the <cite>tune</cite> method, however
 all methods should also be seen as building blocks for other sequences.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <span id="tuning-algorithm"></span><a class="reference internal image-reference" href="../_images/algorithm_dot_tuning.svg"><img alt="dot tuning algorithm" src="../_images/algorithm_dot_tuning.svg" width="55%" /></a>
-<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Dot tuning algorithm implemented by the <cite>DotTuner</cite> class.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Dot tuning algorithm implemented by the <cite>DotTuner</cite> class.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The steps outlined in the diagram have a corresponding method within the class.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -247,8 +250,8 @@ manual input. For good devices, only one pass through the algorithm is
 required, meaning only a few 1D and a one 2D measurement is taken.
 The loops adjusting barriers is not executed.</p>
 </div></blockquote>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tuningstages &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Tuningstages &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -116,18 +117,20 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="tuningstages">
+<section id="tuningstages">
 <span id="id1"></span><h1>Tuningstages<a class="headerlink" href="#tuningstages" title="Permalink to this headline"></a></h1>
 <p>The <cite>TuningStage</cite> abstraction represents a typical step of both manual and
 automated tuning, its workflow is illustrated in <a class="reference internal" href="#tuningstage-workflow"><span class="std std-ref">The tuningstage workflow implemented by the base class and used by all
 sub-classes.</span></a>.
 This base class is meant to be sub-classed, where each sub-classes implements
 the methods called during the workflow.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <span id="tuningstage-workflow"></span><a class="reference internal image-reference" href="../_images/tuningstage_workflow.svg"><img alt="tuningstage workflow" src="../_images/tuningstage_workflow.svg" width="55%" /></a>
-<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">The tuningstage workflow implemented by the base class and used by all
+<figcaption>
+<p><span class="caption-number">Fig. 12 </span><span class="caption-text">The tuningstage workflow implemented by the base class and used by all
 sub-classes.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+</figcaption>
+</figure>
 <p>A <cite>TuningStage</cite> takes as input a list of parameters which are to be swept,
 as well as the parameters’ safety ranges and (trained) machine learning models
 to use for classification. Setpoints are
@@ -150,18 +153,18 @@ unsuccessful run.</p>
 <cite>ChargeDiagram</cite>. All methods used in these classes have been refactored so
 that they can be used without the <cite>TuningStage</cite> abstraction as well.
 They are in the <cite>*tasks.py</cite> files located close to the classes’ implementations.</p>
-<div class="section" id="gate-characterization">
+<section id="gate-characterization">
 <h2>Gate characterization<a class="headerlink" href="#gate-characterization" title="Permalink to this headline"></a></h2>
 <p><cite>GateCharacterization1D</cite> implements pinchoff curves. See
 <a class="reference internal" href="../examples/Example_gate_characterization.html"><span class="doc">the notebook</span></a>
 for an example.</p>
-</div>
-<div class="section" id="charge-diagram">
+</section>
+<section id="charge-diagram">
 <h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this headline"></a></h2>
 <p><cite>ChargeDiagram</cite> takes a 2D scan, most often plungers. See
 <a class="reference internal" href="../examples/Example_charge_diagram_stage.html"><span class="doc">the notebook</span></a> for an example.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

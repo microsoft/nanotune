@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Data &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -110,7 +111,7 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="data">
+<section id="data">
 <span id="id1"></span><h1>Data<a class="headerlink" href="#data" title="Permalink to this headline"></a></h1>
 <p>Typical manual-tuning-inspired measurements are one- and two-dimensional traces
 on a grid. While this is fairly limiting when dealing with multi-dimensional
@@ -121,7 +122,7 @@ supports are 1D and 2D traces.</p>
 <p>All measurements are done using QCoDeS and are thus saved to a database via a
 QCoDeS dataset. However, nanotune has its own dataset
 abstraction with a few extra functionalities convenient for tuning.</p>
-<div class="section" id="dataset">
+<section id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline"></a></h2>
 <p>The dataset class emulates a QCoDeS dataset in order to standardize a few
 naming conventions and adding post-processing steps. Using QCoDeS’s
@@ -152,8 +153,8 @@ which is defined in <cite>nanotune.configuration.config.json</cite>.</p>
 </pre></div>
 </div>
 <p>For more details see also <a class="reference internal" href="../examples/dataset_example.html"><span class="doc">the dataset example notebook</span></a>,</p>
-</div>
-<div class="section" id="databases">
+</section>
+<section id="databases">
 <h2>Databases<a class="headerlink" href="#databases" title="Permalink to this headline"></a></h2>
 <p>As shown above and as opposed to QCoDes, nanotune does not rely on data run IDs
 only. It also needs the database name and optionally the folder where the
@@ -177,8 +178,8 @@ learning label, e.g. good pinchoffs. As these labels occupy a separate column in
 the database, these functions utilize efficient SQLite queries.
 The columns are initialized whenever a database is created using
 ‘nt.new_database’.</p>
-</div>
-<div class="section" id="data-flow">
+</section>
+<section id="data-flow">
 <h2>Data flow<a class="headerlink" href="#data-flow" title="Permalink to this headline"></a></h2>
 <p>The diagram shown in <a class="reference internal" href="#fig-data-flow"><span class="std std-numref">Fig. 13</span></a> illustrates the data and
 instruction flow of quantum measurements.
@@ -186,10 +187,12 @@ The dotted ellipses indicates which stages are covered by QCoDeS or nanotune.
 QCoDeS provides an interface to room-temperature instruments (i.e. drivers)
 and tools to take and save measurements, while nanotune extends this functionality
 by automating common procedures encountered during quantum dot initialization.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <span id="fig-data-flow"></span><a class="reference internal image-reference" href="../_images/nanotune_data_flow-02.svg"><img alt="Data flow in nanotune." src="../_images/nanotune_data_flow-02.svg" width="100.0%" /></a>
-<p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Data flow during tuning with nanotune.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Data flow during tuning with nanotune.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>As stated above, all data is taken via QCoDeS, specifically by making use of its
 measurement context manager. The data is taken during the device
 characterization and dot-tuning sequence, which is implemented by the
@@ -208,8 +211,8 @@ closed, can be determined. Either the extracted feature
 vector or entire measurement is passed to the classifier for quality or
 charge state prediction. Based on the outcome, a decision about
 subsequent tuning is made.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

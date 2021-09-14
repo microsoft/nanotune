@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -34,7 +35,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -383,7 +384,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Capacitance-model-for-quantum-dots">
+<section id="Capacitance-model-for-quantum-dots">
 <h1>Capacitance model for quantum dots<a class="headerlink" href="#Capacitance-model-for-quantum-dots" title="Permalink to this headline"></a></h1>
 <p>The system of electrostatic gates, dots and reservoirs is represented by a system of conductors connected via resistors and capacitors. Albeit classical and simple, the capacitance model explains and qualitatively reproduces relevant transport features of gate-defined quantum dots.</p>
 <p>The capacitance model is defined by a capacitance matrix <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, whose elements <span class="math notranslate nohighlight">\(C_{ij}\)</span> are the capacitances between individual elements <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>. We distinguish between two different types of elements, the charge and the voltage nodes, representing quantum dots and electrostatic gates respectively. Each node <span class="math notranslate nohighlight">\(i\)</span> is defined by its charge <span class="math notranslate nohighlight">\(Q_{i}\)</span> and electrical potential <span class="math notranslate nohighlight">\(V_{i}\)</span>. For simplicity, we write charges and potentials on all nodes of
@@ -406,9 +407,9 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 <div class="line">Illustration of capacitances between gates and gates and dots:</div>
 <div class="line">Each gate voltage <span class="math notranslate nohighlight">\(V_{i}\)</span> will tune the number of charges on each dot. The capacitance of the dots, <span class="math notranslate nohighlight">\(C_{A}\)</span> and <span class="math notranslate nohighlight">\(C_{B}\)</span>, are sums of all capacitances connects to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> respectively. Gates located further away will have a smaller capacitive coupling. Most labels of capacitance between gates are omitted for readability.</div>
 </div>
-<p><img alt="01b8cd71115741a386a2355507c6a872" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
+<p><img alt="7d0123c6f3584ab9b5a6c42635bfc583" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
 <p>Names and layout indices of gates: Six electrostatic gates, three barriers and two plungers, are used to define two, possibly coupled, quantum dots. Barrier gates are primarily used to create potential barriers, while plungers are used to tune electron density and thus the dot’s electrochemical potentials.</p>
-<p><img alt="0de61cc916c440eb9e5f93d8e405da5e" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
+<p><img alt="1b6828a8321543d4b683420bc63d6786" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
 <p>Initiate or set database where data should be saved. When initializing a database a new qcodes experiment needs to be created as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -629,7 +630,7 @@ Starting experimental run with id: 10.
 <img alt="../_images/examples_capacitance_model_example_double_dot_13_2.png" src="../_images/examples_capacitance_model_example_double_dot_13_2.png" />
 </div>
 </div>
-</div>
+</section>
 
 
            </div>

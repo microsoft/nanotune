@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device abstraction &mdash; nanotune 0.1.0+22.g0a764c5a documentation</title>
+  <title>Device abstraction &mdash; nanotune 0.1.0+23.ga7ce4168 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +33,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+22.g0a764c5a
+                0.1.0+23.ga7ce4168
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -110,7 +111,7 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="device-abstraction">
+<section id="device-abstraction">
 <span id="device"></span><h1>Device abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this headline"></a></h1>
 <p>The physical device or sample is represented by an instance of a <cite>Device</cite> class, which
 in turn is a QCodeS <cite>DelegateInstrument</cite>. The <cite>Device</cite> class extends its base
@@ -209,7 +210,7 @@ and some known tuning parameters.</p>
         <span class="nt">top_barrier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.4</span>
 </pre></div>
 </div>
-<div class="section" id="device-layout">
+<section id="device-layout">
 <h2>Device layout<a class="headerlink" href="#device-layout" title="Permalink to this headline"></a></h2>
 <p>The <cite>DeviceLayout</cite> class serves as interface for specifying a device
 layout. A subclass needs to implement the methods which return the gate IDs of
@@ -217,14 +218,14 @@ device channels serving the specific purpose. For example, the method
 <cite>barriers</cite> needs to return the gate IDs of all barriers of the device.
 <cite>DeviceLayout</cite> is a dataclass inheriting from the abstract <cite>IDeviceLayout</cite>.
 An example of a device layout is <cite>DoubleDotLayout</cite>.</p>
-</div>
-<div class="section" id="normalization-constants">
+</section>
+<section id="normalization-constants">
 <h2>Normalization constants<a class="headerlink" href="#normalization-constants" title="Permalink to this headline"></a></h2>
 <p>This dataclass is used to hold and update normalization constants of a device.
 Each attribute keeps track of the constants of one readout method, e.g.
 transport, sensing and rf.</p>
-</div>
-<div class="section" id="device-channel">
+</section>
+<section id="device-channel">
 <h2>Device channel<a class="headerlink" href="#device-channel" title="Permalink to this headline"></a></h2>
 <p>A <cite>DeviceChannel</cite> is a wrapper of an instrument channel, e.g. a
 DAC channel, but with added functionalities. The channel wrapped and passed to
@@ -258,8 +259,8 @@ that can be set without ramping such that the device is not damaged.</p>
 setting of it. Examples: ground or floating.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
