@@ -8,7 +8,7 @@ backcall==0.2.0
 bleach==4.1.0
 broadbean==0.10.0
 cachetools==4.2.2
-certifi==2021.5.30
+certifi==2021.10.8
 cffi==1.14.6
 charset-normalizer==2.0.6
 contextlib2==21.6.0
@@ -97,7 +97,7 @@ scikit-learn==1.0
 scipy==1.7.1
 Send2Trash==1.8.0
 six==1.16.0
-smmap==4.0.0
+smmap==5.0.0
 snowballstemmer==2.1.0
 Sphinx==4.2.0
 sphinx-jsonschema==1.16.11
