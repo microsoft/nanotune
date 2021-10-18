@@ -1,5 +1,5 @@
 absl-py==0.14.1
-apipkg==1.5
+apipkg==2.1.0
 appnope==0.1.2
 argon2-cffi==21.1.0
 astunparse==1.6.3
