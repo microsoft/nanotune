@@ -24,7 +24,7 @@ entrypoints==0.3
 execnet==1.9.0
 flatbuffers==2.0
 gast==0.5.2
-google-api-core~=2.0.1
+google-api-core~=2.1.1
 google-auth~=1.35.0
 googleapis-common-protos~=1.53.0
 grpcio==1.40.0
@@ -78,7 +78,7 @@ ply==3.11
 prettytable==2.2.1
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
-protobuf==3.18.0
+protobuf==3.18.1
 psutil==5.8.0
 ptyprocess==0.7.0
 py==1.10.0
@@ -96,7 +96,7 @@ python-dateutil==2.8.2
 pytz==2021.1
 PyVISA==1.11.3
 PyWavelets==1.1.1
-PyYAML==5.4.1
+PyYAML==6.0
 pyzmq==22.3.0
 qcodes>=0.27.0
 reportlab==3.6.1
