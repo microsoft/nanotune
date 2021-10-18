@@ -11,7 +11,7 @@ broadbean==0.10.0
 cached-property==1.5.2
 cachetools==4.2.2
 certifi==2021.10.8
-cffi==1.14.6
+cffi==1.15.0
 cftime==1.5.1
 chardet==4.0.0
 contextlib2==21.6.0
