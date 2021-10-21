@@ -56,7 +56,7 @@ nbsphinx==0.8.7
 nest-asyncio==1.5.1
 networkx==2.6.3
 notebook==6.4.5
-numpy==1.21.2
+numpy==1.21.3
 opencensus==0.8.0
 opencensus-context==0.1.2
 opencensus-ext-azure==1.1.0
