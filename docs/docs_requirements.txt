@@ -29,7 +29,7 @@ h5py==3.5.0
 idna==3.3
 imageio==2.10.1
 imagesize==1.2.0
-ipykernel==6.4.2
+ipykernel==6.5.0
 ipython==7.29.0
 ipython-genutils==0.2.0
 ipywidgets==7.6.5
