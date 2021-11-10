@@ -130,7 +130,7 @@ class QcodesDataProvider(DataProvider):
                 for name in param_names
             ]
             rename_dict = dict(zip(param_names, param_labels))
-            renamed_dataset = dataset.to_xarray_dataset(param_names[-1]).rename(rename_dict)  # type: ignore
+            renamed_dataset = dataset.to_xarray_dataset(param_names[-1]).rename(rename_dict)
             self._xarray_dataset = renamed_dataset
 
             # For some reason 2D xarray dataset axes are transposed from the original measurement. Transpose it back
