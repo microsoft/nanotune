@@ -1,4 +1,4 @@
-absl-py==0.15.0
+absl-py==1.0.0
 apipkg==2.1.0
 appnope==0.1.2
 argon2-cffi==21.1.0
