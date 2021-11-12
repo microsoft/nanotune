@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nanotune.drivers.dac_client &mdash; nanotune 0.1.0+191.g32da2de4 documentation</title>
+  <title>nanotune.drivers.dac_client &mdash; nanotune 0.1.0+193.g566843ba documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+191.g32da2de4
+                0.1.0+193.g566843ba
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -134,7 +134,7 @@
 <span id="nanotune-drivers-dac-client"></span><h1>nanotune.drivers.dac_client<a class="headerlink" href="#module-nanotune.drivers.dac_client" title="Permalink to this headline"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_client.message_parser">
-<span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_client.</span></span><span class="sig-name descname"><span class="pre">message_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mips</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="dac_interface.html#nanotune.drivers.dac_interface.DACInterface" title="nanotune.drivers.dac_interface.DACInterface"><span class="pre">nanotune.drivers.dac_interface.DACInterface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#message_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.message_parser" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_client.</span></span><span class="sig-name descname"><span class="pre">message_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dac_interface.html#nanotune.drivers.dac_interface.DACInterface" title="nanotune.drivers.dac_interface.DACInterface"><span class="pre">nanotune.drivers.dac_interface.DACInterface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#message_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.message_parser" title="Permalink to this definition"></a></dt>
 <dd><p>A very crude proof-of-principle way of making the mips do something
 based on a message. The idea is that we send ‘parametername;value’ for set
 or ‘parametername;?’ for a query. ONLY works for float values.</p>
@@ -143,16 +143,16 @@ or ‘parametername;?’ for a query. ONLY works for float values.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_client.DACClient">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_client.</span></span><span class="sig-name descname"><span class="pre">DACClient</span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#DACClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nanotune.drivers.dac_client.</span></span><span class="sig-name descname"><span class="pre">DACClient</span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#DACClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_client.DACClient.PORT">
-<span class="sig-name descname"><span class="pre">PORT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">7780</span></em><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient.PORT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7780</span></em><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient.PORT" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nanotune.drivers.dac_client.DACClient.send">
-<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#DACClient.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient.send" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nanotune/drivers/dac_client.html#DACClient.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nanotune.drivers.dac_client.DACClient.send" title="Permalink to this definition"></a></dt>
 <dd><p>Send a message to the server</p>
 </dd></dl>
 
