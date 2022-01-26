@@ -85,7 +85,7 @@ PyWavelets==1.2.0
 PyYAML==6.0
 pyzmq==22.3.0
 qcodes==0.29.1
-reportlab==3.6.2
+reportlab==3.6.6
 requests==2.26.0
 requirements-parser==0.2.0
 rsa==4.8
