@@ -50,7 +50,7 @@ kiwisolver==1.3.2
 lesscpy==0.15.0
 Markdown==3.3.6
 MarkupSafe==2.0.1
-matplotlib==3.5.0
+matplotlib==3.5.1
 mistune==0.8.4
 mypy==0.931
 mypy-extensions==0.4.3
