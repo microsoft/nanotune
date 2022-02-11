@@ -27,7 +27,7 @@ googleapis-common-protos==1.54.0
 h5netcdf==0.13.1
 h5py==3.6.0
 idna==3.3
-imageio==2.11.0
+imageio==2.15.0
 imagesize==1.3.0
 ipykernel==6.5.0
 ipython==7.31.1
