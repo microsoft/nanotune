@@ -38,7 +38,7 @@ Jinja2==3.0.3
 joblib==1.1.0
 jsonpointer==2.2
 jsonschema==4.4.0
-jupyter-client==7.1.0
+jupyter-client==7.1.2
 jupyter-core==4.9.1
 jupyterlab-pygments==0.1.2
 jupyterlab-widgets==1.0.2
