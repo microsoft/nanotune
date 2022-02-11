@@ -17,7 +17,7 @@ debugpy==1.5.1
 decorator==5.1.1
 defusedxml==0.7.1
 docutils==0.18.1
-entrypoints==0.3
+entrypoints==0.4
 future==0.18.2
 gitdb==4.0.9
 GitPython==3.1.24
