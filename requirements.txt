@@ -61,7 +61,7 @@ nest-asyncio==1.5.4
 netCDF4==1.5.8
 notebook==6.4.8
 numpy==1.21.4
-oauthlib==3.1.1
+oauthlib==3.2.0
 opencensus==0.8.0
 opencensus-context==0.1.2
 opencensus-ext-azure==1.1.1
