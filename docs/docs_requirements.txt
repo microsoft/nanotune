@@ -124,4 +124,4 @@ webencodings==0.5.1
 websockets==10.1
 widgetsnbextension==3.5.2
 wrapt==1.13.3
-xarray==0.20.1
+xarray==0.20.2
