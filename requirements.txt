@@ -49,7 +49,7 @@ jupyterthemes==0.20.0
 kiwisolver==1.3.2
 lesscpy==0.15.0
 Markdown==3.3.6
-MarkupSafe==2.0.1
+MarkupSafe==2.1.0
 matplotlib==3.5.1
 mistune==2.0.2
 mypy==0.931
