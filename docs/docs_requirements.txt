@@ -84,7 +84,7 @@ PyVISA==1.11.3
 PyWavelets==1.2.0
 PyYAML==6.0
 pyzmq==22.3.0
-qcodes==0.29.1
+qcodes==0.33.0
 reportlab==3.6.2
 requests==2.26.0
 requirements-parser==0.2.0
