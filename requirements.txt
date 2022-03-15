@@ -59,7 +59,7 @@ nbconvert==6.4.2
 nbformat==5.2.0
 nest-asyncio==1.5.4
 netCDF4==1.5.8
-notebook==6.4.9
+notebook==6.4.10
 numpy==1.21.5
 oauthlib==3.2.0
 opencensus==0.8.0
