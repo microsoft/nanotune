@@ -32,7 +32,7 @@ jupyterlab-pygments==0.1.2
 MarkupSafe==2.1.1
 mistune==2.0.2
 nbclient==0.5.13
-nbconvert==6.4.4
+nbconvert==6.4.5
 nbformat==5.3.0
 nbconvert==6.4.5
 nbsphinx==0.8.8
