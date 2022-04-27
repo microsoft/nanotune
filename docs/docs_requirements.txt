@@ -22,9 +22,9 @@ future==0.18.2
 gitdb==4.0.9
 GitPython==3.1.27
 google-api-core==2.7.2
-google-auth==2.6.5
+google-auth==2.6.6
 googleapis-common-protos==1.56.0
-google-auth==2.6.5
+google-auth==2.6.6
 googleapis-common-protos==1.55.0
 h5netcdf==1.0.0
 h5py==3.6.0
