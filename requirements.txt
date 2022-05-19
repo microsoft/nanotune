@@ -28,7 +28,7 @@ google-api-core~=2.8.0
 google-auth~=2.6.6
 googleapis-common-protos~=1.56.0
 google-auth~=2.6.6
-googleapis-common-protos~=1.55.0
+googleapis-common-protos~=1.56.1
 grpcio==1.46.1
 h5py==3.6.0
 idna==3.3
