@@ -117,7 +117,7 @@ threadpoolctl==3.1.0
 tifffile==2021.11.2
 tornado==6.1
 tqdm==4.64.0
-traitlets==5.2.1.post0
+traitlets==5.2.2.post1
 typing-extensions==4.2.0
 uncertainties==3.1.6
 urllib3==1.26.9
