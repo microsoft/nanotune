@@ -26,9 +26,9 @@ flatbuffers==2.0
 gast==0.5.3
 google-api-core~=2.8.1
 google-auth~=2.6.6
-googleapis-common-protos~=1.56.1
+googleapis-common-protos~=1.56.2
 google-auth~=2.6.6
-googleapis-common-protos~=1.56.1
+googleapis-common-protos~=1.56.2
 grpcio==1.46.3
 h5py==3.6.0
 idna==3.3
