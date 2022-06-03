@@ -30,7 +30,7 @@ googleapis-common-protos~=1.56.2
 google-auth~=2.6.6
 googleapis-common-protos~=1.56.2
 grpcio==1.46.3
-h5py==3.6.0
+h5py==3.7.0
 idna==3.3
 imageio==2.19.3
 importlib-metadata==4.11.3
