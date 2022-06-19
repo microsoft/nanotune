@@ -88,7 +88,7 @@ PyYAML==6.0
 pyzmq==23.1.0
 qcodes==0.34.1
 reportlab==3.6.9
-requests==2.27.1
+requests==2.28.0
 requirements-parser==0.5.0
 rsa==4.8
 ruamel.yaml==0.17.21
