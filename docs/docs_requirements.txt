@@ -3,7 +3,7 @@ appnope==0.1.3
 argon2-cffi==21.3.0
 async-generator==1.10
 attrs==21.4.0
-Babel==2.10.1
+Babel==2.10.3
 backcall==0.2.0
 bleach==5.0.0
 broadbean==0.10.0
