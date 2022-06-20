@@ -10,7 +10,7 @@ broadbean==0.10.0
 cachetools==4.2.4
 certifi==2021.10.8
 cffi==1.15.0
-charset-normalizer==2.0.7
+charset-normalizer==2.1.0
 contextlib2==21.6.0
 cycler==0.11.0
 debugpy==1.5.1
