@@ -48,7 +48,7 @@ kiwisolver==1.4.3
 MarkupSafe==2.1.1
 matplotlib==3.5.2
 matplotlib-inline==0.1.3
-mistune==2.0.2
+mistune==2.0.3
 mypy-extensions==0.4.3
 -e git+https://github.com/microsoft/nanotune.git@48fdd245cdbfeddc1c4544230074e9c53d61e73c#egg=nanotune
 nbclient==0.6.4
