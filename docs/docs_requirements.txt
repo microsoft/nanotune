@@ -115,7 +115,7 @@ terminado==0.15.0
 testpath==0.6.0
 threadpoolctl==3.1.0
 tifffile==2021.11.2
-tornado==6.1
+tornado==6.2
 tqdm==4.64.0
 traitlets==5.3.0
 typing-extensions==4.2.0
