@@ -44,7 +44,7 @@ jupyter-client==7.3.4
 jupyter-core==4.11.1
 jupyterlab-pygments==0.2.2
 jupyterlab-widgets==1.1.1
-kiwisolver==1.4.3
+kiwisolver==1.4.4
 MarkupSafe==2.1.1
 matplotlib==3.5.2
 matplotlib-inline==0.1.3
