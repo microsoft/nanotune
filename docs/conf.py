@@ -297,3 +297,5 @@ nbsphinx_kernel_name = 'python3'
 nbsphinx_execute = 'never'
 
 nbsphinx_allow_errors = True
+
+language = "en"
