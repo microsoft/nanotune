@@ -134,5 +134,5 @@ websockets==10.1
 Werkzeug==2.0.2
 widgetsnbextension==3.5.2
 wrapt==1.14.1
-xarray==0.20.1
+xarray==0.20.2
 zipp==3.8.1
