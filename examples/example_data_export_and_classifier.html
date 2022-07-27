@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data export and classification &mdash; nanotune 0.1.0+422.g8c9d4447 documentation</title>
+  <title>Data export and classification &mdash; nanotune 0.1.0+426.gea7e24a8 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -36,7 +36,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+422.g8c9d4447
+                0.1.0+426.gea7e24a8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -314,11 +314,12 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -327,10 +328,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -342,12 +347,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -380,8 +388,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">qcodes</span> <span class="k">as</span> <span class="nn">qc</span>
 <span class="kn">import</span> <span class="nn">nanotune</span> <span class="k">as</span> <span class="nn">nt</span>
@@ -400,8 +407,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">export_data</span><span class="p">(</span><span class="s1">&#39;pinchoff&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;device_characterization.db&#39;</span><span class="p">],</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt_root</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;tuning&#39;</span><span class="p">),</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;test_export_data&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">export_data</span><span class="p">(</span><span class="s1">&#39;pinchoff&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;device_characterization.db&#39;</span><span class="p">],</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt_root</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;tuning&#39;</span><span class="p">),</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;test_export_data&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -413,8 +419,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pinchoff_classifier</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pinchoff_classifier</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span>
         <span class="p">[</span><span class="s1">&#39;test_export_data.npy&#39;</span><span class="p">],</span>
         <span class="s1">&#39;pinchoff&#39;</span><span class="p">,</span>
         <span class="n">data_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span>
@@ -428,8 +433,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -442,8 +446,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="mi">1203</span><span class="p">,</span> <span class="n">db_name</span><span class="o">=</span><span class="s1">&#39;device_characterization.db&#39;</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt_root</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;tuning&#39;</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="mi">1203</span><span class="p">,</span> <span class="n">db_name</span><span class="o">=</span><span class="s1">&#39;device_characterization.db&#39;</span><span class="p">,</span> <span class="n">db_folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nt_root</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;tuning&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -460,8 +463,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pinchoff_classifier</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pinchoff_classifier</span> <span class="o">=</span> <span class="n">Classifier</span><span class="p">(</span>
         <span class="p">[</span><span class="s1">&#39;pinchoff.npy&#39;</span><span class="p">],</span>
         <span class="s1">&#39;pinchoff&#39;</span><span class="p">,</span>
         <span class="n">data_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">],</span>
@@ -476,8 +478,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">metrics_results</span><span class="p">,</span> <span class="n">metrics_all_iterations</span> <span class="o">=</span> <span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">compute_metrics</span><span class="p">(</span><span class="n">save_to_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics_results</span><span class="p">,</span> <span class="n">metrics_all_iterations</span> <span class="o">=</span> <span class="n">pinchoff_classifier</span><span class="o">.</span><span class="n">compute_metrics</span><span class="p">(</span><span class="n">save_to_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -486,8 +487,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">display_metrics</span><span class="p">(</span><span class="n">metrics_results</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_metrics</span><span class="p">(</span><span class="n">metrics_results</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -512,8 +512,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">metrics_results</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics_results</span>
 </pre></div>
 </div>
 </div>
@@ -571,8 +570,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">METRIC_NAMES</span><span class="p">,</span> <span class="n">metrics_results</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">METRIC_NAMES</span><span class="p">,</span> <span class="n">metrics_results</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -606,8 +604,7 @@ data_files
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>

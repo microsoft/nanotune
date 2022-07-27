@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+422.g8c9d4447 documentation</title>
+  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+426.gea7e24a8 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -36,7 +36,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+422.g8c9d4447
+                0.1.0+426.gea7e24a8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -310,11 +310,12 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -323,10 +324,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -338,12 +343,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -374,8 +382,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="n">new_experiment</span>
 <span class="kn">from</span> <span class="nn">qcodes.dataset.experiment_container</span> <span class="kn">import</span> <span class="n">load_by_id</span>
 <span class="kn">from</span> <span class="nn">qcodes.dataset.plotting</span> <span class="kn">import</span> <span class="n">plot_by_id</span>
@@ -408,16 +415,15 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 <div class="line">Illustration of capacitances between gates and gates and dots:</div>
 <div class="line">Each gate voltage <span class="math notranslate nohighlight">\(V_{i}\)</span> will tune the number of charges on each dot. The capacitance of the dots, <span class="math notranslate nohighlight">\(C_{A}\)</span> and <span class="math notranslate nohighlight">\(C_{B}\)</span>, are sums of all capacitances connects to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> respectively. Gates located further away will have a smaller capacitive coupling. Most labels of capacitance between gates are omitted for readability.</div>
 </div>
-<p><img alt="d212b29517ff40caaccfe1b68a14cd52" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
+<p><img alt="ef01e229f0d848418970677d1af55dbd" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
 <p>Names and layout indices of gates: Six electrostatic gates, three barriers and two plungers, are used to define two, possibly coupled, quantum dots. Barrier gates are primarily used to create potential barriers, while plungers are used to tune electron density and thus the dot’s electrochemical potentials.</p>
-<p><img alt="e418c736c8494703806ffc15f483a9bc" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
+<p><img alt="1ab40ec432db475ba47596ae4af00d01" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
 <p>Initiate or set database where data should be saved. When initializing a database a new qcodes experiment needs to be created as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">exp_name</span> <span class="o">=</span> <span class="s1">&#39;capacitance_extraction&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exp_name</span> <span class="o">=</span> <span class="s1">&#39;capacitance_extraction&#39;</span>
 <span class="n">sample_name</span> <span class="o">=</span> <span class="s1">&#39;capa_model&#39;</span>
 <span class="n">db_name</span> <span class="o">=</span> <span class="s1">&#39;capa_model_test.db&#39;</span>
 <span class="n">nt</span><span class="o">.</span><span class="n">new_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
@@ -456,8 +462,7 @@ capacitance_extraction#capa_model#1@C:\Workshop\nanotune\docs\examples\capa_mode
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">voltage_nodes</span> <span class="o">=</span> <span class="p">{</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">voltage_nodes</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;top_barrier&#39;</span><span class="p">,</span>
     <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;left_barrier&#39;</span><span class="p">,</span>
     <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;left_plunger&#39;</span><span class="p">,</span>
@@ -477,8 +482,7 @@ capacitance_extraction#capa_model#1@C:\Workshop\nanotune\docs\examples\capa_mode
     <span class="n">db_name</span><span class="o">=</span><span class="n">db_name</span><span class="p">,</span>
     <span class="n">db_folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span>
 <span class="p">)</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <p>Set voltages, define capacitance matrix and calculate ground state dot occupation</p>
@@ -486,8 +490,7 @@ capacitance_extraction#capa_model#1@C:\Workshop\nanotune\docs\examples\capa_mode
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">qdot</span><span class="o">.</span><span class="n">V_v</span><span class="p">([</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qdot</span><span class="o">.</span><span class="n">V_v</span><span class="p">([</span>
     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># top_barrier</span>
     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># left_barrier</span>
     <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># left_plunger</span>
@@ -520,8 +523,7 @@ capacitance_extraction#capa_model#1@C:\Workshop\nanotune\docs\examples\capa_mode
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">N_limits</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_limits</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
 <span class="n">sweep_ranges</span> <span class="o">=</span> <span class="n">qdot</span><span class="o">.</span><span class="n">determine_sweep_voltages</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">N_limits</span><span class="o">=</span><span class="n">N_limits</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sweep_ranges</span><span class="p">)</span>
 </pre></div>
@@ -539,8 +541,7 @@ capacitance_extraction#capa_model#1@C:\Workshop\nanotune\docs\examples\capa_mode
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%%time</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
 <span class="n">dataid</span> <span class="o">=</span> <span class="n">qdot</span><span class="o">.</span><span class="n">sweep_voltages</span><span class="p">(</span>
     <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
     <span class="n">sweep_ranges</span><span class="p">,</span>
@@ -585,8 +586,7 @@ Wall time: 42.8 s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">qdot</span><span class="o">.</span><span class="n">V_v</span><span class="p">([</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qdot</span><span class="o">.</span><span class="n">V_v</span><span class="p">([</span>
     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># top_barrier</span>
     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># left_barrier</span>
     <span class="mf">3.2</span><span class="p">,</span>  <span class="c1"># left_plunger</span>
