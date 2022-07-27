@@ -48,7 +48,7 @@ jupyterlab-widgets==1.0.2
 jupyterthemes==0.20.0
 kiwisolver==1.4.4
 lesscpy==0.15.0
-Markdown==3.3.6
+Markdown==3.4.1
 MarkupSafe==2.0.1
 matplotlib==3.5.2
 mistune==0.8.4
