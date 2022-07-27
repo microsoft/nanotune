@@ -6,7 +6,7 @@ astunparse==1.6.3
 async-generator==1.10
 attrs==21.2.0
 backcall==0.2.0
-bleach==4.1.0
+bleach==5.0.1
 broadbean==0.10.0
 cached-property==1.5.2
 cachetools==4.2.4
