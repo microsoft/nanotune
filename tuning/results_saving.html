@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results saving &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Results saving &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -119,12 +120,12 @@
 }
 </style>
 <section id="results-saving">
-<span id="id1"></span><h1>Results saving<a class="headerlink" href="#results-saving" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Results saving<a class="headerlink" href="#results-saving" title="Permalink to this heading"></a></h1>
 <p>Three classes work together to ensure tuning results are retained:
 <cite>TuningResult</cite>, <cite>MeasurementHistory</cite>, <cite>MeasurementHistory</cite>. They can be used to
 also save any other, not tuning related, results if desired.</p>
 <section id="tuningresult">
-<h2>TuningResult<a class="headerlink" href="#tuningresult" title="Permalink to this headline"></a></h2>
+<h2>TuningResult<a class="headerlink" href="#tuningresult" title="Permalink to this heading"></a></h2>
 <p>The <cite>TuningResult</cite> is a dataclass holding results of a tuning stage such as
 gate characterization or charge diagram. It can also be used without
 nanotune’s <cite>Tuningstage</cite> and is serializable.
@@ -134,7 +135,7 @@ guid/data run IDs and where the data is saved. The latter is important when
 several databases are used.</p>
 </section>
 <section id="measurementhistory">
-<h2>MeasurementHistory<a class="headerlink" href="#measurementhistory" title="Permalink to this headline"></a></h2>
+<h2>MeasurementHistory<a class="headerlink" href="#measurementhistory" title="Permalink to this heading"></a></h2>
 <p>The <cite>MeasurementHistory</cite> is a container holding tuning results of a single
 device. Its <cite>results</cite> attribute is a dictionary mapping string identifiers
 such as <cite>gate_characterization_top_barrier</cite> to a <cite>TuningResult</cite> instances. If
@@ -142,7 +143,7 @@ appearing multiple times, these
 identifiers are made unique by appending numbers (as strings) at the end.</p>
 </section>
 <section id="tuninghistory">
-<h2>TuningHistory<a class="headerlink" href="#tuninghistory" title="Permalink to this headline"></a></h2>
+<h2>TuningHistory<a class="headerlink" href="#tuninghistory" title="Permalink to this heading"></a></h2>
 <p>The <cite>TuningHistory</cite> class is a container for
 tuning results of multiple devices. It wraps a dictionary mapping a device
 name to an instance of a <cite>MeasurementHistory</cite>.</p>

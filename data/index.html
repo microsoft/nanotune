@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Data &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +113,7 @@
 }
 </style>
 <section id="data">
-<span id="id1"></span><h1>Data<a class="headerlink" href="#data" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Data<a class="headerlink" href="#data" title="Permalink to this heading"></a></h1>
 <p>Typical manual-tuning-inspired measurements are one- and two-dimensional traces
 on a grid. While this is fairly limiting when dealing with multi-dimensional
 spaces, it is currently the only human-analyzable way of taking data. As
@@ -123,7 +124,7 @@ supports are 1D and 2D traces.</p>
 QCoDeS dataset. However, nanotune has its own dataset
 abstraction with a few extra functionalities convenient for tuning.</p>
 <section id="dataset">
-<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline"></a></h2>
+<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this heading"></a></h2>
 <p>The dataset class emulates a QCoDeS dataset in order to standardize a few
 naming conventions and adding post-processing steps. Using QCoDeS’s
 <cite>to_xarray_dataset</cite>, raw data is loaded into an xarray called <cite>raw_data</cite>.
@@ -155,7 +156,7 @@ which is defined in <cite>nanotune.configuration.config.json</cite>.</p>
 <p>For more details see also <a class="reference internal" href="../examples/dataset_example.html"><span class="doc">the dataset example notebook</span></a>,</p>
 </section>
 <section id="databases">
-<h2>Databases<a class="headerlink" href="#databases" title="Permalink to this headline"></a></h2>
+<h2>Databases<a class="headerlink" href="#databases" title="Permalink to this heading"></a></h2>
 <p>As shown above and as opposed to QCoDes, nanotune does not rely on data run IDs
 only. It also needs the database name and optionally the folder where the
 database is located to find data.
@@ -180,7 +181,7 @@ The columns are initialized whenever a database is created using
 ‘nt.new_database’.</p>
 </section>
 <section id="data-flow">
-<h2>Data flow<a class="headerlink" href="#data-flow" title="Permalink to this headline"></a></h2>
+<h2>Data flow<a class="headerlink" href="#data-flow" title="Permalink to this heading"></a></h2>
 <p>The diagram shown in <a class="reference internal" href="#fig-data-flow"><span class="std std-numref">Fig. 13</span></a> illustrates the data and
 instruction flow of quantum measurements.
 The dotted ellipses indicates which stages are covered by QCoDeS or nanotune.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capacitance model &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Capacitance model &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +36,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -114,7 +115,7 @@
 }
 </style>
 <section id="capacitance-model">
-<span id="capa-model"></span><h1>Capacitance model<a class="headerlink" href="#capacitance-model" title="Permalink to this headline"></a></h1>
+<span id="capa-model"></span><h1>Capacitance model<a class="headerlink" href="#capacitance-model" title="Permalink to this heading"></a></h1>
 <p>This section is an extraction from Jana’s <a class="reference external" href="https://doi.org/10.3929/ethz-b-000473107">thesis</a>.</p>
 <p>Quantum dots with weak coupling between them and thus well localized charges
 separated from the remaining of the electron gas
@@ -246,7 +247,7 @@ However, a system of <span class="math notranslate nohighlight">\(N\)</span> nod
 capacitors and thus requires <span class="math notranslate nohighlight">\(N(N-1)/2\)</span> many relations to fully
 determine <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>.</p>
 <section id="double-quantum-dots">
-<h2>Double quantum dots<a class="headerlink" href="#double-quantum-dots" title="Permalink to this headline"></a></h2>
+<h2>Double quantum dots<a class="headerlink" href="#double-quantum-dots" title="Permalink to this heading"></a></h2>
 <p>We now consider the specific case of  two charge and six voltage nodes,
 representing common 2DEG device layouts  for semiconductor
 qubits.
@@ -291,7 +292,7 @@ source, and <span class="math notranslate nohighlight">\(B\)</span> and drain re
 determined from measurements probing the charge states of the system.</p>
 </section>
 <section id="charge-diagram">
-<h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this headline"></a></h2>
+<h2>Charge diagram<a class="headerlink" href="#charge-diagram" title="Permalink to this heading"></a></h2>
 <p>The charge diagram, sometimes also called the charge stability diagram, is a
 two-dimensional measurement stepping over two gate voltages while probing the
 dots’ stable electron configurations. As introduced above, charge transitions
@@ -404,7 +405,7 @@ distinct gate combinations, these equations allow to extract the entries of
 both <span class="math notranslate nohighlight">\(\mathbf{C_{cv}}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{C_{cc}}\)</span>.</p>
 </section>
 <section id="note-on-synthetic-data">
-<h2>Note on synthetic data<a class="headerlink" href="#note-on-synthetic-data" title="Permalink to this headline"></a></h2>
+<h2>Note on synthetic data<a class="headerlink" href="#note-on-synthetic-data" title="Permalink to this heading"></a></h2>
 <p>The model described above was used to generate one part of the synthetic dataset
 used in <a class="reference external" href="https://iopscience.iop.org/article/10.1088/2632-2153/ac104c">Darulova et al. 2021</a>.
 The general problem with synthetic data or simple models such as the one above is

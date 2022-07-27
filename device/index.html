@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device abstraction &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Device abstraction &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +113,7 @@
 }
 </style>
 <section id="device-abstraction">
-<span id="device"></span><h1>Device abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this headline"></a></h1>
+<span id="device"></span><h1>Device abstraction<a class="headerlink" href="#device-abstraction" title="Permalink to this heading"></a></h1>
 <p>The physical device or sample is represented by an instance of a <cite>Device</cite> class, which
 in turn is a QCodeS <cite>DelegateInstrument</cite>. The <cite>Device</cite> class extends its base
 class by adding
@@ -176,42 +177,42 @@ measurements.</p>
 device with three gates, already known normalization constants (which could
 be the case when re-loading a device), two readout instruments hooked up
 and some known tuning parameters.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">instruments</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">instruments</span><span class="p">:</span><span class="w"></span>
 
-<span class="nt">device_example</span><span class="p">:</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nanotune.device.device.Device</span>
-    <span class="l l-Scalar l-Scalar-Plain">init</span><span class="p p-Indicator">:</span>
-    <span class="nt">device_type</span><span class="p">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">doubledot</span>
-    <span class="nt">normalization_constants</span><span class="p">:</span>
-      <span class="nt">transport</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">2</span><span class="p p-Indicator">]</span>
-      <span class="nt">sensing</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">-0.3</span><span class="p p-Indicator">,</span> <span class="nv">0.6</span><span class="p p-Indicator">]</span>
-    <span class="nt">channels</span><span class="p">:</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nanotune.device.device_channel.DeviceChannel</span>
-      <span class="nt">top_barrier</span><span class="p">:</span>
-        <span class="nt">channel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dac.ch01</span>
-        <span class="nt">gate_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-      <span class="nt">left_plunger</span><span class="p">:</span>
-        <span class="nt">channel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dac.ch02</span>
-        <span class="nt">gate_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-      <span class="nt">left_ohmic</span><span class="p">:</span>
-        <span class="nt">channel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dac.ch10</span>
-        <span class="nt">ohmic_id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-    <span class="nt">readout</span><span class="p">:</span>
-      <span class="nt">transport</span><span class="p">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">lockin.X</span>
-      <span class="nt">sensing</span><span class="p">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">rf.phase</span>
-    <span class="nt">initial_valid_ranges</span><span class="p">:</span>
-        <span class="nt">top_barrier</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">-3</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
-    <span class="nt">current_valid_ranges</span><span class="p">:</span>
-        <span class="nt">top_barrier</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">-0.5</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
-    <span class="nt">transition_voltages</span><span class="p">:</span>
-        <span class="nt">top_barrier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-0.4</span>
+<span class="nt">device_example</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nanotune.device.device.Device</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">init</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">device_type</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">doubledot</span><span class="w"></span>
+<span class="w">    </span><span class="nt">normalization_constants</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">transport</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">sensing</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-0.3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.6</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">channels</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nanotune.device.device_channel.DeviceChannel</span><span class="w"></span>
+<span class="w">      </span><span class="nt">top_barrier</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dac.ch01</span><span class="w"></span>
+<span class="w">        </span><span class="nt">gate_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">      </span><span class="nt">left_plunger</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dac.ch02</span><span class="w"></span>
+<span class="w">        </span><span class="nt">gate_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">      </span><span class="nt">left_ohmic</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dac.ch10</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ohmic_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">readout</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">transport</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">lockin.X</span><span class="w"></span>
+<span class="w">      </span><span class="nt">sensing</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">rf.phase</span><span class="w"></span>
+<span class="w">    </span><span class="nt">initial_valid_ranges</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">top_barrier</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">current_valid_ranges</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">top_barrier</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-0.5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">transition_voltages</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">top_barrier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-0.4</span><span class="w"></span>
 </pre></div>
 </div>
 <section id="device-layout">
-<h2>Device layout<a class="headerlink" href="#device-layout" title="Permalink to this headline"></a></h2>
+<h2>Device layout<a class="headerlink" href="#device-layout" title="Permalink to this heading"></a></h2>
 <p>The <cite>DeviceLayout</cite> class serves as interface for specifying a device
 layout. A subclass needs to implement the methods which return the gate IDs of
 device channels serving the specific purpose. For example, the method
@@ -220,13 +221,13 @@ device channels serving the specific purpose. For example, the method
 An example of a device layout is <cite>DoubleDotLayout</cite>.</p>
 </section>
 <section id="normalization-constants">
-<h2>Normalization constants<a class="headerlink" href="#normalization-constants" title="Permalink to this headline"></a></h2>
+<h2>Normalization constants<a class="headerlink" href="#normalization-constants" title="Permalink to this heading"></a></h2>
 <p>This dataclass is used to hold and update normalization constants of a device.
 Each attribute keeps track of the constants of one readout method, e.g.
 transport, sensing and rf.</p>
 </section>
 <section id="device-channel">
-<h2>Device channel<a class="headerlink" href="#device-channel" title="Permalink to this headline"></a></h2>
+<h2>Device channel<a class="headerlink" href="#device-channel" title="Permalink to this heading"></a></h2>
 <p>A <cite>DeviceChannel</cite> is a wrapper of an instrument channel, e.g. a
 DAC channel, but with added functionalities. The channel wrapped and passed to
 init function needs to either implement the methods of a <cite>DACChannelInterface</cite>

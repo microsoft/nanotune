@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instruments &amp; interfaces &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Instruments &amp; interfaces &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,9 +113,9 @@
 }
 </style>
 <section id="instruments-interfaces">
-<span id="drivers"></span><h1>Instruments &amp; interfaces<a class="headerlink" href="#instruments-interfaces" title="Permalink to this headline"></a></h1>
+<span id="drivers"></span><h1>Instruments &amp; interfaces<a class="headerlink" href="#instruments-interfaces" title="Permalink to this heading"></a></h1>
 <section id="interfaces">
-<h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline"></a></h2>
+<h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this heading"></a></h2>
 <p>The idea of using interfaces between the hardware used and
 nanotune is to keep the automation code general and independent of the
 instruments. It is up to the user to specify the methods getting and setting
@@ -135,12 +136,12 @@ define the remaining functionalities.</p>
 whose API documentation can be found in <a class="reference internal" href="../api/drivers/index.html#drivers-api"><span class="std std-ref">nanotune.drivers</span></a>.</p>
 </section>
 <section id="mock-instruments">
-<h2>Mock instruments<a class="headerlink" href="#mock-instruments" title="Permalink to this headline"></a></h2>
+<h2>Mock instruments<a class="headerlink" href="#mock-instruments" title="Permalink to this heading"></a></h2>
 <p><cite>MockDACChannel</cite>, <cite>MockDAC</cite>, as well as <cite>MockLockin</cite> and <cite>MockRF</cite> are primarily
 used in unit and functional tests, but can also appear in offline demos.</p>
 </section>
 <section id="server-client-setup-for-dacs">
-<h2>Server-client setup for DACs<a class="headerlink" href="#server-client-setup-for-dacs" title="Permalink to this headline"></a></h2>
+<h2>Server-client setup for DACs<a class="headerlink" href="#server-client-setup-for-dacs" title="Permalink to this heading"></a></h2>
 <p>In QCoDeS, it is currently not possible to connect to the same instrument from
 the same python kernel, i.e. jupyter notebook. Sometimes it is convenient to
 do exactly that, such as when measuring multiple devices in parallel.

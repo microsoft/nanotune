@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Capacitance model for quantum dots &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +36,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -385,7 +386,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="Capacitance-model-for-quantum-dots">
-<h1>Capacitance model for quantum dots<a class="headerlink" href="#Capacitance-model-for-quantum-dots" title="Permalink to this headline"></a></h1>
+<h1>Capacitance model for quantum dots<a class="headerlink" href="#Capacitance-model-for-quantum-dots" title="Permalink to this heading"></a></h1>
 <p>The system of electrostatic gates, dots and reservoirs is represented by a system of conductors connected via resistors and capacitors. Albeit classical and simple, the capacitance model explains and qualitatively reproduces relevant transport features of gate-defined quantum dots.</p>
 <p>The capacitance model is defined by a capacitance matrix <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, whose elements <span class="math notranslate nohighlight">\(C_{ij}\)</span> are the capacitances between individual elements <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>. We distinguish between two different types of elements, the charge and the voltage nodes, representing quantum dots and electrostatic gates respectively. Each node <span class="math notranslate nohighlight">\(i\)</span> is defined by its charge <span class="math notranslate nohighlight">\(Q_{i}\)</span> and electrical potential <span class="math notranslate nohighlight">\(V_{i}\)</span>. For simplicity, we write charges and potentials on all nodes of
 the system in vector notation. We denote charges on charge and voltages nodes by <span class="math notranslate nohighlight">\(\vec{Q_{c}}\)</span> and <span class="math notranslate nohighlight">\(\vec{Q_{v}}\)</span> respectively, and electrical potentials by <span class="math notranslate nohighlight">\(\vec{V}_{c}\)</span> and <span class="math notranslate nohighlight">\(\vec{V}_{v}\)</span>. The capacitance model allows to calculate potentials on voltage nodes resulting in the desired number of charges on charge nodes. We consider a system of <span class="math notranslate nohighlight">\(N_{c}\)</span> charge nodes and <span class="math notranslate nohighlight">\(N_{v}\)</span> voltage nodes.</p>
@@ -407,9 +408,9 @@ to calculate so-called virtual gate coefficients - useful knobs in semiconductor
 <div class="line">Illustration of capacitances between gates and gates and dots:</div>
 <div class="line">Each gate voltage <span class="math notranslate nohighlight">\(V_{i}\)</span> will tune the number of charges on each dot. The capacitance of the dots, <span class="math notranslate nohighlight">\(C_{A}\)</span> and <span class="math notranslate nohighlight">\(C_{B}\)</span>, are sums of all capacitances connects to <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> respectively. Gates located further away will have a smaller capacitive coupling. Most labels of capacitance between gates are omitted for readability.</div>
 </div>
-<p><img alt="07439f967ff14a969c99dcf6981353f4" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
+<p><img alt="7775ca0bfd8e49e5a7d0c8863b54449b" class="no-scaled-link" src="../_images/quantum_dots-08.svg" width="300" /></p>
 <p>Names and layout indices of gates: Six electrostatic gates, three barriers and two plungers, are used to define two, possibly coupled, quantum dots. Barrier gates are primarily used to create potential barriers, while plungers are used to tune electron density and thus the dot’s electrochemical potentials.</p>
-<p><img alt="c131f26ff2a9492d9a47acb7568e7071" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
+<p><img alt="a35384db9a9840daba1b28e2c84de980" class="no-scaled-link" src="../_images/quantum_dots-09.svg" width="200" /></p>
 <p>Initiate or set database where data should be saved. When initializing a database a new qcodes experiment needs to be created as well.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:

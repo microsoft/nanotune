@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Overview &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +113,7 @@
 }
 </style>
 <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h1>
 <p>Nanotune was implemented as part of a PhD project with the goal to initialize
 gate-defined quantum dots without human interaction and no pre-measured input.
 It automates
@@ -151,7 +152,7 @@ dots formed in 1D systems such as nanowires. All measurements were taken in
 DC transport, i.e. measuring current through the device. This readout method
 can be replaced by sensing technique easily.</p>
 <section id="tuning-workflow">
-<h2>Tuning workflow<a class="headerlink" href="#tuning-workflow" title="Permalink to this headline"></a></h2>
+<h2>Tuning workflow<a class="headerlink" href="#tuning-workflow" title="Permalink to this heading"></a></h2>
 <p>The dot-initialization workflow consists of two pre-calibration, one
 characterization and one tuning step, as outlined in the flowchart pictured in
 <a class="reference internal" href="#fig-workflow"><span class="std std-numref">Fig. 2</span></a>.</p>
@@ -197,7 +198,7 @@ intermediate transport regime, gate voltages are adjusted. The precise
 sequence of measurements is discussed in <a class="reference internal" href="../tuning/index.html#tuning"><span class="std std-ref">Tuning</span></a>.</p>
 </section>
 <section id="implementation">
-<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline"></a></h2>
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading"></a></h2>
 <p>The main modules implementing the dot-tuning are the <cite>Device</cite>, <cite>Tuner</cite>,
 <cite>TuningStage</cite>, <cite>DataFit</cite> and <cite>Classifier</cite> classes. These classes work together as follows:
 A subclass of <cite>TuningStage</cite>, currently either <cite>GateCharacterization1D</cite> or
@@ -215,7 +216,7 @@ physical device including a list of gates, ohmics, gate layout and readout
 methods.</p>
 </section>
 <section id="acknowledgments">
-<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline"></a></h2>
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this heading"></a></h2>
 <p>A special thanks goes to Matthias Troyer, Maja Cassidy, David Reilly and
 Charles Marcus for initiating, supervising and pushing over the finish line
 the PhD project, which resulted in the original version of nanotune. Chris

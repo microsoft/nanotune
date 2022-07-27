@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Classification &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Classification &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -113,7 +114,7 @@
 }
 </style>
 <section id="classification">
-<h1>Classification<a class="headerlink" href="#classification" title="Permalink to this headline"></a></h1>
+<h1>Classification<a class="headerlink" href="#classification" title="Permalink to this heading"></a></h1>
 <p>nanotune replaces the experimenter’s decision making by binary classifiers
 predicting either quality of a measurement or charge stage found in charge
 diagrams. Due to a large variety of regimes and noise types not reproduced by
@@ -122,7 +123,7 @@ it uses hand-labelled experimental measurements to train them. Given the
 difficulty of collecting and labelling these datasets, binary classifiers,
 which are less data hungry than neural networks, are used.</p>
 <section id="classifier">
-<h2>Classifier<a class="headerlink" href="#classifier" title="Permalink to this headline"></a></h2>
+<h2>Classifier<a class="headerlink" href="#classifier" title="Permalink to this heading"></a></h2>
 <p>nanotune’s <cite>Classifier</cite> class emulates binary classifiers implemented in
 scikit-learn. One can choose among the following classifiers at initialization:</p>
 <ul class="simple">
@@ -147,7 +148,7 @@ dataset so that both labels appear equally often. Principle components can also
 be calculated and used for classification.</p>
 </section>
 <section id="synthetic-vs-experimental-data">
-<h2>Synthetic vs experimental data<a class="headerlink" href="#synthetic-vs-experimental-data" title="Permalink to this headline"></a></h2>
+<h2>Synthetic vs experimental data<a class="headerlink" href="#synthetic-vs-experimental-data" title="Permalink to this heading"></a></h2>
 <p>The issue with using synthetic data to train machine learning classifiers to
 predict the charge state is that models often fail to capture the large variety
 of regimes. The model implemented in nanotune for example, is able to produce
@@ -187,7 +188,7 @@ same image.</p>
 sub-regions for classification. Each sub-region is classified separately.</p>
 </section>
 <section id="labelling">
-<h2>Labelling<a class="headerlink" href="#labelling" title="Permalink to this headline"></a></h2>
+<h2>Labelling<a class="headerlink" href="#labelling" title="Permalink to this heading"></a></h2>
 <p>When using labelled experimental data, the labelling process brings another
 challenge with it. Not only is the process time consuming, but the regime
 might not be clear-cut. In fact, each labeller might label diagrams differently,
@@ -215,7 +216,7 @@ could be used to decide on a set of “labelling rules”.</p>
 <p><a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01658ef52b2c.svg"><img alt="noise1" src="../_images/dotfit_deafcafe-0200-0004-0000-01658ef52b2c.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-01659e804f95.svg"><img alt="noise2" src="../_images/dotfit_deafcafe-0200-0004-0000-01659e804f95.svg" width="45%" /></a> <a class="reference internal" href="../_images/dotfit_deafcafe-0200-0004-0000-0165ad687e7b.svg"><img alt="noise3" src="../_images/dotfit_deafcafe-0200-0004-0000-0165ad687e7b.svg" width="45%" /></a></p>
 </section>
 <section id="labelling-tool">
-<h2>Labelling tool<a class="headerlink" href="#labelling-tool" title="Permalink to this headline"></a></h2>
+<h2>Labelling tool<a class="headerlink" href="#labelling-tool" title="Permalink to this heading"></a></h2>
 <p>nanotune has a simple tool trying to alleviate the pain of labelling, called
 the <cite>LabellingTool</cite>. From experience, having a window displaying each
 measurements and buttons to click for each label, makes the whole procedure

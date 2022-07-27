@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device tuner &mdash; nanotune 0.1.0+321.gb6287146 documentation</title>
+  <title>Device tuner &mdash; nanotune 0.1.0+342.g2cff02e5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -33,7 +34,7 @@
             <a href="../index.html" class="icon icon-home"> nanotune
           </a>
               <div class="version">
-                0.1.0+321.gb6287146
+                0.1.0+342.g2cff02e5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -119,9 +120,9 @@
 }
 </style>
 <section id="device-tuner">
-<span id="id1"></span><h1>Device tuner<a class="headerlink" href="#device-tuner" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Device tuner<a class="headerlink" href="#device-tuner" title="Permalink to this heading"></a></h1>
 <section id="tuner">
-<h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this headline"></a></h2>
+<h2>Tuner<a class="headerlink" href="#tuner" title="Permalink to this heading"></a></h2>
 <p>The base class implements the most common tuning methods such as updating a
 device’s normalization constants, measuring a pinchoff or taking a charge diagram.
 These methods use the corresponding <a class="reference internal" href="tuningstages.html#tuningstages"><span class="std std-ref">Tuningstages</span></a> to take and
@@ -150,14 +151,14 @@ lying methods used in every other tuning procedure ensures that all of them
 are retained.</p>
 </section>
 <section id="characterizer">
-<h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this headline"></a></h2>
+<h2>Characterizer<a class="headerlink" href="#characterizer" title="Permalink to this heading"></a></h2>
 <p>The <cite>Characterizer</cite> sub-class implements the device characterization step by
 applying the base class’ gate characterization step to all gates. Optionally,
 gates can be left out, e.g. in the case of a helper gate which has been set
 beforehand.</p>
 </section>
 <section id="dot-tuner">
-<h2>Dot tuner<a class="headerlink" href="#dot-tuner" title="Permalink to this headline"></a></h2>
+<h2>Dot tuner<a class="headerlink" href="#dot-tuner" title="Permalink to this heading"></a></h2>
 <p>The <cite>DotTuner</cite> contains methods required to implement the tuning procedure
 shown in <a class="reference internal" href="#tuning-algorithm"><span class="std std-numref">Fig. 11</span></a>.
 If desired, the entire sequence can by run using the <cite>tune</cite> method, however
