@@ -72,7 +72,7 @@ class NormalizationConstants:
                     expect list or tuple.')
             if not hasattr(self, read_type):
                 raise KeyError(f'Invalid normalization constant identifier, \
-                    use one of {self.__dataclass_fields__.keys()}')  # type: ignore
+                    use one of {self.__dataclass_fields__.keys()}')
             setattr(self, read_type, tuple(constant))
 
 

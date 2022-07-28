@@ -666,8 +666,8 @@ class Classifier:
             train_data_addon = train_data_addon[mask_np]
             train_labels_addon = train_labels_addon[mask_np]
         else:
-            train_data_addon = None  # type: ignore
-            train_labels_addon = None  # type: ignore
+            train_data_addon = None
+            train_labels_addon = None
 
         for curr_iter in range(n_iter):
             start_time_train = time.time()
