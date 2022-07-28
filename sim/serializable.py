@@ -1,4 +1,4 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 import importlib
 from typing import Any, OrderedDict, Tuple
 
@@ -35,6 +35,7 @@ class ISerializable(ABC):
         typeinfo["init"]["name"] = name
         return ISerializable.create_from_type(**typeinfo)
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def make(cls, **kwargs) -> Any:
         """ Creates an instance of this class """

@@ -4,7 +4,7 @@
 
 import importlib
 import logging
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import ABC, abstractmethod
 from queue import SimpleQueue
 from typing import Any, Mapping, Tuple
 
