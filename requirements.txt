@@ -7,7 +7,7 @@ async-generator==1.10
 attrs==21.4.0
 backcall==0.2.0
 bleach==5.0.1
-broadbean==0.10.0
+broadbean==0.11.0
 cached-property==1.5.2
 cachetools==5.2.0
 certifi==2022.6.15
