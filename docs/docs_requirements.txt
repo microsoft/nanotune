@@ -125,6 +125,6 @@ urllib3==1.26.12
 wcwidth==0.2.5
 webencodings==0.5.1
 websockets==10.3
-widgetsnbextension==4.0.2
+widgetsnbextension==4.0.3
 wrapt==1.14.1
 xarray==0.20.2
