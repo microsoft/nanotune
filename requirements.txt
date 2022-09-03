@@ -79,7 +79,7 @@ pluggy==1.0.0
 ply==3.11
 prettytable==3.4.0
 prometheus-client==0.14.1
-prompt-toolkit==3.0.30
+prompt-toolkit==3.0.31
 protobuf==4.21.5
 psutil==5.9.1
 ptyprocess==0.7.0
