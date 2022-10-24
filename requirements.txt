@@ -47,7 +47,7 @@ jupyterlab-pygments==0.2.2
 jupyterlab-widgets==1.1.1
 jupyterthemes==0.20.0
 kiwisolver==1.4.4
-lesscpy==0.15.0
+lesscpy==0.15.1
 Markdown==3.4.1
 MarkupSafe==2.1.1
 matplotlib==3.5.2
