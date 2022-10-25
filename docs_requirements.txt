@@ -8,7 +8,7 @@ bleach==5.0.1
 certifi==2022.6.15
 cffi==1.15.1
 chardet==5.0.0
-colorama==0.4.5
+colorama==0.4.6
 decorator==5.1.1
 defusedxml==0.7.1
 docutils==0.17.1
