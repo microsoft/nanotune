@@ -20,7 +20,7 @@ ipykernel==6.15.1
 ipython==7.34.0
 ipython-genutils==0.2.0
 ipywidgets==7.7.1
-jedi==0.18.1
+jedi==0.18.2
 Jinja2==3.1.2
 jsonpointer==2.3
 jsonschema==4.7.2
