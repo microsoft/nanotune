@@ -24,7 +24,7 @@ entrypoints==0.4
 execnet==1.9.0
 flatbuffers==2.0
 gast==0.5.3
-google-api-core~=2.8.2
+google-api-core~=2.11.0
 google-auth~=2.9.1
 googleapis-common-protos~=1.56.4
 grpcio==1.47.0
