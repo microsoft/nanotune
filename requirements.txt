@@ -10,7 +10,7 @@ bleach==5.0.1
 broadbean==0.10.0
 cached-property==1.5.2
 cachetools==5.2.0
-certifi==2022.6.15
+certifi==2022.12.7
 cffi==1.15.1
 cftime==1.6.1
 chardet==5.0.0
