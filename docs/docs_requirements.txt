@@ -53,7 +53,7 @@ mypy-extensions==0.4.3
 -e git+https://github.com/microsoft/nanotune.git@48fdd245cdbfeddc1c4544230074e9c53d61e73c#egg=nanotune
 nbclient==0.6.8
 nbconvert==7.0.0
-nbformat==5.4.0
+nbformat==5.7.0
 nbsphinx==0.8.9
 nest-asyncio==1.5.5
 networkx==2.6.3
