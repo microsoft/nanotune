@@ -43,7 +43,7 @@ jsonschema==4.16.0
 jupyter-client==7.3.5
 jupyter-core==4.11.2
 jupyterlab-pygments==0.2.2
-jupyterlab-widgets==3.0.3
+jupyterlab-widgets==3.0.5
 kiwisolver==1.4.4
 MarkupSafe==2.1.1
 matplotlib==3.5.3
