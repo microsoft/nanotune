@@ -51,7 +51,7 @@ matplotlib-inline==0.1.6
 mistune==2.0.4
 mypy-extensions==0.4.3
 -e git+https://github.com/microsoft/nanotune.git@48fdd245cdbfeddc1c4544230074e9c53d61e73c#egg=nanotune
-nbclient==0.6.8
+nbclient==0.7.2
 nbconvert==7.2.7
 nbformat==5.7.0
 nbsphinx==0.8.9
