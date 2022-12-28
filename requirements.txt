@@ -57,7 +57,7 @@ mistune==2.0.4
 mypy==0.991
 mypy-extensions==0.4.3
 nbformat==5.7.0
-nbclient==0.6.8
+nbclient==0.7.2
 nbconvert==7.2.7
 nest-asyncio==1.5.5
 netCDF4==1.6.2
