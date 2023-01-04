@@ -114,7 +114,7 @@ Send2Trash==1.8.0
 six==1.16.0
 smmap==5.0.0
 tabulate==0.8.10
-termcolor==1.1.0
+termcolor==2.2.0
 terminado==0.15.0
 testpath==0.6.0
 threadpoolctl==3.1.0
