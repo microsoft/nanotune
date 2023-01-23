@@ -22,7 +22,7 @@ decorator==5.1.1
 defusedxml==0.7.1
 entrypoints==0.4
 execnet==1.9.0
-flatbuffers==2.0
+flatbuffers==23.1.21
 gast==0.5.3
 google-api-core~=2.8.2
 google-auth~=2.9.1
