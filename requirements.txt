@@ -28,7 +28,7 @@ google-api-core~=2.8.2
 google-auth~=2.9.1
 googleapis-common-protos~=1.56.4
 grpcio==1.47.0
-h5py==3.7.0
+h5py==3.8.0
 idna==3.3
 imageio==2.20.0
 importlib-metadata==4.12.0
