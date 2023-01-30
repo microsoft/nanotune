@@ -85,4 +85,4 @@ webencodings==0.5.1
 widgetsnbextension==3.6.1
 wincertstore==0.2
 xarray==0.20.2
-zipp==3.8.1
+zipp==3.12.0
