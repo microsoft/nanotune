@@ -1,3 +1,6 @@
+**Nanotune is not maintained and has been archived**
+
+
 Nanotune is a QCoDeS- and Python-based automated tuning software, which uses
 supervised machine learning to enable autonomous bring-up of gate-defined
 quantum dots.
